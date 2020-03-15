@@ -22,5 +22,5 @@
   input(a);
   print(a+b, b+c);
 
-  666: input(b);
+  input(b);
   print(a*b*c+r*(a+5));
