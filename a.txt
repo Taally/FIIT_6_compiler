@@ -10,10 +10,10 @@
   }
   
   666:   
-  if b >= 5 or a+b and TRUE == 0
+  if b >= 5 or a+b == 0 and TRUE
       c = a;
   else {
-	c = a;
+    c = a;
     b=c;
   }
 
