@@ -1,5 +1,4 @@
 %{
-// ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public Parser(AbstractScanner<int, LexLocation> scanner) : base(scanner) { }
 %}
 
@@ -7,111 +6,105 @@
 
 %namespace SimpleParser
 
-%token BEGIN END INUM ID ASSIGN SEMICOLON COMMA FOR
-OR AND EQUAL NEQUAL GREATER LESS EQGREATER EQLESS LPAR RPAR WHILE BOOL
-IF ELSE
-PLUS MINUS MULT DIV MOD
-VAR PRINT INPUT GOTO
+%token BEGIN END INUM RNUM ID ASSIGN SEMICOLON COMMA FOR PLUS MINUS MULT DIV LPAR RPAR WHILE IF ELSE INPUT PRINT
+VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO COLON BOOL
 
 %%
 
-progr   : block
-		;
-
-block	: BEGIN stlist END
+progr   : stlist
 		;
 
 stlist	: statement 
-		| stlist SEMICOLON statement 
+		| stlist statement 
 		;
 
-statement 	: assign
-			| block  
-			| for	
-			| while
-			| if
-			| var
-			| print
-			| input
-			| goto
-			| label
-			;
+statement: assign 
+		| for
+		| while
+		| if
+		| input
+		| print
+		| var
+		| label
+		| goto
+		;
 
 ident 	: ID 
 		;
 	
-assign 	: ident ASSIGN expr 
-		| ident ASSIGN expr
-		;
-
-label	: INUM
-		;
-
-goto	: GOTO label
-		;
-
-for 	: FOR ident ASSIGN INUM COMMA INUM statement
-		;
-
-while 	: WHILE expr statement
+assign 	: ident ASSIGN expr SEMICOLON
 		;
 
 expr	: expr OR A
 		| A
 		;
 
-A	: A AND B
-	| B
-	;
+A		: A AND B
+		| B
+		;
 
-B	: B EQUAL C
-	| B NEQUAL C
-	| C
-	;
+B		: B EQUAL C
+		| B NOTEQUAL C
+		| C
+		;
 
-C	: C GREATER D
-	| C LESS D
-	| C EQGREATER D
-	| C EQLESS D
-	| D
-	;
+C		: C GREATER E
+		| C LESS E
+		| C EQGREATER E
+		| C EQLESS E
+		| E
+		;
 
-D	: D PLUS E
-	| D MINUS E
-	| E
-	;
+E		: E PLUS T  
+		| E MINUS T
+		| T
+		;
 
-E	: E MULT F
-	| E DIV F
-	| E MOD F
-	| F
-	;
+T		: T MULT F
+		| T DIV F
+		| F
+		;
 
-F	: ident
-	| INUM
-	| BOOL
-	| LPAR expr RPAR
-	;
+F		: ident
+		| INUM
+		| LPAR expr RPAR
+		| BOOL
+		;
 
-print    : PRINT LPAR exprlist RPAR
-		 ;
+block	: statement
+		| BEGIN stlist END 
+		;
 
-input    : INPUT LPAR ident RPAR
-		 ;
+for		: FOR ident ASSIGN INUM COMMA INUM block
+		;
+
+while	: WHILE expr block
+		;
+
+if		: IF expr block ELSE block
+		| IF expr block
+		;
+
+input	: INPUT LPAR ident RPAR SEMICOLON
+		;
 
 exprlist : expr
-		 | exprlist COMMA expr
-		 ;
+		| exprlist COMMA expr
+		;
 
-if 		: IF expr block ELSE block
-		| IF expr block
+print	: PRINT LPAR exprlist RPAR SEMICOLON
 		;
 
 varlist	: ident
 		| varlist COMMA ident
 		;
 
-var		: VAR varlist
+var		: VAR varlist SEMICOLON
 		;
 
+goto	: GOTO INUM SEMICOLON
+		;
+
+label	: INUM COLON statement
+		;
 %%

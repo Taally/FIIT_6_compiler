@@ -1,31 +1,26 @@
-{
-  var a, b, c, d, f;
-  b := 2;
-  a := 3;
-  a := b;
-  d := TRUE;
+  var a, b, c, r, i;
+  b = 2;
+  a = 3;
+  a = TRUE;
+  for a = 1,5 
+      b = 1+2+3+4+5;
+  while i > 0 {
+    a = b+b;
+    i = i + 1;
+  }
   
-  18;
-  
-  for a := 1,5
-  {
-	b := 5;
-    if ((TRUE || FALSE) && TRUE) || (5 == 6) || (7 != 8) || (5 > 8) || (8 < 5)
-    { 
-      a := 5
-    }
-    else
-    {
-      a := 7
-    }
-  };
-  
-  a := ((b + c) * 5) % (17 - f);
-  print (a, b, 5 + 7);
-  input (d);
-  
-  goto 18;
-  
-  while (TRUE || 5 != 6) input (c)
+  666:   
+  if b >= 5 or a+b and TRUE == 0
+      c = a;
+  else {
+	c = a;
+    b=c;
+  }
 
-}
+  goto 666;
+
+  input(a);
+  print(a+b, b+c);
+
+  666: input(b);
+  print(a*b*c+r*(a+5));
