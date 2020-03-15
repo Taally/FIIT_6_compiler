@@ -7,8 +7,8 @@
 
 %namespace SimpleParser
 
-%token BEGIN END INUM RNUM ID ASSIGN SEMICOLON COMMA FOR
-OR AND EQUAL NEQUAL GREATER LESS LPAREN RPAREN WHILE BOOL
+%token BEGIN END INUM ID ASSIGN SEMICOLON COMMA FOR
+OR AND EQUAL NEQUAL GREATER LESS EQGREATER EQLESS LPAR RPAR WHILE BOOL
 IF ELSE
 PLUS MINUS MULT DIV MOD
 VAR PRINT INPUT GOTO
@@ -41,7 +41,7 @@ ident 	: ID
 		;
 	
 assign 	: ident ASSIGN expr 
-		| ident ASSIGN exprb
+		| ident ASSIGN expr
 		;
 
 label	: INUM
@@ -53,41 +53,58 @@ goto	: GOTO label
 for 	: FOR ident ASSIGN INUM COMMA INUM statement
 		;
 
-while 	: WHILE exprb statement
+while 	: WHILE expr statement
 		;
 
-expr	: ident  
-		| INUM
-		| LPAREN expr RPAREN
-		| expr DIV expr
-		| expr MOD expr
-		| expr MULT expr
-		| expr MINUS expr
-		| expr PLUS expr
+expr	: expr OR A
+		| A
 		;
 
-exprb   : BOOL
-		| exprb OR exprb
-	    | exprb AND exprb
-		| LPAREN exprb RPAREN
-		| INUM LESS INUM
-	    | INUM GREATER INUM
-	    | INUM EQUAL INUM
-	    | INUM NEQUAL INUM
-		;
+A	: A AND B
+	| B
+	;
 
-print    : PRINT LPAREN exprlist RPAREN
+B	: B EQUAL C
+	| B NEQUAL C
+	| C
+	;
+
+C	: C GREATER D
+	| C LESS D
+	| C EQGREATER D
+	| C EQLESS D
+	| D
+	;
+
+D	: D PLUS E
+	| D MINUS E
+	| E
+	;
+
+E	: E MULT F
+	| E DIV F
+	| E MOD F
+	| F
+	;
+
+F	: ident
+	| INUM
+	| BOOL
+	| LPAR expr RPAR
+	;
+
+print    : PRINT LPAR exprlist RPAR
 		 ;
 
-input    : INPUT LPAREN ident RPAREN
+input    : INPUT LPAR ident RPAR
 		 ;
 
 exprlist : expr
 		 | exprlist COMMA expr
 		 ;
 
-if 		: IF exprb block ELSE block
-		| IF exprb block
+if 		: IF expr block ELSE block
+		| IF expr block
 		;
 
 varlist	: ident

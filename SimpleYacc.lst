@@ -3,9 +3,9 @@
 //  GPPG error listing for yacc source file <SimpleYacc.y>
 // ==========================================================================
 //  Version:  1.3.6
-//  Machine:  MacBook-Pro-xittz
-//  DateTime: 07.03.2020 14:18:18
-//  UserName: xittz
+//  Machine:  DEXP
+//  DateTime: 15.03.2020 20:58:08
+//  UserName: User
 // ==========================================================================
 
 
@@ -18,23 +18,19 @@
 
 %namespace SimpleParser
 
-%token BEGIN END INUM RNUM ID ASSIGN SEMICOLON COMMA FOR
-OR AND EQUAL NEQUAL GREATER LESS LPAREN RPAREN WHILE BOOL
+%token BEGIN END INUM ID ASSIGN SEMICOLON COMMA FOR
+OR AND EQUAL NEQUAL GREATER LESS EQGREATER EQLESS LPAR RPAR WHILE BOOL
 IF ELSE
 PLUS MINUS MULT DIV MOD
 VAR PRINT INPUT GOTO
 
 %%
-// Error: There are 2 non-terminating NonTerminal Symbols
-   //  {goto, label}
-// Warning: Terminating goto fixes the following size-1 NonTerminal set
-   // {goto}
-// Warning: Terminating label fixes the following size-1 NonTerminal set
-   // {label}
-// Error: NonTerminal symbol "goto" has no productions
-// Warning: NonTerminal symbol "label" is unreachable
-// Error: NonTerminal symbol "label" has no productions
-// ---------------------------------------------------------------------
+// Error: NonTerminal symbol "MUL" has no productions
+// Warning: Terminating MUL fixes the following size-1 NonTerminal set
+   // {MUL}
+// Error: There are 1 non-terminating NonTerminal Symbols
+   //  {MUL}
+// -------------------------------------------------------------------
 
 progr   : block
 		;
@@ -55,60 +51,77 @@ statement 	: assign
 			| print
 			| input
 			| goto
+			| label
 			;
 
 ident 	: ID 
 		;
 	
 assign 	: ident ASSIGN expr 
-		| ident ASSIGN exprb
+		| ident ASSIGN expr
 		;
 
 label	: INUM
+		;
 
 goto	: GOTO label
-//^^
-// Error: Syntax error, unexpected anchoredSymbol
-// ----------------------------------------------
+		;
 
 for 	: FOR ident ASSIGN INUM COMMA INUM statement
 		;
 
-while 	: WHILE exprb statement
+while 	: WHILE expr statement
 		;
 
-expr	: ident  
-		| INUM
-		| LPAREN expr RPAREN
-		| expr DIV expr
-		| expr MOD expr
-		| expr MULT expr
-		| expr MINUS expr
-		| expr PLUS expr
+expr	: expr OR A
+		| A
 		;
 
-exprb   : BOOL
-		| exprb OR exprb
-	    | exprb AND exprb
-		| LPAREN exprb RPAREN
-		| INUM LESS INUM
-	    | INUM GREATER INUM
-	    | INUM EQUAL INUM
-	    | INUM NEQUAL INUM
-		;
+A	: A AND B
+	| B
+	;
 
-print    : PRINT LPAREN exprlist RPAREN
+B	: B EQUAL C
+	| B NEQUAL C
+	| C
+	;
+
+C	: C GREATER D
+	| C LESS D
+	| C EQGREATER D
+	| C EQLESS D
+	| D
+	;
+
+D	: D PLUS E
+	| D MINUS E
+	| E
+	;
+
+E	: E MUL F
+	| E DIV F
+	| E MOD F
+	| F
+	;
+
+F	: ident
+	| INUM
+	| BOOL
+	| LPAR expr RPAR
+	;
+
+print    : PRINT LPAR exprlist RPAR
 		 ;
 
-input    : INPUT LPAREN ident RPAREN
+input    : INPUT LPAR ident RPAR
 		 ;
 
 exprlist : expr
 		 | exprlist COMMA expr
 		 ;
 
-if 		: IF exprb block ELSE block
-		| IF exprb block
+if 		: IF expr block ELSE block
+		| IF expr block
 		;
 
 varlist	: ident
