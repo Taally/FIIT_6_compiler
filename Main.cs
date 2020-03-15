@@ -10,7 +10,7 @@ namespace SimpleCompiler
     {
         public static void Main()
         {
-            string FileName = "/Users/xittz/University/sem2/Compiler/SimpleLanguage0/a.txt";
+            string FileName = @"..\..\a.txt";
             try
             {
                 string Text = File.ReadAllText(FileName);

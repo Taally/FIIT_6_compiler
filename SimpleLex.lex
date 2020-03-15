@@ -8,7 +8,6 @@ Alpha 	[a-zA-Z_]
 Digit   [0-9] 
 AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
-REALNUM {INTNUM}\.{INTNUM}
 BOOL TRUE|FALSE
 ID {Alpha}{AlphaDigit}* 
 
@@ -16,10 +15,6 @@ ID {Alpha}{AlphaDigit}*
 
 {INTNUM} { 
   return (int)Tokens.INUM; 
-}
-
-{REALNUM} { 
-  return (int)Tokens.RNUM;
 }
 
 {BOOL} {
@@ -30,7 +25,8 @@ ID {Alpha}{AlphaDigit}*
   int res = ScannerHelper.GetIDToken(yytext);
   return res;
 }
-
+"{" { return (int)Tokens.BEGIN; }
+"}" { return (int)Tokens.END; }
 ":=" { return (int)Tokens.ASSIGN; }
 ";"  { return (int)Tokens.SEMICOLON; }
 "," { return (int)Tokens.COMMA; }
@@ -38,8 +34,8 @@ ID {Alpha}{AlphaDigit}*
 "<" { return (int)Tokens.LESS; }
 "==" { return (int)Tokens.EQUAL; }
 "!=" { return (int)Tokens.NEQUAL; }
-"(" { return (int)Tokens.LPAREN; }
-")" { return (int)Tokens.RPAREN; }
+"(" { return (int)Tokens.LPAR; }
+")" { return (int)Tokens.RPAR; }
 "&&" { return (int)Tokens.AND; }
 "||" { return (int)Tokens.OR; }
 "+" { return (int)Tokens.PLUS; }
@@ -48,18 +44,19 @@ ID {Alpha}{AlphaDigit}*
 "/" { return (int)Tokens.DIV; }
 "%" { return (int)Tokens.MOD; }
 
-[^ \r\n] {
+
+[^ \r\n\t] {
 	LexError();
-	return (int)Tokens.EOF; // ????? ???????
+	return (int)Tokens.EOF;
 }
 
 %{
-  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); // ??????? ??????? (????????????? ??? ???????????????), ???????????? @1 @2 ? ?.?.
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); 
 %}
 
 %%
 
-public override void yyerror(string format, params object[] args) // ????????? ?????????????? ??????
+public override void yyerror(string format, params object[] args) 
 {
   var ww = args.Skip(1).Cast<string>().ToArray();
   string errorMsg = string.Format("({0},{1}): ????????? {2}, ? ????????? {3}", yyline, yycol, args[0], string.Join(" ??? ", ww));
@@ -79,8 +76,6 @@ class ScannerHelper
   static ScannerHelper() 
   {
     keywords = new Dictionary<string,int>();
-    keywords.Add("begin",(int)Tokens.BEGIN);
-    keywords.Add("end",(int)Tokens.END);
     keywords.Add("for", (int)Tokens.FOR);
     keywords.Add("while", (int)Tokens.WHILE);
     keywords.Add("if", (int)Tokens.IF);
@@ -92,7 +87,7 @@ class ScannerHelper
   }
   public static int GetIDToken(string s)
   {
-    if (keywords.ContainsKey(s.ToLower())) // ???? ?????????????? ? ????????
+    if (keywords.ContainsKey(s.ToLower()))
       return keywords[s];
     else
       return (int)Tokens.ID;
