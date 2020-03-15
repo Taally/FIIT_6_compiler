@@ -1,0 +1,31 @@
+begin
+  var a, b, c, d, f;
+  b := 2;
+  a := 3;
+  a := b;
+  d := TRUE;
+  
+  18;
+  
+  for a := 1,5
+  begin
+    b := 5;
+    if ((TRUE || FALSE) && TRUE) || (5 == 6) || (7 != 8) || (5 > 8) || (8 < 5)
+    begin 
+      a := 5
+    end
+    else
+    begin
+      a := 7
+    end
+  end;
+  
+  a := ((b + c) * 5) % (17 - f);
+  print (a, b, 5 + 7);
+  input (d);
+  
+  goto 18;
+  
+  while (TRUE || 5 != 6) input (c)
+  
+end
