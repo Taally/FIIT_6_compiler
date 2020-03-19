@@ -8,12 +8,14 @@ Alpha 	[a-zA-Z_]
 Digit   [0-9] 
 AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
+REALNUM {INTNUM}\.{INTNUM}
 BOOL TRUE|FALSE
 ID {Alpha}{AlphaDigit}* 
 
 %%
 
 {INTNUM} { 
+  yylval.iVal = int.Parse(yytext); 
   return (int)Tokens.INUM; 
 }
 
@@ -21,21 +23,25 @@ ID {Alpha}{AlphaDigit}*
     return (int)Tokens.BOOL;
 }
 
+{REALNUM} { 
+  yylval.dVal = double.Parse(yytext); 
+  return (int)Tokens.RNUM;
+}
+
 {ID}  { 
   int res = ScannerHelper.GetIDToken(yytext);
+  if (res == (int)Tokens.ID)
+	yylval.sVal = yytext;
   return res;
 }
+
 "{" { return (int)Tokens.BEGIN; }
 "}" { return (int)Tokens.END; }
-":=" { return (int)Tokens.ASSIGN; }
-";"  { return (int)Tokens.SEMICOLON; }
-"," { return (int)Tokens.COMMA; }
-">" { return (int)Tokens.GREATER; }
-"<" { return (int)Tokens.LESS; }
+
 "==" { return (int)Tokens.EQUAL; }
 "!=" { return (int)Tokens.NEQUAL; }
-"(" { return (int)Tokens.LPAR; }
-")" { return (int)Tokens.RPAR; }
+">" { return (int)Tokens.GREATER; }
+"<" { return (int)Tokens.LESS; }
 "&&" { return (int)Tokens.AND; }
 "||" { return (int)Tokens.OR; }
 "+" { return (int)Tokens.PLUS; }
@@ -44,29 +50,36 @@ ID {Alpha}{AlphaDigit}*
 "/" { return (int)Tokens.DIV; }
 "%" { return (int)Tokens.MOD; }
 
+"=" { return (int)Tokens.ASSIGN; }
+";"  { return (int)Tokens.SEMICOLON; }
+"," { return (int)Tokens.COMMA; }
+"("  { return (int)Tokens.LPAR; }
+")" { return (int)Tokens.RPAR; }
+
+
+
 
 [^ \r\n\t] {
 	LexError();
-	return (int)Tokens.EOF;
 }
 
 %{
-  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); 
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
 %}
 
 %%
 
-public override void yyerror(string format, params object[] args) 
+public override void yyerror(string format, params object[] args) // обработка синтаксических ошибок
 {
   var ww = args.Skip(1).Cast<string>().ToArray();
-  string errorMsg = string.Format("({0},{1}): ????????? {2}, ? ????????? {3}", yyline, yycol, args[0], string.Join(" ??? ", ww));
+  string errorMsg = string.Format("({0},{1}): Встречено {2}, а ожидалось {3}", yyline, yycol, args[0], string.Join(" или ", ww));
   throw new SyntaxException(errorMsg);
 }
 
 public void LexError()
 {
-	string errorMsg = string.Format("({0},{1}): ??????????? ?????? {2}", yyline, yycol, yytext);
-    throw new LexException(errorMsg);
+  string errorMsg = string.Format("({0},{1}): Неизвестный символ {2}", yyline, yycol, yytext);
+  throw new LexException(errorMsg);
 }
 
 class ScannerHelper 
@@ -76,20 +89,25 @@ class ScannerHelper
   static ScannerHelper() 
   {
     keywords = new Dictionary<string,int>();
-    keywords.Add("for", (int)Tokens.FOR);
-    keywords.Add("while", (int)Tokens.WHILE);
-    keywords.Add("if", (int)Tokens.IF);
-    keywords.Add("else", (int)Tokens.ELSE);
-    keywords.Add("var", (int)Tokens.VAR);
-    keywords.Add("print", (int)Tokens.PRINT);
-    keywords.Add("input", (int)Tokens.INPUT);
-    keywords.Add("goto", (int)Tokens.GOTO);
+    keywords.Add("while",(int)Tokens.WHILE);
+	keywords.Add("for",(int)Tokens.FOR);
+	keywords.Add("var",(int)Tokens.VAR);
+
+	keywords.Add("if",(int)Tokens.IF);
+	keywords.Add("else",(int)Tokens.ELSE);
+	keywords.Add("print",(int)Tokens.PRINT);
+	keywords.Add("input",(int)Tokens.INPUT);
+	keywords.Add("goto",(int)Tokens.GOTO);
+
+
+
   }
   public static int GetIDToken(string s)
   {
-    if (keywords.ContainsKey(s.ToLower()))
-      return keywords[s];
-    else
+	if (keywords.ContainsKey(s.ToLower()))
+	  return keywords[s];
+	else
       return (int)Tokens.ID;
   }
+  
 }

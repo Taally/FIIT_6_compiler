@@ -17,13 +17,18 @@ namespace SimpleCompiler
 
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
-            
+
                 Parser parser = new Parser(scanner);
-                      
+
                 var b = parser.Parse();
                 if (!b)
-		            Console.WriteLine("Ошибка");
-                else Console.WriteLine("Программа распознана");
+                    Console.WriteLine("Ошибка");
+                else
+                {
+                    Console.WriteLine("Синтаксическое дерево построено");
+                    //foreach (var st in parser.root.StList)
+                    //Console.WriteLine(st);
+                }
             }
             catch (FileNotFoundException)
             {

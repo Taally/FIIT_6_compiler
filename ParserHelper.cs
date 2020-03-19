@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace SimpleParser
 {
@@ -13,7 +12,7 @@ namespace SimpleParser
     }
     // Класс глобальных описаний и статических методов
     // для использования различными подсистемами парсера и сканера
-    public static class ParserHelper 
+    public static class ParserHelper
     {
     }
 }
