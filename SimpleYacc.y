@@ -2,6 +2,7 @@
 // Ёти объ€влени€ добавл€ютс€ в класс GPPGParser, представл€ющий собой парсер, генерируемый системой gppg
     public BlockNode root; //  орневой узел синтаксического дерева 
     public Parser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+	private bool InDefSect = false;
 %}
 
 %output = SimpleYacc.cs
@@ -64,7 +65,13 @@ statement: assign	{ $$ = $1; }
 empty	: { $$ = new EmptyNode(); }
 		;
 
-ident 	: ID { $$ = new IdNode($1); }	
+ident 	: ID
+			{
+				if (!InDefSect)
+					if (!SymbolTable.vars.ContainsKey($1))
+						throw new Exception("("+@1.StartLine+","+@1.StartColumn+"): ѕеременна€ "+$1+" не описана");
+				$$ = new IdNode($1); 
+			}	
 		;
 	
 assign 	: ident ASSIGN expr { $$ = new AssignNode($1 as IdNode, $3); }
@@ -151,9 +158,11 @@ varlist	: ident
 			}
 		;
 
-var		: VAR varlist
-			{
-					
+var		: VAR { InDefSect = true; } varlist
+			{ 
+				foreach (var v in ($3 as VarListNode).vars)
+					SymbolTable.NewVarDef(v.Name, type.tint);
+				InDefSect = false;	
 			}
 		;
 

@@ -1,7 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SimpleParser
 {
+    public enum type { tint, tbool };
+
+    public static class SymbolTable // Таблица символов
+    {
+        public static Dictionary<string, type> vars = new Dictionary<string, type>(); // таблица символов
+        public static void NewVarDef(string name, type t)
+        {
+            if (vars.ContainsKey(name))
+                throw new Exception("Переменная " + name + " уже определена");
+            else vars.Add(name, t);
+        }
+    }
+
     public class LexException : Exception
     {
         public LexException(string msg) : base(msg) { }

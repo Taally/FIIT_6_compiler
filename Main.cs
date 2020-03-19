@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using System.Reflection;
 using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
+using SimpleLang.Visitors;
 
 namespace SimpleCompiler
 {
@@ -26,21 +29,24 @@ namespace SimpleCompiler
                 else
                 {
                     Console.WriteLine("Синтаксическое дерево построено");
-                    //foreach (var st in parser.root.StList)
-                    //Console.WriteLine(st);
+
+                    var avis = new AssignCountVisitor();
+                    parser.root.Visit(avis);
+                    Console.WriteLine("Количество присваиваний = {0}", avis.Count);
+                    Console.WriteLine("-------------------------------");
+
+                    var pp = new PrettyPrintVisitor();
+                    parser.root.Visit(pp);
+                    Console.WriteLine(pp.Text);
                 }
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("Файл {0} не найден", FileName);
             }
-            catch (LexException e)
+            catch (Exception e)
             {
-                Console.WriteLine("Лексическая ошибка. " + e.Message);
-            }
-            catch (SyntaxException e)
-            {
-                Console.WriteLine("Синтаксическая ошибка. " + e.Message);
+                Console.WriteLine("{0}", e);
             }
 
             Console.ReadLine();

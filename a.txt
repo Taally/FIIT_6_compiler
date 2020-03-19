@@ -1,11 +1,14 @@
 {
-  var a,b;
+  var a,b,c;
   b = (2+1) / 3;
   a = 1;
   if a > b
 	print(a, b)
   else input(c);
-
+  var i;
   for i=0,4
-	a = a + 1
+  {
+	a = a + 1;
+	b = a
+  }
 }

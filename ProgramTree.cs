@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using SimpleLang.Visitors;
 
 namespace ProgramTree
 {
     public enum AssignType { Assign, AssignPlus, AssignMinus, AssignMult, AssignDivide };
 
-    public class Node // базовый класс для всех узлов    
+    public abstract class Node // базовый класс для всех узлов    
     {
+        public abstract void Visit(Visitor v);
     }
 
-    public class ExprNode : Node // базовый класс для всех выражений
+    public abstract class ExprNode : Node // базовый класс для всех выражений
     {
     }
 
@@ -16,18 +18,30 @@ namespace ProgramTree
     {
         public string Name { get; set; }
         public IdNode(string name) { Name = name; }
+        public override void Visit(Visitor v)
+        {
+            v.VisitIdNode(this);
+        }
     }
 
     public class IntNumNode : ExprNode
     {
         public int Num { get; set; }
         public IntNumNode(int num) { Num = num; }
+        public override void Visit(Visitor v)
+        {
+            v.VisitIntNumNode(this);
+        }
     }
 
     public class BoolValNode : ExprNode
     {
         public bool Val { get; set; }
         public BoolValNode(bool val) { Val = val; }
+        public override void Visit(Visitor v)
+        {
+            v.VisitBoolValNode(this);
+        }
     }
 
     public class BinOpNode : ExprNode
@@ -41,9 +55,13 @@ namespace ProgramTree
             this.Right = Right;
             this.Op = op;
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitBinOpNode(this);
+        }
     }
 
-    public class StatementNode : Node // базовый класс для всех операторов
+    public abstract class StatementNode : Node // базовый класс для всех операторов
     {
     }
 
@@ -58,6 +76,10 @@ namespace ProgramTree
             Expr = expr;
             AssOp = assop;
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitAssignNode(this);
+        }
     }
 
     public class WhileNode : StatementNode
@@ -68,6 +90,10 @@ namespace ProgramTree
         {
             Expr = expr;
             Stat = stat;
+        }
+        public override void Visit(Visitor v)
+        {
+            v.VisitWhileNode(this);
         }
     }
 
@@ -84,6 +110,10 @@ namespace ProgramTree
             Finish = new IntNumNode(finish);
             Stat = stat;
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitForNode(this);
+        }
     }
 
     public class BlockNode : StatementNode
@@ -96,6 +126,10 @@ namespace ProgramTree
         public void Add(StatementNode stat)
         {
             StList.Add(stat);
+        }
+        public override void Visit(Visitor v)
+        {
+            v.VisitBlockNode(this);
         }
     }
 
@@ -111,6 +145,10 @@ namespace ProgramTree
             TrueStat = trueSt;
             FalseStat = falseSt;
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitIfElseNode(this);
+        }
     }
 
     public class PrintNode : StatementNode
@@ -120,6 +158,10 @@ namespace ProgramTree
         {
             exprList = list;
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitPrintNode(this);
+        }
     }
 
     public class InputNode: StatementNode
@@ -128,6 +170,10 @@ namespace ProgramTree
         public InputNode(IdNode ident)
         {
             Ident = ident;
+        }
+        public override void Visit(Visitor v)
+        {
+            v.VisitInputNode(this);
         }
     }
 
@@ -142,6 +188,10 @@ namespace ProgramTree
         {
             exprList.Add(expr);
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitExprListNode(this);
+        }
     }
 
     public class VarListNode : StatementNode
@@ -155,9 +205,17 @@ namespace ProgramTree
         {
             vars.Add(id);
         }
+        public override void Visit(Visitor v)
+        {
+            v.VisitVarListNode(this);
+        }
     }
 
     public class EmptyNode : StatementNode
     {
+        public override void Visit(Visitor v)
+        {
+            v.VisitEmptyNode(this);
+        }
     }
 }
