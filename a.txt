@@ -1,26 +1,6 @@
-  var a, b, c, r, i;
-  b = 2;
-  a = 3;
-  a = TRUE;
-  for a = 1,5 
-      b = 1+2+3+4+5;
-  while i > 0 {
-    a = b+b;
-    i = i + 1;
-  }
-  
-  666:   
-  if b >= 5 or a+b == 0 and TRUE
-      c = a;
-  else {
-    c = a;
-    b=c;
-  }
+b = 2;
+a = 3;
+a = b;
+for i=1,5
 
-  goto 666;
-
-  input(a);
-  print(a+b, b+c);
-
-  input(b);
-  print(a*b*c+r*(a+5));
+  a = c;
