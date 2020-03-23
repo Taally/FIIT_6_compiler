@@ -1,7 +1,6 @@
-  var a, b, c, r, i;
-  b = 2;
-  a = 3;
-  a = TRUE;
-  for a = 1,5 
-      b = 1+2+3+4+5;
+b = 2;
+a = 3;
+a = b;
+for i=1,5
 
+  a = c;
