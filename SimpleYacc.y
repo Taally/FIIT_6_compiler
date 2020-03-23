@@ -35,16 +35,16 @@
 
 %%
 
-progr   : block { root = $1; }
+progr   : stlist { root = $1; }
 		;
 
 stlist	: statement 
 			{ 
 				$$ = new BlockNode($1); 
 			}
-		| stlist SEMICOLON statement 
+		| stlist statement 
 			{ 
-				$1.Add($3); 
+				$1.Add($2); 
 				$$ = $1; 
 			}
 		;
@@ -74,7 +74,7 @@ ident 	: ID
 			}	
 		;
 	
-assign 	: ident ASSIGN expr { $$ = new AssignNode($1 as IdNode, $3); }
+assign 	: ident ASSIGN expr SEMICOLON { $$ = new AssignNode($1 as IdNode, $3); }
 		;
 
 expr	: expr OR A { $$ = new BinOpNode($1,$3,"or"); }
@@ -130,10 +130,10 @@ if 		: IF expr statement ELSE statement	{ $$ = new IfElseNode($2, $3, $5); }
 		| IF expr statement					{ $$ = new IfElseNode($2, $3); }
 		;
 
-print    : PRINT LPAR exprlist RPAR	{ $$ = new PrintNode($3 as ExprListNode); }
+print    : PRINT LPAR exprlist RPAR SEMICOLON	{ $$ = new PrintNode($3 as ExprListNode); }
 		 ;
 
-input    : INPUT LPAR ident RPAR	{ $$ = new InputNode($3 as IdNode); }
+input    : INPUT LPAR ident RPAR SEMICOLON	{ $$ = new InputNode($3 as IdNode); }
 		 ;
 
 exprlist : expr	
@@ -158,7 +158,7 @@ varlist	: ident
 			}
 		;
 
-var		: VAR { InDefSect = true; } varlist
+var		: VAR { InDefSect = true; } varlist SEMICOLON
 			{ 
 				foreach (var v in ($3 as VarListNode).vars)
 					SymbolTable.NewVarDef(v.Name, type.tint);
@@ -166,10 +166,10 @@ var		: VAR { InDefSect = true; } varlist
 			}
 		;
 
-goto	: GOTO label
+goto	: GOTO label SEMICOLON
 		;
 
-label	: INUM
+label	: INUM COLON statement
 		;
 	
 %%
