@@ -8,7 +8,7 @@ Alpha 	[a-zA-Z_]
 Digit   [0-9] 
 AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
-REALNUM {INTNUM}\.{INTNUM}
+BOOL TRUE|FALSE
 ID {Alpha}{AlphaDigit}* 
 
 %%
@@ -17,8 +17,8 @@ ID {Alpha}{AlphaDigit}*
   return (int)Tokens.INUM; 
 }
 
-{REALNUM} { 
-  return (int)Tokens.RNUM;
+{BOOL} {
+    return (int)Tokens.BOOL;
 }
 
 {ID}  { 
@@ -43,28 +43,29 @@ ID {Alpha}{AlphaDigit}*
 "<" {return (int)Tokens.LESS; }
 "<=" {return (int)Tokens.EQLESS; }
 ">=" {return (int)Tokens.EQGREATER; }
+":" {return (int)Tokens.COLON; }
 
 [^ \r\n\t] {
 	LexError();
-	return (int)Tokens.EOF; // конец разбора
+	return (int)Tokens.EOF;
 }
 
 %{
-  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); // позици€ символа (терминального или нетерминального), возвращаема€ @1 @2 и т.д.
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
 %}
 
 %%
 
-public override void yyerror(string format, params object[] args) // обработка синтаксических ошибок
+public override void yyerror(string format, params object[] args)
 {
   var ww = args.Skip(1).Cast<string>().ToArray();
-  string errorMsg = string.Format("({0},{1}): ¬стречено {2}, а ожидалось {3}", yyline, yycol, args[0], string.Join(" или ", ww));
+  string errorMsg = string.Format("({0},{1}): Encountered {2}, expected {3}", yyline, yycol, args[0], string.Join(" or ", ww));
   throw new SyntaxException(errorMsg);
 }
 
 public void LexError()
 {
-	string errorMsg = string.Format("({0},{1}): Ќеизвестный символ {2}", yyline, yycol, yytext);
+	string errorMsg = string.Format("({0},{1}): Unknown symbol {2}", yyline, yycol, yytext);
     throw new LexException(errorMsg);
 }
 
@@ -88,7 +89,7 @@ class ScannerHelper
   }
   public static int GetIDToken(string s)
   {
-    if (keywords.ContainsKey(s.ToLower())) // €зык нечувствителен к регистру
+    if (keywords.ContainsKey(s.ToLower()))
       return keywords[s];
     else
       return (int)Tokens.ID;

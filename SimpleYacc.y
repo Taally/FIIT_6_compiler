@@ -1,5 +1,4 @@
 %{
-// Ёти объ€влени€ добавл€ютс€ в класс GPPGParser, представл€ющий собой парсер, генерируемый системой gppg
     public Parser(AbstractScanner<int, LexLocation> scanner) : base(scanner) { }
 %}
 
@@ -8,7 +7,7 @@
 %namespace SimpleParser
 
 %token BEGIN END INUM RNUM ID ASSIGN SEMICOLON COMMA FOR PLUS MINUS MULT DIV LPAR RPAR WHILE IF ELSE INPUT PRINT
-VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO
+VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO COLON BOOL
 
 %%
 
@@ -20,12 +19,15 @@ stlist	: statement
 		;
 
 statement: assign 
+		| block
 		| for
 		| while
 		| if
 		| input
 		| print
 		| var
+		| label
+		| goto
 		;
 
 ident 	: ID 
@@ -67,20 +69,20 @@ T		: T MULT F
 F		: ident
 		| INUM
 		| LPAR expr RPAR
+		| BOOL
 		;
 
-block	: statement
-		| BEGIN stlist END 
+block	: BEGIN stlist END 
 		;
 
-for		: FOR ident ASSIGN INUM COMMA INUM block
+for		: FOR ident ASSIGN INUM COMMA INUM statement
 		;
 
-while	: WHILE expr block
+while	: WHILE expr statement
 		;
 
-if		: IF expr block ELSE block
-		| IF expr block
+if		: IF expr statement ELSE statement
+		| IF expr statement
 		;
 
 input	: INPUT LPAR ident RPAR SEMICOLON
@@ -101,5 +103,8 @@ var		: VAR varlist SEMICOLON
 		;
 
 goto	: GOTO INUM SEMICOLON
+		;
+
+label	: INUM COLON statement
 		;
 %%
