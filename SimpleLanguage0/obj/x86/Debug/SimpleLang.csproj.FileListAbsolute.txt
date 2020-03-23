@@ -1,6 +1,0 @@
-D:\_Downloads\SimpleLanguage01\SimpleLanguage0\bin\Debug\SimpleLang.exe
-D:\_Downloads\SimpleLanguage01\SimpleLanguage0\bin\Debug\SimpleLang.pdb
-D:\_Downloads\SimpleLanguage01\SimpleLanguage0\obj\x86\Debug\SimpleLang.csprojAssemblyReference.cache
-D:\_Downloads\SimpleLanguage01\SimpleLanguage0\obj\x86\Debug\SimpleLang.csproj.CoreCompileInputs.cache
-D:\_Downloads\SimpleLanguage01\SimpleLanguage0\obj\x86\Debug\SimpleLang.exe
-D:\_Downloads\SimpleLanguage01\SimpleLanguage0\obj\x86\Debug\SimpleLang.pdb
