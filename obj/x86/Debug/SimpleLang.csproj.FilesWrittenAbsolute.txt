@@ -1,0 +1,5 @@
+/Users/xittz/University/sem2/Compiler/SimpleLanguage0/obj/x86/Debug/.NETFramework,Version=v4.0,Profile=Client.AssemblyAttribute.cs
+/Users/xittz/University/sem2/Compiler/SimpleLanguage0/bin/Debug/SimpleLang.pdb
+/Users/xittz/University/sem2/Compiler/SimpleLanguage0/bin/Debug/SimpleLang.exe
+/Users/xittz/University/sem2/Compiler/SimpleLanguage0/obj/x86/Debug/SimpleLang.exe
+/Users/xittz/University/sem2/Compiler/SimpleLanguage0/obj/x86/Debug/SimpleLang.pdb
