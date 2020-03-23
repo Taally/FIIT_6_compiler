@@ -19,6 +19,7 @@ stlist	: statement
 		;
 
 statement: assign 
+		| block
 		| for
 		| while
 		| if
@@ -71,18 +72,17 @@ F		: ident
 		| BOOL
 		;
 
-block	: statement
-		| BEGIN stlist END 
+block	: BEGIN stlist END 
 		;
 
-for		: FOR ident ASSIGN INUM COMMA INUM block
+for		: FOR ident ASSIGN INUM COMMA INUM statement
 		;
 
-while	: WHILE expr block
+while	: WHILE expr statement
 		;
 
-if		: IF expr block ELSE block
-		| IF expr block
+if		: IF expr statement ELSE statement
+		| IF expr statement
 		;
 
 input	: INPUT LPAR ident RPAR SEMICOLON
