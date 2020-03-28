@@ -8,12 +8,13 @@ Alpha 	[a-zA-Z_]
 Digit   [0-9] 
 AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
-BOOL TRUE|FALSE
+BOOL	false|true
 ID {Alpha}{AlphaDigit}* 
 
 %%
 
 {INTNUM} { 
+  yylval.iVal = int.Parse(yytext); 
   return (int)Tokens.INUM; 
 }
 
@@ -23,6 +24,8 @@ ID {Alpha}{AlphaDigit}*
 
 {ID}  { 
   int res = ScannerHelper.GetIDToken(yytext);
+  if (res == (int)Tokens.ID)
+	yylval.sVal = yytext;
   return res;
 }
 
@@ -47,7 +50,6 @@ ID {Alpha}{AlphaDigit}*
 
 [^ \r\n\t] {
 	LexError();
-	return (int)Tokens.EOF;
 }
 
 %{
@@ -59,14 +61,14 @@ ID {Alpha}{AlphaDigit}*
 public override void yyerror(string format, params object[] args)
 {
   var ww = args.Skip(1).Cast<string>().ToArray();
-  string errorMsg = string.Format("({0},{1}): Encountered {2}, expected {3}", yyline, yycol, args[0], string.Join(" or ", ww));
+  string errorMsg = string.Format("({0},{1}): Encountered {2}, expected {3}", yyline, yycol, args[0], string.Join(" или ", ww));
   throw new SyntaxException(errorMsg);
 }
 
 public void LexError()
 {
-	string errorMsg = string.Format("({0},{1}): Unknown symbol {2}", yyline, yycol, yytext);
-    throw new LexException(errorMsg);
+  string errorMsg = string.Format("({0},{1}): Unknown symbol {2}", yyline, yycol, yytext);
+  throw new LexException(errorMsg);
 }
 
 class ScannerHelper 
@@ -76,22 +78,23 @@ class ScannerHelper
   static ScannerHelper() 
   {
     keywords = new Dictionary<string,int>();
-    keywords.Add("for",(int)Tokens.FOR);
+	keywords.Add("for",(int)Tokens.FOR);
 	keywords.Add("while",(int)Tokens.WHILE);
 	keywords.Add("if",(int)Tokens.IF);
 	keywords.Add("else",(int)Tokens.ELSE);
-	keywords.Add("input",(int)Tokens.INPUT);
 	keywords.Add("print",(int)Tokens.PRINT);
 	keywords.Add("var",(int)Tokens.VAR);
 	keywords.Add("and",(int)Tokens.AND);
 	keywords.Add("or",(int)Tokens.OR);
 	keywords.Add("goto",(int)Tokens.GOTO);
+	keywords.Add("input",(int)Tokens.INPUT);
   }
   public static int GetIDToken(string s)
   {
-    if (keywords.ContainsKey(s.ToLower()))
-      return keywords[s];
-    else
+	if (keywords.ContainsKey(s.ToLower()))
+	  return keywords[s];
+	else
       return (int)Tokens.ID;
   }
+  
 }
