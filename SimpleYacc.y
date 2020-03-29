@@ -29,11 +29,8 @@
 %token <bVal> BOOL
 
 %type <eVal> expr ident A B C E T F exprlist
-%type <stVal> assign statement for while if input print var labelstatement goto
+%type <stVal> assign statement for while if input print var labelstatement goto varlist
 %type <blVal> stlist block progr
-
-%type <eVal> exprlist
-%type <varVal> varlist
 
 %%
 
@@ -121,18 +118,38 @@ if		: IF expr statement ELSE statement { $$ = new IfNode($2, $3, $5); }
 input	: INPUT LPAR ident RPAR { $$ = new InputNode($3 as IdNode); }
 		;
 
-exprlist : expr { $$ = new ExprListNode($1); }
-		| exprlist COMMA expr { $1.Add($3); $$ = $1; }
+exprlist : expr
+		 {
+			$$ = new ExprListNode($1);
+		 }
+		 | exprlist COMMA expr
+		 {
+			($1 as ExprListNode).Add($3);
+			$$ = $1;
+		 }
+		 ;
+
+print	: PRINT LPAR exprlist RPAR
+		{
+			$$ = new PrintNode($3 as ExprListNode);
+		}
 		;
 
-print	: PRINT LPAR exprlist RPAR { $$ = new PrintNode($3); }
+varlist	: ident
+		{
+			$$ = new IdListNode($1 as IdNode);
+		}
+		| varlist COMMA ident
+		{
+			($1 as IdListNode).Add($3 as IdNode);
+			$$ = $1;
+		}
 		;
 
-varlist	: ident { $$ = new VarNode($1 as IdNode); }
-		| varlist COMMA ident { $1.Add($3 as IdNode); $$ = $1; }
-		;
-
-var		: VAR varlist { $$ = $2; }
+var		: VAR varlist
+		{
+			$$ = $2;
+		}
 		;
 
 goto	: GOTO INUM { $$ = new GoToNode($2); }

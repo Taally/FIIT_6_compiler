@@ -126,7 +126,7 @@ namespace ProgramTree
         public InputNode(IdNode id) => Id = id;
     }
 
-    public class ExprListNode : ExprNode //?????
+    public class ExprListNode : ExprNode
     {
         public List<ExprNode> ExprList = new List<ExprNode>();
 
@@ -142,7 +142,7 @@ namespace ProgramTree
         public PrintNode(ExprListNode exprList) => ExprList = exprList;
     }
 
-    public class IdListNode : ExprNode //?????
+    public class IdListNode : StatementNode
     {
         public List<ExprNode> ExprList = new List<ExprNode>();
 
