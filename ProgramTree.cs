@@ -2,27 +2,16 @@
 
 namespace ProgramTree
 {
-
-    /*		
-        | while
-        | if
-        | input
-        | print
-        | var
-        | label
-        | goto
-    */
-
-    public enum OpType { OR, AND, EQUAL, NOTEQUAL, GREATER , LESS , EQGREATER , EQLESS , PLUS , MINUS , MULT , DIV };
-    public class Node // базовый класс для всех узлов    
+    public enum OpType { OR, AND, EQUAL, NOTEQUAL, GREATER, LESS, EQGREATER, EQLESS, PLUS, MINUS, MULT, DIV };
+    public class Node // base class for all nodes 
     {
     }
 
-    public class ExprNode : Node // базовый класс для всех выражений
+    public class ExprNode : Node // base class for all expressions
     {
     }
 
-    public class BinOpNode : ExprNode 
+    public class BinOpNode : ExprNode
     {
         public ExprNode Left { get; set; }
         public ExprNode Right { get; set; }
@@ -47,7 +36,7 @@ namespace ProgramTree
         public IntNumNode(int num) { Num = num; }
     }
 
-    public class StatementNode : Node // базовый класс для всех операторов
+    public class StatementNode : Node // base class for all statements
     {
     }
 
@@ -62,7 +51,7 @@ namespace ProgramTree
         }
     }
 
-    public class ForNode : StatementNode // Record-классы
+    public class ForNode : StatementNode
     {
         public IdNode Id { get; set; }
         public ExprNode From { get; set; }
