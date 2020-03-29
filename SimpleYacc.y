@@ -20,8 +20,6 @@
 			public BlockNode blVal;
        }
 
-%using ProgramTree
-
 %token BEGIN END ASSIGN SEMICOLON COMMA FOR PLUS MINUS MULT DIV LPAR RPAR WHILE IF ELSE INPUT PRINT
 %token VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO COLON BOOL
 
@@ -34,7 +32,7 @@
 %type <stVal> assign statement for while if input print var labelstatement goto
 %type <blVal> stlist block progr
 
-%type <exVal> exprlist
+%type <eVal> exprlist
 %type <varVal> varlist
 
 %%
