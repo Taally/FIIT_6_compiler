@@ -11,7 +11,7 @@ namespace SimpleParser
         public static void NewVarDef(string name, type t)
         {
             if (vars.ContainsKey(name))
-                throw new Exception("Переменная " + name + " уже определена");
+                throw new Exception("Variable " + name + " is already defined");
             else vars.Add(name, t);
         }
     }

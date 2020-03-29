@@ -5,17 +5,14 @@ using System.Reflection;
 using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
-using SimpleLang.Visitors;
+using Newtonsoft.Json;
 
-namespace SimpleCompiler
-{
-    public class SimpleCompilerMain
-    {
-        public static void Main()
-        {
+namespace SimpleCompiler{
+    public class SimpleCompilerMain{
+        public static void Main(){
             string FileName = @"..\..\a.txt";
-            try
-            {
+            string OutputFileName = @"..\..\a.json";
+            try{
                 string Text = File.ReadAllText(FileName);
 
                 Scanner scanner = new Scanner();
@@ -24,33 +21,26 @@ namespace SimpleCompiler
                 Parser parser = new Parser(scanner);
 
                 var b = parser.Parse();
-                if (!b)
-                    Console.WriteLine("Ошибка");
-                else
-                {
-                    Console.WriteLine("Синтаксическое дерево построено");
-
-                    var avis = new AssignCountVisitor();
-                    parser.root.Visit(avis);
-                    Console.WriteLine("Количество присваиваний = {0}", avis.Count);
-                    Console.WriteLine("-------------------------------");
-
-                    var pp = new PrettyPrintVisitor();
-                    parser.root.Visit(pp);
-                    Console.WriteLine(pp.Text);
+                if (!b) Console.WriteLine("Error");
+                else{
+                    Console.WriteLine("Syntax tree built");
+                    JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
+                    jsonSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                    jsonSettings.TypeNameHandling = TypeNameHandling.All;
+                    string output = JsonConvert.SerializeObject(parser.root, jsonSettings);
+                    File.WriteAllText(OutputFileName, output);
                 }
             }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine("Файл {0} не найден", FileName);
+            catch (FileNotFoundException){
+                Console.WriteLine("File {0} not found", FileName);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("{0}", e);
+            catch (LexException e){
+                Console.WriteLine("Lex Error. " + e.Message);
             }
-
+            catch (SyntaxException e){
+                Console.WriteLine("Syntax Error. " + e.Message);
+            }
             Console.ReadLine();
         }
-
     }
 }

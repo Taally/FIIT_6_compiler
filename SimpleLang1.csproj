@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{12B9D996-7B4A-4EE4-9AD8-2E24EAF3F574}</ProjectGuid>
+    <ProjectGuid>{3F169682-E165-42EE-A70C-C80D5C1A1065}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleLang</RootNamespace>
@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,17 +53,14 @@
     <Compile Include="ShiftReduceParserCode.cs" />
     <Compile Include="SimpleLex.cs" />
     <Compile Include="SimpleYacc.cs" />
-    <Compile Include="Visitors\AssignCountVisitor.cs" />
-    <Compile Include="Visitors\AutoVisitor.cs" />
-    <Compile Include="Visitors\PrettyPrintVisitor.cs" />
-    <Compile Include="Visitors\Visitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="SimpleLex.lex" />
+    <None Include="SimpleYacc.y" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="a.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SimpleLex.lex" />
-    <None Include="SimpleYacc.y" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
