@@ -1,3 +1,4 @@
+{
   var a, b, c, r, i;
   b = 2;
   a = 3;
@@ -24,3 +25,4 @@
 
   666: input(b);
   print(a*b*c+r*(a+5));
+}

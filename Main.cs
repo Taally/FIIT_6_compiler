@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
+using SimpleLang.Visitors;
 using Newtonsoft.Json;
 
 namespace SimpleCompiler{
@@ -29,6 +30,10 @@ namespace SimpleCompiler{
                     jsonSettings.TypeNameHandling = TypeNameHandling.All;
                     string output = JsonConvert.SerializeObject(parser.root, jsonSettings);
                     File.WriteAllText(OutputFileName, output);
+
+                    var pp = new PrettyPrintVisitor();
+                    parser.root.Visit(pp);
+                    Console.WriteLine(pp.Text);
                 }
             }
             catch (FileNotFoundException){
