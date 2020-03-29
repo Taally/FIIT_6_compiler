@@ -1,5 +1,5 @@
 %{
-    public BlockNode root;
+    public StListNode root;
     public Parser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 %}
 
@@ -12,9 +12,7 @@
 			public Node nVal;
 			public ExprNode eVal;
 			public StatementNode stVal;
-			public BlockNode blVal;
-			public ExprListNode exVal;
-			public VarListNode varVal;
+			public StListNode blVal;
        }
 
 %using ProgramTree;
@@ -28,17 +26,15 @@ VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO PLUS MINUS MULT DIV
 %token <sVal> ID
 
 %type <eVal> expr ident A B C E T F exprlist
-%type <stVal> assign statement for while if input print var labelstatement goto
-%type <blVal> stlist block progr
-%type <exVal> exprlist
-%type <varVal> varlist
+%type <stVal> assign statement for while if input print var varlist labelstatement goto block
+%type <blVal> stlist progr
 
 %%
 
 progr   : stlist { root = $1; }
 		;
 
-stlist	: statement { $$ = new BlockNode($1); }
+stlist	: statement { $$ = new StListNode($1); }
 		| stlist statement 
 			{ 
 				$1.Add($2); 
@@ -64,7 +60,7 @@ ident 	: ID { $$ = new IdNode($1); }
 assign 	: ident ASSIGN expr { $$ = new AssignNode($1 as IdNode, $3); }
 		;
 
-block	: BEGIN stlist END { $$ = $2; }
+block	: BEGIN stlist END { $$ = new BlockNode($2); }
 		;
 
 for		: FOR ident ASSIGN expr COMMA expr statement
@@ -120,18 +116,18 @@ input	: INPUT LPAR ident RPAR { $$ = new InputNode($3 as IdNode); }
 exprlist : expr { $$ = new ExprListNode($1); }
 		| exprlist COMMA expr
 		{	
-			$1.Add($3); 
+			($1 as ExprListNode).Add($3); 
 			$$ = $1; 
 		}
 		;
 
-print	: PRINT LPAR exprlist RPAR { $$ = new PrintNode($3); }
+print	: PRINT LPAR exprlist RPAR { $$ = new PrintNode($3 as ExprListNode); }
 		;
 
 varlist	: ident { $$ = new VarListNode($1 as IdNode); }
 		| varlist COMMA ident
 		{
-			$1.Add($3 as IdNode); 
+			($1 as VarListNode).Add($3 as IdNode); 
 			$$ = $1; 
 		}
 		;
