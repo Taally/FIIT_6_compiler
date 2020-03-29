@@ -22,20 +22,20 @@ namespace SimpleCompiler
                       
                 var b = parser.Parse();
                 if (!b)
-		            Console.WriteLine("Ошибка");
-                else Console.WriteLine("Программа распознана");
+		            Console.WriteLine("Error");
+                else Console.WriteLine("Abstract syntax tree was successfully constructed.");
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("Файл {0} не найден", FileName);
+                Console.WriteLine("File {0} not found", FileName);
             }
             catch (LexException e)
             {
-                Console.WriteLine("Лексическая ошибка. " + e.Message);
+                Console.WriteLine("Lex error. " + e.Message);
             }
             catch (SyntaxException e)
             {
-                Console.WriteLine("Синтаксическая ошибка. " + e.Message);
+                Console.WriteLine("Syntax error. " + e.Message);
             }
 
             Console.ReadLine();
