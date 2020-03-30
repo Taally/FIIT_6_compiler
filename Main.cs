@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
 using Newtonsoft.Json;
+using SimpleLang.Visitors;
 
 namespace SimpleCompiler{
     public class SimpleCompilerMain{
@@ -27,6 +28,13 @@ namespace SimpleCompiler{
                     jsonSettings.TypeNameHandling = TypeNameHandling.All;
                     string output = JsonConvert.SerializeObject(parser.root, jsonSettings);
                     File.WriteAllText(OutputFileName, output);
+
+                    var pp = new PrettyPrintVisitor();
+                    parser.root.Visit(pp);
+                    Console.WriteLine(pp.Text);
+
+                    var av = new AutoVisitor();
+                    parser.root.Visit(av);
                 }
             }
             catch (FileNotFoundException){

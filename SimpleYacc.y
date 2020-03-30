@@ -1,6 +1,7 @@
 %{
     public StListNode root;
     public Parser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+	private bool InDefSect = false;
 %}
 
 %output = SimpleYacc.cs
@@ -15,6 +16,7 @@
 			public StListNode blVal;
        }
 
+%using System.IO;
 %using ProgramTree;
 
 %namespace SimpleParser
@@ -26,7 +28,7 @@ VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO PLUS MINUS MULT DIV
 %token <sVal> ID
 
 %type <eVal> expr ident A B C E T F exprlist
-%type <stVal> assign statement for while if input print var varlist labelstatement goto block
+%type <stVal> assign statement for while if input print varlist var labelstatement goto block
 %type <blVal> stlist progr
 
 %%
@@ -54,7 +56,12 @@ statement: assign SEMICOLON { $$ = $1; }
 		| labelstatement { $$ = $1; }
 		;
 
-ident 	: ID { $$ = new IdNode($1); }	
+ident 	: ID { 
+			if (!InDefSect)
+				if (!SymbolTable.vars.ContainsKey($1))
+					throw new Exception("("+@1.StartLine+","+@1.StartColumn+"): Variable "+$1+" not described");
+			$$ = new IdNode($1); 
+		}	
 		;
 	
 assign 	: ident ASSIGN expr { $$ = new AssignNode($1 as IdNode, $3); }
@@ -132,7 +139,12 @@ varlist	: ident { $$ = new VarListNode($1 as IdNode); }
 		}
 		;
 
-var		: VAR varlist { $$ = $2; }
+var		: VAR { InDefSect = true; } varlist 
+			{ 
+				foreach (var v in ($3 as VarListNode).vars)
+					SymbolTable.NewVarDef(v.Name);
+				InDefSect = false;	
+			}
 		;
 
 goto	: GOTO INUM { $$ = new GotoNode($2); }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SimpleParser
 {
@@ -14,5 +15,15 @@ namespace SimpleParser
     // для использования различными подсистемами парсера и сканера
     public static class ParserHelper
     {
+    }
+    public enum type { tint, tbool, tundefined };
+
+    public static class SymbolTable { 
+        public static Dictionary<string, type> vars = new Dictionary<string, type>();
+        public static void NewVarDef(string name){
+            if (vars.ContainsKey(name))
+                throw new Exception("Variable " + name + " was described");
+            else vars.Add(name,type.tundefined);
+        }
     }
 }
