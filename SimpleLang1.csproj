@@ -54,7 +54,9 @@
     <Compile Include="SimpleLex.cs" />
     <Compile Include="SimpleYacc.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
+    <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Visitors\FillParentVisitor.cs" />
+    <Compile Include="Visitors\OptVisitor.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
     <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>

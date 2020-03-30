@@ -33,3 +33,8 @@
   input(a);
 
   print(a*b*c+r*(a+5));
+
+  if true
+	c = a;
+  else 
+	c = b;
