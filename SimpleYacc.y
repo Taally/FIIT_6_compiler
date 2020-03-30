@@ -1,5 +1,5 @@
 %{
-    public BlockNode root;
+    public StListNode root;
     public Parser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	private bool InDefSect = false;
 %}
@@ -13,11 +13,10 @@
 			public Node nVal;
 			public ExprNode eVal;
 			public StatementNode stVal;
-			public BlockNode blVal;
-			public ExprListNode exVal;
-			public VarListNode varVal;
+			public StListNode blVal;
        }
 
+%using System.IO;
 %using ProgramTree;
 
 %namespace SimpleParser
@@ -29,17 +28,15 @@ VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO PLUS MINUS MULT DIV
 %token <sVal> ID
 
 %type <eVal> expr ident A B C E T F exprlist
-%type <stVal> assign statement for while if input print var labelstatement goto
-%type <blVal> stlist block progr
-%type <exVal> exprlist
-%type <varVal> varlist
+%type <stVal> assign statement for while if input print varlist var labelstatement goto block
+%type <blVal> stlist progr
 
 %%
 
 progr   : stlist { root = $1; }
 		;
 
-stlist	: statement { $$ = new BlockNode($1); }
+stlist	: statement { $$ = new StListNode($1); }
 		| stlist statement 
 			{ 
 				$1.Add($2); 
@@ -59,11 +56,10 @@ statement: assign SEMICOLON { $$ = $1; }
 		| labelstatement { $$ = $1; }
 		;
 
-ident 	: ID 
-		{ 
+ident 	: ID { 
 			if (!InDefSect)
 				if (!SymbolTable.vars.ContainsKey($1))
-					throw new Exception("("+@1.StartLine+","+@1.StartColumn+"): variable "+$1+" was not described");
+					throw new Exception("("+@1.StartLine+","+@1.StartColumn+"): Variable "+$1+" not described");
 			$$ = new IdNode($1); 
 		}	
 		;
@@ -71,7 +67,7 @@ ident 	: ID
 assign 	: ident ASSIGN expr { $$ = new AssignNode($1 as IdNode, $3); }
 		;
 
-block	: BEGIN stlist END { $$ = $2; }
+block	: BEGIN stlist END { $$ = new BlockNode($2); }
 		;
 
 for		: FOR ident ASSIGN expr COMMA expr statement
@@ -127,28 +123,28 @@ input	: INPUT LPAR ident RPAR { $$ = new InputNode($3 as IdNode); }
 exprlist : expr { $$ = new ExprListNode($1); }
 		| exprlist COMMA expr
 		{	
-			$1.Add($3); 
+			($1 as ExprListNode).Add($3); 
 			$$ = $1; 
 		}
 		;
 
-print	: PRINT LPAR exprlist RPAR { $$ = new PrintNode($3); }
+print	: PRINT LPAR exprlist RPAR { $$ = new PrintNode($3 as ExprListNode); }
 		;
 
 varlist	: ident { $$ = new VarListNode($1 as IdNode); }
 		| varlist COMMA ident
 		{
-			$1.Add($3 as IdNode); 
+			($1 as VarListNode).Add($3 as IdNode); 
 			$$ = $1; 
 		}
 		;
 
 var		: VAR { InDefSect = true; } varlist 
-		{ 
-			foreach (var v in ($3 as VarListNode).vars)
-				SymbolTable.NewVarDef(v.Name, type.tint);
-			InDefSect = false;
-		}
+			{ 
+				foreach (var v in ($3 as VarListNode).vars)
+					SymbolTable.NewVarDef(v.Name);
+				InDefSect = false;	
+			}
 		;
 
 goto	: GOTO INUM { $$ = new GotoNode($2); }

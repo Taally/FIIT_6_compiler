@@ -2,9 +2,11 @@
   var a, b, c, r, i;
   b = 2;
   a = 3;
-  a = true;
+  a = false;
   for a = 1,5 
-      b = 1+2+3+4+5;
+      b = 1+2+3+4+5; 
+	  
+  goto 666;
   while i > 0 {
     a = b+b;
     i = i + 1;
@@ -13,16 +15,23 @@
   666:   
   if b >= 5 or a+b == 0 and true
       c = a;
-  else {
-	c = a;
-    b=c;
+  else{
+	input(c);
+	if 5<c and c < 7 {
+		c = a;
+		b=c;
+  }  
+  } 
+  
+
+  for i=5,10
+  {
+		a = c*b;
+		print(a, 777);
   }
 
-  goto 666;
 
   input(a);
-  print(a+b, b+c);
 
-  666: input(b);
   print(a*b*c+r*(a+5));
 }

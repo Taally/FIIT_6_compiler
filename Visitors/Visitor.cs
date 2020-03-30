@@ -4,26 +4,25 @@ using System.Linq;
 using System.Text;
 using ProgramTree;
 
-namespace SimpleLang.Visitors
-{
-    public abstract class Visitor
-    {
-        public virtual void VisitIdNode(IdNode n) { }
-        public virtual void VisitIntNumNode(IntNumNode n) { }
-        public virtual void VisitBinOpNode(BinOpNode n) { }
-        public virtual void VisitAssignNode(AssignNode n) { }
-        public virtual void VisitBlockNode(BlockNode n) { }
-        public virtual void VisitVarListNode(VarListNode n) { }
-        public virtual void VisitEmptyNode(EmptyNode n) { }
-        public virtual void VisitBoolValNode(BoolValNode n) { }
-        public virtual void VisitWhileNode(WhileNode n) { }
-        public virtual void VisitForNode(ForNode n) { }
-        public virtual void VisitIfElseNode(IfElseNode n) { }
-        public virtual void VisitPrintNode(PrintNode n) { }
-        public virtual void VisitInputNode(InputNode n) { }
-        public virtual void VisitExprListNode(ExprListNode n) { }
-        public virtual void VisitGotoNode(GotoNode n) { }
-        public virtual void VisitLabelStatementNode(LabelStatementNode n) { }
+namespace SimpleLang.Visitors{
+    public abstract class Visitor{
+        public virtual void VisitIdNode(IdNode id) { }
+        public virtual void VisitIntNumNode(IntNumNode num) { }
+        public virtual void VisitBinOpNode(BinOpNode binop) { }
+        public virtual void VisitAssignNode(AssignNode a) { }
+        public virtual void VisitStListNode(StListNode bl) { }
+        public virtual void VisitBoolValNode(BoolValNode b) { }
+        public virtual void VisitWhileNode(WhileNode w) { }
+        public virtual void VisitForNode(ForNode f) { }
+        public virtual void VisitIfElseNode(IfElseNode i) { }
+        public virtual void VisitPrintNode(PrintNode p) { }
+        public virtual void VisitInputNode(InputNode i) { }
+        public virtual void VisitExprListNode(ExprListNode e) { }
+        public virtual void VisitVarListNode(VarListNode v) { }
+        public virtual void VisitGotoNode(GotoNode g) { }
+        public virtual void VisitLabelstatementNode(LabelStatementNode l) { }
+        public virtual void VisitBlockNode(BlockNode b) { }
 
+        // public virtual void VisitEmptyNode(EmptyNode w) { }
     }
 }

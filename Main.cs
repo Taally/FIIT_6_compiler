@@ -34,6 +34,9 @@ namespace SimpleCompiler{
                     var pp = new PrettyPrintVisitor();
                     parser.root.Visit(pp);
                     Console.WriteLine(pp.Text);
+
+                    var av = new AutoVisitor();
+                    parser.root.Visit(av);
                 }
             }
             catch (FileNotFoundException){

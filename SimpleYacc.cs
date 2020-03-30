@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DEXP
-// DateTime: 29.03.2020 19:40:48
-// UserName: User
+// Machine:  IRU-TAULING
+// DateTime: 30.03.2020 10:25:42
+// UserName: ??????
 // Input file <SimpleYacc.y>
 
 // options: no-lines gplex
@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using QUT.Gppg;
+using System.IO;
 using ProgramTree;
 
 namespace SimpleParser
@@ -35,9 +36,7 @@ public struct ValueType
 			public Node nVal;
 			public ExprNode eVal;
 			public StatementNode stVal;
-			public BlockNode blVal;
-			public ExprListNode exVal;
-			public VarListNode varVal;
+			public StListNode blVal;
        }
 // Abstract base class for GPLEX scanners
 public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
@@ -49,7 +48,7 @@ public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
 public class Parser: ShiftReduceParser<ValueType, LexLocation>
 {
   // Verbatim content from SimpleYacc.y
-    public BlockNode root;
+    public StListNode root;
     public Parser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	private bool InDefSect = false;
   // End verbatim content from SimpleYacc.y
@@ -61,14 +60,14 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
   private static State[] states = new State[101];
   private static string[] nonTerms = new string[] {
       "expr", "ident", "A", "B", "C", "E", "T", "F", "exprlist", "assign", "statement", 
-      "for", "while", "if", "input", "print", "var", "labelstatement", "goto", 
-      "stlist", "block", "progr", "varlist", "$accept", "Anon@1", };
+      "for", "while", "if", "input", "print", "varlist", "var", "labelstatement", 
+      "goto", "block", "stlist", "progr", "$accept", "Anon@1", };
 
   static Parser() {
-    states[0] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-22,1,-20,3,-11,100,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[0] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-23,1,-22,3,-11,100,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[1] = new State(new int[]{2,2});
     states[2] = new State(-1);
-    states[3] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97,2,-2},new int[]{-11,4,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[3] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97,2,-2},new int[]{-11,4,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[4] = new State(-4);
     states[5] = new State(new int[]{6,6});
     states[6] = new State(-5);
@@ -118,21 +117,21 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     states[50] = new State(new int[]{33,23,31,24,10,25,32,38},new int[]{-1,51,-3,28,-4,29,-5,46,-6,45,-7,40,-8,39,-2,22});
     states[51] = new State(new int[]{8,52,18,10});
     states[52] = new State(new int[]{33,23,31,24,10,25,32,38},new int[]{-1,53,-3,28,-4,29,-5,46,-6,45,-7,40,-8,39,-2,22});
-    states[53] = new State(new int[]{18,10,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,54,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[53] = new State(new int[]{18,10,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,54,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[54] = new State(-18);
     states[55] = new State(-7);
     states[56] = new State(new int[]{33,23,31,24,10,25,32,38},new int[]{-1,57,-3,28,-4,29,-5,46,-6,45,-7,40,-8,39,-2,22});
-    states[57] = new State(new int[]{18,10,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,58,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[57] = new State(new int[]{18,10,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,58,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[58] = new State(-19);
     states[59] = new State(-8);
     states[60] = new State(new int[]{33,23,31,24,10,25,32,38},new int[]{-1,61,-3,28,-4,29,-5,46,-6,45,-7,40,-8,39,-2,22});
-    states[61] = new State(new int[]{18,10,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,62,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[61] = new State(new int[]{18,10,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,62,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[62] = new State(new int[]{14,63,33,-21,7,-21,12,-21,13,-21,3,-21,15,-21,16,-21,17,-21,26,-21,31,-21,2,-21,4,-21});
-    states[63] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,64,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[63] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,64,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[64] = new State(-20);
     states[65] = new State(-9);
-    states[66] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-20,67,-11,100,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
-    states[67] = new State(new int[]{4,68,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,4,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[66] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-22,67,-11,100,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
+    states[67] = new State(new int[]{4,68,33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,4,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[68] = new State(-17);
     states[69] = new State(new int[]{6,70});
     states[70] = new State(-10);
@@ -152,7 +151,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     states[84] = new State(new int[]{6,85});
     states[85] = new State(-12);
     states[86] = new State(-50,new int[]{-25,87});
-    states[87] = new State(new int[]{33,23},new int[]{-23,88,-2,91});
+    states[87] = new State(new int[]{33,23},new int[]{-17,88,-2,91});
     states[88] = new State(new int[]{8,89,6,-51});
     states[89] = new State(new int[]{33,23},new int[]{-2,90});
     states[90] = new State(-49);
@@ -163,14 +162,14 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     states[95] = new State(-52);
     states[96] = new State(-14);
     states[97] = new State(new int[]{9,98});
-    states[98] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,99,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-17,84,-19,92,-18,96});
+    states[98] = new State(new int[]{33,23,7,48,12,56,13,60,3,66,15,71,16,77,17,86,26,94,31,97},new int[]{-11,99,-10,5,-2,7,-12,47,-13,55,-14,59,-21,65,-15,69,-16,75,-18,84,-20,92,-19,96});
     states[99] = new State(-53);
     states[100] = new State(-3);
 
-    rules[1] = new Rule(-24, new int[]{-22,2});
-    rules[2] = new Rule(-22, new int[]{-20});
-    rules[3] = new Rule(-20, new int[]{-11});
-    rules[4] = new Rule(-20, new int[]{-20,-11});
+    rules[1] = new Rule(-24, new int[]{-23,2});
+    rules[2] = new Rule(-23, new int[]{-22});
+    rules[3] = new Rule(-22, new int[]{-11});
+    rules[4] = new Rule(-22, new int[]{-22,-11});
     rules[5] = new Rule(-11, new int[]{-10,6});
     rules[6] = new Rule(-11, new int[]{-12});
     rules[7] = new Rule(-11, new int[]{-13});
@@ -178,12 +177,12 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     rules[9] = new Rule(-11, new int[]{-21});
     rules[10] = new Rule(-11, new int[]{-15,6});
     rules[11] = new Rule(-11, new int[]{-16,6});
-    rules[12] = new Rule(-11, new int[]{-17,6});
-    rules[13] = new Rule(-11, new int[]{-19,6});
-    rules[14] = new Rule(-11, new int[]{-18});
+    rules[12] = new Rule(-11, new int[]{-18,6});
+    rules[13] = new Rule(-11, new int[]{-20,6});
+    rules[14] = new Rule(-11, new int[]{-19});
     rules[15] = new Rule(-2, new int[]{33});
     rules[16] = new Rule(-10, new int[]{-2,5,-1});
-    rules[17] = new Rule(-21, new int[]{3,-20,4});
+    rules[17] = new Rule(-21, new int[]{3,-22,4});
     rules[18] = new Rule(-12, new int[]{7,-2,5,-1,8,-1,-11});
     rules[19] = new Rule(-13, new int[]{12,-1,-11});
     rules[20] = new Rule(-14, new int[]{13,-1,-11,14,-11});
@@ -214,12 +213,12 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     rules[45] = new Rule(-9, new int[]{-1});
     rules[46] = new Rule(-9, new int[]{-9,8,-1});
     rules[47] = new Rule(-16, new int[]{16,10,-9,11});
-    rules[48] = new Rule(-23, new int[]{-2});
-    rules[49] = new Rule(-23, new int[]{-23,8,-2});
+    rules[48] = new Rule(-17, new int[]{-2});
+    rules[49] = new Rule(-17, new int[]{-17,8,-2});
     rules[50] = new Rule(-25, new int[]{});
-    rules[51] = new Rule(-17, new int[]{17,-25,-23});
-    rules[52] = new Rule(-19, new int[]{26,31});
-    rules[53] = new Rule(-18, new int[]{31,9,-11});
+    rules[51] = new Rule(-18, new int[]{17,-25,-17});
+    rules[52] = new Rule(-20, new int[]{26,31});
+    rules[53] = new Rule(-19, new int[]{31,9,-11});
   }
 
   protected override void Initialize() {
@@ -237,7 +236,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 { root = ValueStack[ValueStack.Depth-1].blVal; }
         break;
       case 3: // stlist -> statement
-{ CurrentSemanticValue.blVal = new BlockNode(ValueStack[ValueStack.Depth-1].stVal); }
+{ CurrentSemanticValue.blVal = new StListNode(ValueStack[ValueStack.Depth-1].stVal); }
         break;
       case 4: // stlist -> stlist, statement
 { 
@@ -258,7 +257,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 { CurrentSemanticValue.stVal = ValueStack[ValueStack.Depth-1].stVal; }
         break;
       case 9: // statement -> block
-{ CurrentSemanticValue.stVal = ValueStack[ValueStack.Depth-1].blVal; }
+{ CurrentSemanticValue.stVal = ValueStack[ValueStack.Depth-1].stVal; }
         break;
       case 10: // statement -> input, SEMICOLON
 { CurrentSemanticValue.stVal = ValueStack[ValueStack.Depth-2].stVal; }
@@ -279,7 +278,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 { 
 			if (!InDefSect)
 				if (!SymbolTable.vars.ContainsKey(ValueStack[ValueStack.Depth-1].sVal))
-					throw new Exception("("+LocationStack[LocationStack.Depth-1].StartLine+","+LocationStack[LocationStack.Depth-1].StartColumn+"): variable "+ValueStack[ValueStack.Depth-1].sVal+" was not described");
+					throw new Exception("("+LocationStack[LocationStack.Depth-1].StartLine+","+LocationStack[LocationStack.Depth-1].StartColumn+"): Variable "+ValueStack[ValueStack.Depth-1].sVal+" not described");
 			CurrentSemanticValue.eVal = new IdNode(ValueStack[ValueStack.Depth-1].sVal); 
 		}
         break;
@@ -287,7 +286,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 { CurrentSemanticValue.stVal = new AssignNode(ValueStack[ValueStack.Depth-3].eVal as IdNode, ValueStack[ValueStack.Depth-1].eVal); }
         break;
       case 17: // block -> BEGIN, stlist, END
-{ CurrentSemanticValue.blVal = ValueStack[ValueStack.Depth-2].blVal; }
+{ CurrentSemanticValue.stVal = new BlockNode(ValueStack[ValueStack.Depth-2].blVal); }
         break;
       case 18: // for -> FOR, ident, ASSIGN, expr, COMMA, expr, statement
 { CurrentSemanticValue.stVal = new ForNode(ValueStack[ValueStack.Depth-6].eVal as IdNode, ValueStack[ValueStack.Depth-4].eVal, ValueStack[ValueStack.Depth-2].eVal, ValueStack[ValueStack.Depth-1].stVal); }
@@ -371,24 +370,24 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 { CurrentSemanticValue.stVal = new InputNode(ValueStack[ValueStack.Depth-2].eVal as IdNode); }
         break;
       case 45: // exprlist -> expr
-{ CurrentSemanticValue.exVal = new ExprListNode(ValueStack[ValueStack.Depth-1].eVal); }
+{ CurrentSemanticValue.eVal = new ExprListNode(ValueStack[ValueStack.Depth-1].eVal); }
         break;
       case 46: // exprlist -> exprlist, COMMA, expr
 {	
-			ValueStack[ValueStack.Depth-3].exVal.Add(ValueStack[ValueStack.Depth-1].eVal); 
-			CurrentSemanticValue.exVal = ValueStack[ValueStack.Depth-3].exVal; 
+			(ValueStack[ValueStack.Depth-3].eVal as ExprListNode).Add(ValueStack[ValueStack.Depth-1].eVal); 
+			CurrentSemanticValue.eVal = ValueStack[ValueStack.Depth-3].eVal; 
 		}
         break;
       case 47: // print -> PRINT, LPAR, exprlist, RPAR
-{ CurrentSemanticValue.stVal = new PrintNode(ValueStack[ValueStack.Depth-2].exVal); }
+{ CurrentSemanticValue.stVal = new PrintNode(ValueStack[ValueStack.Depth-2].eVal as ExprListNode); }
         break;
       case 48: // varlist -> ident
-{ CurrentSemanticValue.varVal = new VarListNode(ValueStack[ValueStack.Depth-1].eVal as IdNode); }
+{ CurrentSemanticValue.stVal = new VarListNode(ValueStack[ValueStack.Depth-1].eVal as IdNode); }
         break;
       case 49: // varlist -> varlist, COMMA, ident
 {
-			ValueStack[ValueStack.Depth-3].varVal.Add(ValueStack[ValueStack.Depth-1].eVal as IdNode); 
-			CurrentSemanticValue.varVal = ValueStack[ValueStack.Depth-3].varVal; 
+			(ValueStack[ValueStack.Depth-3].stVal as VarListNode).Add(ValueStack[ValueStack.Depth-1].eVal as IdNode); 
+			CurrentSemanticValue.stVal = ValueStack[ValueStack.Depth-3].stVal; 
 		}
         break;
       case 50: // Anon@1 -> /* empty */
@@ -396,10 +395,10 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 51: // var -> VAR, Anon@1, varlist
 { 
-			foreach (var v in (ValueStack[ValueStack.Depth-1].varVal as VarListNode).vars)
-				SymbolTable.NewVarDef(v.Name, type.tint);
-			InDefSect = false;
-		}
+				foreach (var v in (ValueStack[ValueStack.Depth-1].stVal as VarListNode).vars)
+					SymbolTable.NewVarDef(v.Name);
+				InDefSect = false;	
+			}
         break;
       case 52: // goto -> GOTO, INUM
 { CurrentSemanticValue.stVal = new GotoNode(ValueStack[ValueStack.Depth-1].iVal); }

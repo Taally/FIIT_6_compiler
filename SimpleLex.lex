@@ -19,6 +19,7 @@ ID {Alpha}{AlphaDigit}*
 }
 
 {BOOL} {
+	yylval.bVal = bool.Parse(yytext);
     return (int)Tokens.BOOL;
 }
 
