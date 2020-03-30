@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace SimpleParser
 {
-    public enum type { tint, tbool };
+    public enum type { tint, tbool, tundefined };
 
-    public static class SymbolTable // Таблица символов
+    public static class SymbolTable
     {
-        public static Dictionary<string, type> vars = new Dictionary<string, type>(); // таблица символов
-        public static void NewVarDef(string name, type t)
+        public static Dictionary<string, type> vars = new Dictionary<string, type>();
+        public static void NewVarDef(string name)
         {
             if (vars.ContainsKey(name))
-                throw new Exception("Variable " + name + " is already defined");
-            else vars.Add(name, t);
+                throw new Exception("Variable " + name + " was described");
+            else vars.Add(name, type.tundefined);
         }
     }
 
