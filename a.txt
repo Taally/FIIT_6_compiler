@@ -7,13 +7,14 @@
 	  
   goto 666;
   while i > 0 {
-    a = b+b;
+    a = b*1;
+	b = 1*(c+5);
     i = i + 1;
   }
   
   666:   
   if b >= 5 or a+b == 0 and true
-      c = a;
+      c = a / 1;
   else{
 	input(c);
 	if 5<c and c < 7 {
@@ -32,7 +33,7 @@
 
   input(a);
 
-  print(a*b*c+r*(a+5));
+  print(a*b*c+r*1 * (5+a));
 
   if true
 	c = a;
