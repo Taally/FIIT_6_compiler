@@ -12,7 +12,7 @@
 ## Задания
 
 | Команда  | Задания | |
-| :---------- |:-------:|
+| :---------- |:-------:|:--:|
 | ИА | 1 \* ex, ex \* 1, ex / 1 => ex | if (true) st1; else st2; => st1 |
 | Dedsec | a > a, a != a => false | if (false) st1; else st2; => st2 |  
 | H6 | 2 == 4 => false | while (false) st; => null |
