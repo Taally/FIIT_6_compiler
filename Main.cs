@@ -33,8 +33,8 @@ namespace SimpleCompiler{
                     parser.root.Visit(pp);
                     Console.WriteLine(pp.Text);
 
-                    var av = new AutoVisitor();
-                    parser.root.Visit(av);
+                    var fp = new FillParentVisitor();
+                    parser.root.Visit(fp);
                 }
             }
             catch (FileNotFoundException){

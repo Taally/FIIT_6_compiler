@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using ProgramTree;
 
-//TODO
 namespace SimpleLang.Visitors{
     class AutoVisitor : Visitor{
         public override void VisitBinOpNode(BinOpNode binop){
@@ -69,6 +68,21 @@ namespace SimpleLang.Visitors{
         public override void VisitWhileNode(WhileNode w){
             w.Expr.Visit(this);
             w.Stat.Visit(this);
+        }
+
+        public override void VisitBoolValNode(BoolValNode b)
+        {
+            
+        }
+
+        public override void VisitIdNode(IdNode id)
+        {
+            
+        }
+
+        public override void VisitIntNumNode(IntNumNode num)
+        {
+            
         }
     }
 }
