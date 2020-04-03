@@ -5,19 +5,9 @@ using System.Text;
 using ProgramTree;
 
 namespace SimpleLang.Visitors{
-    class OptVisitor: ChangeVisitor{
-        public override void VisitIfElseNode(IfElseNode n){
-            if (n.Expr is BoolValNode bn && bn.Val == true){
-                n.TrueStat.Visit(this);
-                ReplaceStat(n, n.TrueStat);
-            }
-            else
-                base.VisitIfElseNode(n);
-
-        }
-
+    class OptExpr1Visitor : ChangeVisitor {
         public override void VisitBinOpNode(BinOpNode binop){
-            switch (binop.Op) {
+            switch (binop.Op){
                 case OpType.MULT:
                     if (binop.Left is IntNumNode && (binop.Left as IntNumNode).Num == 1){
                         binop.Right.Visit(this);
@@ -27,17 +17,19 @@ namespace SimpleLang.Visitors{
                         binop.Left.Visit(this);
                         ReplaceExpr(binop, binop.Left);
 
-                    } else base.VisitBinOpNode(binop);
+                    }
+                    else base.VisitBinOpNode(binop);
                     break;
 
                 case OpType.DIV:
-                    if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1) {
+                    if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1){
                         binop.Left.Visit(this);
                         ReplaceExpr(binop, binop.Left);
                     }
                     break;
 
-                default: base.VisitBinOpNode(binop);
+                default:
+                    base.VisitBinOpNode(binop);
                     break;
             }
         }
