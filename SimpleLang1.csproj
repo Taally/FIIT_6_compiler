@@ -58,6 +58,7 @@
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Visitors\OptExprVisitor.cs" />
+    <Compile Include="Visitors\OptStatVisitor.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
     <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>

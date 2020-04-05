@@ -24,8 +24,8 @@ namespace SimpleLang.Visitors
         public override void VisitStListNode(StListNode bl)
         {
             PreVisit(bl);
-            foreach (var st in bl.StList)
-                st.Visit(this);
+            for (int i = 0; i < bl.StList.Count; ++i)
+                bl.StList[i].Visit(this);
             PostVisit(bl);
         }
 

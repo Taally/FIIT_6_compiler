@@ -1,8 +1,8 @@
 var a, b;
-a = 2;
-a = a == a;
-b = a <= a;
-a = b >= b;
-
-if a <= a and b == b
-    b = a >= a;
+if a == a
+    if b == b
+        a = a;
+    else
+        a = b;
+else
+    b = a == a;

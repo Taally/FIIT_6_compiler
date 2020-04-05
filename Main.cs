@@ -40,6 +40,8 @@ namespace SimpleCompiler
 
                     var optExpr = new OptExprVisitor();
                     parser.root.Visit(optExpr);
+                    var optStat = new OptStatVisitor();
+                    parser.root.Visit(optStat);
 
                     Console.WriteLine("\n\n");
                     pp = new PrettyPrintVisitor();
