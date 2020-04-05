@@ -57,6 +57,10 @@ namespace SimpleLang.Visitors
                 else if (ifNode.FalseStat == from)
                     ifNode.FalseStat = to;
             }
+            else if (p is ForNode forNode)
+            {
+                forNode.Stat = to;
+            }
         }
     }
 }
