@@ -24,6 +24,10 @@ namespace SimpleLang.Visitors
             {
                 ifNode.Expr = to;
             }
+            else if (p is WhileNode whileNode)
+            {
+                whileNode.Expr = to;
+            }
             else if (p is BlockNode)
             {
                 throw new Exception("Parent node doesn't contain expressions.");
@@ -57,9 +61,17 @@ namespace SimpleLang.Visitors
                 else if (ifNode.FalseStat == from)
                     ifNode.FalseStat = to;
             }
+            else if (p is WhileNode whileNode)
+            {
+                whileNode.Stat = to;
+            }
             else if (p is ForNode forNode)
             {
                 forNode.Stat = to;
+            }
+            else if (p is LabelStatementNode labelNode)
+            {
+                labelNode.Stat = to;
             }
         }
     }
