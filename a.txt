@@ -1,8 +1,25 @@
-var a, b;
-if a == a
-    if b == b
-        a = a;
-    else
-        a = b;
-else
-    b = a == a;
+var a, b, c, i;
+a = a >= a;
+b = b == b;
+c = (a == a) and (b >= b);
+for i = 1,5
+	if (c <= c)
+		if (a == a)
+			a = 1;
+		else
+			a = 0;
+	else
+		if (a == b)
+			b = 1;
+		else
+			b = 0;
+goto 1024;
+while (c == c)
+	if (a == a)
+		a = 2;
+	else
+		a = 22;
+1024: if (b >= b)
+          c = 0;
+	  else
+	      c = 1000;
