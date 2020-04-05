@@ -4,6 +4,7 @@ using SimpleLang.Visitors;
 namespace ProgramTree{
     public enum OpType { OR, AND, EQUAL, NOTEQUAL, GREATER, LESS, EQGREATER, EQLESS, PLUS, MINUS, MULT, DIV };
     public abstract class Node{
+        public Node Parent { get; set; }
         public abstract void Visit(Visitor v);
     }
 
