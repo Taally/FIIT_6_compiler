@@ -24,8 +24,8 @@ namespace SimpleLang.Visitors
         public override void VisitStListNode(StListNode bl)
         {
             PreVisit(bl);
-            for (int i = 0; i < bl.StList.Count; ++i)
-                bl.StList[i].Visit(this);
+            for (int i = 0; i < bl.StatChildren.Count; ++i)
+                bl.StatChildren[i].Visit(this);
             PostVisit(bl);
         }
 
@@ -47,7 +47,7 @@ namespace SimpleLang.Visitors
         public override void VisitExprListNode(ExprListNode e)
         {
             PreVisit(e);
-            foreach (var x in e.exprList)
+            foreach (var x in e.ExprChildren)
                 x.Visit(this);
             PostVisit(e);
         }
@@ -97,7 +97,7 @@ namespace SimpleLang.Visitors
         public override void VisitPrintNode(PrintNode p)
         {
             PreVisit(p);
-            p.exprList.Visit(this);
+            p.ExprList.Visit(this);
             PostVisit(p);
         }
 
