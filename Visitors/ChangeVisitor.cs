@@ -43,6 +43,18 @@ namespace SimpleLang.Visitors{
                         sln.StList[i] = to;
                         break;
                     }
+            } else if (p is WhileNode wn)
+            {
+                if (wn.Stat == from)
+                    wn.Stat = to;
+            } else if (p is ForNode fn)
+            {
+                if (fn.Stat == from)
+                    fn.Stat = to;
+            } else if (p is LabelStatementNode ln)
+            {
+                if (ln.Stat == from)
+                    ln.Stat = to;
             }
         }
     }
