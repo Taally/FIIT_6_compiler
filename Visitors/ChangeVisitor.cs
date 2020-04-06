@@ -12,7 +12,8 @@ namespace SimpleLang.Visitors{
 
             if (p is AssignNode assn)
                 assn.Expr = to;
-            else if (p is BinOpNode binopn){
+            else if (p is BinOpNode binopn)
+            {
                 if (binopn.Left == from)
                     binopn.Left = to;
                 else if (binopn.Right == from)
@@ -22,7 +23,11 @@ namespace SimpleLang.Visitors{
             else if (p is IfElseNode ifElse)
                 ifElse.Expr = to;
 
-            else if (p is ForNode f){
+            else if (p is WhileNode w)
+                w.Expr = to;
+
+            else if (p is ForNode f)
+            {
                 if (f.From == from)
                     f.From = to;
                 else if (f.To == from)
@@ -30,13 +35,14 @@ namespace SimpleLang.Visitors{
             }
             else if (p is ExprListNode exp)
                 for (var i = 0; i < exp.exprList.Count; ++i)
-                    if (exp.exprList[i] == from){
+                    if (exp.exprList[i] == from)
+                    {
                         exp.exprList[i] = to;
                         break;
                     }
 
-            else if (p is BlockNode)
-                throw new Exception("Parent node does not contain expressions");
+                    else if (p is BlockNode)
+                        throw new Exception("Parent node does not contain expressions");
         }
 
         public void ReplaceStat(StatementNode from, StatementNode to){
