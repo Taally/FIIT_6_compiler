@@ -3,14 +3,12 @@ using System.IO;
 using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
-using Newtonsoft.Json;
 using SimpleLang.Visitors;
 
 namespace SimpleCompiler{
     public class SimpleCompilerMain{
         public static void Main(){
             string FileName = @"..\..\a.txt";
-            string OutputFileName = @"..\..\a.json";
             try{
                 string Text = File.ReadAllText(FileName);
 
@@ -22,17 +20,9 @@ namespace SimpleCompiler{
                 var b = parser.Parse();
                 if (!b) Console.WriteLine("Error");
                 else{
-                    Console.WriteLine("Syntax tree built");
-                    JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-                    jsonSettings.TypeNameHandling = TypeNameHandling.All;
-                    string output = JsonConvert.SerializeObject(parser.root, jsonSettings);
-                    File.WriteAllText(OutputFileName, output);
-
                     var fp = new FillParentVisitor();
                     parser.root.Visit(fp);
                     
-
                     var opt1 = new OptStat1Visitor();
                     parser.root.Visit(opt1);
 

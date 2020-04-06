@@ -45,8 +45,8 @@ namespace SimpleLang.Visitors{
 
         public override void VisitExprListNode(ExprListNode n){
             PreVisit(n);
-            foreach (var x in n.exprList)
-                x.Visit(this);
+            for (int i = 0; i < n.exprList.Count; ++i)
+                n.exprList[i].Visit(this);
             PostVisit(n);
         }
 
