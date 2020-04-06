@@ -28,6 +28,13 @@ namespace SimpleLang.Visitors
             {
                 whileNode.Expr = to;
             }
+            else if (p is ForNode forNode)
+            {
+                if (forNode.From == from)
+                    forNode.From = to;
+                else if (forNode.To == from)
+                    forNode.To = to;
+            }
             else if (p is BlockNode)
             {
                 throw new Exception("Parent node doesn't contain expressions.");
