@@ -1,51 +1,6 @@
   var a, b, c, r, i;
   b = 2;
-  a = 3;
   a = false;
-  for a = 1,5 
-      b = 1+2+3+4+5; 	  
-  goto 666;
-  while i > 0 {
-    a = b*1;
-	b = 1*(c*1*1+5*a*1);
-    i = i + 1;
-  }
-  
-  while i > 0 
-	if true
-		c=b;
-print(a*b*c+r*1 * (5+a));
-  666:   
-  if b >= 5 or a+b == 0 and true
-      c = a * 1/ 1;
-  else{
-	input(c);
-	if 5<c and c < 7 {
-		c = a;
-		b=c; }  
-  } 
-
-  for i=1*a, 1*b/1{
-		a = c*b;
-		print(a*1, 777*1);
-  }
-
-  input(a);
-  
-  while i*1
-	b=1;
-
-	while i*1>0
-	b=1;
-
-  if true
-	c = a;
-  else 
-	c = b/1;
-
-if 2*1
-	if true 
-		c=b;
-	else
-		c = b*1/1;
-  else c = 5;
+  a = 3 + 1;
+  b = (a * 2) + (b / 3) - 1;  
+  c = a > 2 or b <= 1 and true;

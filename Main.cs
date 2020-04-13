@@ -32,6 +32,16 @@ namespace SimpleCompiler{
                     var pp1 = new PrettyPrintVisitor();
                     parser.root.Visit(pp1);
                     Console.WriteLine(pp1.Text);
+
+                    var threeAddr = new ThreeAddrGen();
+                    parser.root.Visit(threeAddr);
+
+                    Console.WriteLine("-----");
+
+                    foreach (var c in threeAddr.table)
+                    {
+                        Console.WriteLine(c.ToString());
+                    }
                 }
             }
             catch (FileNotFoundException){
