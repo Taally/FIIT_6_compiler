@@ -2,7 +2,6 @@
 using System.IO;
 using SimpleScanner;
 using SimpleParser;
-using Newtonsoft.Json;
 using SimpleLang.Visitors;
 
 namespace SimpleCompiler
@@ -10,7 +9,6 @@ namespace SimpleCompiler
     public class SimpleCompilerMain{
         public static void Main(){
             string FileName = @"..\..\a.txt";
-            string OutputFileName = @"..\..\a.json";
             try{
                 string Text = File.ReadAllText(FileName);
 
@@ -23,13 +21,6 @@ namespace SimpleCompiler
                 if (!b) Console.WriteLine("Error");
                 else{
                     Console.WriteLine("Syntax tree built");
-                    JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-                    {
-                        Formatting = Formatting.Indented,
-                        TypeNameHandling = TypeNameHandling.All
-                    };
-                    string output = JsonConvert.SerializeObject(parser.root, jsonSettings);
-                    File.WriteAllText(OutputFileName, output);
 
                     var fillParents = new FillParentsVisitor();
                     parser.root.Visit(fillParents);
@@ -47,6 +38,12 @@ namespace SimpleCompiler
                     pp = new PrettyPrintVisitor();
                     parser.root.Visit(pp);
                     Console.WriteLine(pp.Text);
+
+                    Console.WriteLine("\n\n");
+                    var threeAddrCode = new ThreeAddrGenVisitor();
+                    parser.root.Visit(threeAddrCode);
+                    foreach (var instruction in threeAddrCode.Instructions)
+                        Console.WriteLine(instruction);
                 }
             }
             catch (FileNotFoundException){

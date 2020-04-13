@@ -6,6 +6,7 @@ namespace SimpleLang.Visitors
     {
         public virtual void PreVisit(Node n) { }
         public virtual void PostVisit(Node n) { }
+
         public override void VisitBinOpNode(BinOpNode binop)
         {
             PreVisit(binop);
@@ -13,6 +14,7 @@ namespace SimpleLang.Visitors
             binop.Right.Visit(this);
             PostVisit(binop);
         }
+
         public override void VisitAssignNode(AssignNode a)
         {
             PreVisit(a);
