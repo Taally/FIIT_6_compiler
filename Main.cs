@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
+using SimpleLang;
+using SimpleLang.ThreeAddrOpt;
 
 namespace SimpleCompiler{
     public class SimpleCompilerMain{
@@ -36,12 +38,19 @@ namespace SimpleCompiler{
                     var threeAddr = new ThreeAddrGen();
                     parser.root.Visit(threeAddr);
 
-                    Console.WriteLine("-----");
+                    Console.WriteLine("------");
 
                     foreach (var c in threeAddr.table)
-                    {
                         Console.WriteLine(c.ToString());
-                    }
+
+                    Console.WriteLine("---After opt---");
+
+                    //var check = DefUseOpt.DeleteDeadCode(threeAddr.table);
+                    var check = ThreeAdrOpt.ConvСonstants(threeAddr.table);
+                    foreach (var c in check)
+                        Console.WriteLine(c.ToString());
+
+
                 }
             }
             catch (FileNotFoundException){

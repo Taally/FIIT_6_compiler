@@ -21,8 +21,8 @@ namespace ProgramTree{
 
     public class IntNumNode : ExprNode{
         public override Node Parent { get; set; }
-        public int Num { get; set; }
-        public IntNumNode(int num) { Num = num; }
+        public int Val { get; set; }
+        public IntNumNode(int num) { Val = num; }
         public override void Visit(Visitor v){
             v.VisitIntNumNode(this);
         }

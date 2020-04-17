@@ -22,7 +22,7 @@ namespace SimpleLang.Visitors{
             Text += id.Name;
         }
         public override void VisitIntNumNode(IntNumNode num){
-            Text += num.Num.ToString();
+            Text += num.Val.ToString();
         }
 
         private string GetOp(OpType t) {
