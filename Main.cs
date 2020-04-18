@@ -40,11 +40,14 @@ namespace SimpleCompiler{
 
                     Console.WriteLine("------");
 
+                    threeAddr.table.Insert(5, new Command("#t0001", "a", "b", "+", ""));
+
                     foreach (var c in threeAddr.table)
                         Console.WriteLine(c.ToString());
 
                     Console.WriteLine("---After opt---");
 
+                            
                     var check = DefUseOpt.DeleteDeadCode(threeAddr.table);
                     //var check = ThreeAdrOpt.ConvСonstants(threeAddr.table);
                     foreach (var c in check)
