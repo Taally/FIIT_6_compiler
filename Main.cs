@@ -45,8 +45,8 @@ namespace SimpleCompiler{
 
                     Console.WriteLine("---After opt---");
 
-                    //var check = DefUseOpt.DeleteDeadCode(threeAddr.table);
-                    var check = ThreeAdrOpt.ConvСonstants(threeAddr.table);
+                    var check = DefUseOpt.DeleteDeadCode(threeAddr.table);
+                    //var check = ThreeAdrOpt.ConvСonstants(threeAddr.table);
                     foreach (var c in check)
                         Console.WriteLine(c.ToString());
 

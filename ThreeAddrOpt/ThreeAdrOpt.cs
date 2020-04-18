@@ -74,6 +74,29 @@ namespace SimpleLang.ThreeAddrOpt{
         public static List<Command> DeleteDeadCode(List<Command> commands) {
             List<Command> result = new List<Command>();
             FillLists(commands);
+            Console.WriteLine("\nCount of commands (before): " + commands.Count);
+
+            for (int i = commands.Count - 1; i >= 0; --i)
+            {
+                var c = commands[i];
+
+                // если этот def последний в блоке, он может использоваться в других блоках дальше - его удалять нельзя
+                var lastDefInd = DefList.FindLastIndex(x => x.Id == c.Result);
+                var curDefInd = DefList.FindIndex(x => x.OrderNum == i);
+                
+                // удаляем, если список Uses пустой и 
+                // если это не временная переменная, это не должно быть последним определением этой переменной (потому что см. выше)
+                if (DefList[curDefInd].Uses.Count == 0 && (c.Result[0] != '#' ? curDefInd != lastDefInd : true)) { 
+                    DeleteUse(commands[i].Arg1, i);
+                    DeleteUse(commands[i].Arg2, i);
+                    continue;
+                }
+                result.Add(commands[i]);
+            }
+            result.Reverse();
+            Console.WriteLine("Count of commands (after): " + result.Count + "\n");
+            return result;
+            /*
             result.Add(commands[commands.Count - 1]);
             for (int i = commands.Count - 2; i > -1; --i) {
                 //Мы удаляем код только! у временных переменных. Причем когда просто списки пусты. Каскад есть, но работает только
@@ -86,7 +109,8 @@ namespace SimpleLang.ThreeAddrOpt{
                 result.Add(commands[i]);
             }
             result.Reverse();
-            return result;
+            Console.WriteLine("Dev (after): " + result.Count);
+            return result;*/
         }
     }
 
