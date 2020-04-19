@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class Instruction
+    public class Instruction
     {
         public string Label { get; }
         public string Operation { get; }

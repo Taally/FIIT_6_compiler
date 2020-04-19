@@ -48,6 +48,11 @@ namespace SimpleCompiler
                     parser.root.Visit(threeAddrCode);
                     foreach (var instruction in threeAddrCode.Instructions)
                         Console.WriteLine(instruction);
+
+                    Console.WriteLine("\n\n");
+                    var optInstructions = OptConstantFolding.FoldConstants(threeAddrCode.Instructions);
+                    foreach (var instruction in optInstructions)
+                        Console.WriteLine(instruction);
                 }
             }
             catch (FileNotFoundException)
