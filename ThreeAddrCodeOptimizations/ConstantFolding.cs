@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SimpleLang.Visitors;
+using System;
 using System.Collections.Generic;
 
-namespace SimpleLang.Visitors
+namespace SimpleLang.ThreeAddressCodeOptimizations
 {
-    static class OptConstantFolding
+    static class ConstantFolding
     {
         public static List<Instruction> FoldConstants(List<Instruction> instructions)
         {

@@ -3,6 +3,7 @@ using System.IO;
 using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
+using SimpleLang.ThreeAddressCodeOptimizations;
 
 namespace SimpleCompiler
 {
@@ -50,8 +51,12 @@ namespace SimpleCompiler
                         Console.WriteLine(instruction);
 
                     Console.WriteLine("\n\n");
-                    var optInstructions = OptConstantFolding.FoldConstants(threeAddrCode.Instructions);
+                    var optInstructions = ConstantFolding.FoldConstants(threeAddrCode.Instructions);
                     foreach (var instruction in optInstructions)
+                        Console.WriteLine(instruction);
+
+                    Console.WriteLine("\n\n");
+                    foreach (var instruction in DeleteDeadCodeWithDeadVars.Execute(optInstructions))
                         Console.WriteLine(instruction);
                 }
             }

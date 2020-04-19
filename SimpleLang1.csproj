@@ -54,10 +54,11 @@
     <Compile Include="ShiftReduceParserCode.cs" />
     <Compile Include="SimpleLex.cs" />
     <Compile Include="SimpleYacc.cs" />
+    <Compile Include="ThreeAddrCodeOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
-    <Compile Include="OptConstantFolding.cs" />
+    <Compile Include="ThreeAddrCodeOptimizations\ConstantFolding.cs" />
     <Compile Include="Visitors\OptExprVisitor.cs" />
     <Compile Include="Visitors\OptStatVisitor.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
@@ -72,6 +73,7 @@
   <ItemGroup>
     <Content Include="a.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
