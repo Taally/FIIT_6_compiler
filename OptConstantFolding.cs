@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleLang.Visitors
 {
-    public static class OptConstantFolding
+    static class OptConstantFolding
     {
         public static List<Instruction> FoldConstants(List<Instruction> instructions)
         {
