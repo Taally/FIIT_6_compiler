@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    public class Instruction
+    class Instruction
     {
         public string Label { get; }
         public string Operation { get; }
@@ -40,6 +40,8 @@ namespace SimpleLang.Visitors
                 case "MULT":
                 case "DIV":
                     return $"{label}{Result} = {Argument1} {ConvertToMathNotation(Operation)} {Argument2}";
+                case "noop":
+                    return $"{label}noop";
                 default:
                     return $"label: {Label}; op {Operation}; arg1: {Argument1}; arg2: {Argument2}; res: {Result}";
             }
