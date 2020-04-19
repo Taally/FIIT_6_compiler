@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ProgramTree;
-
 
 namespace SimpleLang.Visitors
 {
@@ -22,7 +20,63 @@ namespace SimpleLang.Visitors
             Result = result;
         }
 
-        public override string ToString() => $"label: {Label}; op {Operation}; arg1: {Argument1}; arg2: {Argument2}; res: {Result}";
+        public override string ToString()
+        {
+            var label = Label != "" ? Label + ": " : "";
+            switch (Operation)
+            {
+                case "assign":
+                    return label + Result + " = " + Argument1;
+                case "OR":
+                case "AND":
+                case "EQUAL":
+                case "NOTEQUAL":
+                case "LESS":
+                case "GREATER":
+                case "EQGREATER":
+                case "EQLESS":
+                case "PLUS":
+                case "MINUS":
+                case "MULT":
+                case "DIV":
+                    return $"{label}{Result} = {Argument1} {ConvertToMathNotation(Operation)} {Argument2}";
+                default:
+                    return $"label: {Label}; op {Operation}; arg1: {Argument1}; arg2: {Argument2}; res: {Result}";
+            }
+        }
+
+        private string ConvertToMathNotation(string operation)
+        {
+            switch (operation)
+            {
+                case "OR":
+                    return "or";
+                case "AND":
+                    return "and";
+                case "EQUAL":
+                    return "==";
+                case "NOTEQUAL":
+                    return "!=";
+                case "LESS":
+                    return "<";
+                case "GREATER":
+                    return ">";
+                case "EQGREATER":
+                    return ">=";
+                case "EQLESS":
+                    return "<=";
+                case "PLUS":
+                    return "+";
+                case "MINUS":
+                    return "-";
+                case "MULT":
+                    return "*";
+                case "DIV":
+                    return "/";
+                default:
+                    return operation;
+            }
+        }
     }
 
     class ThreeAddrGenVisitor : AutoVisitor

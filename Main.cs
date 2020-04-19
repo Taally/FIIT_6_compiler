@@ -6,10 +6,13 @@ using SimpleLang.Visitors;
 
 namespace SimpleCompiler
 {
-    public class SimpleCompilerMain{
-        public static void Main(){
+    public class SimpleCompilerMain
+    {
+        public static void Main()
+        {
             string FileName = @"..\..\a.txt";
-            try{
+            try
+            {
                 string Text = File.ReadAllText(FileName);
 
                 Scanner scanner = new Scanner();
@@ -19,7 +22,8 @@ namespace SimpleCompiler
 
                 var b = parser.Parse();
                 if (!b) Console.WriteLine("Error");
-                else{
+                else
+                {
                     Console.WriteLine("Syntax tree built");
 
                     var fillParents = new FillParentsVisitor();
@@ -46,13 +50,16 @@ namespace SimpleCompiler
                         Console.WriteLine(instruction);
                 }
             }
-            catch (FileNotFoundException){
+            catch (FileNotFoundException)
+            {
                 Console.WriteLine("File {0} not found", FileName);
             }
-            catch (LexException e){
+            catch (LexException e)
+            {
                 Console.WriteLine("Lex Error. " + e.Message);
             }
-            catch (SyntaxException e){
+            catch (SyntaxException e)
+            {
                 Console.WriteLine("Syntax Error. " + e.Message);
             }
             Console.ReadLine();

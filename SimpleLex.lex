@@ -62,7 +62,7 @@ ID {Alpha}{AlphaDigit}*
 public override void yyerror(string format, params object[] args)
 {
   var ww = args.Skip(1).Cast<string>().ToArray();
-  string errorMsg = string.Format("({0},{1}): Encountered {2}, expected {3}", yyline, yycol, args[0], string.Join(" или ", ww));
+  string errorMsg = string.Format("({0},{1}): Encountered {2}, expected {3}", yyline, yycol, args[0], string.Join(" or ", ww));
   throw new SyntaxException(errorMsg);
 }
 
