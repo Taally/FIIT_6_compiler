@@ -39,10 +39,10 @@ namespace SimpleCompiler
                     var optStat = new OptStatVisitor();
                     parser.root.Visit(optStat);
 
-                    Console.WriteLine("\n\n");
-                    pp = new PrettyPrintVisitor();
-                    parser.root.Visit(pp);
-                    Console.WriteLine(pp.Text);
+                    //Console.WriteLine("\n\n");
+                    //pp = new PrettyPrintVisitor();
+                    //parser.root.Visit(pp);
+                    //Console.WriteLine(pp.Text);
 
                     Console.WriteLine("\n\n");
                     var threeAddrCode = new ThreeAddrGenVisitor();

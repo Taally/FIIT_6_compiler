@@ -1,9 +1,5 @@
-﻿using SimpleLang.Visitors;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang.ThreeAddressCodeOptimizations
 {
@@ -24,7 +20,7 @@ namespace SimpleLang.ThreeAddressCodeOptimizations
 
             foreach (var command in commands.Reverse<Instruction>().Skip(1))
             {
-                if (!varStatus.ContainsKey(command.Result) || !varStatus[command.Result])
+                if (varStatus.ContainsKey(command.Result) && !varStatus[command.Result])
                 {
                     result.Add(new Instruction(command.Label, "noop", null, null, null));
                     continue;
