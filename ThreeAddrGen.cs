@@ -19,8 +19,10 @@ namespace SimpleLang{
             Label = label;
         }
 
-        public override string ToString() =>
-            (Label != "" ? Label + ": " : "" ) + Result + " = " + Arg1 + " " + Op + " " + Arg2;
+        public override string ToString(){
+            if (Result == "empty") return Result;
+            return (Label != "" ? Label + ": " : "") + Result + " = " + Arg1 + " " + Op + " " + Arg2;
+        }
     }
 
     class ThreeAddrGen: AutoVisitor{

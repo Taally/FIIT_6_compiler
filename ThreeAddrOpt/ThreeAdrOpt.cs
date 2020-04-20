@@ -8,7 +8,7 @@ namespace SimpleLang.ThreeAddrOpt{
     public class Use {
         public Def Parent { get; set; }
         public int OrderNum { get; set; }
-        public Command Command { get; set; } //на всякий случай пока запоминаем
+        public Command Command { get; set; }
 
         public Use(int n, Command c, Def p = null) {
             Parent = p;
@@ -29,11 +29,8 @@ namespace SimpleLang.ThreeAddrOpt{
         }
     }
 
-
     public static class DefUseOpt{
-        //Пока не используем UseList
         public static List<Def> DefList = new List<Def>();
-        //public static List<Use> UseList = new List<Use>();
 
         private static bool IsId(string id) {
             return id != "" && id != "true" && id != "false" &&
@@ -49,14 +46,14 @@ namespace SimpleLang.ThreeAddrOpt{
                     use.Parent = DefList[def];
                     DefList[def].Uses.Add(use);
                 }
-               // UseList.Add(use);
             }
         }
 
         private static void FillLists(List<Command> commands) {
             DefList = new List<Def>();
             for (int i = 0; i < commands.Count; ++i) {
-                DefList.Add(new Def(i,commands[i].Result));
+                //if(commands[i].ToString().Contains("="))
+                    DefList.Add(new Def(i,commands[i].Result));
                 AddUse(commands[i].Arg1, commands[i], i);
                 AddUse(commands[i].Arg2, commands[i], i);
             }
@@ -64,57 +61,45 @@ namespace SimpleLang.ThreeAddrOpt{
 
         private static void DeleteUse(string id, int i) {
             if (id == "") return;
-            //Вот здесь использовать инфу про use ( у него есть родитель! может по другому хранить)
             var d = DefList.FindLast(x => x.Id == id && x.OrderNum < i);
             if (d == null) return;
             d.Uses.RemoveAt(d.Uses.FindLastIndex(x=> x.OrderNum == i));
-            //UseList.RemoveAt();
         }
 
         public static List<Command> DeleteDeadCode(List<Command> commands) {
             List<Command> result = new List<Command>();
             FillLists(commands);
-            Console.WriteLine("\nCount of commands (before): " + commands.Count);
-
-            // здесь код 
-            #region
-            /*for (int i = commands.Count - 1; i >= 0; --i)
-            {
+           
+            for (int i = commands.Count - 1; i >= 0; --i){
                 var c = commands[i];
 
-                // если этот def последний в блоке, он может использоваться в других блоках дальше - его удалять нельзя
                 var lastDefInd = DefList.FindLastIndex(x => x.Id == c.Result);
                 var curDefInd = DefList.FindIndex(x => x.OrderNum == i);
                 
-                // удаляем, если список Uses пустой и 
-                // если это не временная переменная, это не должно быть последним определением этой переменной (потому что см. выше)
                 if (DefList[curDefInd].Uses.Count == 0 && (c.Result[0] != '#' ? curDefInd != lastDefInd : true)) { 
                     DeleteUse(commands[i].Arg1, i);
                     DeleteUse(commands[i].Arg2, i);
-                    continue;
+                    result.Add(new Command("empty", "", "", "", commands[i].Label));
                 }
-                result.Add(commands[i]);
+                else result.Add(commands[i]);
             }
             result.Reverse();
-            Console.WriteLine("Count of commands (after): " + result.Count + "\n");
             return result;
-            */
-            #endregion 
-
-            result.Add(commands[commands.Count - 1]);
+            
+            #region
+            /*result.Add(commands[commands.Count - 1]);
             for (int i = commands.Count - 2; i > -1; --i) {
-                //Мы удаляем код только! у временных переменных. Причем когда просто списки пусты. Каскад есть, но работает только
-                //у временных переменных!
                 if ((DefList.Find(x => x.OrderNum == i).Uses.Count == 0) && commands[i].Result[0] == '#') {
                     DeleteUse(commands[i].Arg1, i);
                     DeleteUse(commands[i].Arg2, i);
-                    continue;
+                    result.Add(new Command("empty", "", "", "", commands[i].Label));
                 }
-                result.Add(commands[i]);
+                else result.Add(commands[i]);
             }
             result.Reverse();
-            Console.WriteLine("Count of commands (after): " + result.Count + "\n");
             return result;
+            */
+            #endregion 
         }
     }
 
@@ -131,7 +116,7 @@ namespace SimpleLang.ThreeAddrOpt{
                 case ">=": return (a1 >= a2).ToString().ToLower();
                 case "==": return (a1 == a2).ToString().ToLower();
                 case "!=": return (a1 != a2).ToString().ToLower();
-                default: throw new Exception();
+                default: throw new InvalidOperationException();
             }
         }
 
@@ -141,7 +126,7 @@ namespace SimpleLang.ThreeAddrOpt{
                 case "!=": return (a1 != a2).ToString().ToLower();
                 case "and": return (a1 && a2).ToString().ToLower();
                 case "or": return (a1 || a2).ToString().ToLower();
-                default: throw new Exception();
+                default: throw new InvalidOperationException();
             }
         } 
 

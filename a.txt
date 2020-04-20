@@ -1,6 +1,4 @@
   var a, b, c, r, i;
-  c = 1;
-  b = 2 + c;
   b = 2 * 7 + 1 > 5 - 1;
   c = b + 1;
   r = i + b;
@@ -8,4 +6,4 @@
   a = 3 + 1;
   b = (a * 2) + (b / 3) - 1;  
   c = a > 2 or b <= 1 and true;
-  c = false and true or true;
+  c = c and true or true;
