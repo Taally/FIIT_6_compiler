@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleLang</RootNamespace>
     <AssemblyName>SimpleLang</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -23,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -32,11 +34,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\Students\МирзоевДенис\Task6\SimpleLanguage1\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <Reference Include="Newtonsoft.Json" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASTOptimizer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="ParserHelper.cs" />
     <Compile Include="ProgramTree.cs" />
@@ -53,17 +55,27 @@
     <Compile Include="ShiftReduceParserCode.cs" />
     <Compile Include="SimpleLex.cs" />
     <Compile Include="SimpleYacc.cs" />
+    <Compile Include="ThreeAddressCodeOptimizer.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
+    <Compile Include="Visitors\FillParentsVisitor.cs" />
+    <Compile Include="Visitors\ChangeVisitor.cs" />
+    <Compile Include="Instruction.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptStatIfTrue.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
+    <Compile Include="Visitors\ThreeAddrGenVisitor.cs" />
     <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="SimpleLex.lex" />
     <None Include="SimpleYacc.y" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="a.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
