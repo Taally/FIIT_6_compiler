@@ -21,7 +21,8 @@ namespace SimpleLang{
 
         public override string ToString(){
             if (Result == "empty") return Result;
-            return (Label != "" ? Label + ": " : "") + Result + " = " + Arg1 + " " + Op + " " + Arg2;
+            return (Label != "" ? Label + ": " : "") + Result + " = " + Arg1 + " " + 
+                (Op == "=" ? "" : Op) + " " + Arg2;
         }
     }
 
@@ -109,16 +110,16 @@ namespace SimpleLang{
 
         public override void VisitAssignNode(AssignNode n){
             if (n.Expr is IntNumNode node)
-                genCommand(n.Id.Name, node.Val.ToString(), "", "", "");
+                genCommand(n.Id.Name, node.Val.ToString(), "", "=", "");
 
              else if (n.Expr is BoolValNode bnode)
-                genCommand(n.Id.Name, bnode.Val.ToString().ToLower(), "", "", "");
+                genCommand(n.Id.Name, bnode.Val.ToString().ToLower(), "", "=", "");
 
              else if (n.Expr is IdNode idnode)
-                genCommand(n.Id.Name, idnode.Name, "", "", "");
+                genCommand(n.Id.Name, idnode.Name, "", "=", "");
             else{
                 string tmp = gen(n.Expr);
-                genCommand(n.Id.Name, tmp, "", "", "");
+                genCommand(n.Id.Name, tmp, "", "=", "");
             }
         }
     }

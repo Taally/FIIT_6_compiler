@@ -49,10 +49,13 @@ namespace SimpleLang.ThreeAddrOpt{
             }
         }
 
+        static List<string> operations = new List<string>()
+            { "+", "-", "*", "/", "==", "!=", "<", "<=", ">", ">=", "and", "or"};
+
         private static void FillLists(List<Command> commands) {
             DefList = new List<Def>();
             for (int i = 0; i < commands.Count; ++i) {
-                //if(commands[i].ToString().Contains("="))
+                if(operations.Contains(commands[i].Op) || commands[i].Op == "=")
                     DefList.Add(new Def(i,commands[i].Result));
                 AddUse(commands[i].Arg1, commands[i], i);
                 AddUse(commands[i].Arg2, commands[i], i);
@@ -128,26 +131,29 @@ namespace SimpleLang.ThreeAddrOpt{
                 case "or": return (a1 || a2).ToString().ToLower();
                 default: throw new InvalidOperationException();
             }
-        } 
+        }
+
+        static List<string> operations = new List<string>()
+            { "+", "-", "*", "/", "==", "!=", "<", "<=", ">", ">=", "and", "or"};
 
         public static List<Command> ConvСonstants(List<Command> commands) {
             List<Command> result = new List<Command>();
 
             for (int i = 0; i < commands.Count; ++i) {
-                if (commands[i].Arg2 != "") {
+                if (commands[i].Arg2 != "" && operations.Contains(commands[i].Op)) {
                     int argInt1, argInt2;
                     bool argBool1, argBool2;
                     if (Int32.TryParse(commands[i].Arg1, out argInt1)
                         && Int32.TryParse(commands[i].Arg2, out argInt2)) {
                         result.Add(new Command(commands[i].Result,
-                            Op(commands[i].Op, argInt1, argInt2), "", "", ""));
+                            Op(commands[i].Op, argInt1, argInt2), "", "=", ""));
                         continue;
                     }
 
                     if (bool.TryParse(commands[i].Arg1, out argBool1)
                         && bool.TryParse(commands[i].Arg2, out argBool2)) {
                         result.Add(new Command(commands[i].Result,
-                           Op(commands[i].Op, argBool1, argBool2), "", "", ""));
+                           Op(commands[i].Op, argBool1, argBool2), "", "=", ""));
                         continue;
                     }
                 }
