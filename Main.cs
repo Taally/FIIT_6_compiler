@@ -3,7 +3,7 @@ using System.IO;
 using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
-using SimpleLang.ThreeAddressCodeOptimizations;
+using SimpleLang;
 
 namespace SimpleCompiler
 {
@@ -34,29 +34,22 @@ namespace SimpleCompiler
                     parser.root.Visit(pp);
                     Console.WriteLine(pp.Text);
 
-                    var optExpr = new OptExprVisitor();
-                    parser.root.Visit(optExpr);
-                    var optStat = new OptStatVisitor();
-                    parser.root.Visit(optStat);
+                    ASTOptimizer.Optimize(parser);
+                    Console.WriteLine("\n\nAfter AST optimizations");
+                    pp = new PrettyPrintVisitor();
+                    parser.root.Visit(pp);
+                    Console.WriteLine(pp.Text);
 
-                    //Console.WriteLine("\n\n");
-                    //pp = new PrettyPrintVisitor();
-                    //parser.root.Visit(pp);
-                    //Console.WriteLine(pp.Text);
-
-                    Console.WriteLine("\n\n");
-                    var threeAddrCode = new ThreeAddrGenVisitor();
-                    parser.root.Visit(threeAddrCode);
-                    foreach (var instruction in threeAddrCode.Instructions)
+                    Console.WriteLine("\n\nThree address code");
+                    var threeAddrCodeVisitor = new ThreeAddrGenVisitor();
+                    parser.root.Visit(threeAddrCodeVisitor);
+                    var threeAddressCode = threeAddrCodeVisitor.Instructions;
+                    foreach (var instruction in threeAddressCode)
                         Console.WriteLine(instruction);
 
-                    Console.WriteLine("\n\n");
-                    var optInstructions = ConstantFolding.FoldConstants(threeAddrCode.Instructions);
-                    foreach (var instruction in optInstructions)
-                        Console.WriteLine(instruction);
-
-                    Console.WriteLine("\n\n");
-                    foreach (var instruction in DeleteDeadCodeWithDeadVars.Execute(optInstructions))
+                    ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
+                    Console.WriteLine("\n\nOptimized three address code");
+                    foreach (var instruction in threeAddressCode)
                         Console.WriteLine(instruction);
                 }
             }

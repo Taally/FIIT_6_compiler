@@ -5,6 +5,14 @@ namespace SimpleLang.Visitors
 {
     class ChangeVisitor : AutoVisitor
     {
+        public bool Changed { get; set; }
+
+        public override void VisitStListNode(StListNode bl)
+        {
+            Changed = false;
+            base.VisitStListNode(bl);
+        }
+
         public void ReplaceExpr(ExprNode from, ExprNode to)
         {
             var p = from.Parent;
@@ -15,6 +23,7 @@ namespace SimpleLang.Visitors
                     if (p.ExprChildren[i] == from)
                     {
                         p.ExprChildren[i] = to;
+                        Changed = true;
                         break;
                     }
             }
@@ -32,6 +41,7 @@ namespace SimpleLang.Visitors
                     if (p.StatChildren[i] == from)
                     {
                         p.StatChildren[i] = to;
+                        Changed = true;
                         break;
                     }
             }

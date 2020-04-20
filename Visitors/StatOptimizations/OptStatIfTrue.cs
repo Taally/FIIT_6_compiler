@@ -2,10 +2,11 @@
 
 namespace SimpleLang.Visitors
 {
-    class OptStatVisitor : ChangeVisitor
+    class OptStatIfTrue : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {
+            // if (true) st1; else st2
             if (n is IfElseNode ifNode)
                 if (ifNode.Expr is BoolValNode boolNode && boolNode.Val)
                 {
