@@ -8,24 +8,34 @@ namespace SimpleLang.Visitors
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
 
+        // метка для текущего оператора
+        private string nextVisitLabel = null;
+
         public override void VisitAssignNode(AssignNode a)
         {
             string argument1 = Gen(a.Expr);
-            GenCommand("", "assign", argument1, "", a.Id.Name);
+            GenCommand(nextVisitLabel ?? "", "assign", argument1, "", a.Id.Name);
         }
 
-        int tmpInd = 0;
-        string GenTmpName()
+        public override void VisitIfElseNode(IfElseNode i)
         {
-            ++tmpInd;
-            return "#t" + tmpInd;
-        }
+            // перевод в трёхадресный код условия
+            string exprTmpName = Gen(i.Expr);
 
-        int tmpLabelInd = 0;
-        string GenTmpLabel()
-        {
-            ++tmpLabelInd;
-            return "L" + tmpLabelInd;
+            string trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            string falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
+
+            // перевод в трёхадресный код false ветки
+            i.FalseStat?.Visit(this);
+            GenCommand("", "goto", falseLabel, "", "");
+
+            // перевод в трёхадресный код true ветки
+            nextVisitLabel = trueLabel;
+            i.TrueStat.Visit(this);
+            nextVisitLabel = null;
+
+            GenCommand(falseLabel, "noop", "", "", "");
         }
 
         void GenCommand(string label, string operation, string argument1, string argument2, string result)
@@ -40,8 +50,17 @@ namespace SimpleLang.Visitors
                 var bin = (BinOpNode)ex;
                 string argument1 = Gen(bin.Left);
                 string argument2 = Gen(bin.Right);
-                string result = GenTmpName();
-                GenCommand("", bin.Op.ToString(), argument1, argument2, result);
+                string result = ThreeAddressCodeTmp.GenTmpName();
+
+                // 
+                if (nextVisitLabel != null && bin.Left.GetType() != typeof(BinOpNode) && bin.Right.GetType() != typeof(BinOpNode))
+                {
+                    GenCommand(nextVisitLabel, bin.Op.ToString(), argument1, argument2, result);
+                    nextVisitLabel = null;
+                }
+                else
+                    GenCommand("", bin.Op.ToString(), argument1, argument2, result);
+
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))

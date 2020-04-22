@@ -24,6 +24,10 @@
             {
                 case "assign":
                     return label + Result + " = " + Argument1;
+                case "ifgoto":
+                    return $"{label}if {Argument1} goto {Argument2}";
+                case "goto":
+                    return $"{label}goto {Argument1}";
                 case "OR":
                 case "AND":
                 case "EQUAL":
