@@ -1,86 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ProgramTree;
 
-namespace SimpleLang.Visitors{
-    class ChangeVisitor: AutoVisitor{
-        public void ReplaceExpr(ExprNode from, ExprNode to){
-            var p = from.Parent;
-            to.Parent = p;
+namespace SimpleLang.Visitors
+{
+    class ChangeVisitor : AutoVisitor
+    {
+        public bool Changed { get; set; }
 
-            if (p is AssignNode assn)
-                assn.Expr = to;
-            else if (p is BinOpNode binopn)
-            {
-                if (binopn.Left == from)
-                    binopn.Left = to;
-                else if (binopn.Right == from)
-                    binopn.Right = to;
-            }
-
-            else if (p is IfElseNode ifElse)
-                ifElse.Expr = to;
-
-            else if (p is WhileNode w)
-                w.Expr = to;
-
-            else if (p is ForNode f)
-            {
-                if (f.From == from)
-                    f.From = to;
-                else if (f.To == from)
-                    f.To = to;
-            }
-            else if (p is ExprListNode exp)
-                for (var i = 0; i < exp.exprList.Count; ++i)
-                    if (exp.exprList[i] == from)
-                    {
-                        exp.exprList[i] = to;
-                        break;
-                    }
-
-                    else if (p is BlockNode)
-                        throw new Exception("Parent node does not contain expressions");
+        public override void VisitStListNode(StListNode bl)
+        {
+            Changed = false;
+            base.VisitStListNode(bl);
         }
 
-        public void ReplaceStat(StatementNode from, StatementNode to){
+        public void ReplaceExpr(ExprNode from, ExprNode to)
+        {
             var p = from.Parent;
-            if (p is AssignNode || p is ExprNode)
-                throw new Exception("Parent node does not contain statements");
-
             to.Parent = p;
-            if (p is BlockNode bln){
-                for (var i = 0; i < bln.List.StList.Count - 1; ++i)
-                    if (bln.List.StList[i] == from){
-                        bln.List.StList[i] = to;
+            if (p.ExprChildren.Count > 0)
+            {
+                for (int i = 0; i < p.ExprChildren.Count; ++i)
+                    if (p.ExprChildren[i] == from)
+                    {
+                        p.ExprChildren[i] = to;
+                        Changed = true;
                         break;
                     }
-            } else if (p is IfElseNode ifn){
-                if (ifn.TrueStat == from)
-                    ifn.TrueStat = to;
-                else if (ifn.FalseStat == from)
-                    ifn.FalseStat = to;
-            } else if (p is StListNode sln){
-                for (var i = 0; i < sln.StList.Count; ++i)
-                    if (sln.StList[i] == from){
-                        sln.StList[i] = to;
-                        break;
-                    }
-            } else if (p is WhileNode wn)
-            {
-                if (wn.Stat == from)
-                    wn.Stat = to;
-            } else if (p is ForNode fn)
-            {
-                if (fn.Stat == from)
-                    fn.Stat = to;
-            } else if (p is LabelStatementNode ln)
-            {
-                if (ln.Stat == from)
-                    ln.Stat = to;
             }
+            else
+                throw new Exception("Parent node doesn't contain expressions.");
+        }
+
+        public void ReplaceStat(StatementNode from, StatementNode to)
+        {
+            var p = from.Parent;
+            to.Parent = p;
+            if (p.StatChildren.Count > 0)
+            {
+                for (int i = 0; i < p.StatChildren.Count; ++i)
+                    if (p.StatChildren[i] == from)
+                    {
+                        p.StatChildren[i] = to;
+                        Changed = true;
+                        break;
+                    }
+            }
+            else
+                throw new Exception("Parent node doesn't contain statements.");
         }
     }
 }

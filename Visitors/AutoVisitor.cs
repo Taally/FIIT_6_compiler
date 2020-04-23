@@ -1,118 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ProgramTree;
+﻿using ProgramTree;
 
-namespace SimpleLang.Visitors{
-    class AutoVisitor : Visitor{
-        public virtual void PreVisit(Node n){ }
-        public virtual void PostVisit(Node n){ }
+namespace SimpleLang.Visitors
+{
+    class AutoVisitor : Visitor
+    {
+        public virtual void PreVisit(Node n) { }
+        public virtual void PostVisit(Node n) { }
 
-        public override void VisitBinOpNode(BinOpNode n){
-            PreVisit(n);
-            n.Left.Visit(this);
-            n.Right.Visit(this);
-            PostVisit(n);
+        public override void VisitBinOpNode(BinOpNode binop)
+        {
+            PreVisit(binop);
+            binop.Left.Visit(this);
+            binop.Right.Visit(this);
+            PostVisit(binop);
         }
 
-        public override void VisitAssignNode(AssignNode n){
-            PreVisit(n);
-            n.Id.Visit(this);
-            n.Expr.Visit(this);
-            PostVisit(n);
+        public override void VisitAssignNode(AssignNode a)
+        {
+            PreVisit(a);
+            a.Id.Visit(this);
+            a.Expr.Visit(this);
+            PostVisit(a);
         }
 
-        public override void VisitStListNode(StListNode n){
-            PreVisit(n);
-            for (int i = 0; i < n.StList.Count; ++i)
-                n.StList[i].Visit(this);
-            PostVisit(n);
+        public override void VisitStListNode(StListNode bl)
+        {
+            PreVisit(bl);
+            for (int i = 0; i < bl.StatChildren.Count; ++i)
+                bl.StatChildren[i].Visit(this);
+            PostVisit(bl);
         }
 
-        public override void VisitVarListNode(VarListNode n){
-            PreVisit(n);
-            foreach (var v in n.vars)
+        public override void VisitVarListNode(VarListNode w)
+        {
+            PreVisit(w);
+            foreach (var v in w.vars)
                 v.Visit(this);
-            PostVisit(n);
+            PostVisit(w);
         }
 
-        public override void VisitBlockNode(BlockNode n){
-            PreVisit(n);
-            n.List.Visit(this);
-            PostVisit(n);
+        public override void VisitBlockNode(BlockNode b)
+        {
+            PreVisit(b);
+            b.List.Visit(this);
+            PostVisit(b);
         }
 
-        public override void VisitExprListNode(ExprListNode n){
-            PreVisit(n);
-            for (int i = 0; i < n.exprList.Count; ++i)
-                n.exprList[i].Visit(this);
-            PostVisit(n);
+        public override void VisitExprListNode(ExprListNode e)
+        {
+            PreVisit(e);
+            foreach (var x in e.ExprChildren)
+                x.Visit(this);
+            PostVisit(e);
         }
 
-        public override void VisitForNode(ForNode n){
-            PreVisit(n);
-            n.Id.Visit(this);
-            n.From.Visit(this);
-            n.To.Visit(this);
-            n.Stat.Visit(this);
-            PostVisit(n);
+        public override void VisitForNode(ForNode f)
+        {
+            PreVisit(f);
+            f.Id.Visit(this);
+            f.From.Visit(this);
+            f.To.Visit(this);
+            f.Stat.Visit(this);
+            PostVisit(f);
         }
 
-        public override void VisitGotoNode(GotoNode n){
-            PreVisit(n);
-            n.Label.Visit(this);
-            PostVisit(n);
+        public override void VisitGotoNode(GotoNode g)
+        {
+            PreVisit(g);
+            g.Label.Visit(this);
+            PostVisit(g);
         }
 
-        public override void VisitIfElseNode(IfElseNode n){
-            PreVisit(n);
-            n.Expr.Visit(this);
-            n.TrueStat.Visit(this);
-            if (n.FalseStat != null)
-                n.FalseStat.Visit(this);
-            PostVisit(n);
+        public override void VisitIfElseNode(IfElseNode i)
+        {
+            PreVisit(i);
+            i.Expr.Visit(this);
+            i.TrueStat.Visit(this);
+            if (i.FalseStat != null)
+                i.FalseStat.Visit(this);
+            PostVisit(i);
         }
 
-        public override void VisitInputNode(InputNode n){
-            PreVisit(n);
-            n.Ident.Visit(this);
-            PostVisit(n);
+        public override void VisitInputNode(InputNode i)
+        {
+            PreVisit(i);
+            i.Ident.Visit(this);
+            PostVisit(i);
         }
 
-        public override void VisitLabelstatementNode(LabelStatementNode n){
-            PreVisit(n);
-            n.Label.Visit(this);
-            n.Stat.Visit(this);
-            PostVisit(n);
+        public override void VisitLabelstatementNode(LabelStatementNode l)
+        {
+            PreVisit(l);
+            l.Label.Visit(this);
+            l.Stat.Visit(this);
+            PostVisit(l);
         }
 
-        public override void VisitPrintNode(PrintNode n){
-            PreVisit(n);
-            n.exprList.Visit(this);
-            PostVisit(n);
+        public override void VisitPrintNode(PrintNode p)
+        {
+            PreVisit(p);
+            p.ExprList.Visit(this);
+            PostVisit(p);
         }
 
-        public override void VisitWhileNode(WhileNode n){
-            PreVisit(n);
-            n.Expr.Visit(this);
-            n.Stat.Visit(this);
-            PostVisit(n);
-        }
-
-        public override void VisitBoolValNode(BoolValNode n){
-            PreVisit(n);
-            PostVisit(n);
-        }
-
-        public override void VisitIdNode(IdNode n){
-            PreVisit(n);
-            PostVisit(n);
-        }
-
-        public override void VisitIntNumNode(IntNumNode n){
-            PreVisit(n);
-            PostVisit(n);
+        public override void VisitWhileNode(WhileNode w)
+        {
+            PreVisit(w);
+            w.Expr.Visit(this);
+            w.Stat.Visit(this);
+            PostVisit(w);
         }
     }
 }

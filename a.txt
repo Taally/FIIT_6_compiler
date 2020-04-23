@@ -1,9 +1,6 @@
-  var a, b, c, r, i;
-  b = 2 * 7 + 1 > 5 - 1;
-  c = b + 1;
-  r = i + b;
-  a = false;
-  a = 3 + 1;
-  b = (a * 2) + (b / 3) - 1;  
-  c = a > 2 or b <= 1 and true;
-  c = c and true or true;
+var a, b;
+1: a = false;
+b = true;
+100: a = b;
+101: if a
+	a = b;

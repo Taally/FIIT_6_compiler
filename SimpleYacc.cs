@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  IRU-TAULING
-// DateTime: 30.03.2020 10:25:42
-// UserName: ??????
+// Machine:  DESKTOP-G3E9S7I
+// DateTime: 19-Apr-20 21:59:44
+// UserName: Dmitry
 // Input file <SimpleYacc.y>
 
 // options: no-lines gplex
