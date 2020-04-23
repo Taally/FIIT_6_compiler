@@ -12,15 +12,17 @@ namespace SimpleLang
         {
             while (true)
             {
-                FoldConstants(instructions);
+                //FoldConstants(instructions);
+                //if (Changed)
+                //    continue;
+
+                //DeleteDeadCodeWithDeadVars(instructions);
+                //if (Changed)
+                //    continue;
+
+                RemoveGotoThroughGoto(instructions);
                 if (Changed)
                     continue;
-
-                DeleteDeadCodeWithDeadVars(instructions);
-                if (Changed)
-                    continue;
-
-                //RemoveGotoThroughGoto(instructions);
 
                 break;
             }
@@ -143,7 +145,7 @@ namespace SimpleLang
                     if (com1.Operation == "goto" && com2.Operation != "noop" && com3.Operation == "noop" && com0.Argument2 == com2.Label && com1.Argument1 == com3.Label)
                     {
                         string tmpName = ThreeAddressCodeTmp.GenTmpName();
-                        commands[i] = new Instruction("", "EQUAL", "False", com0.Argument1, tmpName); // операция отрицания через EQUAL
+                        commands[i] = new Instruction(com0.Label, "EQUAL", "False", com0.Argument1, tmpName); // операция отрицания через EQUAL
                         commands[i+1] = new Instruction("", "ifgoto", tmpName, com3.Label, "");
                         commands[i+2] = new Instruction("", com2.Operation, com2.Argument1, com2.Argument2, com2.Result);
                         commands[i+3] = new Instruction(com3.Label, com3.Operation, com3.Argument1, com3.Argument2, com3.Result);

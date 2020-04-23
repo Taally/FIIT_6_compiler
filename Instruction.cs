@@ -2,7 +2,7 @@
 {
     class Instruction
     {
-        public string Label { get; }
+        public string Label { get; internal set; }
         public string Operation { get; }
         public string Argument1 { get; }
         public string Argument2 { get; }

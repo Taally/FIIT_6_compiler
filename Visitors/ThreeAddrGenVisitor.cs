@@ -11,6 +11,13 @@ namespace SimpleLang.Visitors
         // метка для текущего оператора
         private string nextVisitLabel = null;
 
+        public override void VisitLabelstatementNode(LabelStatementNode l)
+        {
+            var instructionIndex = Instructions.Count;
+            l.Stat.Visit(this);
+            Instructions[instructionIndex].Label = l.Label.Num.ToString();
+        }
+
         public override void VisitAssignNode(AssignNode a)
         {
             string argument1 = Gen(a.Expr);
@@ -52,7 +59,7 @@ namespace SimpleLang.Visitors
                 string argument2 = Gen(bin.Right);
                 string result = ThreeAddressCodeTmp.GenTmpName();
 
-                // 
+                // why do we need this check?
                 if (nextVisitLabel != null && bin.Left.GetType() != typeof(BinOpNode) && bin.Right.GetType() != typeof(BinOpNode))
                 {
                     GenCommand(nextVisitLabel, bin.Op.ToString(), argument1, argument2, result);
