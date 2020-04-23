@@ -8,9 +8,6 @@ namespace SimpleLang.Visitors
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
 
-        // метка для текущего оператора
-        private string nextVisitLabel = null;
-
         public override void VisitLabelstatementNode(LabelStatementNode l)
         {
             var instructionIndex = Instructions.Count;
@@ -21,7 +18,7 @@ namespace SimpleLang.Visitors
         public override void VisitAssignNode(AssignNode a)
         {
             string argument1 = Gen(a.Expr);
-            GenCommand(nextVisitLabel ?? "", "assign", argument1, "", a.Id.Name);
+            GenCommand("", "assign", argument1, "", a.Id.Name);
         }
 
         public override void VisitIfElseNode(IfElseNode i)
@@ -38,9 +35,9 @@ namespace SimpleLang.Visitors
             GenCommand("", "goto", falseLabel, "", "");
 
             // перевод в трёхадресный код true ветки
-            nextVisitLabel = trueLabel;
+            var instructionIndex = Instructions.Count;
             i.TrueStat.Visit(this);
-            nextVisitLabel = null;
+            Instructions[instructionIndex].Label = trueLabel;
 
             GenCommand(falseLabel, "noop", "", "", "");
         }
@@ -58,16 +55,7 @@ namespace SimpleLang.Visitors
                 string argument1 = Gen(bin.Left);
                 string argument2 = Gen(bin.Right);
                 string result = ThreeAddressCodeTmp.GenTmpName();
-
-                // why do we need this check?
-                if (nextVisitLabel != null && bin.Left.GetType() != typeof(BinOpNode) && bin.Right.GetType() != typeof(BinOpNode))
-                {
-                    GenCommand(nextVisitLabel, bin.Op.ToString(), argument1, argument2, result);
-                    nextVisitLabel = null;
-                }
-                else
-                    GenCommand("", bin.Op.ToString(), argument1, argument2, result);
-
+                GenCommand("", bin.Op.ToString(), argument1, argument2, result);
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))
