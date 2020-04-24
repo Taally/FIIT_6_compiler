@@ -25,6 +25,12 @@ namespace SimpleLang
                     continue;
 
                 break;
+
+                /* Check Def-Use
+                 * var res = ThreeAddressCodeDefUse.DeleteDeadCode(instructions);
+                instructions = res.Item2;
+                if (res.Item1 || Changed) continue;
+                break;*/
             }
         }
 
