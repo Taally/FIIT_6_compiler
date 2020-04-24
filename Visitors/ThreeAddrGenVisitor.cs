@@ -42,6 +42,16 @@ namespace SimpleLang.Visitors
             GenCommand(falseLabel, "noop", "", "", "");
         }
 
+        public override void VisitEmptyNode(EmptyNode w)
+        {
+           GenCommand("", "noop", "", "", "");
+        }
+
+        public override void VisitGotoNode(GotoNode g)
+        {
+            GenCommand("", "goto", g.Label.Num.ToString(), "", "");
+        }
+
         void GenCommand(string label, string operation, string argument1, string argument2, string result)
         {
             Instructions.Add(new Instruction(label, operation, argument1, argument2, result));
