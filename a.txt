@@ -5,5 +5,19 @@ b = true;
 101: if a
 	a = b;
 
+goto 201;
+
 if a
 	c = 5 + 6 + 7;
+a = true;
+
+while (true == false)
+    a = 5;
+
+goto 200;
+
+200: while (false)
+    b = 5;
+201: c = 5;
+
+goto 200;

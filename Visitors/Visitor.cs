@@ -23,6 +23,6 @@ namespace SimpleLang.Visitors{
         public virtual void VisitLabelstatementNode(LabelStatementNode l) { }
         public virtual void VisitBlockNode(BlockNode b) { }
 
-        // public virtual void VisitEmptyNode(EmptyNode w) { }
+        public virtual void VisitEmptyNode(EmptyNode w) { }
     }
 }

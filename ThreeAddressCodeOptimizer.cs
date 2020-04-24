@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 
 namespace SimpleLang
 {
@@ -8,30 +9,39 @@ namespace SimpleLang
     {
         static public bool Changed { get; set; }
 
-        static public void Optimize(List<Instruction> instructions)
+        public static List<Instruction> Optimize(List<Instruction> instructions)
         {
+            var result = instructions;
             while (true)
             {
-                //FoldConstants(instructions);
-                //if (Changed)
-                //    continue;
+                // FoldConstants(instructions);
+                // if (Changed)
+                //     continue;
 
                 //DeleteDeadCodeWithDeadVars(instructions);
                 //if (Changed)
                 //    continue;
 
-                RemoveGotoThroughGoto(instructions);
-                if (Changed)
-                    continue;
-
-                break;
+                // RemoveGotoThroughGoto(instructions);
+                // if (Changed)
+                //     continue;
+                //
+                // break;
 
                 /* Check Def-Use
                  * var res = ThreeAddressCodeDefUse.DeleteDeadCode(instructions);
                 instructions = res.Item2;
                 if (res.Item1 || Changed) continue;
                 break;*/
+
+                var res = ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(result);
+                result = res.Item2;
+                if (res.Item1) continue;
+
+                break;
             }
+
+            return result;
         }
 
         static public void FoldConstants(List<Instruction> instructions)

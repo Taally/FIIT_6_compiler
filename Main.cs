@@ -11,7 +11,7 @@ namespace SimpleCompiler
     {
         public static void Main()
         {
-            string FileName = @"..\..\a.txt";
+            string FileName = @"../../a.txt";
             try
             {
                 string Text = File.ReadAllText(FileName);
@@ -47,9 +47,9 @@ namespace SimpleCompiler
                     foreach (var instruction in threeAddressCode)
                         Console.WriteLine(instruction);
 
-                    ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
+                    var optResult = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
                     Console.WriteLine("\n\nOptimized three address code");
-                    foreach (var instruction in threeAddressCode)
+                    foreach (var instruction in optResult)
                         Console.WriteLine(instruction);
                 }
             }
