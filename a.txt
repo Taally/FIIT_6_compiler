@@ -1,6 +1,0 @@
-var a, b;
-1: a = false;
-b = true;
-100: a = b;
-101: if a
-	a = b;
