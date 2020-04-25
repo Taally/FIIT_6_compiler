@@ -11,35 +11,21 @@ namespace SimpleLang
 
         public static List<Instruction> Optimize(List<Instruction> instructions)
         {
-            /*
-             Что я хочу сделать
-             1. В массиве будут все оптимизации
-             2. Вечный цикл внешний, текущее количество возможных применяемых оптимизаций 
-             и какая оптимизация применяется на данный момент
-             3. Если никто из оптимизаций ничего не изменил, индекс применяемых оптимизаций сдвигается на один
-             4. Если i-ая оптимизация поменяла что-то, счетчик текущих оптимизаций сбрасывается на 0 и запускается зановой все
-             с нулевой оптимизации
-             
-             */
-
             List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>> ListOptimization
                 = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
                 {
                     ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
-                    ThreeAddressCodeDefUse.DeleteDeadCode
+                    ThreeAddressCodeDefUse.DeleteDeadCode,
+                    ThreeAddressCodeFoldConstants.FoldConstants
                 };
 
             var result = instructions;
-
             int currentOpt = 0, enabledOpt = 0;
-            //enabledOpt - те оптимизации, по которым есть необходимость пройтись, не сбрасывается в 0
-            // currentOpt будет сбрасываться в 0, если отработала currentOpt-итая оптимизация
 
-            while (true) { //Может быть и не вечный, а зависимый от enabledOpt
+            while (true) {
                 while (currentOpt <= enabledOpt) {
                     var answer = ListOptimization[currentOpt](result);
                     if (answer.Item1){
-                        //Что-то изменилось
                         currentOpt = 0;
                         result = answer.Item2;
                     }
@@ -83,75 +69,6 @@ namespace SimpleLang
             #endregion
 
             return result;
-        }
-
-        static public void FoldConstants(List<Instruction> instructions)
-        {
-            Changed = false;
-            for (int i = 0; i < instructions.Count; ++i)
-            {
-                if (instructions[i].Argument2 != "")
-                    if (int.TryParse(instructions[i].Argument1, out var intArg1) && int.TryParse(instructions[i].Argument2, out var intArg2))
-                    {
-                        var constant = CalculateConstant(instructions[i].Operation, intArg1, intArg2);
-                        instructions[i] = new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result);
-                        Changed = true;
-                        continue;
-                    }
-                    else if (bool.TryParse(instructions[i].Argument1, out var boolArg1) && bool.TryParse(instructions[i].Argument2, out var boolArg2))
-                    {
-                        var constant = CalculateConstant(instructions[i].Operation, boolArg1, boolArg2);
-                        instructions[i] = new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result);
-                        Changed = true;
-                        continue;
-                    }
-            }
-        }
-
-        private static string CalculateConstant(string operation, bool boolArg1, bool boolArg2)
-        {
-            switch (operation)
-            {
-                case "OR":
-                    return (boolArg1 || boolArg2).ToString();
-                case "AND":
-                    return (boolArg1 && boolArg2).ToString();
-                case "EQUAL":
-                    return (boolArg1 == boolArg2).ToString();
-                case "NOTEQUAL":
-                    return (boolArg1 != boolArg2).ToString();
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-        private static string CalculateConstant(string operation, int intArg1, int intArg2)
-        {
-            switch (operation)
-            {
-                case "EQUAL":
-                    return (intArg1 == intArg2).ToString();
-                case "NOTEQUAL":
-                    return (intArg1 != intArg2).ToString();
-                case "LESS":
-                    return (intArg1 < intArg2).ToString();
-                case "GREATER":
-                    return (intArg1 > intArg2).ToString();
-                case "EQGREATER":
-                    return (intArg1 >= intArg2).ToString();
-                case "EQLESS":
-                    return (intArg1 <= intArg2).ToString();
-                case "PLUS":
-                    return (intArg1 + intArg2).ToString();
-                case "MINUS":
-                    return (intArg1 - intArg2).ToString();
-                case "MULT":
-                    return (intArg1 * intArg2).ToString();
-                case "DIV":
-                    return (intArg1 / intArg2).ToString();
-                default:
-                    throw new InvalidOperationException();
-            }
         }
 
         static public void DeleteDeadCodeWithDeadVars(List<Instruction> instructions)
