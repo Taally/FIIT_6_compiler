@@ -11,8 +11,48 @@ namespace SimpleLang
 
         public static List<Instruction> Optimize(List<Instruction> instructions)
         {
+            /*
+             Что я хочу сделать
+             1. В массиве будут все оптимизации
+             2. Вечный цикл внешний, текущее количество возможных применяемых оптимизаций 
+             и какая оптимизация применяется на данный момент
+             3. Если никто из оптимизаций ничего не изменил, индекс применяемых оптимизаций сдвигается на один
+             4. Если i-ая оптимизация поменяла что-то, счетчик текущих оптимизаций сбрасывается на 0 и запускается зановой все
+             с нулевой оптимизации
+             
+             */
+
+            List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>> ListOptimization
+                = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+                {
+                    ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
+                    ThreeAddressCodeDefUse.DeleteDeadCode
+                };
+
             var result = instructions;
-            while (true)
+
+            int currentOpt = 0, enabledOpt = 0;
+            //enabledOpt - те оптимизации, по которым есть необходимость пройтись, не сбрасывается в 0
+            // currentOpt будет сбрасываться в 0, если отработала currentOpt-итая оптимизация
+
+            while (true) { //Может быть и не вечный, а зависимый от enabledOpt
+                while (currentOpt <= enabledOpt) {
+                    var answer = ListOptimization[currentOpt](result);
+                    if (answer.Item1){
+                        //Что-то изменилось
+                        currentOpt = 0;
+                        result = answer.Item2;
+                    }
+                    else {
+                        ++currentOpt;
+                    }
+                }
+                if (++enabledOpt == ListOptimization.Count)
+                    break;
+            }
+
+            #region
+            /* while (true)
             {
                 // FoldConstants(instructions);
                 // if (Changed)
@@ -34,12 +74,13 @@ namespace SimpleLang
                 if (res.Item1 || Changed) continue;
                 break;*/
 
-                var res = ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(result);
-                result = res.Item2;
-                if (res.Item1) continue;
+            /*var res = ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(result);
+            result = res.Item2;
+            if (res.Item1) continue;
 
-                break;
-            }
+            break;
+        }*/
+            #endregion
 
             return result;
         }
