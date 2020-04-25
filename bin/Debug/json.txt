@@ -1,0 +1,648 @@
+{
+  "root": {
+    "StList": [
+      {
+        "Id": {
+          "Name": "b"
+        },
+        "Expr": {
+          "Num": 2
+        }
+      },
+      {
+        "Id": {
+          "Name": "a"
+        },
+        "Expr": {
+          "Num": 3
+        }
+      },
+      {
+        "Id": {
+          "Name": "a"
+        },
+        "Expr": {
+          "Name": "b"
+        }
+      },
+      {
+        "Id": {
+          "Name": "i"
+        },
+        "From": {
+          "Num": 1
+        },
+        "To": {
+          "Num": 5
+        },
+        "Stat": {
+          "StList": [
+            {
+              "Id": {
+                "Name": "a"
+              },
+              "Expr": {
+                "Name": "c"
+              }
+            },
+            {
+              "Id": {
+                "Name": "c"
+              },
+              "Expr": {
+                "Num": 1
+              }
+            },
+            {
+              "Id": {
+                "Name": "c"
+              },
+              "Expr": {
+                "Left": {
+                  "Left": {
+                    "Bool": false
+                  },
+                  "Right": {
+                    "Bool": true
+                  },
+                  "Op": 1
+                },
+                "Right": {
+                  "Left": {
+                    "Bool": false
+                  },
+                  "Right": {
+                    "Left": {
+                      "Left": {
+                        "Bool": false
+                      },
+                      "Right": {
+                        "Num": 1
+                      },
+                      "Op": 2
+                    },
+                    "Right": {
+                      "Left": {
+                        "Left": {
+                          "Left": {
+                            "Left": {
+                              "Num": 2
+                            },
+                            "Right": {
+                              "Num": 1
+                            },
+                            "Op": 4
+                          },
+                          "Right": {
+                            "Num": 2
+                          },
+                          "Op": 6
+                        },
+                        "Right": {
+                          "Num": 3
+                        },
+                        "Op": 5
+                      },
+                      "Right": {
+                        "Left": {
+                          "Left": {
+                            "Left": {
+                              "Num": 4
+                            },
+                            "Right": {
+                              "Num": 2
+                            },
+                            "Op": 8
+                          },
+                          "Right": {
+                            "Left": {
+                              "Left": {
+                                "Num": 4
+                              },
+                              "Right": {
+                                "Num": 3
+                              },
+                              "Op": 10
+                            },
+                            "Right": {
+                              "Num": 5
+                            },
+                            "Op": 11
+                          },
+                          "Op": 9
+                        },
+                        "Right": {
+                          "Name": "q"
+                        },
+                        "Op": 9
+                      },
+                      "Op": 7
+                    },
+                    "Op": 3
+                  },
+                  "Op": 1
+                },
+                "Op": 0
+              }
+            },
+            {
+              "Expr": {
+                "Bool": true
+              },
+              "Stat": {
+                "StList": [
+                  {
+                    "Id": {
+                      "Name": "s"
+                    },
+                    "Expr": {
+                      "Name": "m"
+                    }
+                  },
+                  {
+                    "Id": {
+                      "Name": "k"
+                    },
+                    "Expr": {
+                      "Left": {
+                        "Num": 2
+                      },
+                      "Right": {
+                        "Num": 2
+                      },
+                      "Op": 8
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Expr": {
+          "Left": {
+            "Name": "a"
+          },
+          "Right": {
+            "Num": 5
+          },
+          "Op": 2
+        },
+        "StatTrue": {
+          "StList": [
+            {
+              "Id": {
+                "Name": "g"
+              },
+              "Expr": {
+                "Num": 2
+              }
+            },
+            {
+              "Id": {
+                "Name": "q"
+              },
+              "Expr": {
+                "Left": {
+                  "Num": 1
+                },
+                "Right": {
+                  "Num": 8
+                },
+                "Op": 10
+              }
+            }
+          ]
+        },
+        "StatFalse": {
+          "StList": [
+            {
+              "Id": {
+                "Name": "z"
+              },
+              "Expr": {
+                "Left": {
+                  "Num": 1
+                },
+                "Right": {
+                  "Num": 1
+                },
+                "Op": 8
+              }
+            },
+            {
+              "Id": {
+                "Name": "q"
+              },
+              "Expr": {
+                "Left": {
+                  "Name": "q"
+                },
+                "Right": {
+                  "Num": 1
+                },
+                "Op": 8
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Expr": {
+          "Left": {
+            "Name": "a"
+          },
+          "Right": {
+            "Num": 5
+          },
+          "Op": 2
+        },
+        "StatTrue": {
+          "Id": {
+            "Name": "g"
+          },
+          "Expr": {
+            "Num": 2
+          }
+        },
+        "StatFalse": null
+      },
+      {
+        "Id": {
+          "Name": "a"
+        }
+      },
+      {
+        "ExprList": {
+          "ExprList": [
+            {
+              "Left": {
+                "Name": "a"
+              },
+              "Right": {
+                "Num": 2
+              },
+              "Op": 8
+            },
+            {
+              "Left": {
+                "Num": 3
+              },
+              "Right": {
+                "Num": 4
+              },
+              "Op": 10
+            }
+          ]
+        }
+      },
+      {
+        "VarList": [
+          {
+            "Name": "a"
+          }
+        ]
+      },
+      {
+        "VarList": [
+          {
+            "Name": "b"
+          },
+          {
+            "Name": "c"
+          },
+          {
+            "Name": "d"
+          }
+        ]
+      },
+      {
+        "Label": {
+          "Num": 10
+        }
+      },
+      {
+        "Label": {
+          "Num": 10
+        },
+        "Stat": {
+          "Id": {
+            "Name": "n"
+          },
+          "Expr": {
+            "Num": 1
+          }
+        }
+      },
+      {
+        "Id": {
+          "Name": "c"
+        },
+        "Expr": {
+          "Name": "a"
+        }
+      },
+      {
+        "Id": {
+          "Name": "c"
+        },
+        "Expr": {
+          "Name": "a"
+        }
+      },
+      {
+        "Id": {
+          "Name": "c"
+        },
+        "Expr": {
+          "Name": "a"
+        }
+      },
+      {
+        "Id": {
+          "Name": "c"
+        },
+        "Expr": {
+          "Name": "a"
+        }
+      },
+      {
+        "Id": {
+          "Name": "c"
+        },
+        "Expr": {
+          "Num": 0
+        }
+      },
+      {
+        "Expr": {
+          "Num": 0
+        },
+        "Stat": {
+          "StList": [
+            {
+              "Id": {
+                "Name": "a"
+              },
+              "Expr": {
+                "Left": {
+                  "Name": "a"
+                },
+                "Right": {
+                  "Num": 2
+                },
+                "Op": 8
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Expr": {
+          "Name": "a"
+        },
+        "StatTrue": {
+          "StList": [
+            {
+              "Id": {
+                "Name": "c"
+              },
+              "Expr": {
+                "Left": {
+                  "Name": "c"
+                },
+                "Right": {
+                  "Num": 2
+                },
+                "Op": 8
+              }
+            }
+          ]
+        },
+        "StatFalse": null
+      },
+      {
+        "ExprList": {
+          "ExprList": [
+            {
+              "Name": "a"
+            }
+          ]
+        }
+      },
+      {
+        "Id": {
+          "Name": "optSum"
+        },
+        "Expr": {
+          "Left": {
+            "Left": {
+              "Name": "a"
+            },
+            "Right": {
+              "Name": "b"
+            },
+            "Op": 8
+          },
+          "Right": {
+            "Num": 2
+          },
+          "Op": 8
+        }
+      },
+      {
+        "Expr": {
+          "Left": {
+            "Left": {
+              "Num": 2
+            },
+            "Right": {
+              "Num": 2
+            },
+            "Op": 8
+          },
+          "Right": {
+            "Num": 9
+          },
+          "Op": 5
+        },
+        "StatTrue": {
+          "Id": {
+            "Name": "w"
+          },
+          "Expr": {
+            "Num": 0
+          }
+        },
+        "StatFalse": null
+      },
+      {
+        "Expr": {
+          "Left": {
+            "Left": {
+              "Num": 2
+            },
+            "Right": {
+              "Num": 2
+            },
+            "Op": 8
+          },
+          "Right": {
+            "Num": 9
+          },
+          "Op": 5
+        },
+        "Stat": {
+          "Id": {
+            "Name": "b"
+          },
+          "Expr": {
+            "Num": 2
+          }
+        }
+      },
+      {
+        "ExprList": {
+          "ExprList": [
+            {
+              "Left": {
+                "Num": 4
+              },
+              "Right": {
+                "Num": 5
+              },
+              "Op": 8
+            },
+            {
+              "Num": 1
+            }
+          ]
+        }
+      },
+      {
+        "Id": {
+          "Name": "optSum1"
+        },
+        "Expr": {
+          "Left": {
+            "Name": "a"
+          },
+          "Right": {
+            "Name": "a"
+          },
+          "Op": 8
+        }
+      },
+      {
+        "Id": {
+          "Name": "optSum2"
+        },
+        "Expr": {
+          "Name": "a"
+        }
+      },
+      {
+        "Id": {
+          "Name": "optSum3"
+        },
+        "Expr": {
+          "Num": 0
+        }
+      },
+      {
+        "Id": {
+          "Name": "optSum4"
+        },
+        "Expr": {
+          "Name": "a"
+        }
+      },
+      {
+        "Id": {
+          "Name": "optSum5"
+        },
+        "Expr": {
+          "Left": {
+            "Left": {
+              "Num": 2
+            },
+            "Right": {
+              "Num": 2
+            },
+            "Op": 8
+          },
+          "Right": {
+            "Num": 2
+          },
+          "Op": 8
+        }
+      },
+      {
+        "Id": {
+          "Name": "o"
+        },
+        "Expr": {
+          "Num": 1
+        }
+      },
+      {
+        "Id": {
+          "Name": "a"
+        },
+        "Expr": {
+          "Num": 0
+        }
+      },
+      {
+        "Id": {
+          "Name": "comb"
+        },
+        "Expr": {
+          "Left": {
+            "Num": 2
+          },
+          "Right": {
+            "Num": 3
+          },
+          "Op": 8
+        }
+      },
+      {
+        "Id": {
+          "Name": "a"
+        },
+        "Expr": {
+          "Num": 0
+        }
+      }
+    ]
+  },
+  "scanner": {
+    "yylval": {
+      "dVal": 0.0,
+      "iVal": 0,
+      "bVal": true,
+      "sVal": "b",
+      "nVal": null,
+      "eVal": null,
+      "stVal": null,
+      "blVal": null,
+      "elVal": null,
+      "vVal": null
+    },
+    "Buffer": {
+      "Pos": 1029,
+      "IsFile": false,
+      "FileName": null
+    },
+    "yytext": "",
+    "yyleng": 0,
+    "yylloc": {
+      "StartLine": 63,
+      "StartColumn": -1,
+      "EndLine": 63,
+      "EndColumn": -1
+    }
+  }
+}

@@ -1,0 +1,30 @@
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив\SimpleLanguage1\bin\Debug\SimpleLang.exe
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив\SimpleLanguage1\bin\Debug\SimpleLang.pdb
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив\SimpleLanguage1\obj\x86\Debug\SimpleLang1.csprojAssemblyReference.cache
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив\SimpleLanguage1\obj\x86\Debug\SimpleLang1.csproj.CoreCompileInputs.cache
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив\SimpleLanguage1\obj\x86\Debug\SimpleLang.exe
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив\SimpleLanguage1\obj\x86\Debug\SimpleLang.pdb
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив РАБОТА\SimpleLanguage1\bin\Debug\SimpleLang.exe
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив РАБОТА\SimpleLanguage1\bin\Debug\SimpleLang.pdb
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив РАБОТА\SimpleLanguage1\obj\x86\Debug\SimpleLang1.csprojAssemblyReference.cache
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив РАБОТА\SimpleLanguage1\obj\x86\Debug\SimpleLang1.csproj.CoreCompileInputs.cache
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив РАБОТА\SimpleLanguage1\obj\x86\Debug\SimpleLang.exe
+D:\Рабочий стол\Учеба\Поступление в магистратуру\2 семестр\Компиляторы (Разработка оптимизирующих компиляторов)\Занятие 3 Синтаксическое дерево\Непонятный архив РАБОТА\SimpleLanguage1\obj\x86\Debug\SimpleLang.pdb
+C:\Compilers\3\bin\Debug\SimpleLang.exe
+C:\Compilers\3\bin\Debug\SimpleLang.pdb
+C:\Compilers\3\obj\x86\Debug\SimpleLang1.csprojAssemblyReference.cache
+C:\Compilers\3\obj\x86\Debug\SimpleLang1.csproj.CoreCompileInputs.cache
+C:\Compilers\3\obj\x86\Debug\SimpleLang.exe
+C:\Compilers\3\obj\x86\Debug\SimpleLang.pdb
+C:\Compilers\3\bin\Debug\Newtonsoft.Json.dll
+C:\Compilers\3\bin\Debug\Newtonsoft.Json.xml
+C:\Compilers\3\obj\x86\Debug\SimpleLang1.csproj.CopyComplete
+C:\Compilers\4 ThreeAddressCode\bin\Debug\SimpleLang.exe
+C:\Compilers\4 ThreeAddressCode\bin\Debug\SimpleLang.pdb
+C:\Compilers\4 ThreeAddressCode\bin\Debug\Newtonsoft.Json.dll
+C:\Compilers\4 ThreeAddressCode\bin\Debug\Newtonsoft.Json.xml
+C:\Compilers\4 ThreeAddressCode\obj\x86\Debug\SimpleLang1.csprojAssemblyReference.cache
+C:\Compilers\4 ThreeAddressCode\obj\x86\Debug\SimpleLang1.csproj.CoreCompileInputs.cache
+C:\Compilers\4 ThreeAddressCode\obj\x86\Debug\SimpleLang1.csproj.CopyComplete
+C:\Compilers\4 ThreeAddressCode\obj\x86\Debug\SimpleLang.exe
+C:\Compilers\4 ThreeAddressCode\obj\x86\Debug\SimpleLang.pdb
