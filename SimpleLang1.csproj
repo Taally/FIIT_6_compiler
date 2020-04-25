@@ -58,6 +58,7 @@
     <Compile Include="ThreeAddressCodeDefUse.cs" />
     <Compile Include="ThreeAddressCodeFoldConstants.cs" />
     <Compile Include="ThreeAddressCodeOptimizer.cs" />
+    <Compile Include="ThreeAddressCodeRemoveGoto.cs" />
     <Compile Include="ThreeAddressCodeRemoveNoop.cs" />
     <Compile Include="ThreeAddressCodeTmp.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
