@@ -1,18 +1,77 @@
 ﻿using System.Collections.Generic;
-using SimpleLang.Visitors;
+using System.Runtime.CompilerServices;
+using SimpleLang;
 
 namespace ProgramTree
 {
     public enum OpType { OR, AND, EQUAL, NOTEQUAL, GREATER, LESS, EQGREATER, EQLESS, PLUS, MINUS, MULT, DIV };
-    public abstract class Node
+
+    public static class OpTypeExtensions
+    {
+        public static string GetName(this OpType op)
+        {
+            switch (op)
+            {
+                case OpType.OR:
+                    return "|";
+                case OpType.AND:
+                    return "&";
+                case OpType.EQUAL:
+                    return "==";
+                case OpType.NOTEQUAL:
+                    return "!=";
+                case OpType.GREATER:
+                    return ">";
+                case OpType.LESS:
+                    return "<";
+                case OpType.EQGREATER:
+                    return ">=";
+                case OpType.EQLESS:
+                    return "<=";
+                case OpType.PLUS:
+                    return "+";
+                case OpType.MINUS:
+                    return "-";
+                case OpType.MULT:
+                    return "*";
+                case OpType.DIV:
+                    return "/";
+                default:
+                    return null;
+            }            
+        }
+    }
+    public abstract class Node // базовый класс для всех узлов    
     {
         public Node Parent { get; set; }
-        public List<ExprNode> ExprChildren { get; set; } = new List<ExprNode>();
-        public List<StatementNode> StatChildren { get; set; } = new List<StatementNode>();
         public abstract void Visit(Visitor v);
     }
 
-    public abstract class ExprNode : Node { }
+    public class ExprNode : Node // базовый класс для всех выражений
+    {        
+        public override void Visit(Visitor v)
+        {
+            v.VisitExprNode(this);
+        }
+    }
+
+    public class BinOpNode : ExprNode
+    {        
+        public ExprNode Left { get; set; }
+        public ExprNode Right { get; set; }
+        public OpType Op { get; set; }
+        public BinOpNode(ExprNode left, ExprNode right, OpType op)
+        {
+            Left = left;
+            Right = right;
+            Op = op;            
+        }
+        
+        public override void Visit(Visitor v)
+        {
+            v.VisitBinOpNode(this);
+        }        
+    }
 
     public class IdNode : ExprNode
     {
@@ -34,189 +93,200 @@ namespace ProgramTree
         }
     }
 
-    public class BoolValNode : ExprNode
+    public class BoolNode : ExprNode
     {
-        public bool Val { get; set; }
-        public BoolValNode(bool val)
-        {
-            Val = val;
-        }
+        public bool Bool { get; set; }
+        public BoolNode(bool b) { Bool = b; }
         public override void Visit(Visitor v)
         {
-            v.VisitBoolValNode(this);
+            v.VisitBoolNode(this);
         }
     }
 
-    public class BinOpNode : ExprNode
+    public class StatementNode : Node // базовый класс для всех операторов
     {
-        public ExprNode Left { get { return ExprChildren[0]; } set { ExprChildren[0] = value; } }
-        public ExprNode Right { get { return ExprChildren[1]; } set { ExprChildren[1] = value; } }
-        public OpType Op { get; set; }
-        public BinOpNode(ExprNode left, ExprNode right, OpType op)
-        {
-            Op = op;
-            ExprChildren.Add(left);
-            ExprChildren.Add(right);
-        }
         public override void Visit(Visitor v)
         {
-            v.VisitBinOpNode(this);
+            v.VisitStatementNode(this);
         }
     }
 
-    public abstract class StatementNode : Node { }
+    public class BlockNode : StatementNode
+    {
+        public List<StatementNode> StList = new List<StatementNode>();
+        public BlockNode(StatementNode stat)
+        {
+            Add(stat);
+        }
+
+        public void Add(StatementNode stat)
+        {
+            StList.Add(stat);
+        }
+
+        public override void Visit(Visitor v)
+        {
+            v.VisitBlockNode(this);
+        }
+    }
 
     public class AssignNode : StatementNode
     {
         public IdNode Id { get; set; }
-        public ExprNode Expr { get { return ExprChildren[0]; } set { ExprChildren[0] = value; } }
+        public ExprNode Expr { get; set; }
         public AssignNode(IdNode id, ExprNode expr)
         {
             Id = id;
-            ExprChildren.Add(expr);
+            Expr = expr;
         }
+
         public override void Visit(Visitor v)
         {
             v.VisitAssignNode(this);
         }
     }
 
-    public class WhileNode : StatementNode
-    {
-        public ExprNode Expr { get { return ExprChildren[0]; } set { ExprChildren[0] = value; } }
-        public StatementNode Stat { get { return StatChildren[0]; } set { StatChildren[0] = value; } }
-        public WhileNode(ExprNode expr, StatementNode stat)
-        {
-            ExprChildren.Add(expr);
-            StatChildren.Add(stat);
-        }
-        public override void Visit(Visitor v)
-        {
-            v.VisitWhileNode(this);
-        }
-    }
-
-    public class ForNode : StatementNode
+    public class ForNode : StatementNode // Record-классы
     {
         public IdNode Id { get; set; }
-        public ExprNode From { get { return ExprChildren[0]; } set { ExprChildren[0] = value; } }
-        public ExprNode To { get { return ExprChildren[1]; } set { ExprChildren[1] = value; } }
-        public StatementNode Stat { get { return StatChildren[0]; } set { StatChildren[0] = value; } }
+        public ExprNode From { get; set; }
+        public ExprNode To { get; set; }
+        public StatementNode Stat { get; set; }
         public ForNode(IdNode id, ExprNode from, ExprNode to, StatementNode stat)
         {
             Id = id;
-            ExprChildren.Add(from);
-            ExprChildren.Add(to);
-            StatChildren.Add(stat);
+            From = from;
+            To = to;
+            Stat = stat;
         }
+
         public override void Visit(Visitor v)
         {
             v.VisitForNode(this);
         }
     }
 
-    public class StListNode : StatementNode
+    public class WhileNode : StatementNode
     {
-        public StListNode(StatementNode stat)
+        public ExprNode Expr { get; set; }
+        public StatementNode Stat { get; set; }
+        public WhileNode(ExprNode expr, StatementNode stat)
         {
-            Add(stat);
+            Expr = expr;
+            Stat = stat;
         }
-        public void Add(StatementNode stat)
-        {
-            StatChildren.Add(stat);
-        }
+
         public override void Visit(Visitor v)
         {
-            v.VisitStListNode(this);
+            v.VisitWhileNode(this);
         }
     }
 
-    public class IfElseNode : StatementNode
+    public class IfNode : StatementNode
     {
-        public ExprNode Expr { get { return ExprChildren[0]; } set { ExprChildren[0] = value; } }
-        public StatementNode TrueStat { get { return StatChildren[0]; } set { StatChildren[0] = value; } }
-        public StatementNode FalseStat { get { return StatChildren[1]; } set { StatChildren[1] = value; } }
-
-        public IfElseNode(ExprNode expr, StatementNode trueSt, StatementNode falseSt = null)
+        public ExprNode Expr { get; set; }
+        public StatementNode StatTrue { get; set; }
+        public StatementNode StatFalse { get; set; }
+        public IfNode(ExprNode expr, StatementNode statTrue, StatementNode statFalse)
         {
-            ExprChildren.Add(expr);
-            StatChildren.Add(trueSt);
-            StatChildren.Add(falseSt);
+            Expr = expr;
+            StatTrue = statTrue;
+            StatFalse = statFalse;
+        }        
+
+        public IfNode(ExprNode expr, StatementNode statTrue) : this(expr, statTrue, null)
+        {
         }
+
         public override void Visit(Visitor v)
         {
-            v.VisitIfElseNode(this);
-        }
-    }
-
-    public class PrintNode : StatementNode
-    {
-        public ExprListNode ExprList { get; set; }
-        public PrintNode(ExprListNode list)
-        {
-            ExprList = list;
-            ExprChildren = ExprList.ExprChildren;
-        }
-        public override void Visit(Visitor v)
-        {
-            v.VisitPrintNode(this);
+            v.VisitIfNode(this);
         }
     }
 
     public class InputNode : StatementNode
     {
-        public IdNode Ident { get; set; }
-        public InputNode(IdNode ident) { Ident = ident; }
+        public IdNode Id { get; set; }
+        public InputNode(IdNode id)
+        {
+            Id = id;
+        }
+
         public override void Visit(Visitor v)
         {
             v.VisitInputNode(this);
         }
     }
-
-    public class ExprListNode : ExprNode
+    public class ExprListNode : Node
     {
+        public List<ExprNode> ExprList { get; set; }
         public ExprListNode(ExprNode expr)
         {
-            Add(expr);
+            ExprList = new List<ExprNode>();
+            ExprList.Add(expr);
         }
+
         public void Add(ExprNode expr)
         {
-            ExprChildren.Add(expr);
+            ExprList.Add(expr);
         }
+
         public override void Visit(Visitor v)
         {
             v.VisitExprListNode(this);
         }
     }
 
-    public class VarListNode : StatementNode
+    public class PrintNode : StatementNode
     {
-        public List<IdNode> vars = new List<IdNode>();
+        public ExprListNode ExprList { get; set; }
+        public PrintNode(ExprListNode exprList)
+        {
+            ExprList = exprList;
+        }
+
+        public override void Visit(Visitor v)
+        {
+            v.VisitPrintNode(this);
+        }
+    }
+
+    public class VarNode : StatementNode
+    {   
+        public override void Visit(Visitor v)
+        {
+            v.VisitVarNode(this);
+        }        
+    }
+
+    public class VarListNode : VarNode
+    {
+        public List<IdNode> VarList { get; set; }
         public VarListNode(IdNode id)
         {
-            Add(id);
+            VarList = new List<IdNode>();
+            VarList.Add(id);
         }
+        
         public void Add(IdNode id)
         {
-            vars.Add(id);
+            VarList.Add(id);
         }
+
         public override void Visit(Visitor v)
         {
             v.VisitVarListNode(this);
         }
     }
 
-    // public class EmptyNode : StatementNode{
-    //public override void Visit(Visitor v)
-    //{
-    // v.VisitEmptyNode(this);
-    // }
-    //}
-
     public class GotoNode : StatementNode
     {
-        public IntNumNode Label { get; set; }
-        public GotoNode(int num) { Label = new IntNumNode(num); }
+        public IntNumNode Label;
+        public GotoNode(IntNumNode label)
+        {
+            Label = label;
+        }
+
         public override void Visit(Visitor v)
         {
             v.VisitGotoNode(this);
@@ -226,29 +296,16 @@ namespace ProgramTree
     public class LabelStatementNode : StatementNode
     {
         public IntNumNode Label { get; set; }
-        public StatementNode Stat { get { return StatChildren[0]; } set { StatChildren[0] = value; } }
-        public LabelStatementNode(int num, StatementNode stat)
+        public StatementNode Stat { get; set; }
+        public LabelStatementNode(IntNumNode label, StatementNode stat)
         {
-            Label = new IntNumNode(num);
-            StatChildren.Add(stat);
+            Label = label;
+            Stat = stat;
         }
-        public override void Visit(Visitor v)
-        {
-            v.VisitLabelstatementNode(this);
-        }
-    }
 
-    public class BlockNode : StatementNode
-    {
-        public StListNode List { get; set; }
-        public BlockNode(StListNode st)
-        {
-            List = st;
-            StatChildren = List.StatChildren;
-        }
         public override void Visit(Visitor v)
         {
-            v.VisitBlockNode(this);
+            v.VisitLabelStatementNode(this);
         }
     }
 }

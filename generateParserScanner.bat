@@ -1,4 +1,4 @@
 cls
-gplex.exe /unicode SimpleLex.lex
-gppg.exe /no-lines /gplex SimpleYacc.y
-pause
+start "%CD%\gplex.exe" "%CD%\SimpleLex.lex" /unicode
+start "C:\Compilers\3\gppg.exe" "C:\Compilers\3\SimpleYacc.y" 
+@pause

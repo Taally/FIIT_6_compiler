@@ -8,26 +8,25 @@ Alpha 	[a-zA-Z_]
 Digit   [0-9] 
 AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
-BOOL	false|true
+BOOL TRUE|FALSE
 ID {Alpha}{AlphaDigit}* 
 
 %%
 
-{INTNUM} { 
-  yylval.iVal = int.Parse(yytext); 
-  return (int)Tokens.INUM; 
+{INTNUM} {    
+    yylval.iVal = int.Parse(yytext);
+    return (int)Tokens.INUM; 
 }
 
 {BOOL} {
-	yylval.bVal = bool.Parse(yytext);
+    yylval.bVal = bool.Parse(yytext);
     return (int)Tokens.BOOL;
 }
 
 {ID}  { 
-  int res = ScannerHelper.GetIDToken(yytext);
-  if (res == (int)Tokens.ID)
-	yylval.sVal = yytext;
-  return res;
+    yylval.sVal = yytext;
+    int res = ScannerHelper.GetIDToken(yytext);
+    return res;
 }
 
 "=" { return (int)Tokens.ASSIGN; }
@@ -51,6 +50,7 @@ ID {Alpha}{AlphaDigit}*
 
 [^ \r\n\t] {
 	LexError();
+	return (int)Tokens.EOF;
 }
 
 %{
@@ -68,8 +68,8 @@ public override void yyerror(string format, params object[] args)
 
 public void LexError()
 {
-  string errorMsg = string.Format("({0},{1}): Unknown symbol {2}", yyline, yycol, yytext);
-  throw new LexException(errorMsg);
+	string errorMsg = string.Format("({0},{1}): Unknown symbol {2}", yyline, yycol, yytext);
+    throw new LexException(errorMsg);
 }
 
 class ScannerHelper 
@@ -79,23 +79,23 @@ class ScannerHelper
   static ScannerHelper() 
   {
     keywords = new Dictionary<string,int>();
-	keywords.Add("for",(int)Tokens.FOR);
+    keywords.Add("for",(int)Tokens.FOR);
 	keywords.Add("while",(int)Tokens.WHILE);
 	keywords.Add("if",(int)Tokens.IF);
 	keywords.Add("else",(int)Tokens.ELSE);
+	keywords.Add("input",(int)Tokens.INPUT);
 	keywords.Add("print",(int)Tokens.PRINT);
 	keywords.Add("var",(int)Tokens.VAR);
 	keywords.Add("and",(int)Tokens.AND);
 	keywords.Add("or",(int)Tokens.OR);
 	keywords.Add("goto",(int)Tokens.GOTO);
-	keywords.Add("input",(int)Tokens.INPUT);
   }
+
   public static int GetIDToken(string s)
   {
-	if (keywords.ContainsKey(s.ToLower()))
-	  return keywords[s];
-	else
+    if (keywords.ContainsKey(s.ToLower()))
+      return keywords[s];
+    else
       return (int)Tokens.ID;
-  }
-  
+  }  
 }

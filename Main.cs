@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using SimpleScanner;
 using SimpleParser;
-using SimpleLang.Visitors;
 using SimpleLang;
+using Newtonsoft.Json;
 
 namespace SimpleCompiler
 {
@@ -19,53 +20,75 @@ namespace SimpleCompiler
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
 
-                Parser parser = new Parser(scanner);
-
+                Parser parser = new Parser(scanner);               
+                
                 var b = parser.Parse();
-                if (!b) Console.WriteLine("Error");
+                if (!b)
+                    Console.WriteLine("Ошибка");
                 else
                 {
-                    Console.WriteLine("Syntax tree built");
+                    Console.WriteLine("Синтаксическое дерево построено");
+                    //foreach (var st in parser.root.StList)
+                    //Console.WriteLine(st);
+                    
+                    AssignCountVisitor acv = new AssignCountVisitor();
+                    parser.root.Visit(acv);
+                    Console.WriteLine(acv.Count);
 
-                    var fillParents = new FillParentsVisitor();
-                    parser.root.Visit(fillParents);
+                    var prettyPrinter = new PrettyPrinterVisitor();
+                    parser.root.Visit(prettyPrinter);
+                    Console.WriteLine("\n----Pretty Printer----");
+                    Console.WriteLine(prettyPrinter.Text);
+                    Console.WriteLine("----------------------");
 
-                    var pp = new PrettyPrintVisitor();
-                    parser.root.Visit(pp);
-                    Console.WriteLine(pp.Text);
+                    var parentVisitor = new FillParentVisitor();
+                    parser.root.Visit(parentVisitor);
+                    //var multOptimization = new MultOptimizationVisitor();
+                    //parser.root.Visit(multOptimization);
 
-                    ASTOptimizer.Optimize(parser);
-                    Console.WriteLine("\n\nAfter AST optimizations");
-                    pp = new PrettyPrintVisitor();
-                    parser.root.Visit(pp);
-                    Console.WriteLine(pp.Text);
+                    //var sumOptimization = new SumOptimizationVisitor();
+                    //parser.root.Visit(sumOptimization);
 
-                    Console.WriteLine("\n\nThree address code");
-                    var threeAddrCodeVisitor = new ThreeAddrGenVisitor();
-                    parser.root.Visit(threeAddrCodeVisitor);
-                    var threeAddressCode = threeAddrCodeVisitor.Instructions;
-                    foreach (var instruction in threeAddressCode)
-                        Console.WriteLine(instruction);
+                    //parser.root.Visit(multOptimization);
 
-                    ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
-                    Console.WriteLine("\n\nOptimized three address code");
-                    foreach (var instruction in threeAddressCode)
-                        Console.WriteLine(instruction);
-                }
-            }
+                    prettyPrinter = new PrettyPrinterVisitor();
+                    parser.root.Visit(prettyPrinter);
+                    Console.WriteLine("\n----Pretty Printer----");
+                    Console.WriteLine(prettyPrinter.Text);
+                    Console.WriteLine("----------------------");
+
+                    Console.WriteLine("\n----Three address code----");
+                    var threeAddressCode = new ThreeAddressCode();
+                    parser.root.Visit(threeAddressCode);
+                    threeAddressCode.Print();
+                    Console.WriteLine("----------------------");
+
+                    Console.WriteLine("\n----Constant convolution----");
+                    threeAddressCode.ConsntantConvolution();
+                    threeAddressCode.Print();
+                    Console.WriteLine("----------------------");
+
+                    Console.WriteLine("\n----CheckA lgebraic Identities----");
+                    threeAddressCode.CheckAlgebraicIdentities();
+                    threeAddressCode.Print();
+                    Console.WriteLine("----------------------");
+                }                  
+            }            
             catch (FileNotFoundException)
             {
-                Console.WriteLine("File {0} not found", FileName);
+                Console.WriteLine("Файл {0} не найден", FileName);
             }
             catch (LexException e)
             {
-                Console.WriteLine("Lex Error. " + e.Message);
+                Console.WriteLine("Лексическая ошибка. " + e.Message);
             }
             catch (SyntaxException e)
             {
-                Console.WriteLine("Syntax Error. " + e.Message);
+                Console.WriteLine("Синтаксическая ошибка. " + e.Message);
             }
+            
             Console.ReadLine();
         }
+
     }
 }

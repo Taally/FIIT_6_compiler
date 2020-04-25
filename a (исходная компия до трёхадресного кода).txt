@@ -1,0 +1,81 @@
+b = 2;
+a = 3;
+a = b;
+for i=1,5
+{
+    a = c;
+    c = 1;
+    c = FALSE and TRUE or FALSE and FALSE == 1 != 2 > 1 >= 2 < 3 <= (4 + 2) - 4 * 3 / 5 - q;
+    while TRUE
+       {
+            s = m;
+            k = 2 + 2;
+       }       
+}
+if a == 5
+    {
+        g = 2;
+        q = 1 * 8;
+    }
+else 
+{
+    z = 1 + 1;
+    q = q + 1;
+}
+
+if a == 5
+    g = 2;
+input(a);
+print(a + 2, 3 * 4);
+var a;
+var b, c, d;
+goto 10;
+10: n = 1;
+c = a + c * b * 0;
+c = a + b * 0 * c;
+c = a + 0 * b * c;
+c = a + a * b * c * 0 * e * f;
+c = 0 * a * b * c;
+while a * 0
+{
+    a = a + 2;
+}
+while a * 0 + 2
+{
+    b = 2 + 0 * 4;
+}
+if a * 0
+{
+    c = c + 2;
+}
+if 0 * a
+{
+    c = c + 2;
+}
+if a + a * 0
+{
+    c = c + 2;
+}
+for i = 0 * 0, 0 * 0
+{
+    b = 0 * 6 * 5 * 0;
+}
+print(0 * 0, 0 * 0 * 0, 1);
+print(a + a * 0 * b * c);
+optSum = 0 + 0 + a + b + 2;
+if ((2 + 0 + 0 + 2) < 9)
+    w = 2 * 0;
+while((2 + 0 + 0 + 2) < 9)
+b = 2;
+while 0 + 0
+    c = 2;
+print(0 + 0 + 0 + 0, 0 + 0 + 1);
+optSum1 = a + 0 + a + 0 + 0;
+optSum2 = a + 0 * a + 0 + 0;
+optSum3 = 0 + 0 + 0 + 0 + 0;
+optSum4 = 0 + 0 + 0 + a;
+optSum5 = (2 + 0 + 0 + 2) + 2;
+o = 0 + 1;
+a = 0 + 0;
+comb = 2 * (0 + (0 * 2 + 0 * 2 * 0));
+a = b * 0;
