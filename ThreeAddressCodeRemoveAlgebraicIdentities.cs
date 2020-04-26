@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    //public Instruction(string label, string operation, string argument1, string argument2, string result)
+    //Instruction(string label, string operation, string argument1, string argument2, string result)
     static class ThreeAddressCodeRemoveAlgebraicIdentities
     {
         public static Tuple<bool, List<Instruction>> RemoveAlgebraicIdentities(List<Instruction> commands)
@@ -45,8 +45,9 @@ namespace SimpleLang
 
                 //Суммирование и вычитание с 0                
                 if ((commands[i].Operation == "PLUS" || commands[i].Operation == "MINUS") && variablesAreNotBool && arg1IsNumber && arg1 == 0)
-                {   
-                    result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument2, "", commands[i].Result));
+                {
+                    var sign = commands[i].Operation == "PLUS" ? "" : "-";
+                    result.Add(new Instruction(commands[i].Label, "assign", sign + commands[i].Argument2, "", commands[i].Result));
                     changed = true;
                     continue;
                 }
