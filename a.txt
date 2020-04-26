@@ -21,3 +21,27 @@ goto 200;
 201: c = 5;
 
 goto 200;
+
+
+var i,d,e;
+d = 5;
+e = 2;
+
+d = d;
+if d==e
+{
+	d = e;
+	d = d;
+}
+for i=1,5
+{
+	e = d;	
+	if d > e
+		d = d;
+	else
+		e = d;
+	if d > e
+		d = d;
+}
+goto 302;
+302: d = d;

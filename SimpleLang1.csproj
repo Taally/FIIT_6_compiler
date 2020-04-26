@@ -66,6 +66,8 @@
     <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Instruction.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />
+    <Compile Include="Visitors\StatOptimizations\IfNullElseNull.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptAssignEquality.cs" />
     <Compile Include="Visitors\StatOptimizations\OptStatIfTrue.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
     <Compile Include="Visitors\StatOptimizations\OptWhileFalse.cs" />
