@@ -23,25 +23,21 @@ goto 200;
 goto 200;
 
 
-var i,d,e;
-d = 5;
-e = 2;
-
-d = d;
-if d==e
+c = c;
+if a==b
 {
-	d = e;
-	d = d;
+	b = a;
+	b = b;
 }
-for i=1,5
+for c=1,5
 {
-	e = d;	
-	if d > e
-		d = d;
+	b = a;	
+	if b == a
+		b = b;
 	else
-		e = d;
-	if d > e
-		d = d;
+		b = a;
+	if b == a
+		b = b;
 }
 goto 302;
-302: d = d;
+302: b = b;
