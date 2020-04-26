@@ -71,6 +71,10 @@
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprSimilarNotEqual.cs" />
+    <Compile Include="Visitors\StatOptimizations\IfNullElseNull.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptAssignEquality.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptStatIfFalse.cs" />
     <Compile Include="Visitors\StatOptimizations\OptStatIfTrue.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
     <Compile Include="Visitors\StatOptimizations\OptWhileFalse.cs" />
@@ -78,7 +82,9 @@
     <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="SimpleLex.lex" />
     <None Include="SimpleYacc.y" />
   </ItemGroup>
