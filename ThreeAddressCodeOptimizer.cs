@@ -34,11 +34,17 @@ namespace SimpleLang
                 if (res.Item1 || Changed) continue;
                 break;*/
 
+                ThreeAdressCodeGotoToGoto.ReplaceGotoToGoto(instructions);
+                if (Changed)
+                    continue;
+                //break;
+
                 var res = ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(result);
                 result = res.Item2;
                 if (res.Item1) continue;
 
                 break;
+
             }
 
             return result;
@@ -171,5 +177,7 @@ namespace SimpleLang
                 }
             }
         }
+        
+        
     }
 }

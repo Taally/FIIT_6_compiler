@@ -59,13 +59,16 @@
     <Compile Include="ThreeAddressCodeOptimizer.cs" />
     <Compile Include="ThreeAddressCodeRemoveNoop.cs" />
     <Compile Include="ThreeAddressCodeTmp.cs" />
+    <Compile Include="ThreeAdressCodeGotoToGoto.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprSimilarNotEqual.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNumId.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Instruction.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptStatIfFalse.cs" />
     <Compile Include="Visitors\StatOptimizations\OptStatIfTrue.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
     <Compile Include="Visitors\StatOptimizations\OptWhileFalse.cs" />
