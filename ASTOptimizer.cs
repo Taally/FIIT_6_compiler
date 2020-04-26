@@ -11,8 +11,10 @@ namespace SimpleLang
             new OptExprEqualToItself(),
             new OptExprMultDivByOne(),
             new OptStatIfTrue(),
+            new OptStatIfFalse(),
             new OptExprEqualBoolNumId(),
             new OptWhileFalseVisitor(),
+            new OptExprSimilarNotEqual(),
         };
 
         public static void Optimize(Parser parser)
