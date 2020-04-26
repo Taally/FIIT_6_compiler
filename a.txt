@@ -38,22 +38,6 @@ if (true)
 else
 	c = 55;
 
-
 c = c;
 if a==b
-{
-	b = a;
 	b = b;
-}
-for c=1,5
-{
-	b = a;	
-	if b == a
-		b = b;
-	else
-		b = a;
-	if b == a
-		b = b;
-}
-goto 302;
-302: b = b;
