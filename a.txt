@@ -21,3 +21,23 @@ goto 200;
 201: c = 5 + 1;
 
 goto 200;
+
+if a>a b=1;
+else b = a;
+
+
+554: c = 77;
+goto 56;
+goto 45;
+56: goto 57;
+57: c=1;
+45: goto 554; 
+
+if (true) 
+	goto 45;
+else
+	c = 55;
+
+c = c;
+if a==b
+	b = b;
