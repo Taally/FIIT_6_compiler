@@ -1,34 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    class ThreeAddressCodeFoldConstants
-    {
-        public static (bool, List<Instruction>) FoldConstants(List<Instruction> instructions)
-        {
-            var isChanged = false;
-            var newInstructions = new List<Instruction>();
+    static class ThreeAddressCodeFoldConstants{
+        static public Tuple<bool, List<Instruction>> FoldConstants(List<Instruction> instructions){
+            bool Changed = false;
+            var result = new List<Instruction>();
             for (int i = 0; i < instructions.Count; ++i)
             {
                 if (instructions[i].Argument2 != "")
                     if (int.TryParse(instructions[i].Argument1, out var intArg1) && int.TryParse(instructions[i].Argument2, out var intArg2))
                     {
                         var constant = CalculateConstant(instructions[i].Operation, intArg1, intArg2);
-                        newInstructions.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
-                        isChanged = true;
+                        result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
+                        Changed = true;
                         continue;
                     }
                     else if (bool.TryParse(instructions[i].Argument1, out var boolArg1) && bool.TryParse(instructions[i].Argument2, out var boolArg2))
                     {
                         var constant = CalculateConstant(instructions[i].Operation, boolArg1, boolArg2);
-                        newInstructions.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
-                        isChanged = true;
+                        result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
+                        Changed = true;
                         continue;
                     }
-                newInstructions.Add(instructions[i]);
+                result.Add(instructions[i]);
             }
-            return (isChanged, newInstructions);
+            return Tuple.Create(Changed, result);
         }
 
         private static string CalculateConstant(string operation, bool boolArg1, bool boolArg2)

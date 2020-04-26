@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SimpleLang
 {
     class DeleteDeadCodeWithDeadVars
     {
-        public static (bool, List<Instruction>) DeleteDeadCode(List<Instruction> instructions)
+        public static Tuple<bool, List<Instruction>> DeleteDeadCode(List<Instruction> instructions)
         {
             var isChanged = false;
             var newInstructions = new List<Instruction>();
@@ -42,7 +45,7 @@ namespace SimpleLang
                 newInstructions.Add(instruction);
             }
             newInstructions.Reverse();
-            return (isChanged, newInstructions);
+            return Tuple.Create(isChanged, newInstructions);
         }
     }
 }
