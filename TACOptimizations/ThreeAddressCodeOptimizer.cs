@@ -20,8 +20,7 @@ namespace SimpleLang
                     ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
                     ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
                     DeleteDeadCodeWithDeadVars.DeleteDeadCode,
-                    ThreeAdressCodeGotoToGoto.ReplaceGotoToGoto,
-                    DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+                    ThreeAdressCodeGotoToGoto.ReplaceGotoToGoto
                 };
 
             var result = instructions;
