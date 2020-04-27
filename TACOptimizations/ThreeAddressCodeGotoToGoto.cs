@@ -8,7 +8,6 @@ namespace SimpleLang
 {
     static class ThreeAdressCodeGotoToGoto
     {
-
         public struct GtotScaner
         {
             public int index;
@@ -22,6 +21,7 @@ namespace SimpleLang
                 this.labelfrom = labelfrom;
             }
         }
+      
         public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
         {
             bool changed = false;
@@ -49,7 +49,6 @@ namespace SimpleLang
                 }
             }
             return Tuple.Create(changed, commands);
-
         }
     }
 }

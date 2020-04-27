@@ -37,4 +37,3 @@ else
 c = c;
 if a==b
 	b = b;
-
