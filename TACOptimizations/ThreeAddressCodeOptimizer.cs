@@ -24,9 +24,23 @@ namespace SimpleLang
                 };
 
             var result = instructions;
-            int currentOpt = 0, enabledOpt = 0;
+            int currentOpt = 0;
 
-            while (true) {
+            while (currentOpt < ListOptimization.Count){
+                 var answer = ListOptimization[currentOpt](result);
+                 if (answer.Item1)
+                 {
+                     currentOpt = 0;
+                     result = answer.Item2;
+                 }
+                 else
+                 {
+                     ++currentOpt;
+                 }
+            }
+
+            #region
+            /*while (true) {
                 while (currentOpt <= enabledOpt) {
                     var answer = ListOptimization[currentOpt](result);
                     if (answer.Item1){
@@ -39,37 +53,7 @@ namespace SimpleLang
                 }
                 if (++enabledOpt == ListOptimization.Count)
                     break;
-            }
-
-            #region
-            /* while (true)
-            {
-                // FoldConstants(instructions);
-                // if (Changed)
-                //     continue;
-
-                //DeleteDeadCodeWithDeadVars(instructions);
-                //if (Changed)
-                //    continue;
-
-                // RemoveGotoThroughGoto(instructions);
-                // if (Changed)
-                //     continue;
-                //
-                // break;
-
-                /* Check Def-Use
-                 * var res = ThreeAddressCodeDefUse.DeleteDeadCode(instructions);
-                instructions = res.Item2;
-                if (res.Item1 || Changed) continue;
-                break;*/
-
-            /*var res = ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(result);
-            result = res.Item2;
-            if (res.Item1) continue;
-
-            break;
-        }*/
+            }*/
             #endregion
 
             return result;
