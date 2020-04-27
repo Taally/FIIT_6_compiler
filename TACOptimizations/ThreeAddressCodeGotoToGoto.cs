@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    class ThreeAdressCodeGotoToGoto
+    static class ThreeAdressCodeGotoToGoto
     {
-
         public struct GtotScaner
         {
             public int index;
@@ -18,9 +21,10 @@ namespace SimpleLang
                 this.labelfrom = labelfrom;
             }
         }
-
-        public static void ReplaceGotoToGoto(List<Instruction> commands)
+      
+        public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
         {
+            bool changed = false;
             List<GtotScaner> list = new List<GtotScaner>();
             for (int i = 0; i < commands.Count; i++)
             {
@@ -38,11 +42,13 @@ namespace SimpleLang
                     {
                         if (list[j].label == commands[i].Argument1)
                         {
+                            changed = true;
                             commands[i] = new Instruction("", "goto", list[j].labelfrom.ToString(), "", "");
                         }
                     }
                 }
             }
+            return Tuple.Create(changed, commands);
         }
     }
 }

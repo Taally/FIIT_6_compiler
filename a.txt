@@ -22,16 +22,12 @@ goto 200;
 
 goto 200;
 
-if a>a b=1;
-else b = a;
-
-
-554: c = 77;
-goto 56;
-goto 45;
-56: goto 57;
-57: c=1;
-45: goto 554; 
+111:a = 1;
+goto 55;
+55: goto 10;
+10: goto 111;
+if a>a goto 10;
+else goto 111;
 
 if (true) 
 	goto 45;
