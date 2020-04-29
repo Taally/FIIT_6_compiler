@@ -15,6 +15,13 @@ namespace SimpleLang.Visitors
             PostVisit(binop);
         }
 
+        public override void VisitUnOpNode(UnOpNode unop)
+        {
+            PreVisit(unop);
+            unop.Expr.Visit(this);
+            PostVisit(unop);
+        }
+
         public override void VisitAssignNode(AssignNode a)
         {
             PreVisit(a);

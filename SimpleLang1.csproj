@@ -67,7 +67,9 @@
     <Compile Include="TACOptimizations\ThreeAddressCodeRemoveGotoThroughGoto.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNumId.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprFoldUnary.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprTransformUnaryToValue.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />

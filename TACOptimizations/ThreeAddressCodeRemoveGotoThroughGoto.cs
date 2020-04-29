@@ -9,6 +9,7 @@ namespace SimpleLang
     static class ThreeAddressCodeRemoveGotoThroughGoto
     {
         // устранение переходов через переходы
+        #region
         /*public static Tuple<bool, List<Instruction>> RemoveGotoThroughGoto(List<Instruction> instructions)
         {
             if (instructions is null)
@@ -60,6 +61,7 @@ namespace SimpleLang
             return Tuple.Create(isChange, newInstructions);
         }*/
 
+        #endregion
 
         // старый код. работает только с одной инструкцией в true ветке
         public static Tuple<bool, List<Instruction>> RemoveGotoThroughGoto(List<Instruction> instructions)

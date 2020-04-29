@@ -3,7 +3,6 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-
     class ThreeAddrGenVisitor : AutoVisitor
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
@@ -66,6 +65,13 @@ namespace SimpleLang.Visitors
                 string argument2 = Gen(bin.Right);
                 string result = ThreeAddressCodeTmp.GenTmpName();
                 GenCommand("", bin.Op.ToString(), argument1, argument2, result);
+                return result;
+            }
+            else if (ex.GetType() == typeof(UnOpNode)) {
+                var unop = (UnOpNode)ex;
+                string argument1 = Gen(unop.Expr);
+                string result = ThreeAddressCodeTmp.GenTmpName();
+                GenCommand("", unop.Op.ToString(), argument1, null, result);
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))

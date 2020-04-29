@@ -18,8 +18,8 @@ namespace SimpleLang
                     ThreeAddressCodeDefUse.DeleteDeadCode,
                     ThreeAddressCodeFoldConstants.FoldConstants,
                     ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
-                    ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
-                    DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+                    //ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
+                    //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                     ThreeAdressCodeGotoToGoto.ReplaceGotoToGoto
                 };
 

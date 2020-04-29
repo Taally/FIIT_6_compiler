@@ -16,7 +16,9 @@ namespace SimpleLang
             new OptWhileFalseVisitor(),
             new OptExprSimilarNotEqual(),
             new OptAssignEquality(),
-            new IfNullElseNull()
+            new IfNullElseNull(),
+            new OptExprTransformUnaryToValue(),
+            new OptExprFoldUnary()
         };
 
         public static void Optimize(Parser parser)

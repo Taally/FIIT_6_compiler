@@ -55,11 +55,14 @@ namespace SimpleLang.Visitors
                 case OpType.PLUS:
                     return "+";
                 case OpType.MINUS:
+                case OpType.UNMINUS:
                     return "-";
                 case OpType.MULT:
                     return "*";
                 case OpType.DIV:
                     return "/";
+                case OpType.NOT:
+                    return "!";
             }
             throw new ArgumentException();
         }
@@ -72,6 +75,14 @@ namespace SimpleLang.Visitors
             binop.Right.Visit(this);
             Text += ")";
         }
+
+        public override void VisitUnOpNode(UnOpNode unop)
+        {
+            Text += "(" + GetOp(unop.Op);
+            unop.Expr.Visit(this);
+            Text += ")";
+        }
+
         public override void VisitAssignNode(AssignNode a)
         {
             Text += IndentStr();
@@ -83,7 +94,6 @@ namespace SimpleLang.Visitors
 
         public override void VisitBlockNode(BlockNode bl)
         {
-            //Text += IndentStr() + "{" + Environment.NewLine;
             Text += "{" + Environment.NewLine;
             IndentPlus();
             bl.List.Visit(this);
