@@ -59,6 +59,8 @@
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeDefUse.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeFoldConstants.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodePullingConstants.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodePullingCopies.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeRemoveNoop.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeTmp.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeGotoToGoto.cs" />
@@ -66,9 +68,11 @@
     <Compile Include="TACOptimizations\ThreeAddressCodeRemoveAlgebraicIdentities.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeRemoveGotoThroughGoto.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprAlgebraic.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNumId.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprFoldUnary.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprSubEqualVar.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprTransformUnaryToValue.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
