@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodeFoldConstants{
-        static public Tuple<bool, List<Instruction>> FoldConstants(List<Instruction> instructions){
+    public static class ThreeAddressCodeFoldConstants
+    {
+        static public Tuple<bool, List<Instruction>> FoldConstants(List<Instruction> instructions)
+        {
             bool Changed = false;
             var result = new List<Instruction>();
             for (int i = 0; i < instructions.Count; ++i)

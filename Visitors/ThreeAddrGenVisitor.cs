@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class ThreeAddrGenVisitor : AutoVisitor
+    public class ThreeAddrGenVisitor : AutoVisitor
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
 

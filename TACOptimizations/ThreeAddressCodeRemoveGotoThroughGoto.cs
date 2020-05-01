@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodeRemoveGotoThroughGoto
+    public static class ThreeAddressCodeRemoveGotoThroughGoto
     {
         // устранение переходов через переходы
         #region

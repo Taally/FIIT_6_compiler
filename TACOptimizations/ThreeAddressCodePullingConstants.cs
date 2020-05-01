@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodePullingConstants
+    public static class ThreeAddressCodePullingConstants
     {
         static public Tuple<bool, List<Instruction>> PullingConstants(List<Instruction> instructions)
         {
