@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleLang</RootNamespace>
     <AssemblyName>SimpleLang</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -55,20 +55,42 @@
     <Compile Include="ShiftReduceParserCode.cs" />
     <Compile Include="SimpleLex.cs" />
     <Compile Include="SimpleYacc.cs" />
-    <Compile Include="ThreeAddressCodeOptimizer.cs" />
+    <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
+    <Compile Include="TACOptimizations\Instruction.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeDefUse.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeFoldConstants.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodePullingConstants.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodePullingCopies.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeRemoveNoop.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeTmp.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeGotoToGoto.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeOptimizer.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeRemoveAlgebraicIdentities.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeRemoveGotoThroughGoto.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprAlgebraic.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNumId.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprFoldUnary.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprSubEqualVar.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprTransformUnaryToValue.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
-    <Compile Include="Instruction.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprSimilarNotEqual.cs" />
+    <Compile Include="Visitors\StatOptimizations\IfNullElseNull.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptAssignEquality.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptStatIfFalse.cs" />
     <Compile Include="Visitors\StatOptimizations\OptStatIfTrue.cs" />
     <Compile Include="Visitors\PrettyPrintVisitor.cs" />
+    <Compile Include="Visitors\StatOptimizations\OptWhileFalse.cs" />
     <Compile Include="Visitors\ThreeAddrGenVisitor.cs" />
     <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="SimpleLex.lex" />
     <None Include="SimpleYacc.y" />
   </ItemGroup>

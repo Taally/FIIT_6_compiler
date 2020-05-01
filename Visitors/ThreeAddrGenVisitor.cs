@@ -3,10 +3,16 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-
     class ThreeAddrGenVisitor : AutoVisitor
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
+
+        public override void VisitLabelstatementNode(LabelStatementNode l)
+        {
+            var instructionIndex = Instructions.Count;
+            l.Stat.Visit(this);
+            Instructions[instructionIndex].Label = l.Label.Num.ToString();
+        }
 
         public override void VisitAssignNode(AssignNode a)
         {
@@ -14,18 +20,35 @@ namespace SimpleLang.Visitors
             GenCommand("", "assign", argument1, "", a.Id.Name);
         }
 
-        int tmpInd = 0;
-        string GenTmpName()
+        public override void VisitIfElseNode(IfElseNode i)
         {
-            ++tmpInd;
-            return "#t" + tmpInd;
+            // перевод в трёхадресный код условия
+            string exprTmpName = Gen(i.Expr);
+
+            string trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            string falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
+
+            // перевод в трёхадресный код false ветки
+            i.FalseStat?.Visit(this);
+            GenCommand("", "goto", falseLabel, "", "");
+
+            // перевод в трёхадресный код true ветки
+            var instructionIndex = Instructions.Count;
+            i.TrueStat.Visit(this);
+            Instructions[instructionIndex].Label = trueLabel;
+
+            GenCommand(falseLabel, "noop", "", "", "");
         }
 
-        int tmpLabelInd = 0;
-        string GenTmpLabel()
+        public override void VisitEmptyNode(EmptyNode w)
         {
-            ++tmpLabelInd;
-            return "L" + tmpLabelInd;
+           GenCommand("", "noop", "", "", "");
+        }
+
+        public override void VisitGotoNode(GotoNode g)
+        {
+            GenCommand("", "goto", g.Label.Num.ToString(), "", "");
         }
 
         void GenCommand(string label, string operation, string argument1, string argument2, string result)
@@ -40,8 +63,15 @@ namespace SimpleLang.Visitors
                 var bin = (BinOpNode)ex;
                 string argument1 = Gen(bin.Left);
                 string argument2 = Gen(bin.Right);
-                string result = GenTmpName();
+                string result = ThreeAddressCodeTmp.GenTmpName();
                 GenCommand("", bin.Op.ToString(), argument1, argument2, result);
+                return result;
+            }
+            else if (ex.GetType() == typeof(UnOpNode)) {
+                var unop = (UnOpNode)ex;
+                string argument1 = Gen(unop.Expr);
+                string result = ThreeAddressCodeTmp.GenTmpName();
+                GenCommand("", unop.Op.ToString(), argument1, null, result);
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))

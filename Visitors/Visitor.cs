@@ -9,6 +9,7 @@ namespace SimpleLang.Visitors{
         public virtual void VisitIdNode(IdNode id) { }
         public virtual void VisitIntNumNode(IntNumNode num) { }
         public virtual void VisitBinOpNode(BinOpNode binop) { }
+        public virtual void VisitUnOpNode(UnOpNode unop) { }
         public virtual void VisitAssignNode(AssignNode a) { }
         public virtual void VisitStListNode(StListNode bl) { }
         public virtual void VisitBoolValNode(BoolValNode b) { }
@@ -22,7 +23,6 @@ namespace SimpleLang.Visitors{
         public virtual void VisitGotoNode(GotoNode g) { }
         public virtual void VisitLabelstatementNode(LabelStatementNode l) { }
         public virtual void VisitBlockNode(BlockNode b) { }
-
-        // public virtual void VisitEmptyNode(EmptyNode w) { }
+        public virtual void VisitEmptyNode(EmptyNode w) { }
     }
 }
