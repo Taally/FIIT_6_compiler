@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleLang
 {
-    public static class ThreeAdressCodeGotoToGoto
+    public static class ThreeAddressCodeGotoToGoto
     {
 
         public struct GtotScaner

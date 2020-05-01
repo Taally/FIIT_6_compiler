@@ -4,6 +4,7 @@ using SimpleLang.Visitors;
 using SimpleParser;
 using SimpleScanner;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleLanguage.Tests
 {
@@ -12,6 +13,9 @@ namespace SimpleLanguage.Tests
     {
         List<Instruction> GenTAC(string sourceCode)
         {
+            ThreeAddressCodeTmp.ResetTmpName();
+            ThreeAddressCodeTmp.ResetTmpLabel();
+            SymbolTable.vars.Clear();   // oh yeah, all variables are stored in a static dict :D
             var scanner = new Scanner();
             scanner.SetSource(sourceCode, 0);
             var parser = new Parser(scanner);
@@ -24,16 +28,48 @@ namespace SimpleLanguage.Tests
         }
 
         [Test]
-        public void FoldConstantsTest()
+        public void SimpleFold()
         {
             var TAC = GenTAC(@"
-var a;
-a = 1 + 2;");
+        var a;
+        a = 1 + 2;");
 
             ThreeAddressCodeOptimizer.Optimizations.Clear();
             ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeFoldConstants.FoldConstants);
             TAC = ThreeAddressCodeOptimizer.Optimize(TAC);
-            Assert.That(TAC[0].ToString() == "#t1 = 3");
+
+            var expected = new List<string>()
+                    {
+                        "#t1 = 3",
+                        "a = #t1"
+                    };
+            var actual = TAC.Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void FoldAndPropagateConstants()
+        {
+            var TAC = GenTAC(@"
+        var a;
+        a = 1 + 2 * 3 - 7;");
+
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeFoldConstants.FoldConstants);
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodePullingConstants.PullingConstants);
+            TAC = ThreeAddressCodeOptimizer.Optimize(TAC);
+
+            var expected = new List<string>()
+                    {
+                        "#t1 = 6",
+                        "#t2 = 7",
+                        "#t3 = 0",
+                        "a = 0"
+                    };
+            var actual = TAC.Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }
