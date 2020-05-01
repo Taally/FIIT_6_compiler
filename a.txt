@@ -1,4 +1,4 @@
-var a, b, c, d, x, u, e,g, y;
+var a, b, c, d, x, u, e,g, y,zz,i;
 1: a = false;
 b = true;
 100: a = b;
@@ -65,3 +65,13 @@ g = d + 1;
 g = b + 7;
 e = y;
 b = 0 + e;
+
+x = zz;
+
+777: while x < 25 {
+	x = x + 1;
+	x = x * 2;
+}
+
+for i=2,7
+	x = x + 1;

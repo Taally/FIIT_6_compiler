@@ -14,15 +14,15 @@ namespace SimpleLang
             List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>> ListOptimization
                 = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
                 {
-                    ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
+                    //ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
                     ThreeAddressCodeDefUse.DeleteDeadCode,
                     ThreeAddressCodeFoldConstants.FoldConstants,
                     ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
-                    //ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
-                    //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+                    ////ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
+                    ////DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                     ThreeAdressCodeGotoToGoto.ReplaceGotoToGoto,
-                    ThreeAddressCodePullingConstants.PullingConstants,
-                    ThreeAddressCodePullingCopies.PullingCopies
+                    ////ThreeAddressCodePullingConstants.PullingConstants,
+                    ////ThreeAddressCodePullingCopies.PullingCopies
                 };
 
             var result = instructions;
