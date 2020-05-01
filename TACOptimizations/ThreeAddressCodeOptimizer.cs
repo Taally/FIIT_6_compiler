@@ -16,8 +16,8 @@ namespace SimpleLang
             //ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
             //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
             ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
-            ThreeAddressCodePullingConstants.PullingConstants,
-            ThreeAddressCodePullingCopies.PullingCopies
+            ThreeAddressCodeConstantPropagation.PropagateConstants,
+            ThreeAddressCodeCopyPropagation.PropagateCopies
         };
 
         public static List<Instruction> Optimize(List<Instruction> instructions)

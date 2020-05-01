@@ -59,8 +59,8 @@
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeDefUse.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeFoldConstants.cs" />
-    <Compile Include="TACOptimizations\ThreeAddressCodePullingConstants.cs" />
-    <Compile Include="TACOptimizations\ThreeAddressCodePullingCopies.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeConstantPropagation.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeCopyPropagation.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeRemoveNoop.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeTmp.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeGotoToGoto.cs" />
