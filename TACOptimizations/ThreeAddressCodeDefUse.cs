@@ -26,7 +26,8 @@ namespace SimpleLang{
         }
 
         static List<string> operations = new List<string>()
-            { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR"};
+            { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR",
+            "UNMINUS, NOT"};
 
         private static void FillLists(List<Instruction> commands){
             DefList = new List<Def>();

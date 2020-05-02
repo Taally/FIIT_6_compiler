@@ -22,7 +22,7 @@
 %namespace SimpleParser
 
 %token BEGIN END ASSIGN SEMICOLON FOR COMMA COLON LPAR RPAR WHILE IF ELSE INPUT PRINT
-VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO PLUS MINUS MULT DIV
+VAR OR AND EQUAL NOTEQUAL LESS GREATER EQGREATER EQLESS GOTO PLUS MINUS MULT DIV NOT
 %token <iVal> INUM
 %token <bVal> BOOL
 %token <sVal> ID
@@ -115,6 +115,8 @@ F		: ident { $$ = $1 as IdNode; }
 		| INUM { $$ = new IntNumNode($1); }
 		| LPAR expr RPAR { $$ = $2; }
 		| BOOL { $$ = new BoolValNode($1); }
+		| MINUS F { $$ = new UnOpNode($2, OpType.UNMINUS); }
+		| NOT F { $$ = new UnOpNode($2, OpType.NOT);}
 		;
 
 input	: INPUT LPAR ident RPAR { $$ = new InputNode($3 as IdNode); }
