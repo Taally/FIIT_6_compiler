@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodePullingCopies
+    public static class ThreeAddressCodeCopyPropagation
     {
-        static public Tuple<bool, List<Instruction>> PullingCopies(List<Instruction> instructions)
+        static public Tuple<bool, List<Instruction>> PropagateCopies(List<Instruction> instructions)
         {
             int count = instructions.Count;
             bool Changed = false;

@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class FillParentsVisitor : AutoVisitor
+    public class FillParentsVisitor : AutoVisitor
     {
         readonly Stack<Node> st = new Stack<Node>();
 

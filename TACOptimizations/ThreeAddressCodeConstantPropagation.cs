@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodePullingConstants
+    public static class ThreeAddressCodeConstantPropagation
     {
-        static public Tuple<bool, List<Instruction>> PullingConstants(List<Instruction> instructions)
+        static public Tuple<bool, List<Instruction>> PropagateConstants(List<Instruction> instructions)
         {
             int count = instructions.Count;
             bool Changed = false;
