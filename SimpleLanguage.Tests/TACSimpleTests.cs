@@ -193,51 +193,51 @@ a = !a;
         }
 
 
-        [Test]
-        public void DefUseTest()
-        {
-            var TAC = GenTAC(@"
-var a, b, c;
-a = 1;
-a = 2;
-b = 11;
-b = 22;
-a = 3;
-a = b;
-c = 1;
-a = b + c;
-b = -c;
-c = 1;
-b = a - c;
-a = -b;
-");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+//        [Test]
+//        public void DefUseTest()
+//        {
+//            var TAC = GenTAC(@"
+//var a, b, c;
+//a = 1;
+//a = 2;
+//b = 11;
+//b = 22;
+//a = 3;
+//a = b;
+//c = 1;
+//a = b + c;
+//b = -c;
+//c = 1;
+//b = a - c;
+//a = -b;
+//");
+//            ThreeAddressCodeOptimizer.Optimizations.Clear();
+//            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
 
-            var expected = new List<string>()
-            {
-                "noop",
-                "noop",
-                "noop",
-                "b = 22",
-                "noop",
-                "noop",
-                "c = 1",
-                "#t1 = b + c",
-                "a = #t1",
-                "noop",
-                "noop",
-                "c = 1",
-                "#t3 = a - c",
-                "b = #t3",
-                "#t4 = -b",
-                "a = #t4",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
-                .Select(instruction => instruction.ToString());
+//            var expected = new List<string>()
+//            {
+//                "noop",
+//                "noop",
+//                "noop",
+//                "b = 22",
+//                "noop",
+//                "noop",
+//                "c = 1",
+//                "#t1 = b + c",
+//                "a = #t1",
+//                "noop",
+//                "noop",
+//                "c = 1",
+//                "#t3 = a - c",
+//                "b = #t3",
+//                "#t4 = -b",
+//                "a = #t4",
+//            };
+//            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+//                .Select(instruction => instruction.ToString());
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
+//            CollectionAssert.AreEqual(expected, actual);
+//        }
 
         [Test]
         public void GotoToGotoTest()

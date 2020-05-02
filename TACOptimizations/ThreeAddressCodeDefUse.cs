@@ -29,7 +29,7 @@ namespace SimpleLang
 
         static List<string> operations = new List<string>()
             { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR",
-            "UNMINUS, NOT"};
+            "UNMINUS", "NOT"};
 
         private static void FillLists(List<Instruction> commands)
         {

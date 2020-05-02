@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TACCombinedTests.cs" />
+    <Compile Include="TACDefUseTests.cs" />
     <Compile Include="TACSimpleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TACTestsBase.cs" />
