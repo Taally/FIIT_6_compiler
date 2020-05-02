@@ -28,7 +28,8 @@ namespace SimpleLang
                     newInstructions.Add(instruction);
                     continue;
                 }
-                if (varStatus.ContainsKey(instruction.Result) && !varStatus[instruction.Result])
+                if ((varStatus.ContainsKey(instruction.Result) && !varStatus[instruction.Result])
+                    || (instruction.Result.First() == '#' && !varStatus.ContainsKey(instruction.Result)))
                 {
                     newInstructions.Add(new Instruction(instruction.Label, "noop", null, null, null));
                     isChanged = true;
@@ -38,7 +39,8 @@ namespace SimpleLang
                 varStatus[instruction.Result] = false;
                 if (!int.TryParse(instruction.Argument1, out _) && instruction.Argument1 != "True" && instruction.Argument1 != "False")
                     varStatus[instruction.Argument1] = true;
-                if (!int.TryParse(instruction.Argument2, out _) && instruction.Argument2 != "True" && instruction.Argument2 != "False")
+                if (instruction.Operation != "UNMINUS" 
+                    && !int.TryParse(instruction.Argument2, out _) && instruction.Argument2 != "True" && instruction.Argument2 != "False")
                     varStatus[instruction.Argument2] = true;
                 newInstructions.Add(instruction);
             }
