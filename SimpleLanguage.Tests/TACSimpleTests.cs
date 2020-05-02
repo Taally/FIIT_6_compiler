@@ -312,6 +312,7 @@ b = a + 0;
 b = 0 + a;
 b = a - 0;
 b = 0 - a;
+b = b / b;
 ");
             ThreeAddressCodeOptimizer.Optimizations.Clear();
             ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities);
@@ -337,7 +338,9 @@ b = 0 - a;
                 "#t9 = a",
                 "b = #t9",
                 "#t10 = -a",
-                "b = #t10"
+                "b = #t10",
+                "#t11 = 1",
+                "b = #t11"
             };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
                 .Select(instruction => instruction.ToString());
