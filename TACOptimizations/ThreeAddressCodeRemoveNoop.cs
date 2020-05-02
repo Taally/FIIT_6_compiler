@@ -16,7 +16,7 @@ namespace SimpleLang
             //    Then just combine current label and next op.
             // c) Command = noop with label, in this case,
             //    rename all GOTO current_label to GOTO next_label
-            for (var i = 0; i < commands.Count; i++)
+            for (var i = 0; i < commands.Count - 1; i++)
             {
                 var currentCommand = commands[i];
                 if (currentCommand.Operation == "noop" && currentCommand.Label == "")
@@ -26,13 +26,8 @@ namespace SimpleLang
                 // we have label here
                 else if (currentCommand.Operation == "noop")
                 {
-                    // noop is last, just remove it
-                    if (i == commands.Count - 1)
-                    {
-                        changed = true;
-                    }
                     // if next label is empty, we concat current label with next op
-                    else if (commands[i + 1].Label == "")
+                    if (commands[i + 1].Label == "")
                     {
                         var nextCommand = commands[i + 1];
                         changed = true;
@@ -82,6 +77,8 @@ namespace SimpleLang
                     result.Add(commands[i]);
                 }
             }
+
+            result.Add(commands[commands.Count - 1]);
 
             return new Tuple<bool, List<Instruction>>(changed, result);
         }
