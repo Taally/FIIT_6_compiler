@@ -76,6 +76,8 @@ namespace SimpleLang{
                    result.Add(commands[i]);
                }
            }
+           
+           result.Add(commands[commands.Count - 1]);
 
            return new Tuple<bool, List<Instruction>>(changed, result);
        }
