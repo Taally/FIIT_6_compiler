@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleLanguage.Tests
+namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    class TACDefUseTests : TACTestsBase
+    class DefUseTests : TACTestsBase
     {
         [Test]
         public void VarAssignSimple()

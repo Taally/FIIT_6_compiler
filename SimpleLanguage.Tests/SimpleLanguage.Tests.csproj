@@ -70,11 +70,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TACCombinedTests.cs" />
-    <Compile Include="TACDefUseTests.cs" />
-    <Compile Include="TACSimpleTests.cs" />
+    <Compile Include="TAC\TACCombinedTests.cs" />
+    <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
+    <Compile Include="TAC\Simple\AlgebraicIdentitiesTest.cs" />
+    <Compile Include="TAC\Simple\DefUseTests.cs" />
+    <Compile Include="TAC\TACSimpleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TACTestsBase.cs" />
+    <Compile Include="TAC\TACTestsBase.cs" />
+    <Compile Include="TAC\Simple\DeleteDeadCodeWithDeadVarsTest.cs" />
+    <Compile Include="TAC\Simple\FoldConstantsTest.cs" />
+    <Compile Include="TAC\Simple\GotoThroughGotoTest.cs" />
+    <Compile Include="TAC\Simple\GotoToGotoTest.cs" />
+    <Compile Include="TAC\Simple\PropagateConstantsTest.cs" />
+    <Compile Include="TAC\Simple\PropagateCopiesTest.cs" />
+    <Compile Include="TAC\Simple\RemoveNoopTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -85,6 +94,7 @@
       <Name>SimpleLang1</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
