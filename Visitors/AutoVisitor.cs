@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    class AutoVisitor : Visitor
+    public class AutoVisitor : Visitor
     {
         public virtual void PreVisit(Node n) { }
         public virtual void PostVisit(Node n) { }
@@ -13,6 +13,13 @@ namespace SimpleLang.Visitors
             binop.Left.Visit(this);
             binop.Right.Visit(this);
             PostVisit(binop);
+        }
+
+        public override void VisitUnOpNode(UnOpNode unop)
+        {
+            PreVisit(unop);
+            unop.Expr.Visit(this);
+            PostVisit(unop);
         }
 
         public override void VisitAssignNode(AssignNode a)

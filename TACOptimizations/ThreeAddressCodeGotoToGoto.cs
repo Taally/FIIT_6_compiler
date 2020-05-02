@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SimpleLang
 {
-    class ThreeAdressCodeGotoToGoto
+    public static class ThreeAddressCodeGotoToGoto
     {
 
         public struct GtotScaner
@@ -18,31 +19,36 @@ namespace SimpleLang
                 this.labelfrom = labelfrom;
             }
         }
-
-        public static void ReplaceGotoToGoto(List<Instruction> commands)
+        public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
         {
+            bool changed = false;
             List<GtotScaner> list = new List<GtotScaner>();
+            List<Instruction> tmpcommands = new List<Instruction>();
             for (int i = 0; i < commands.Count; i++)
             {
+                tmpcommands.Add(commands[i]);
                 if (commands[i].Operation == "goto")
                 {
                     list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument1));
                 }
             }
 
-            for (int i = 0; i < commands.Count; i++)
+            for (int i = 0; i < tmpcommands.Count; i++)
             {
-                if (commands[i].Operation == "goto")
+                if (tmpcommands[i].Operation == "goto")
                 {
                     for (int j = 0; j < list.Count; j++)
                     {
-                        if (list[j].label == commands[i].Argument1)
+                        if (list[j].label == tmpcommands[i].Argument1)
                         {
-                            commands[i] = new Instruction("", "goto", list[j].labelfrom.ToString(), "", "");
+                            changed = true;
+                            tmpcommands[i] = new Instruction("", "goto", list[j].labelfrom.ToString(), "", "");
                         }
                     }
                 }
             }
+            return Tuple.Create(changed, tmpcommands);
+
         }
     }
 }

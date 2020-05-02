@@ -1,6 +1,6 @@
 ﻿namespace SimpleLang
 {
-    class Instruction
+    public class Instruction
     {
         public string Label { get; internal set; }
         public string Operation { get; }
@@ -28,6 +28,9 @@
                     return $"{label}if {Argument1} goto {Argument2}";
                 case "goto":
                     return $"{label}goto {Argument1}";
+                case "NOT":
+                case "UNMINUS":
+                    return $"{label}{Result} = {ConvertToMathNotation(Operation)}{Argument1}";
                 case "OR":
                 case "AND":
                 case "EQUAL":
@@ -71,11 +74,14 @@
                 case "PLUS":
                     return "+";
                 case "MINUS":
+                case "UNMINUS":
                     return "-";
                 case "MULT":
                     return "*";
                 case "DIV":
                     return "/";
+                case "NOT":
+                    return "!";
                 default:
                     return operation;
             }

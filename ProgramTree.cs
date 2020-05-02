@@ -16,7 +16,9 @@ namespace ProgramTree
         PLUS,
         MINUS,
         MULT,
-        DIV
+        DIV,
+        NOT,
+        UNMINUS
     };
 
     public abstract class Node
@@ -102,6 +104,27 @@ namespace ProgramTree
         public override void Visit(Visitor v)
         {
             v.VisitBinOpNode(this);
+        }
+    }
+
+    public class UnOpNode : ExprNode{
+        public ExprNode Expr
+        {
+            get { return ExprChildren[0]; }
+            set { ExprChildren[0] = value; }
+        }
+
+        public OpType Op { get; set; }
+
+        public UnOpNode(ExprNode expr, OpType op)
+        {
+            Op = op;
+            ExprChildren.Add(expr);
+        }
+
+        public override void Visit(Visitor v)
+        {
+            v.VisitUnOpNode(this);
         }
     }
 
