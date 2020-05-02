@@ -21,8 +21,8 @@ namespace SimpleLang
                     ////ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
                     ////DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                     ThreeAdressCodeGotoToGoto.ReplaceGotoToGoto,
-                    ThreeAddressCodePullingConstants.PullingConstants,
-                    ThreeAddressCodePullingCopies.PullingCopies
+                    ////ThreeAddressCodePullingConstants.PullingConstants,
+                    ////ThreeAddressCodePullingCopies.PullingCopies
                 };
 
             var result = instructions;
