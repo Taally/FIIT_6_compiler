@@ -147,6 +147,53 @@ a = -b;
         }
 
         [Test]
+        public void DeleteDeadCodeWithDeadVarsTempVarsTest()
+        {
+            var TAC = GenTAC(@"
+var a;
+a = -a;
+a = 1;
+");
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(DeleteDeadCodeWithDeadVars.DeleteDeadCode);
+
+            var expected = new List<string>()
+            {
+                "noop",
+                "noop",
+                "a = 1"
+            };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void DeleteDeadCodeWithDeadVarsNegationTest()
+        {
+            var TAC = GenTAC(@"
+var a;
+a = true;
+a = !a;
+");
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(DeleteDeadCodeWithDeadVars.DeleteDeadCode);
+
+            var expected = new List<string>()
+            {
+                "a = True",
+                "#t1 = !a",
+                "a = #t1"
+            };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+
+        [Test]
         public void DefUseTest()
         {
             var TAC = GenTAC(@"
