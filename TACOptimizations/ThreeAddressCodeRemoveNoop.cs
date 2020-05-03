@@ -10,6 +10,7 @@ namespace SimpleLang
         {
             var result = new List<Instruction>();
             var changed = false;
+            var toAddLast = true;
             // three cases:
             // a) Command = noop without label, in this case just remove it
             // b) Command = noop with label, next command - op without label.
@@ -41,6 +42,10 @@ namespace SimpleLang
                             )
                         );
                         i += 1;
+                        if (i == commands.Count - 1)
+                        {
+                            toAddLast = false;
+                        }
                     }
                     // if next label is not empty, instead of noop + next,
                     // rename GOTO current_label to GOTO next_label
@@ -78,7 +83,7 @@ namespace SimpleLang
                 }
             }
 
-            result.Add(commands[commands.Count - 1]);
+            if (toAddLast) result.Add(commands[commands.Count - 1]);
 
             return new Tuple<bool, List<Instruction>>(changed, result);
         }
