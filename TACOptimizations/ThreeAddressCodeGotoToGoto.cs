@@ -31,6 +31,11 @@ namespace SimpleLang
                 {
                     list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument1));
                 }
+
+                if (commands[i].Operation == "ifgoto")
+                {
+                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument2));
+                }
             }
 
             for (int i = 0; i < tmpcommands.Count; i++)
@@ -42,7 +47,20 @@ namespace SimpleLang
                         if (list[j].label == tmpcommands[i].Argument1)
                         {
                             changed = true;
-                            tmpcommands[i] = new Instruction("", "goto", list[j].labelfrom.ToString(), "", "");
+                            int index = i >= list.Count ? j - 1 : i;
+                            tmpcommands[i] = new Instruction(list[index].label, "goto", list[j].labelfrom.ToString(), "", "");
+                        }
+                    }
+                }
+
+                if (tmpcommands[i].Operation == "ifgoto")
+                {
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        if (list[j].label == tmpcommands[i].Argument2)
+                        {
+                            changed = true;
+                            tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), "");
                         }
                     }
                 }
