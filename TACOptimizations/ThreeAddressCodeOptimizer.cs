@@ -11,11 +11,11 @@ namespace SimpleLang
         {
             ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             ThreeAddressCodeDefUse.DeleteDeadCode,
-            ThreeAddressCodeFoldConstants.FoldConstants,            
+            ThreeAddressCodeFoldConstants.FoldConstants,
+            ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
+            ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
             //ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
             //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
-            ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
-            ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeCopyPropagation.PropagateCopies
         };
