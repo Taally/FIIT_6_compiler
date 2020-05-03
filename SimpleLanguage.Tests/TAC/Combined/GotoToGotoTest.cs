@@ -99,34 +99,5 @@ goto 1;
 
             CollectionAssert.AreEqual(expected, actual);
         }
-
-        [Test]
-        public void TestRemoveGotoDeadCodeEmptyNodes()
-        {
-            var TAC = GenTAC(@"
-var a, b;
-a = 2;
-b = 5;
-a = 7;
-a = 32;
-goto 1;
-1: goto 2;
-2: a = 5;
-");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
-            ThreeAddressCodeOptimizer.Optimizations.Add(DeleteDeadCodeWithDeadVars.DeleteDeadCode);
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveNoop.RemoveEmptyNodes);
-
-            var expected = new List<string>()
-            {
-                "goto 2",
-                "2: a = 5",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
-                .Select(instruction => instruction.ToString());
-
-            CollectionAssert.AreEqual(expected, actual);
-        }
     }
 }
