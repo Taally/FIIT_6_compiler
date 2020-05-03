@@ -57,6 +57,7 @@
     <Compile Include="SimpleYacc.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
+    <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeDefUse.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeFoldConstants.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeConstantPropagation.cs" />
