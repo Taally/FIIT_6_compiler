@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SimpleLang
 {
     //Instruction(string label, string operation, string argument1, string argument2, string result)
-    static class ThreeAddressCodeRemoveAlgebraicIdentities
+    public static class ThreeAddressCodeRemoveAlgebraicIdentities
     {
         public static Tuple<bool, List<Instruction>> RemoveAlgebraicIdentities(List<Instruction> commands)
         {
