@@ -17,6 +17,11 @@
             Result = result;
         }
 
+        public Instruction Copy()
+        {
+            return (new Instruction(Label, Operation, Argument1, Argument2, Result));
+        }
+
         public override string ToString()
         {
             var label = Label != "" ? Label + ": " : "";
