@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
     <Compile Include="TAC\TACCombinedTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTest.cs" />

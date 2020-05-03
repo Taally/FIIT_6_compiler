@@ -83,7 +83,19 @@ namespace SimpleLang
                 }
             }
 
-            if (toAddLast) result.Add(commands[commands.Count - 1]);
+            if (toAddLast)
+            {
+                var lastCommand = commands[commands.Count - 1];
+                var toSkip = lastCommand.Operation == "noop" && lastCommand.Label == "";
+                if (toSkip)
+                {
+                    changed = true;
+                }
+                else
+                {
+                    result.Add(commands[commands.Count - 1]);   
+                }
+            }
 
             return new Tuple<bool, List<Instruction>>(changed, result);
         }
