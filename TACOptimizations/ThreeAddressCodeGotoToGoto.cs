@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    static class ThreeAdressCodeGotoToGoto
+    public static class ThreeAddressCodeGotoToGoto
     {
 
         public struct GtotScaner

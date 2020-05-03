@@ -1,6 +1,6 @@
 ﻿namespace SimpleLang
 {
-    class Instruction
+    public class Instruction
     {
         public string Label { get; internal set; }
         public string Operation { get; }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodePullingConstants
+    public static class ThreeAddressCodeConstantPropagation
     {
-        static public Tuple<bool, List<Instruction>> PullingConstants(List<Instruction> instructions)
+        static public Tuple<bool, List<Instruction>> PropagateConstants(List<Instruction> instructions)
         {
             int count = instructions.Count;
             bool Changed = false;
@@ -16,7 +16,7 @@ namespace SimpleLang
                 int arg1, arg2;
                 string currentOp = instructions[i].Operation;
                 if (instructions[i].Operation == "assign"
-                    && instructions.GetRange(0, i).FindLast(x => x.Result.ToString() == instructions[i].Argument1) is Instruction cmnd)
+                    && instructions.GetRange(0, i).FindLast(x => x.Result == instructions[i].Argument1) is Instruction cmnd)
                 {
                     if (cmnd.Operation == "assign"
                         && int.TryParse(cmnd.Argument1, out arg1))
@@ -29,14 +29,14 @@ namespace SimpleLang
                 }
                 else if (instructions[i].Operation != "assign")
                 {
-                    if (instructions.GetRange(0, i).FindLast(x => x.Result.ToString() == instructions[i].Argument1) is Instruction cmnd1
+                    if (instructions.GetRange(0, i).FindLast(x => x.Result == instructions[i].Argument1) is Instruction cmnd1
                         && cmnd1.Operation == "assign"
                         && int.TryParse(cmnd1.Argument1, out arg1))
                     {
                         currentArg1 = cmnd1.Argument1;
                         Changed = true;
                     }
-                    if (instructions.GetRange(0, i).FindLast(x => x.Result.ToString() == instructions[i].Argument2) is Instruction cmnd2
+                    if (instructions.GetRange(0, i).FindLast(x => x.Result == instructions[i].Argument2) is Instruction cmnd2
                         && cmnd2.Operation == "assign"
                         && int.TryParse(cmnd2.Argument1, out arg2))
                     {

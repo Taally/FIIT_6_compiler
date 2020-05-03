@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class ThreeAddrGenVisitor : AutoVisitor
+    public class ThreeAddrGenVisitor : AutoVisitor
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
 
@@ -121,7 +121,7 @@ namespace SimpleLang.Visitors
                 var unop = (UnOpNode)ex;
                 string argument1 = Gen(unop.Expr);
                 string result = ThreeAddressCodeTmp.GenTmpName();
-                GenCommand("", unop.Op.ToString(), argument1, null, result);
+                GenCommand("", unop.Op.ToString(), argument1, "", result);
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))
