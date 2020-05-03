@@ -11,8 +11,13 @@ namespace SimpleLang.Visitors
                 if (ifNode.Expr is BoolValNode boolNode && boolNode.Val == false)
                 {
                     if (ifNode.FalseStat != null)
+                    {
                         ifNode.FalseStat.Visit(this);
-                    ReplaceStat(ifNode, ifNode.FalseStat);
+                        ReplaceStat(ifNode, ifNode.FalseStat);
+                    }
+                    else {
+                        ReplaceStat(ifNode, new EmptyNode());
+                    }
                 }
         }
     }

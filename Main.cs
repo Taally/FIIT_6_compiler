@@ -51,6 +51,8 @@ namespace SimpleCompiler
                     Console.WriteLine("\n\nOptimized three address code");
                     foreach (var instruction in optResult)
                         Console.WriteLine(instruction);
+
+                    Console.WriteLine(" \nDone");
                 }
             }
             catch (FileNotFoundException)

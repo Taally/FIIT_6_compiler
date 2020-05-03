@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
     //Instruction(string label, string operation, string argument1, string argument2, string result)
-    static class ThreeAddressCodeRemoveAlgebraicIdentities
+    public static class ThreeAddressCodeRemoveAlgebraicIdentities
     {
         public static Tuple<bool, List<Instruction>> RemoveAlgebraicIdentities(List<Instruction> commands)
         {

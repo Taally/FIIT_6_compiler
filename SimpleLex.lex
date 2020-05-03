@@ -48,6 +48,7 @@ ID {Alpha}{AlphaDigit}*
 "<=" {return (int)Tokens.EQLESS; }
 ">=" {return (int)Tokens.EQGREATER; }
 ":" {return (int)Tokens.COLON; }
+"!" {return (int)Tokens.NOT; }
 
 [^ \r\n\t] {
 	LexError();
