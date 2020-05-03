@@ -3,7 +3,6 @@ using SimpleLang;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework.Internal;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
@@ -28,7 +27,25 @@ namespace SimpleLanguage.Tests.TAC.Simple
         }
         
         [Test]
-        public void ShouldNotRemoveLastNoop()
+        public void ShouldNotRemoveLastNoopIfItHasLabel()
+        {
+            var TAC = new List<Instruction>
+            {
+                new Instruction("6", "assign", "b", "", "a"),
+                new Instruction("L1", "noop", null, null, null)
+            };
+            var result = OptimizeLocal(TAC);
+            var expected = new List<String>
+            {
+                "6: a = b",
+                "L1: noop"
+            };
+            
+            AssertNotChanged(result, expected);
+        }
+
+        [Test]
+        public void ShouldRemoveLastNoopIfItHasNoLabel()
         {
             var TAC = new List<Instruction>
             {
@@ -38,13 +55,12 @@ namespace SimpleLanguage.Tests.TAC.Simple
             var result = OptimizeLocal(TAC);
             var expected = new List<String>
             {
-                "6: a = b",
-                "noop"
+                "6: a = b"
             };
             
-            AssertNotChanged(result, expected);
+            AssertChanged(result, expected);
         }
-
+        
         [Test]
         public void ShouldRemoveOnlyOneNoop()
         {
@@ -53,7 +69,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("6", "assign", "b", "", "a"),
                 new Instruction("1", "noop", null, null, null),
                 new Instruction("9", "assign", "a", "", "b"),
-                new Instruction("", "noop", null, null, null),
+                new Instruction("L1", "noop", null, null, null),
             };
 
             var result = OptimizeLocal(TAC);
@@ -62,7 +78,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
             {
                 "6: a = b",
                 "9: b = a",
-                "noop"
+                "L1: noop"
             };
             
             AssertChanged(result, expected);
