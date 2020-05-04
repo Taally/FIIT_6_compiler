@@ -33,9 +33,13 @@
                     return $"{label}if {Argument1} goto {Argument2}";
                 case "goto":
                     return $"{label}goto {Argument1}";
+                case "input":
+                    return $"{label}input {Result}";
+                case "print":
+                    return $"{label}print {Argument1}";
                 case "NOT":
                 case "UNMINUS":
-                    return $"{label}{Result} = {ConvertToMathNotation(Operation)}{Argument1}";
+                    return $"{label}{Result} = {ConvertToMathNotation(Operation)}{Argument1}";                
                 case "OR":
                 case "AND":
                 case "EQUAL":
