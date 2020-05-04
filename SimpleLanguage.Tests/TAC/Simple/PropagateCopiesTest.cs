@@ -29,13 +29,13 @@ k = c + a;
                 "a = b",
                 "#t1 = b - b",
                 "c = #t1",
-                "#t2 = c + 1",
+                "#t2 = #t1 + 1",
                 "d = #t2",
-                "#t3 = d * b",
+                "#t3 = #t2 * b",
                 "e = #t3",
                 "#t4 = x - y",
                 "a = #t4",
-                "#t5 = c + a",
+                "#t5 = #t1 + #t4",
                 "k = #t5"
             };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
