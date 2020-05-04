@@ -1,4 +1,4 @@
-﻿using ProgramTree;
+using ProgramTree;
 using System;
 
 namespace SimpleLang.Visitors
@@ -11,6 +11,9 @@ namespace SimpleLang.Visitors
             if (n is BinOpNode binop && binop.Op == OpType.MINUS)
             {
                 if (binop.Left is IdNode id1 && binop.Right is IdNode id2 && id1.Name == id2.Name)
+            if (n is BinOpNode binop && binop.Left is IdNode id1 && binop.Right is IdNode id2 && id1.Name==id2.Name)
+            {
+                if (binop.Op == OpType.MINUS)
                 {   
                     ReplaceExpr(binop, new IntNumNode(0));
                 }

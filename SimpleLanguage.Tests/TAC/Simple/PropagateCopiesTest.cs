@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using SimpleLang;
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,14 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 a = x - y;
                 k = c + a;
                 ");
+var a, b, c, d, e, x, y, k;
+a = b;
+c = b - a;
+d = c + 1;
+e = d * a;
+a = x - y;
+k = c + a;
+");
             ThreeAddressCodeOptimizer.Optimizations.Clear();
             ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeCopyPropagation.PropagateCopies);
 
