@@ -18,11 +18,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 y = 7 - x;
                 x = x + x;
                 ");
-var x, y;
-x = 14;
-y = 7 - x;
-x = x + x;
-");
+
             ThreeAddressCodeOptimizer.Optimizations.Clear();
             ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeConstantPropagation.PropagateConstants);
 
