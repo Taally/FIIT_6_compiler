@@ -1,6 +1,6 @@
 ﻿namespace SimpleLang
 {
-    class Instruction
+    public class Instruction
     {
         public string Label { get; internal set; }
         public string Operation { get; }
@@ -15,6 +15,11 @@
             Argument1 = argument1;
             Argument2 = argument2;
             Result = result;
+        }
+
+        public Instruction Copy()
+        {
+            return (new Instruction(Label, Operation, Argument1, Argument2, Result));
         }
 
         public override string ToString()

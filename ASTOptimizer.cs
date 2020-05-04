@@ -18,7 +18,9 @@ namespace SimpleLang
             new OptAssignEquality(),
             new IfNullElseNull(),
             new OptExprTransformUnaryToValue(),
-            new OptExprFoldUnary()
+            new OptExprFoldUnary(),
+            new OptExprAlgebraic(),
+            new OptExprSubEqualVar()
         };
 
         public static void Optimize(Parser parser)

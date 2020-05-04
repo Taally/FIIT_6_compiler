@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    class AutoVisitor : Visitor
+    public class AutoVisitor : Visitor
     {
         public virtual void PreVisit(Node n) { }
         public virtual void PostVisit(Node n) { }

@@ -3,13 +3,16 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class ThreeAddrGenVisitor : AutoVisitor
+    public class ThreeAddrGenVisitor : AutoVisitor
     {
         public List<Instruction> Instructions { get; } = new List<Instruction>();
 
         public override void VisitLabelstatementNode(LabelStatementNode l)
         {
             var instructionIndex = Instructions.Count;
+            // Чтобы не затиралась временная метка у циклов
+            if (l.Stat is WhileNode || l.Stat is ForNode)
+                GenCommand("", "noop", "", "", "");
             l.Stat.Visit(this);
             Instructions[instructionIndex].Label = l.Label.Num.ToString();
         }
@@ -51,6 +54,53 @@ namespace SimpleLang.Visitors
             GenCommand("", "goto", g.Label.Num.ToString(), "", "");
         }
 
+        public override void VisitWhileNode(WhileNode w)
+        {
+            string exprTmpName = Gen(w.Expr);
+
+            string whileHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            string whileBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            string exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
+
+            Instructions[Instructions.Count - 1].Label = whileHeadLabel;
+
+            GenCommand("", "ifgoto", exprTmpName, whileBodyLabel, "");
+            GenCommand("", "goto", exitLabel, "", "");
+
+            var instructionIndex = Instructions.Count;
+            w.Stat.Visit(this);
+            Instructions[instructionIndex].Label = whileBodyLabel;
+            GenCommand("", "goto", whileHeadLabel, "", "");
+            GenCommand(exitLabel, "noop", "", "", "");
+        }
+
+        public override void VisitForNode(ForNode f)
+        {
+            string Id = f.Id.Name;
+            string forHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            string forBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            string exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
+
+            string fromTmpName = Gen(f.From);
+            GenCommand("", "assign", fromTmpName, "", Id);
+
+            string toTmpName = Gen(f.To);
+            // Делаем допущение, что for шагает на +1 до границы, не включая ее
+            string condTmpName = ThreeAddressCodeTmp.GenTmpName();
+            GenCommand(forHeadLabel, "LESS", Id, toTmpName, condTmpName);
+
+            GenCommand("", "ifgoto", condTmpName, forBodyLabel, "");
+            GenCommand("", "goto", exitLabel, "", "");
+
+            var instructionIndex = Instructions.Count;
+            f.Stat.Visit(this);
+            Instructions[instructionIndex].Label = forBodyLabel;
+
+            GenCommand("", "PLUS", Id, "1", Id);
+            GenCommand("", "goto", forHeadLabel, "", "");
+            GenCommand(exitLabel, "noop", "", "", "");
+        }
+
         void GenCommand(string label, string operation, string argument1, string argument2, string result)
         {
             Instructions.Add(new Instruction(label, operation, argument1, argument2, result));
@@ -71,7 +121,7 @@ namespace SimpleLang.Visitors
                 var unop = (UnOpNode)ex;
                 string argument1 = Gen(unop.Expr);
                 string result = ThreeAddressCodeTmp.GenTmpName();
-                GenCommand("", unop.Op.ToString(), argument1, null, result);
+                GenCommand("", unop.Op.ToString(), argument1, "", result);
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))

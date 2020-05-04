@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-    static class ThreeAddressCodeRemoveGotoThroughGoto
+    public static class ThreeAddressCodeRemoveGotoThroughGoto
     {
-        // устранение переходов через переходы
+        // устранение переходов через переходы (experimental)
         #region
         /*public static Tuple<bool, List<Instruction>> RemoveGotoThroughGoto(List<Instruction> instructions)
         {
@@ -63,7 +60,7 @@ namespace SimpleLang
 
         #endregion
 
-        // старый код. работает только с одной инструкцией в true ветке
+        // устранение переходов через переходы (пример из презентации Opt5.pdf слайд 32)
         public static Tuple<bool, List<Instruction>> RemoveGotoThroughGoto(List<Instruction> instructions)
         {
             if (instructions is null)
@@ -82,14 +79,15 @@ namespace SimpleLang
                     var com3 = instructions[i + 3];
 
                     // только одна операция
-                    if (com1.Operation == "goto" && com1.Label == "" && com2.Operation != "noop" && com3.Operation == "noop" && com0.Argument2 == com2.Label && com1.Argument1 == com3.Label)
+                    if (com1.Operation == "goto" && com1.Label == "" && com2.Operation != "noop" && com0.Argument2 == com2.Label && com1.Argument1 == com3.Label)
                     {
                         string tmpName = ThreeAddressCodeTmp.GenTmpName();
-                        newInstructions.Add(new Instruction(com0.Label, "EQUAL", "False", com0.Argument1, tmpName)); // операция отрицания через EQUAL
+                        newInstructions.Add(new Instruction(com0.Label, "NOT", com0.Argument1, "", tmpName));
                         newInstructions.Add(new Instruction("", "ifgoto", tmpName, com3.Label, ""));
                         newInstructions.Add(new Instruction("", com2.Operation, com2.Argument1, com2.Argument2, com2.Result));
                         newInstructions.Add(new Instruction(com3.Label, com3.Operation, com3.Argument1, com3.Argument2, com3.Result));
 
+                        isChange = true;
                         i += 3;
                         continue;
                     }
