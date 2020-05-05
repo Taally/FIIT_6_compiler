@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
+    <Compile Include="LiveVariableAnalysis.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="ParserHelper.cs" />
     <Compile Include="ProgramTree.cs" />

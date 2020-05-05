@@ -19,7 +19,14 @@ namespace SimpleCompiler
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
 
-                Parser parser = new Parser(scanner);
+                Console.WriteLine(" \nDefUseSet");
+                var livev = new LiveVariableAnalysis();
+                livev.FillDefUse();
+                Console.WriteLine(livev.ToString());
+
+
+
+                /*Parser parser = new Parser(scanner);
 
                 var b = parser.Parse();
                 if (!b) Console.WriteLine("Error");
@@ -51,9 +58,8 @@ namespace SimpleCompiler
                     Console.WriteLine("\n\nOptimized three address code");
                     foreach (var instruction in optResult)
                         Console.WriteLine(instruction);
-
                     Console.WriteLine(" \nDone");
-                }
+                }*/
             }
             catch (FileNotFoundException)
             {
