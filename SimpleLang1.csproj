@@ -14,6 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -55,6 +56,8 @@
     <Compile Include="ShiftReduceParserCode.cs" />
     <Compile Include="SimpleLex.cs" />
     <Compile Include="SimpleYacc.cs" />
+    <Compile Include="TACOptimizations\BasicBlock.cs" />
+    <Compile Include="TACOptimizations\ControlFlowGraph.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />
