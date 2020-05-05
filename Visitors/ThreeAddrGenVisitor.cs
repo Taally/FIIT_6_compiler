@@ -101,6 +101,18 @@ namespace SimpleLang.Visitors
             GenCommand(exitLabel, "noop", "", "", "");
         }
 
+        public override void VisitInputNode(InputNode i)
+        {
+            GenCommand("", "input","","",i.Ident.Name);
+        }
+
+        public override void VisitPrintNode(PrintNode p) {
+            foreach (var x in p.ExprList.ExprChildren) {
+                string exprTmpName = Gen(x);
+                GenCommand("", "print", exprTmpName, "", "");
+            }
+        }
+
         void GenCommand(string label, string operation, string argument1, string argument2, string result)
         {
             Instructions.Add(new Instruction(label, operation, argument1, argument2, result));
