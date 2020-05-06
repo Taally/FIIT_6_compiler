@@ -34,7 +34,7 @@ namespace SimpleLang
         public List<BasicBlock> GetParentBasicBlock(int index)
         {
             var result = new List<BasicBlock>();
-            for (int j = 0; j < _children[index].Count; j++)
+            for (int j = 0; j < _parent[index].Count; j++)
                 if (_parent[index][j] == 1)
                     result.Add(_basicBlocks[j]);
             return result;
