@@ -9,8 +9,6 @@ namespace SimpleLanguage.Tests.TAC.Simple
     [TestFixture]
     class RemoveNoopTest : TACTestsBase
     {
-        [Test]
-        public void Test1()
         public Tuple<bool, List<Instruction>> OptimizeLocal(List<Instruction> tac)
         {
             return ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
