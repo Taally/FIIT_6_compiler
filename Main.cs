@@ -22,14 +22,14 @@ namespace SimpleCompiler
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
 
-                Console.WriteLine(" \nDefUseSet");
+                /*Console.WriteLine(" \nDefUseSet");
                 var livev = new LiveVariableAnalysis();
                 livev.FillDefUse();
                 Console.WriteLine(livev.ToString());
+                */
 
 
-
-                /*Parser parser = new Parser(scanner);
+                Parser parser = new Parser(scanner);
 
                 var b = parser.Parse();
                 if (!b) Console.WriteLine("Error");
@@ -57,26 +57,39 @@ namespace SimpleCompiler
                     foreach (var instruction in threeAddressCode)
                         Console.WriteLine(instruction);
 
-                    var optResult = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
+                    /*var optResult = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
                     Console.WriteLine("\n\nOptimized three address code");
                     foreach (var instruction in optResult)
-                        Console.WriteLine(instruction);
+                        Console.WriteLine(instruction);*/
 
+                    Console.WriteLine("\n\nOptimized three address code for block");
+                    BasicBlockLeader basicBlock = new BasicBlockLeader();
+                    var bBlocks = basicBlock.DivideLeaderToLeader(threeAddressCode);
+                    foreach (var x in bBlocks)
+                    {
+                        Console.WriteLine(x.Key + "-------------");
+                        foreach (var y in x.Value)
+                        {
+                            Console.WriteLine(y);
+                        }
+                    }
 
-                    //Console.WriteLine("\n\nOptimized three address code for block");
-                    //BasicBlockLeader basicBlock = new BasicBlockLeader();
-                    //var a = basicBlock.DivideLeaderToLeader(optResult);
-                    //foreach (var x in a)
-                    //{
-                    //    Console.WriteLine(x.Key + "-------------");
-                    //    foreach (var y in x.Value)
-                    //    {
-                    //        Console.WriteLine(y);
-                    //    }
-                    //}
+                    var optResult = ThreeAddressCodeOptimizer.Optimize(bBlocks);
+                    Console.WriteLine("\n\nOptimized three address code");
+                    /*foreach (var instruction in optResult)
+                        Console.WriteLine(instruction);*/
+
+                    foreach (var x in optResult)
+                    {
+                        Console.WriteLine(x.Key + "-------------");
+                        foreach (var y in x.Value)
+                        {
+                            Console.WriteLine(y);
+                        }
+                    }
 
                     Console.WriteLine(" \nDone");
-                }*/
+                }
             }
             catch (FileNotFoundException)
             {

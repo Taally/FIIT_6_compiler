@@ -51,7 +51,20 @@ namespace SimpleLang
             d.Uses.RemoveAt(d.Uses.FindLastIndex(x => x.OrderNum == i));
         }
 
-        public static Tuple<bool, List<Instruction>> DeleteDeadCode(List<Instruction> commands)
+        public static Tuple<bool, Dictionary<int, List<Instruction>>> DeleteDeadCode(Dictionary<int, List<Instruction>> bBlocks)
+        {
+            var isChange = false;
+            var resBBlocks = new Dictionary<int, List<Instruction>>();
+            foreach (var block in bBlocks)
+            {
+                var res = DeleteDeadCodeHelper(block.Value);
+                resBBlocks[block.Key] = res.Item2;
+                isChange = isChange || res.Item1;
+            }
+            return Tuple.Create(isChange, resBBlocks);
+        }
+
+        public static Tuple<bool, List<Instruction>> DeleteDeadCodeHelper(List<Instruction> commands)
         {
             List<Instruction> result = new List<Instruction>();
             FillLists(commands);
