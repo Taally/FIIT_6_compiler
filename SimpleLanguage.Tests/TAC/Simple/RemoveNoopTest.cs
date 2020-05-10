@@ -136,14 +136,20 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("7", "noop", null, null, null),
                 new Instruction("8", "noop", null, null, null),
             };
-           
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveNoop.RemoveEmptyNodes);
+
             var expected = new List<string>()
             {
                 "3: a = 1",
                 "6: b = a",
-                "8: noop"
-            };
-           
+                "8: noop" 
+             };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+
             AssertChanged(OptimizeLocal(TAC), expected);
         }
     }
