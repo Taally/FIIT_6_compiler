@@ -8,6 +8,8 @@ namespace SimpleLang
     {
         public static Tuple<bool, List<Instruction>> RemoveEmptyNodes(List<Instruction> commands)
         {
+            if (commands.Count == 0) return new Tuple<bool, List<Instruction>>(false, commands);
+        
             var result = new List<Instruction>();
             var changed = false;
             var toAddLast = true;

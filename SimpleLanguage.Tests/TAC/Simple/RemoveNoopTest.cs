@@ -9,8 +9,6 @@ namespace SimpleLanguage.Tests.TAC.Simple
     [TestFixture]
     class RemoveNoopTest : TACTestsBase
     {
-        [Test]
-        public void Test1()
         public Tuple<bool, List<Instruction>> OptimizeLocal(List<Instruction> tac)
         {
             return ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
@@ -26,6 +24,15 @@ namespace SimpleLanguage.Tests.TAC.Simple
         {
             Assert.IsFalse(result.Item1);
             CollectionAssert.AreEqual(result.Item2.Select(x => x.ToString()), expected);
+        }
+
+        [Test]
+        public void ShouldWorkWithEmptyList()
+        {
+            var TAC = new List<Instruction> { };
+            var result = OptimizeLocal(TAC);
+            CollectionAssert.AreEqual(result.Item2, TAC);
+            Assert.IsFalse(result.Item1);
         }
         
         [Test]

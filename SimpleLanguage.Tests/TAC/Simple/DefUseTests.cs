@@ -219,6 +219,85 @@ c = a * b;
         }
 
         [Test]
+        public void DeadBeforeInput() {
+            var TAC = GenTAC(@"
+var a, b;
+a = 1;
+input(a);
+b = a + 1;
+");
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+
+            var expected = new List<string>()
+            {
+                "noop",
+                "input a",
+                "#t1 = a + 1",
+                "b = #t1"
+            };
+
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void NoDeadInputPrint()
+        {
+            var TAC = GenTAC(@"
+var a, b;
+a = 1;
+print(a);
+input(a);
+b = a + 1;
+");
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+
+            var expected = new List<string>()
+            {
+                "a = 1",
+                "print a",
+                "input a",
+                "#t1 = a + 1",
+                "b = #t1"
+            };
+
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void DeadInput()
+        {
+            var TAC = GenTAC(@"
+var a, b;
+input(a);
+input(a);
+b = a + 1;
+");
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+
+            var expected = new List<string>()
+            {
+                "noop",
+                "input a",
+                "#t1 = a + 1",
+                "b = #t1"
+            };
+
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public void ArithmeticOpsNoDead()
         {
             var TAC = GenTAC(@"
