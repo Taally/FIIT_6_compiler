@@ -62,12 +62,14 @@ namespace SimpleCompiler
                     foreach (var x in a)
                     {
                         Console.WriteLine("---------------------------");
-                        for (int i = 0; i < x.GetInstructions.Count; i++)
+                        for (int i = 0; i < x.GetInstructions().Count; i++)
                         {
-                            Console.WriteLine(x.GetInstructions[i]);
+                            Console.WriteLine(x.GetInstructions()[i]);
                         }
                         
                     }
+
+                    // var cfg = new ControlFlowGraph(a);
 
                     Console.WriteLine(" \nDone");
                 }
