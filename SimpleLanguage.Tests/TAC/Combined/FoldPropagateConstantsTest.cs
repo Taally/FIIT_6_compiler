@@ -3,13 +3,13 @@ using System.Linq;
 using SimpleLang;
 using NUnit.Framework;
 
-namespace SimpleLanguage.Tests
+namespace SimpleLanguage.Tests.TAC.Combined
 {
     [TestFixture]
-    class TACCombinedTests : TACTestsBase
+    class FoldPropagateConstantsTest : TACTestsBase
     {
         [Test]
-        public void FoldPropagateConstantsTest1()
+        public void Test1()
         {
             var TAC = GenTAC(@"
 var x, y;
@@ -36,7 +36,7 @@ x = x + x;
         }
 
         [Test]
-        public void FoldPropagateConstantsTest2()
+        public void Test2()
         {
             var TAC = GenTAC(@"
 var a;

@@ -17,11 +17,11 @@ namespace SimpleLang
                 int arg;
                 if (!int.TryParse(instructions[i].Argument1, out arg))
                 {
-                    int index1 = instructions.GetRange(0, i).FindLastIndex(x => x.Result.ToString() == instructions[i].Argument1);
+                    int index1 = instructions.GetRange(0, i).FindLastIndex(x => x.Result == instructions[i].Argument1);
                     if (index1 != -1
                         && instructions[index1].Operation == "assign"
                         && !int.TryParse(instructions[index1].Argument1, out arg)
-                        && instructions.GetRange(index1, i - index1).FindLastIndex(x => x.Result.ToString() == instructions[index1].Argument1) == -1)
+                        && instructions.GetRange(index1, i - index1).FindLastIndex(x => x.Result == instructions[index1].Argument1) == -1)
                     {
                         currentArg1 = instructions[index1].Argument1;
                         Changed = true;
@@ -30,11 +30,11 @@ namespace SimpleLang
                 }
                 if (!int.TryParse(instructions[i].Argument2, out arg))
                 {
-                    int index2 = instructions.GetRange(0, i).FindLastIndex(x => x.Result.ToString() == instructions[i].Argument2);
+                    int index2 = instructions.GetRange(0, i).FindLastIndex(x => x.Result == instructions[i].Argument2);
                     if (index2 != -1
                         && instructions[index2].Operation == "assign"
                         && !int.TryParse(instructions[index2].Argument1, out arg)
-                        && instructions.GetRange(index2, i - index2).FindLastIndex(x => x.Result.ToString() == instructions[index2].Argument1) == -1)
+                        && instructions.GetRange(index2, i - index2).FindLastIndex(x => x.Result == instructions[index2].Argument1) == -1)
                     {
                         currentArg2 = instructions[index2].Argument1;
                         Changed = true;

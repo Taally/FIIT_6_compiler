@@ -4,6 +4,9 @@ using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
 using SimpleLang;
+using SimpleLang.TACOptimizations;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace SimpleCompiler
 {
@@ -51,6 +54,19 @@ namespace SimpleCompiler
                     Console.WriteLine("\n\nOptimized three address code");
                     foreach (var instruction in optResult)
                         Console.WriteLine(instruction);
+
+
+                    //Console.WriteLine("\n\nOptimized three address code for block");
+                    //BasicBlockLeader basicBlock = new BasicBlockLeader();
+                    //var a = basicBlock.DivideLeaderToLeader(optResult);
+                    //foreach (var x in a)
+                    //{
+                    //    Console.WriteLine(x.Key + "-------------");
+                    //    foreach (var y in x.Value)
+                    //    {
+                    //        Console.WriteLine(y);
+                    //    }
+                    //}
 
                     Console.WriteLine(" \nDone");
                 }

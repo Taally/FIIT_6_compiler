@@ -29,15 +29,14 @@ namespace SimpleLang
 
         static List<string> operations = new List<string>()
             { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR",
-            "UNMINUS, NOT"};
+            "UNMINUS", "NOT", "assign", "input"};
 
         private static void FillLists(List<Instruction> commands)
         {
             DefList = new List<Def>();
             for (int i = 0; i < commands.Count; ++i)
             {
-                //TODO: Проверить работоспособность фильтров
-                if (operations.Contains(commands[i].Operation) || commands[i].Operation == "assign")
+                if (operations.Contains(commands[i].Operation))
                     DefList.Add(new Def(i, commands[i].Result));
                 AddUse(commands[i].Argument1, commands[i], i);
                 AddUse(commands[i].Argument2, commands[i], i);

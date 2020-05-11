@@ -101,6 +101,18 @@ namespace SimpleLang.Visitors
             GenCommand(exitLabel, "noop", "", "", "");
         }
 
+        public override void VisitInputNode(InputNode i)
+        {
+            GenCommand("", "input","","",i.Ident.Name);
+        }
+
+        public override void VisitPrintNode(PrintNode p) {
+            foreach (var x in p.ExprList.ExprChildren) {
+                string exprTmpName = Gen(x);
+                GenCommand("", "print", exprTmpName, "", "");
+            }
+        }
+
         void GenCommand(string label, string operation, string argument1, string argument2, string result)
         {
             Instructions.Add(new Instruction(label, operation, argument1, argument2, result));
@@ -121,7 +133,7 @@ namespace SimpleLang.Visitors
                 var unop = (UnOpNode)ex;
                 string argument1 = Gen(unop.Expr);
                 string result = ThreeAddressCodeTmp.GenTmpName();
-                GenCommand("", unop.Op.ToString(), argument1, null, result);
+                GenCommand("", unop.Op.ToString(), argument1, "", result);
                 return result;
             }
             else if (ex.GetType() == typeof(IdNode))

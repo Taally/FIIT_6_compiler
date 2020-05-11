@@ -13,9 +13,9 @@ namespace SimpleLang
             ThreeAddressCodeDefUse.DeleteDeadCode,
             ThreeAddressCodeFoldConstants.FoldConstants,
             ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
+            ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
             //ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
             //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
-            ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeCopyPropagation.PropagateCopies
         };

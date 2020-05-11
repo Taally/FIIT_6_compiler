@@ -1,4 +1,5 @@
 # FIIT_6_compiler
+![CI](https://github.com/Taally/FIIT_6_compiler/workflows/CI/badge.svg)
 
 |Название команды |Аббревиатура|Участники команды|
 |:-----------------:|:-------------:|:-----------------:|
