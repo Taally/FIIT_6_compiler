@@ -56,17 +56,18 @@ namespace SimpleCompiler
                         Console.WriteLine(instruction);
 
 
-                    //Console.WriteLine("\n\nOptimized three address code for block");
-                    //BasicBlockLeader basicBlock = new BasicBlockLeader();
-                    //var a = basicBlock.DivideLeaderToLeader(optResult);
-                    //foreach (var x in a)
-                    //{
-                    //    Console.WriteLine(x.Key + "-------------");
-                    //    foreach (var y in x.Value)
-                    //    {
-                    //        Console.WriteLine(y);
-                    //    }
-                    //}
+                    Console.WriteLine("\n\nOptimized three address code for block");
+                    BasicBlockLeader basicBlock = new BasicBlockLeader();
+                    var a = basicBlock.DivideLeaderToLeader(optResult);
+                    foreach (var x in a)
+                    {
+                        Console.WriteLine("---------------------------");
+                        for (int i = 0; i < x.GetInstructions.Count; i++)
+                        {
+                            Console.WriteLine(x.GetInstructions[i]);
+                        }
+                        
+                    }
 
                     Console.WriteLine(" \nDone");
                 }
