@@ -69,6 +69,34 @@ if(a > b)
         }
 
         [Test]
+        public void Test3()
+        {
+            var TAC = GenTAC(@"
+var a;
+goto 1;
+1: goto 2;
+2: goto 3;
+3: goto 4;
+4: a = 4;
+");
+            ThreeAddressCodeOptimizer.Optimizations.Clear();
+            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
+
+            var expected = new List<string>()
+            {
+                "goto 4",
+                "1: goto 4",
+                "2: goto 4",
+                "3: goto 4",
+                "4: a = 4",
+            };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public void TestGotoIfElseTACGen2()
         {
             var TAC = GenTAC(@"
