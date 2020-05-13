@@ -2,9 +2,12 @@
 using System.Linq;
 using SimpleLang;
 using NUnit.Framework;
+using System;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class FoldPropagateConstantsTest : TACTestsBase
     {
@@ -17,9 +20,11 @@ x = 14;
 y = 7 - x;
 x = x + x;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeFoldConstants.FoldConstants);
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeConstantPropagation.PropagateConstants);
+            var optimizations = new List<Optimization>
+            {
+                ThreeAddressCodeFoldConstants.FoldConstants,
+                ThreeAddressCodeConstantPropagation.PropagateConstants,
+            };
 
             var expected = new List<string>()
             {
@@ -29,7 +34,7 @@ x = x + x;
                 "#t2 = 28",
                 "x = 28"
             };
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -42,9 +47,11 @@ x = x + x;
 var a;
 a = 1 + 2 * 3 - 7;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeFoldConstants.FoldConstants);
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeConstantPropagation.PropagateConstants);
+            var optimizations = new List<Optimization>
+            {
+                ThreeAddressCodeFoldConstants.FoldConstants,
+                ThreeAddressCodeConstantPropagation.PropagateConstants,
+            };
 
             var expected = new List<string>()
             {
@@ -53,7 +60,7 @@ a = 1 + 2 * 3 - 7;
                 "#t3 = 0",
                 "a = 0"
             };
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

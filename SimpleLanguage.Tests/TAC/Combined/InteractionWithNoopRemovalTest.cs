@@ -10,18 +10,6 @@ namespace SimpleLanguage.Tests.TAC.Combined
     [TestFixture]
     public class InteractionWithNoopRemovalTest : TACTestsBase
     {
-        public List<Instruction> Optimize(
-            List<Instruction> tac,
-            List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>> optimizations
-        )
-        {
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            optimizations.ForEach(opt => 
-                ThreeAddressCodeOptimizer.Optimizations.Add(opt)
-            );
-            return ThreeAddressCodeOptimizer.OptimizeBlocks(tac);
-        }
-
         public void AssertEquality(List<Instruction> result, List<string> expected)
         {
             var resultStr = result.Select(x => x.ToString());
@@ -53,7 +41,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             };
             
-            var result = Optimize(TAC, opts);
+            var result = ThreeAddressCodeOptimizer.Optimize(TAC, opts);
             var expected = new List<String>
             {
                 "b = 22",
@@ -84,7 +72,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             };
 
-            var result = Optimize(TAC, opts);
+            var result = ThreeAddressCodeOptimizer.Optimize(TAC, opts);
             Assert.AreEqual(result[result.Count - 1].Operation, "noop");
         }
 
@@ -105,7 +93,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
             };
 
-            var result = Optimize(TAC, opts);
+            var result = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: opts);
 
             var expected = new List<String>
             {
@@ -133,7 +121,7 @@ var a;
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
             };
 
-            var result = Optimize(TAC, opts);
+            var result = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: opts);
 
             var expected = new List<string>
             {

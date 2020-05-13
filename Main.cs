@@ -57,18 +57,10 @@ namespace SimpleCompiler
                         Console.WriteLine(instruction);
 
 
-                    Console.WriteLine("\n\n Local optimized three address code for blocks");
-
-                    var bBlocks = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
-
-                    foreach (var x in bBlocks)
-                    {
-                        Console.WriteLine("---------------------------");
-                        for (int i = 0; i < x.GetInstructions().Count; i++)
-                        {
-                            Console.WriteLine(x.GetInstructions()[i]);
-                        }
-                    }
+                    Console.WriteLine("\n\nOptimized three address code");
+                    var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
+                    foreach (var x in optResult)
+                        Console.WriteLine(x);
 
 
                     // var optResult = ThreeAddressCodeOptimizer.OptimizeBlocks(bBlocks);
