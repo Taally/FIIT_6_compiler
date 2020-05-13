@@ -66,7 +66,7 @@
     <Compile Include="TACOptimizations\BasicBlock.cs" />
     <Compile Include="TACOptimizations\BasicBlockLeader.cs" />
     <Compile Include="TACOptimizations\ControlFlowGraph.cs" />
-    <Compile Include="TACOptimizations\ControlFlowGraphExtensions.cs" />
+    <Compile Include="DataFlowAnalysis\ControlFlowGraphExtensions.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />

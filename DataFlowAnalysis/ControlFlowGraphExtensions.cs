@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleLang.TACOptimizations
+namespace SimpleLang
 {
     public static class ControlFlowGraphExtensions
     {
-
         public static List<(int, BasicBlock)> GetChildsBasicBlocks(this ControlFlowGraph graph, BasicBlock block) => 
             graph.GetChildsBasicBlocks(graph.GetCurrentBasicBlocks().IndexOf(block));
 
