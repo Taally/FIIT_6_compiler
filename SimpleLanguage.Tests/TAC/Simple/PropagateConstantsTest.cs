@@ -30,7 +30,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "#t2 = 14 + 14",
                 "x = #t2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -57,7 +57,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "#t1 = 7 + 7",
                 "x = #t1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -79,7 +79,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "x = 5",
                 "x = 5",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -104,7 +104,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
         //        "#t1 = -5 + -5",
         //        "y = #t1"
         //    };
-        //    var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+        //    var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
         //        .Select(instruction => instruction.ToString());
 
         //    CollectionAssert.AreEqual(expected, actual);

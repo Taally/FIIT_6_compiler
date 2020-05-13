@@ -29,7 +29,7 @@ x = x + x;
                 "#t2 = 28",
                 "x = 28"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -53,7 +53,7 @@ a = 1 + 2 * 3 - 7;
                 "#t3 = 0",
                 "a = 0"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

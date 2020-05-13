@@ -31,7 +31,7 @@ if(a > b)
                 "L1: goto 6",
                 "6: a = 4",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -66,7 +66,7 @@ else
                 "6: a = 4",
                 "4: a = 6",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -94,7 +94,7 @@ goto 1;
                 "L1: goto 2",
                 "2: a = 5",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
