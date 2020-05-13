@@ -53,7 +53,8 @@ namespace SimpleLang
                 // question: how can we find starting BBl?
                 foreach (var block in graph.GetCurrentBasicBlocks().Skip(1))
                 {
-                    var parents = graph.GetParentBasicBlocks(-1).Select(z => z.Item2); // ??????????????????
+                    var index = graph.GetBlockIndex(block);
+                    var parents = graph.GetParentBasicBlocks(index).Select(z => z.Item2);
                     resultIn[block] = new List<Instruction>(parents.SelectMany(b => resultOut[b]).Distinct());
                     var outNew = gen[block].Union(resultIn[block].Except(kill[block]));
                     if (outNew.Except(resultOut[block]).Any())
