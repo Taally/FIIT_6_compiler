@@ -19,7 +19,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
             optimizations.ForEach(opt => 
                 ThreeAddressCodeOptimizer.Optimizations.Add(opt)
             );
-            return ThreeAddressCodeOptimizer.Optimize(tac);
+            return ThreeAddressCodeOptimizer.OptimizeBlocks(tac);
         }
 
         public void AssertEquality(List<Instruction> result, List<string> expected)

@@ -49,7 +49,7 @@ a = -b;
                 "#t4 = -b",
                 "a = #t4",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -72,7 +72,7 @@ a = 1;
                 "noop",
                 "a = 1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -95,7 +95,7 @@ a = !a;
                 "#t1 = !a",
                 "a = #t1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

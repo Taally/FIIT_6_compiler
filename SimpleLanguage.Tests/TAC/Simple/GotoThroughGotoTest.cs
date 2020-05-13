@@ -56,7 +56,7 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);
@@ -101,7 +101,7 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);
@@ -151,7 +151,7 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);
@@ -197,7 +197,7 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);

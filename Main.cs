@@ -4,7 +4,6 @@ using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
 using SimpleLang;
-using SimpleLang.TACOptimizations;
 using NUnit.Framework;
 using System.Collections.Generic;
 
@@ -57,36 +56,34 @@ namespace SimpleCompiler
                     foreach (var instruction in threeAddressCode)
                         Console.WriteLine(instruction);
 
-                    /*var optResult = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
-                    Console.WriteLine("\n\nOptimized three address code");
-                    foreach (var instruction in optResult)
-                        Console.WriteLine(instruction);*/
 
-                    Console.WriteLine("\n\nOptimized three address code for block");
-                    BasicBlockLeader basicBlock = new BasicBlockLeader();
-                    var bBlocks = basicBlock.DivideLeaderToLeader(threeAddressCode);
+                    Console.WriteLine("\n\n Local optimized three address code for blocks");
+
+                    var bBlocks = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
+
                     foreach (var x in bBlocks)
                     {
-                        Console.WriteLine(x.Key + "-------------");
-                        foreach (var y in x.Value)
+                        Console.WriteLine("---------------------------");
+                        for (int i = 0; i < x.GetInstructions().Count; i++)
                         {
-                            Console.WriteLine(y);
+                            Console.WriteLine(x.GetInstructions()[i]);
                         }
                     }
 
-                    var optResult = ThreeAddressCodeOptimizer.Optimize(bBlocks);
-                    Console.WriteLine("\n\nOptimized three address code");
+
+                    // var optResult = ThreeAddressCodeOptimizer.OptimizeBlocks(bBlocks);
+                    // Console.WriteLine("\n\nOptimized three address code");
                     /*foreach (var instruction in optResult)
                         Console.WriteLine(instruction);*/
 
-                    foreach (var x in optResult)
-                    {
-                        Console.WriteLine(x.Key + "-------------");
-                        foreach (var y in x.Value)
-                        {
-                            Console.WriteLine(y);
-                        }
-                    }
+                    // foreach (var x in optResult)
+                    // {
+                    //    Console.WriteLine(x.Key + "-------------");
+                    //    foreach (var y in x.Value)
+                    //    {
+                    //         Console.WriteLine(y);
+                    //    }
+                    // }
 
                     Console.WriteLine(" \nDone");
                 }
