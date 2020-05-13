@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class GotoThroughGotoTest : TACTestsBase
     {
@@ -48,15 +50,14 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
 
             //ThreeAddressCodeTmp.ResetTmpName();
             //ThreeAddressCodeTmp.ResetTmpLabel();
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);
@@ -93,15 +94,14 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
 
             //ThreeAddressCodeTmp.ResetTmpName();
             //ThreeAddressCodeTmp.ResetTmpLabel();
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);
@@ -143,15 +143,14 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
 
             //ThreeAddressCodeTmp.ResetTmpName();
             //ThreeAddressCodeTmp.ResetTmpLabel();
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);
@@ -189,15 +188,14 @@ var a;
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
 
             //ThreeAddressCodeTmp.ResetTmpName();
             //ThreeAddressCodeTmp.ResetTmpLabel();
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expectedOptimize, actual);

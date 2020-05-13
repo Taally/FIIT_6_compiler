@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class DeleteDeadCodeWithDeadVarsTest : TACTestsBase
     {
@@ -27,8 +29,7 @@ c = 1;
 b = a - c;
 a = -b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(DeleteDeadCodeWithDeadVars.DeleteDeadCode);
+            var optimizations = new List<Optimization> { DeleteDeadCodeWithDeadVars.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -49,7 +50,7 @@ a = -b;
                 "#t4 = -b",
                 "a = #t4",
             };
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -63,8 +64,7 @@ var a;
 a = -a;
 a = 1;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(DeleteDeadCodeWithDeadVars.DeleteDeadCode);
+            var optimizations = new List<Optimization> { DeleteDeadCodeWithDeadVars.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -72,7 +72,7 @@ a = 1;
                 "noop",
                 "a = 1"
             };
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -86,8 +86,7 @@ var a;
 a = true;
 a = !a;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(DeleteDeadCodeWithDeadVars.DeleteDeadCode);
+            var optimizations = new List<Optimization> { DeleteDeadCodeWithDeadVars.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -95,7 +94,7 @@ a = !a;
                 "#t1 = !a",
                 "a = #t1"
             };
-            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
