@@ -8,7 +8,7 @@ namespace SimpleLang
     {
         public static List<Def> DefList;
 
-        private static bool IsId(string id) =>
+        internal static bool IsId(string id) =>
             id != null && id != "" && id != "True" && id != "False" &&
                     (char.IsLetter(id[0]) || id[0] == '#' || id[0] == '_') && id[0] != 'L';
 

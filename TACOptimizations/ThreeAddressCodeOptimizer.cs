@@ -5,26 +5,38 @@ namespace SimpleLang
 {
     public static class ThreeAddressCodeOptimizer
     {
-        public static bool Changed { get; set; }
-        public static List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>> Optimizations { get; set; }
-        = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+        public static List<BasicBlock> Optimize(List<Instruction> instructions)
         {
-            ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
+            var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
+            for (int i = 0; i < blocks.Count; ++i) {
+                var blockInstructions = blocks[i].GetInstructions();
+                blocks[i] = new BasicBlock(OptimizeBlocks(blockInstructions));
+            }
+               
+            //Где здесь сбор из блоков обратно в целое представление
+            // и прогон глобальных оптимизаций
+            // и возможно разбитие на блоки обратно
+
+            return blocks;
+        }
+
+        public static List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>> Optimizations { get; set; }
+        = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>(){
+            //ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             ThreeAddressCodeDefUse.DeleteDeadCode,
             ThreeAddressCodeFoldConstants.FoldConstants,
-            ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
-            ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
-            //ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
-            //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+            //ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
+            //ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+            ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
+            DeleteDeadCodeWithDeadVars.DeleteDeadCode,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeCopyPropagation.PropagateCopies
         };
 
-        public static List<Instruction> Optimize(List<Instruction> instructions)
+        public static List<Instruction> OptimizeBlocks(List<Instruction> bBlocks)
         {
-            var result = instructions;
+            var result = bBlocks;
             int currentOpt = 0;
-
             while (currentOpt < Optimizations.Count)
             {
                 var answer = Optimizations[currentOpt++](result);
@@ -34,7 +46,6 @@ namespace SimpleLang
                     result = answer.Item2;
                 }
             }
-
             return result;
         }
     }

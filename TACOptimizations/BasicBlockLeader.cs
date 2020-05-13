@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleLang.TACOptimizations
+namespace SimpleLang
 {
     class BasicBlockLeader
     {
-
         //public Dictionary<int, List<Instruction>> DivideLeaderToLeader(List<Instruction> instructions)
-        public List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
-        {
+       static public List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
+       {
             //Dictionary<int, List<Instruction>> BasicBlockList = new Dictionary<int, List<Instruction>>();
             List<BasicBlock> basicBlockList = new List<BasicBlock>();
             List<Instruction> temp = new List<Instruction>();
@@ -67,7 +66,7 @@ namespace SimpleLang.TACOptimizations
             return basicBlockList;
         }
 
-        public bool IsLabelAlive(List<Instruction> instructions, string checkLabel) //Есть ли переход на метку ? 
+        static public bool IsLabelAlive(List<Instruction> instructions, string checkLabel) //Есть ли переход на метку ? 
         {
             for (int i = 0; i < instructions.Count; i++)
             {

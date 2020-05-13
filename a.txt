@@ -1,83 +1,100 @@
-var a, b, c, d, x, u, e,g, y,zz,i;
-1: a = false;
-b = true;
-100: a = b;
-101: if a
+var a, b, c, d, x, u, e,g, y,zz,i; 
+1: a = false; 
+b = true; 
+100: a = b; 
+101: if a 
+	a = b; 
+ 
+goto 201; 
+ 
+if a 
+	c = 5 + 6 + 7; 
+a = true; 
+ 
+while (true == false) 
+    a = 5; 
+ 
+goto 200; 
+ 
+200: while (false) 
+    b = 5; 
+201: c = 5 + 1; 
+ 
+goto 200; 
+ 
+111:a = 1; 
+goto 55; 
+55: goto 10; 
+10: goto 111; 
+if a>a goto 10; 
+else goto 111; 
+ 
+if (true)  
+	goto 45; 
+else 
+	c = 55; 
+ 
+c = c; 
+if a==b 
+	b = b; 
+ 
+a = -1; 
+b = -a; 
+c = -(a+b); 
+a = !b; 
+c = !(a == b); 
+ 
+a = !(!true); 
+a = a - - -1; 
+ 
+ 
+a = b != !b; 
+c = 1 != -1; 
+d = !!!b == !!!b; 
+if(!!!b == !!b) 
+	c = 1; 
+a = a - -(-(-b)); 
+ 
+y = u; 
+b = x; 
+x = 7; 
+x = 5/1-4+1*8; 
+c = x + 1; 
+d = c + 1; 
+g = d + 1; 
+g = b + 7; 
+e = y; 
+b = 0 + e; 
+b = -1-4; 
+g = b; 
+ 
+x = zz; 
+ 
+777: while x < 25 { 
+	x = x + 1; 
+	x = x * 2; 
+} 
+ 
+for i=2,7 
+	x = x + 1; 
+ 
+zz = 1; 
+input(zz); 
+print(zz, a, b); 
+
+if c > a
+{
+	a = c;
+	a = 1;
+}
+else 
+{	b = 1;
 	a = b;
-
-goto 201;
-
-if a
-	c = 5 + 6 + 7;
-a = true;
-
-while (true == false)
-    a = 5;
-
-goto 200;
-
-200: while (false)
-    b = 5;
-201: c = 5 + 1;
-
-goto 200;
-
-111:a = 1;
-goto 55;
-55: goto 10;
-10: goto 111;
-if a>a goto 10;
-else goto 111;
-
-if (true) 
-	goto 45;
-else
-	c = 55;
-
-c = c;
-if a==b
-	b = b;
-
-a = -1;
-b = -a;
-c = -(a+b);
-a = !b;
-c = !(a == b);
-
-a = !(!true);
-a = a - - -1;
-
-
-a = b != !b;
-c = 1 != -1;
-d = !!!b == !!!b;
-if(!!!b == !!b)
-	c = 1;
-a = a - -(-(-b));
-
-y = u;
-b = x;
-x = 7;
-x = 5/1-4+1*8;
-c = x + 1;
-d = c + 1;
-g = d + 1;
-g = b + 7;
-e = y;
-b = 0 + e;
-b = -1-4;
-g = b;
-
-x = zz;
-
-777: while x < 25 {
-	x = x + 1;
-	x = x * 2;
+	b = 20;
+	a = 11;
 }
 
-for i=2,7
-	x = x + 1;
-
-zz = 1;
-input(zz);
-print(zz, a, b);
+for i=1,10
+{	a = a + 3;
+	a = b + 1;
+}	
