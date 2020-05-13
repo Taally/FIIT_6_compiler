@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleLang.DataFlowAnalysis
+namespace SimpleLang
 {
     class ReachingDefinitions
     {
@@ -15,7 +15,7 @@ namespace SimpleLang.DataFlowAnalysis
             foreach (var block in graph.GetCurrentBasicBlocks())
             {
                 var used = new HashSet<string>();
-                foreach (var inst in block.GetInstructions.Reverse())
+                foreach (var inst in block.GetInstructions().Reverse<Instruction>())
                     if (inst.Operation == "assign" && !used.Contains(inst.Result))
                     {
                         definitions.Add(new DefinitionInfo { Instruction = inst, BasicBlock = block });
@@ -53,7 +53,7 @@ namespace SimpleLang.DataFlowAnalysis
                 // question: how can we find starting BBl?
                 foreach (var block in graph.GetCurrentBasicBlocks().Skip(1))
                 {
-                    var parents = graph.GetParentBasicBlock(-1); // ??????????????????
+                    var parents = graph.GetParentBasicBlocks(-1).Select(z => z.Item2); // ??????????????????
                     resultIn[block] = new List<Instruction>(parents.SelectMany(b => resultOut[b]).Distinct());
                     var outNew = gen[block].Union(resultIn[block].Except(kill[block]));
                     if (outNew.Except(resultOut[block]).Any())
