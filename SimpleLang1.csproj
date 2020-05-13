@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="packages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('packages\NUnit.3.12.0\build\NUnit.props')" />
   <PropertyGroup>
@@ -66,6 +66,7 @@
     <Compile Include="TACOptimizations\BasicBlock.cs" />
     <Compile Include="TACOptimizations\BasicBlockLeader.cs" />
     <Compile Include="TACOptimizations\ControlFlowGraph.cs" />
+    <Compile Include="TACOptimizations\ControlFlowGraphExtensions.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />

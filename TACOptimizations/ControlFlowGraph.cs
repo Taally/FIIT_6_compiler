@@ -74,7 +74,5 @@ namespace SimpleLang
         public List<(int, BasicBlock)> GetChildsBasicBlocks(int index) => _childs[index];
 
         public List<(int, BasicBlock)> GetParentBasicBlocks(int index) => _parents[index];
-
-        public int GetBlockIndex(BasicBlock block) => _basicBlocks.IndexOf(block);
     }
 }
