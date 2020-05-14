@@ -62,20 +62,15 @@ namespace SimpleCompiler
                     foreach (var x in optResult)
                         Console.WriteLine(x);
 
+                    Console.WriteLine("\n\nDivided three address code");
+                    var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
 
-                    // var optResult = ThreeAddressCodeOptimizer.OptimizeBlocks(bBlocks);
-                    // Console.WriteLine("\n\nOptimized three address code");
-                    /*foreach (var instruction in optResult)
-                        Console.WriteLine(instruction);*/
-
-                    // foreach (var x in optResult)
-                    // {
-                    //    Console.WriteLine(x.Key + "-------------");
-                    //    foreach (var y in x.Value)
-                    //    {
-                    //         Console.WriteLine(y);
-                    //    }
-                    // }
+                    foreach (var x in divResult)
+                    {
+                        foreach (var y in x.GetInstructions())
+                            Console.WriteLine(y);
+                        Console.WriteLine("--------------");
+                    }
 
                     Console.WriteLine(" \nDone");
                 }
