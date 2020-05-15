@@ -446,40 +446,6 @@ a = 3;
         }
 
         [Test]
-        public void IfDead()
-        {
-            var TAC = GenTAC(@"
-var a, b, c;
-a = 2;
-if a
-{
-b = 1;
-c = b + 3;
-}
-c = 1;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
-
-            var expected = new List<string>()
-            {
-                "a = 2",
-                "if a goto L1",
-                "goto L2",
-                "L1: b = 1",
-                "noop",
-                "noop",
-                "L2: noop",
-                "c = 1"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
-
-            // TODO: исправить тест
-            //CollectionAssert.AreEqual(expected, actual);
-        }
-
-
-        [Test]
         public void DefUseTest()
         {
             var TAC = GenTAC(@"
