@@ -26,8 +26,10 @@ b = a - 0;
 b = 0 - a;
 b = b / b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities);
+            var optimizations = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>
+            { 
+                ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities
+            };
 
             var expected = new List<string>()
             {
@@ -54,7 +56,7 @@ b = b / b;
                 "#t11 = 1",
                 "b = #t11"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

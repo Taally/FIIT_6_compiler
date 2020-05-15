@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class DefUseTests : TACTestsBase
     {
@@ -17,15 +19,14 @@ var a, b, x;
 x = a;
 x = b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
                 "noop",
                 "x = b"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -39,8 +40,7 @@ var a, b, x;
 x = -a;
 x = b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -48,7 +48,7 @@ x = b;
                 "noop",
                 "x = b"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -62,8 +62,7 @@ var a, b, x;
 x = a;
 x = -b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -71,7 +70,7 @@ x = -b;
                 "#t1 = -b",
                 "x = #t1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -85,15 +84,14 @@ var x;
 x = 1;
 x = 2;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
                 "noop",
                 "x = 2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -107,8 +105,7 @@ var x;
 x = -1;
 x = 2;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -116,7 +113,7 @@ x = 2;
                 "noop",
                 "x = 2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -130,8 +127,7 @@ var x;
 x = 1;
 x = -2;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -139,7 +135,7 @@ x = -2;
                 "#t1 = -2",
                 "x = #t1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -153,8 +149,7 @@ var a, b, x;
 x = a or b;
 x = !x;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -163,7 +158,7 @@ x = !x;
                 "#t2 = !x",
                 "x = #t2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -176,8 +171,7 @@ var a, b, x;
 x = a or b;
 x = !a;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -186,7 +180,7 @@ x = !a;
                 "#t2 = !a",
                 "x = #t2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -201,8 +195,7 @@ a = 2;
 b = a + 4;
 c = a * b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -212,7 +205,7 @@ c = a * b;
                 "#t2 = a * b",
                 "c = #t2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -226,8 +219,7 @@ a = 1;
 input(a);
 b = a + 1;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -237,7 +229,7 @@ b = a + 1;
                 "b = #t1"
             };
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -253,8 +245,7 @@ print(a);
 input(a);
 b = a + 1;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -265,7 +256,7 @@ b = a + 1;
                 "b = #t1"
             };
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -280,8 +271,7 @@ input(a);
 input(a);
 b = a + 1;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -291,7 +281,7 @@ b = a + 1;
                 "b = #t1"
             };
 
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -306,8 +296,7 @@ a = (2 + x) - a;
 b = (c * 3) - (b / 4);
 c = (a * 10 + b * 2) / 3;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -324,7 +313,7 @@ c = (a * 10 + b * 2) / 3;
                 "#t9 = #t8 / 3",
                 "c = #t9"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -342,8 +331,7 @@ a = 1;
 b = 1;
 c = 1;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -363,14 +351,14 @@ c = 1;
                 "b = 1",
                 "c = 1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
         }
 
 /* For now it is working only for one Base Block, so we don't need these tests (yet). */
-/*
+
         [Test]
         public void GotoNoDead()
         {
@@ -382,8 +370,7 @@ b = 2;
 777: 
 c = 1;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -393,7 +380,7 @@ c = 1;
                 "b = 2",
                 "777: c = 1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -409,8 +396,7 @@ goto 777;
 777: c = 1;
 c = 2;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -420,7 +406,7 @@ c = 2;
                 "777: noop",
                 "c = 2"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -440,8 +426,7 @@ c = b + 3;
 }
 a = 3;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -454,45 +439,11 @@ a = 3;
                 "L2: noop",
                 "a = 3"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
         }
-
-        [Test]
-        public void IfDead()
-        {
-            var TAC = GenTAC(@"
-var a, b, c;
-a = 2;
-if a
-{
-b = 1;
-c = b + 3;
-}
-c = 1;
-");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
-
-            var expected = new List<string>()
-            {
-                "a = 2",
-                "if a goto L1",
-                "goto L2",
-                "L1: b = 1",
-                "noop",
-                "noop",
-                "L2: noop",
-                "c = 1"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
-                .Select(instruction => instruction.ToString());
-
-            CollectionAssert.AreEqual(expected, actual);
-        }
-*/
 
         [Test]
         public void DefUseTest()
@@ -512,8 +463,7 @@ c = 1;
 b = a - c;
 a = -b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeDefUse.DeleteDeadCode);
+            var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
 
             var expected = new List<string>()
             {
@@ -534,7 +484,7 @@ a = -b;
                 "#t4 = -b",
                 "a = #t4",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

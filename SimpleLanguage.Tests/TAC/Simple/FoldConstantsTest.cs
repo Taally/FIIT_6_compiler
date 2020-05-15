@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class FoldConstantsTest : TACTestsBase
     {
@@ -19,8 +21,7 @@ a = 4 * 2;
 a = 10 / 5;
 a = 9 + 3;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeFoldConstants.FoldConstants);
+            var optimizations = new List<Optimization> { ThreeAddressCodeFoldConstants.FoldConstants };
 
             var expected = new List<string>()
             {
@@ -33,7 +34,7 @@ a = 9 + 3;
                 "#t4 = 12",
                 "a = #t4"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

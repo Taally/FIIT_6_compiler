@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class GotoToGotoTest : TACTestsBase
     {
@@ -21,8 +23,7 @@ var a, b;
 5: goto 6;
 6: a = b;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
             var expected = new List<string>()
             {
@@ -33,7 +34,7 @@ var a, b;
                 "5: goto 6",
                 "6: a = b",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -49,8 +50,7 @@ if(a > b)
 	goto 6;
 6: a = 4;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
             var expected = new List<string>()
             {
@@ -62,7 +62,34 @@ if(a > b)
                 "L2: noop",
                 "6: a = 4",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Test3()
+        {
+            var TAC = GenTAC(@"
+var a;
+goto 1;
+1: goto 2;
+2: goto 3;
+3: goto 4;
+4: a = 4;
+");
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
+
+            var expected = new List<string>()
+            {
+                "goto 4",
+                "1: goto 4",
+                "2: goto 4",
+                "3: goto 4",
+                "4: a = 4",
+            };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -82,8 +109,7 @@ else
 4: a = 6;
 
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
             var expected = new List<string>()
             {
@@ -97,7 +123,7 @@ else
                 "6: a = 4",
                 "4: a = 6",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -113,8 +139,7 @@ goto 1;
     goto 2;
 2: a = 5;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
             var expected = new List<string>()
             {
@@ -125,7 +150,7 @@ goto 1;
                 "L2: noop",
                 "2: a = 5",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
