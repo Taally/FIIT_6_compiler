@@ -62,8 +62,10 @@ namespace SimpleLang
                         break;
 
                     default:
-                        _children[i].Add((i + 1, basicBlocks[i + 1]));
-                        _parents[i + 1].Add((i, basicBlocks[i]));
+                        if (i < basicBlocks.Count - 1)
+                            _children[i].Add((i + 1, basicBlocks[i + 1]));
+                        if (i > 0)
+                            _parents[i + 1].Add((i, basicBlocks[i]));
                         break;
                 }
             }
