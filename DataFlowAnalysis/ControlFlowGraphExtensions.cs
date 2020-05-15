@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SimpleLang
 {
     public static class ControlFlowGraphExtensions
     {
-        public static List<(int, BasicBlock)> GetChildsBasicBlocks(this ControlFlowGraph graph, BasicBlock block) => 
-            graph.GetChildsBasicBlocks(graph.GetCurrentBasicBlocks().IndexOf(block));
+        public static List<(int, BasicBlock)> GetChildrenBasicBlocks(this ControlFlowGraph graph, BasicBlock block) => 
+            graph.GetChildrenBasicBlocks(graph.GetCurrentBasicBlocks().IndexOf(block));
 
-        public static List<(int, BasicBlock)> GetParentBasicBlocks(this ControlFlowGraph graph, BasicBlock block) => 
-            graph.GetParentBasicBlocks(graph.GetCurrentBasicBlocks().IndexOf(block));
+        public static List<(int, BasicBlock)> GetParentsBasicBlocks(this ControlFlowGraph graph, BasicBlock block) => 
+            graph.GetParentsBasicBlocks(graph.GetCurrentBasicBlocks().IndexOf(block));
     }
 }

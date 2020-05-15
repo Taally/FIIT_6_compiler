@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
@@ -24,12 +21,10 @@ namespace SimpleLang
             }
 
             // 2. Finding all 'gen' and 'kill'
-            var genRaw = new List<DefinitionInfo>();
             var killRaw = new List<DefinitionInfo>();
             var lookup = definitions.GroupBy(info => info.Instruction.Result);
             foreach (var group in lookup)
             {
-                genRaw.AddRange(group);
                 foreach (var def in group)
                 {
                     var killBlocks = group.Select(g => g.BasicBlock).Where(b => b != def.BasicBlock);
@@ -37,7 +32,7 @@ namespace SimpleLang
                 }
             }
 
-            var gen = genRaw.ToLookup(z => z.BasicBlock, z => z.Instruction);
+            var gen = definitions.ToLookup(z => z.BasicBlock, z => z.Instruction);
             var kill = killRaw.ToLookup(z => z.BasicBlock, z => z.Instruction);
 
             // 3. Running an algorithm
@@ -46,19 +41,18 @@ namespace SimpleLang
             foreach (var block in graph.GetCurrentBasicBlocks())
                 resultOut[block] = new List<Instruction>();
 
-            var flag = true;
-            while (flag)
+            var outWasChanged = true;
+            while (outWasChanged)
             {
-                flag = false;
-                // question: how can we find starting BBl?
-                foreach (var block in graph.GetCurrentBasicBlocks().Skip(1))
+                outWasChanged = false;
+                foreach (var block in graph.GetCurrentBasicBlocks())
                 {
-                    var parents = graph.GetParentBasicBlocks(block).Select(z => z.Item2);
+                    var parents = graph.GetParentsBasicBlocks(block).Select(z => z.Item2);
                     resultIn[block] = new List<Instruction>(parents.SelectMany(b => resultOut[b]).Distinct());
                     var outNew = gen[block].Union(resultIn[block].Except(kill[block]));
                     if (outNew.Except(resultOut[block]).Any())
                     {
-                        flag = true;
+                        outWasChanged = true;
                         resultOut[block] = outNew;
                     }
                 }
