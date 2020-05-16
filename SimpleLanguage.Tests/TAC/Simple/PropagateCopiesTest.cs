@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class PropagateCopiesTest : TACTestsBase
     {
@@ -22,8 +24,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 k = c + a;
                 ");
 
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeCopyPropagation.PropagateCopies);
+            var optimizations = new List<Optimization> { ThreeAddressCodeCopyPropagation.PropagateCopies };
 
             var expected = new List<string>()
             {
@@ -39,7 +40,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "#t5 = #t1 + #t4",
                 "k = #t5"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -56,8 +57,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 d = c;
                 e = d;
                 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeCopyPropagation.PropagateCopies);
+            var optimizations = new List<Optimization> { ThreeAddressCodeCopyPropagation.PropagateCopies };
 
             var expected = new List<string>()
             {
@@ -68,7 +68,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "d = #t1",
                 "e = #t1"
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -83,8 +83,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 b = d + a;
                 e = a;
                 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeCopyPropagation.PropagateCopies);
+            var optimizations = new List<Optimization> { ThreeAddressCodeCopyPropagation.PropagateCopies };
 
             var expected = new List<string>()
             {
@@ -93,7 +92,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "b = #t1",
                 "e = a",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

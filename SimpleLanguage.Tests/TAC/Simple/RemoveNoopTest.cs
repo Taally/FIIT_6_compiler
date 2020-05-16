@@ -145,8 +145,10 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("7", "noop", null, null, null),
                 new Instruction("8", "noop", null, null, null),
             };
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveNoop.RemoveEmptyNodes);
+            var optimizations = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>
+            {
+                ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
+            };
 
             var expected = new List<string>()
             {
@@ -154,7 +156,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "6: b = a",
                 "8: noop" 
              };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

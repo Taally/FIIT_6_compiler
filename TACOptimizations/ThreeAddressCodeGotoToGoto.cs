@@ -40,15 +40,23 @@ namespace SimpleLang
 
             for (int i = 0; i < tmpcommands.Count; i++)
             {
+
                 if (tmpcommands[i].Operation == "goto")
                 {
                     for (int j = 0; j < list.Count; j++)
                     {
                         if (list[j].label == tmpcommands[i].Argument1)
                         {
-                            changed = true;
-                            int index = i >= list.Count ? j - 1 : i;
-                            tmpcommands[i] = new Instruction(list[index].label, "goto", list[j].labelfrom.ToString(), "", "");
+                            if (tmpcommands[i].Argument1.ToString() == list[j].labelfrom.ToString())
+                            {
+                                changed |= false;
+                            }
+                            else
+                            {
+                                changed |= true;
+                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "goto", list[j].labelfrom.ToString(), "", "");
+                            }
+
                         }
                     }
                 }
@@ -59,8 +67,17 @@ namespace SimpleLang
                     {
                         if (list[j].label == tmpcommands[i].Argument2)
                         {
-                            changed = true;
-                            tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), "");
+
+                            if (tmpcommands[i].Argument2.ToString() == list[j].labelfrom.ToString())
+                            {
+                                changed |= false;
+                            }
+                            else
+                            {
+                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), "");
+                                changed |= true;
+                            }
+
                         }
                     }
                 }

@@ -4,7 +4,6 @@ using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
 using SimpleLang;
-using SimpleLang.TACOptimizations;
 using NUnit.Framework;
 using System.Collections.Generic;
 
@@ -21,6 +20,13 @@ namespace SimpleCompiler
 
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
+
+                /*Console.WriteLine(" \nDefUseSet");
+                var livev = new LiveVariableAnalysis();
+                livev.FillDefUse();
+                Console.WriteLine(livev.ToString());
+                */
+
 
                 Parser parser = new Parser(scanner);
 
@@ -50,26 +56,21 @@ namespace SimpleCompiler
                     foreach (var instruction in threeAddressCode)
                         Console.WriteLine(instruction);
 
-                    var optResult = ThreeAddressCodeOptimizer.Optimize(threeAddressCode);
+
                     Console.WriteLine("\n\nOptimized three address code");
-                    foreach (var instruction in optResult)
-                        Console.WriteLine(instruction);
+                    var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
+                    foreach (var x in optResult)
+                        Console.WriteLine(x);
 
+                    Console.WriteLine("\n\nDivided three address code");
+                    var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
 
-                    Console.WriteLine("\n\nOptimized three address code for block");
-                    BasicBlockLeader basicBlock = new BasicBlockLeader();
-                    var a = basicBlock.DivideLeaderToLeader(optResult);
-                    foreach (var x in a)
+                    foreach (var x in divResult)
                     {
-                        Console.WriteLine("---------------------------");
-                        for (int i = 0; i < x.GetInstructions().Count; i++)
-                        {
-                            Console.WriteLine(x.GetInstructions()[i]);
-                        }
-                        
+                        foreach (var y in x.GetInstructions())
+                            Console.WriteLine(y);
+                        Console.WriteLine("--------------");
                     }
-
-                    // var cfg = new ControlFlowGraph(a);
 
                     Console.WriteLine(" \nDone");
                 }

@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using SimpleLang;
 using NUnit.Framework;
+using System;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {
+    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+
     [TestFixture]
     class GotoToGotoTest : TACTestsBase
     {
@@ -18,9 +21,11 @@ if(a > b)
 	goto 6;
 6: a = 4;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveNoop.RemoveEmptyNodes);
+            var optimizations = new List<Optimization>
+            {
+                ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+                ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
+            };
 
             var expected = new List<string>()
             {
@@ -31,7 +36,7 @@ if(a > b)
                 "L1: goto 6",
                 "6: a = 4",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -51,9 +56,11 @@ else
 4: a = 6;
 
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveNoop.RemoveEmptyNodes);
+            var optimizations = new List<Optimization>
+            {
+                ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+                ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
+            };
 
             var expected = new List<string>()
             {
@@ -66,7 +73,7 @@ else
                 "6: a = 4",
                 "4: a = 6",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -82,9 +89,11 @@ goto 1;
     goto 2;
 2: a = 5;
 ");
-            ThreeAddressCodeOptimizer.Optimizations.Clear();
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto);
-            ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeRemoveNoop.RemoveEmptyNodes);
+            var optimizations = new List<Optimization>
+            {
+                ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+                ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
+            };
 
             var expected = new List<string>()
             {
@@ -94,7 +103,7 @@ goto 1;
                 "L1: goto 2",
                 "2: a = 5",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);

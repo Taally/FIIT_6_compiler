@@ -33,7 +33,7 @@
 ////                "#t4 = 12",
 ////                "a = #t4"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -59,7 +59,7 @@
 ////                "#t2 = 14 + 14",
 ////                "x = #t2"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -94,7 +94,7 @@
 ////                "#t5 = c + a",
 ////                "k = #t5"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -140,7 +140,7 @@
 ////                "#t4 = -b",
 ////                "a = #t4",
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -163,7 +163,7 @@
 ////                "noop",
 ////                "a = 1"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -186,7 +186,7 @@
 ////                "#t1 = !a",
 ////                "a = #t1"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -233,7 +233,7 @@
 ////                "#t4 = -b",
 ////                "a = #t4",
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -263,7 +263,7 @@
 ////                "5: goto 6",
 ////                "6: a = b",
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -291,7 +291,7 @@
 //        //        "3: a = 1",
 //        //        "6: b = a",
 //        //    };
-//        //    var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+//        //    var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 //        //        .Select(instruction => instruction.ToString());
 
 //        //    CollectionAssert.AreEqual(expected, actual);
@@ -342,7 +342,7 @@
 ////                "#t11 = 1",
 ////                "b = #t11"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
@@ -372,7 +372,7 @@
 ////                "3: a = 0",
 ////                "4: a = 1"
 ////            };
-////            var actual = ThreeAddressCodeOptimizer.Optimize(TAC)
+////            var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
 ////                .Select(instruction => instruction.ToString());
 
 ////            CollectionAssert.AreEqual(expected, actual);
