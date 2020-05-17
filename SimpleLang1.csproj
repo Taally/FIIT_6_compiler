@@ -70,6 +70,7 @@
     <Compile Include="DataFlowAnalysis\ControlFlowGraphExtensions.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
+    <Compile Include="DataFlowAnalysis\OptimizedGenericIterativeAlgorithm.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeDefUse.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeFoldConstants.cs" />

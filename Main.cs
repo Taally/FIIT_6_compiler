@@ -7,6 +7,7 @@ using SimpleLang;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleCompiler
 {
@@ -86,6 +87,24 @@ namespace SimpleCompiler
                         var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
                         var parentsStr = String.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
+                    }
+
+
+                    var a = new OptimizedGenericIterativeAlgorithm();
+                    var tmp = new ReachingDefinitions();
+                    var res = a.Analyze(cfg, tmp.Execute(cfg), new ReachingTransferFunc(cfg));
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    foreach (var Superres in res)
+                    {
+                        Console.WriteLine("BasicBloc---------------------");
+                        foreach (var y1 in Superres.Key.GetInstructions())
+                            Console.WriteLine(y1);
+                        Console.WriteLine("MyOut---------------------");
+                        foreach (var y2 in Superres.Value)
+                            Console.WriteLine(y2);
                     }
 
                     Console.WriteLine(" \nDone");
