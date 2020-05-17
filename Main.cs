@@ -22,13 +22,6 @@ namespace SimpleCompiler
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
 
-                /*Console.WriteLine(" \nDefUseSet");
-                var livev = new LiveVariableAnalysis();
-                livev.FillDefUse();
-                Console.WriteLine(livev.ToString());
-                */
-
-
                 Parser parser = new Parser(scanner);
 
                 var b = parser.Parse();
@@ -87,6 +80,10 @@ namespace SimpleCompiler
                         var parentsStr = String.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
                     }
+
+                    var activeVariable = new LiveVariableAnalysis();
+                    activeVariable.Execute(cfg);
+                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");
 
                     Console.WriteLine(" \nDone");
                 }
