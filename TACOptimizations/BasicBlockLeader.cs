@@ -2,7 +2,7 @@
 
 namespace SimpleLang
 {
-    class BasicBlockLeader
+    public class BasicBlockLeader
     {
         //public Dictionary<int, List<Instruction>> DivideLeaderToLeader(List<Instruction> instructions)
        static public List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
