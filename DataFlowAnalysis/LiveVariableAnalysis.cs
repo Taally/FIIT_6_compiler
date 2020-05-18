@@ -76,7 +76,7 @@ namespace SimpleLang
                     var pred = dictInOut[i].IN;
                     //Вычисляем IN текущего блока
                     dictInOut[i].IN =
-                        (dictInOut[i].IN.Union(dictDefUse[i].use))
+                        (new HashSet<string>().Union(dictDefUse[i].use))
                         .Union(dictInOut[i].OUT.Except(dictDefUse[i].def))
                         .ToHashSet();
 
