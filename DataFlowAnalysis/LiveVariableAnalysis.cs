@@ -2,17 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ProgramTree;
 
 namespace SimpleLang
 {
-    class InOutSet {
+    public class InOutSet {
         public HashSet<string> IN { get; set; }
         public HashSet<string> OUT { get; set; }
 
         public InOutSet() {
             IN = new HashSet<string>();
             OUT = new HashSet<string>();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder();
+            str.Append("{");
+            foreach (string i in IN)
+                str.Append($" {i}");
+            str.Append(" } ");
+            str.Append("{");
+            foreach (string i in OUT)
+                str.Append($" {i}");
+            str.Append(" } ");
+
+            return str.ToString();
         }
     }
 
@@ -33,87 +47,40 @@ namespace SimpleLang
     }
 
 
-    class LiveVariableAnalysis{
-        Stack<BasicBlock> st; //надо как-то по-солиднее назвать
-        Dictionary<int, InOutSet> dictInOut; //надо как-то по-солиднее назвать
+    public class LiveVariableAnalysis{
+        Stack<BasicBlock> st; 
+        public Dictionary<int, InOutSet> dictInOut; 
         Dictionary<int, DefUseSet> dictDefUse;
 
         public void Execute(ControlFlowGraph cfg) {
-            //Находим последний блок, записываем его родителей в стек, его пустой IN в словарь
-            var cur = cfg.VertexOf(cfg.GetCurrentBasicBlocks().Last());
-            dictInOut.Add(cur, new InOutSet());
-            dictDefUse.Add(cur, new DefUseSet());
-            //Запихнули всех родителей в стек
-            foreach (var (i,block) in cfg.GetParentsBasicBlocks(cur)) {
-                st.Push(block);
+            var blocks = cfg.GetCurrentBasicBlocks();
+
+            foreach (var x in blocks) {
+                int n = cfg.VertexOf(x);
+                dictInOut.Add(n,new InOutSet());
+                dictDefUse.Add(n, new DefUseSet(FillDefUse(x.GetInstructions())));
             }
 
-            var currentBlock = st.Peek();
+            bool isChanged = true;
+            while (isChanged){
+                isChanged = false;
+                for (int i = blocks.Count - 3; i > 0; --i){
+                    var children = cfg.GetChildrenBasicBlocks(i);
 
-            while (true) {
-                //Пока есть родители у блока, подумать над правильностью
-                while (true) {
-                    int num = cfg.VertexOf(currentBlock);
+                    //Вычисляем OUT текущего блока
+                    dictInOut[i].OUT =
+                        children
+                        .Select(x => dictInOut[x.Item1].IN)
+                        .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
 
-                    //Если этот блок есть в словаре - мы его не вычисляем
-                    if (dictInOut.ContainsKey(num)) {
-                        st.Pop();
-                        currentBlock = st.Peek();
-                        continue;
-                    }
-                       
-                    var children = cfg.GetChildrenBasicBlocks(num);
+                    var pred = dictInOut[i].IN;
+                    //Вычисляем IN текущего блока
+                    dictInOut[i].IN =
+                        (dictInOut[i].IN.Union(dictDefUse[i].use))
+                        .Union(dictInOut[i].OUT.Except(dictDefUse[i].def))
+                        .ToHashSet();
 
-                    //Если все дети вычислены
-                    if (children.All(x => dictInOut.ContainsKey(x.Item1)))
-                    {
-                        dictInOut.Add(num, new InOutSet());
-                        //Вычисляем OUT текущего блока
-                        dictInOut[num].OUT =
-                            children
-                            .Select(x => dictInOut[x.Item1].IN)
-                            .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
-
-                        //Вычисляем def-use текущего блока
-                        dictDefUse.Add(num,
-                            new DefUseSet(FillDefUse(currentBlock.GetInstructions())));
-
-                        //Вычисляем IN текущего блока
-                        dictInOut[num].IN =
-                            (dictInOut[num].IN.Union(dictDefUse[num].use))
-                            .Union(dictInOut[num].OUT.Except(dictDefUse[num].def))
-                            .ToHashSet();
-                        st.Pop();
-                        //Если нет родителей - выходим из цикла и проверяем, входной это блок или нет
-                        if (cfg.GetParentsBasicBlocks(num).Count == 0)
-                            break;
-                        //Если родители есть - добавляем в стек
-                        foreach (var (i, block) in cfg.GetParentsBasicBlocks(num))
-                            st.Push(block);
-                    }
-                    //Если дети не вычислены
-                    else {
-                        //Ищем кто не вычислен и запихиваем в стек
-                        foreach (var ch in children.Where(x => !dictInOut.ContainsKey(x.Item1)))
-                            st.Push(ch.Item2); 
-                    }
-
-                    currentBlock = st.Peek();
-                }
-
-                //Проверяем, входной это блок или нет. Если да - значит информация построена вся
-                if (currentBlock == cfg.GetCurrentBasicBlocks().First())
-                    break;
-                //Если нет, значит цепочка оборвана. Либо мы берем следующий блок из стека
-                if (st.Count != 0)
-                    currentBlock = st.Peek();
-                //Иначе ищем по блокам последний из тех, кто еще не вычислен
-                else {
-                    currentBlock = cfg.GetCurrentBasicBlocks()
-                        .Where(x => !dictInOut.ContainsKey(cfg.VertexOf(x)))
-                        .LastOrDefault();
-                    if (currentBlock == default(BasicBlock))
-                        throw new Exception("А так может быть??");
+                    isChanged = !dictInOut[i].IN.SetEquals(pred) || isChanged;
                 }
             }
         }
@@ -153,7 +120,6 @@ namespace SimpleLang
                 foreach (var b in x.GetInstructions()) {
                     str.Append(b.ToString() + "\n");
                 }
-                
                 str.Append($"\n\n---use set---\n");
                 str.Append("{");
                 foreach (string i in dictDefUse[n].use)

@@ -20,7 +20,7 @@ namespace SimpleLang
             new OptExprTransformUnaryToValue(),
             new OptExprFoldUnary(),
             new OptExprAlgebraic(),
-            new OptExprSubEqualVar()
+            //new OptExprSubEqualVar()
         };
 
         public static void Optimize(Parser parser)
