@@ -51,14 +51,14 @@ namespace SimpleCompiler
                         Console.WriteLine(instruction);
 
 
-                    //Console.WriteLine("\n\nOptimized three address code");
-                    //var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
-                    //foreach (var x in optResult)
-                        //Console.WriteLine(x);
+                    Console.WriteLine("\n\nOptimized three address code");
+                    var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
+                    foreach (var x in optResult)
+                        Console.WriteLine(x);
 
                     Console.WriteLine("\n\nDivided three address code");
-                    //var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
-                    var divResult = BasicBlockLeader.DivideLeaderToLeader(threeAddressCode);
+                    var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
+                    
 
                     foreach (var x in divResult)
                     {
@@ -82,9 +82,9 @@ namespace SimpleCompiler
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 
-                    var activeVariable = new LiveVariableAnalysis();
+                    /*var activeVariable = new LiveVariableAnalysis();
                     activeVariable.Execute(cfg);
-                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");/**/
+                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
 
                     Console.WriteLine(" \nDone");
                 }

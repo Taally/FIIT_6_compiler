@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SimpleLang;
 
@@ -26,9 +24,12 @@ print (c);"
             List<(HashSet<string> IN, HashSet<string> OUT)> expected = 
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
                     (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ }),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ })
+                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+                    (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
 
             var actual = Execute(TAC);
@@ -52,10 +53,13 @@ print (c);"
             List<(HashSet<string> IN, HashSet<string> OUT)> expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
-                    (new HashSet<string>(){"a"}, new HashSet<string>(){"a","b"}),
-                    (new HashSet<string>(){"a","b"}, new HashSet<string>(){"b"}),
-                    (new HashSet<string>(){ }, new HashSet<string>(){ }),
-                    (new HashSet<string>(){"b"}, new HashSet<string>(){ "a", "b"})
+                    (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","c"}),
+                    (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","b","c"}),
+                    (new HashSet<string>(){"a","b","c"}, new HashSet<string>(){"b", "c"}),
+                    (new HashSet<string>(){ "c" }, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){"b"}, new HashSet<string>(){ "a", "b", "c"}),
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+                    (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
             var actual = Execute(TAC);
            AssertSet(expected, actual);
@@ -84,13 +88,16 @@ print (c+a+b);"
             List<(HashSet<string> IN, HashSet<string> OUT)> expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
-                    (new HashSet<string>(){"b","c"}, new HashSet<string>(){"c","b","i"}),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i"}),
-                    (new HashSet<string>(){ }, new HashSet<string>(){ }),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i"}),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i"}),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i"}),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i"})
+                    (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","a"}),
+                    (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","a","b"}, new HashSet<string>(){"c","a","b"}),
+                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","a","b"}, new HashSet<string>(){ }),
+                    (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
             var actual = Execute(TAC);
             AssertSet(expected, actual);
@@ -106,16 +113,16 @@ print (c+a+b);"
 
             var listAct = liveAct.dictInOut
                 .Select(x => x.Value)
-                .Select(y => (y.IN, y.OUT))
-                .Skip(1);
-            return listAct.Take(listAct.Count() - 1).ToList();
+                .Select(y => (y.IN, y.OUT));
+            //.Skip(1);
+            //return listAct.Take(listAct.Count() - 1).ToList();
+            return listAct.ToList();
         }
 
         void AssertSet(
             List<(HashSet<string> IN, HashSet<string> OUT)> expected,
             List<(HashSet<string> IN, HashSet<string> OUT)> actual)
         {
-
             for (int i = 0; i < expected.Count; ++i)
             {
                 Assert.True(expected[i].IN.SetEquals(actual[i].IN));

@@ -64,17 +64,16 @@ namespace SimpleLang
             bool isChanged = true;
             while (isChanged){
                 isChanged = false;
-                for (int i = blocks.Count - 3; i > 0; --i){
+                for (int i = blocks.Count - 1; i >= 0; --i){
                     var children = cfg.GetChildrenBasicBlocks(i);
 
-                    //Вычисляем OUT текущего блока
                     dictInOut[i].OUT =
                         children
                         .Select(x => dictInOut[x.Item1].IN)
                         .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
 
                     var pred = dictInOut[i].IN;
-                    //Вычисляем IN текущего блока
+
                     dictInOut[i].IN =
                         (new HashSet<string>().Union(dictDefUse[i].use))
                         .Union(dictInOut[i].OUT.Except(dictDefUse[i].def))
@@ -112,9 +111,7 @@ namespace SimpleLang
         public string ToString(ControlFlowGraph cfg){
             StringBuilder str = new StringBuilder();
 
-            foreach (var x in cfg.GetCurrentBasicBlocks()
-                .Skip(1)
-                .Take(cfg.GetCurrentBasicBlocks().Count-2)) {
+            foreach (var x in cfg.GetCurrentBasicBlocks()) {
                 int n = cfg.VertexOf(x);
                 str.Append($"Block № {n} \n\n");
                 foreach (var b in x.GetInstructions()) {
