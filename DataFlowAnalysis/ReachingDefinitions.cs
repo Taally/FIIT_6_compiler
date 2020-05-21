@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace SimpleLang
 {
@@ -49,6 +50,28 @@ namespace SimpleLang
         {
             public BasicBlock BasicBlock { get; set; }
             public Instruction Instruction { get; set; }
+        }
+
+        public class Operation : ICompareOperations<IEnumerable<Instruction>>
+        {
+            List<Instruction> _instructions;
+            public Operation(List<Instruction> instructions)
+                => _instructions = instructions.Where(x => x.Operation == "assign").ToList();
+            
+            public IEnumerable<Instruction> Lower => new List<Instruction>();
+
+            public IEnumerable<Instruction> Upper => _instructions;
+
+            public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init()
+                => (Lower, Lower);
+
+            public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
+                => a.Union(b);
+            
+
+            public bool Compare(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
+                => !a.Except(b).Any();
+            
         }
     }
 }

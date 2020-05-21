@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableAnalysis.cs" />
+    <Compile Include="DataFlowAnalysis\OptimizedGenericIterativeAlgorithm.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitions.cs" />
     <Compile Include="DataFlowAnalysis\ReachingTransferFunc.cs" />
     <Compile Include="Main.cs" />
