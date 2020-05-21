@@ -7,11 +7,8 @@ namespace SimpleLang
     {
         public InOutInfo Execute(ControlFlowGraph graph)
         {
-            // 0. Skipping #in and #out basic blocks
-            var basicBlocks = graph.GetCurrentBasicBlocks().Skip(1).Take(graph.GetCurrentBasicBlocks().Count - 2);
-
+            var basicBlocks = graph.GetCurrentBasicBlocks();
             var transferFunc = new ReachingTransferFunc(graph);
-
             var resultIn = new Dictionary<BasicBlock, IEnumerable<Instruction>>();
             var resultOut = new Dictionary<BasicBlock, IEnumerable<Instruction>>();
             foreach (var block in basicBlocks)
@@ -23,9 +20,7 @@ namespace SimpleLang
                 outWasChanged = false;
                 foreach (var block in basicBlocks)
                 {
-                    var parents = graph.GetParentsBasicBlocks(block)
-                        .Select(z => z.Item2)
-                        .Where(bl => bl.GetInstructions()[0].Label != "#in" && bl.GetInstructions()[0].Label != "#out");
+                    var parents = graph.GetParentsBasicBlocks(block).Select(z => z.Item2);
                     resultIn[block] = new List<Instruction>(parents.SelectMany(b => resultOut[b]).Distinct());
                     var outNew = transferFunc.ApplyTransferFunc(resultIn[block], block);
                     if (outNew.Except(resultOut[block]).Any())
@@ -45,12 +40,6 @@ namespace SimpleLang
             public Dictionary<BasicBlock, IEnumerable<Instruction>> Out { get; set; }
         }
 
-        private class DefinitionInfo
-        {
-            public BasicBlock BasicBlock { get; set; }
-            public Instruction Instruction { get; set; }
-        }
-
         public class Operation : ICompareOperations<IEnumerable<Instruction>>
         {
             List<Instruction> _instructions;
@@ -67,10 +56,8 @@ namespace SimpleLang
             public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
                 => a.Union(b);
             
-
             public bool Compare(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
                 => !a.Except(b).Any();
-            
         }
     }
 }
