@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    public class ReachingTransferFunc
+    public class ReachingTransferFunc : ITransFunc<IEnumerable<Instruction>>
     {
         private ILookup<string, Instruction> defs_groups;
         private ILookup<BasicBlock, Instruction> gen_block;
@@ -71,7 +71,11 @@ namespace SimpleLang
         }
 
         public IEnumerable<Instruction> ApplyTransferFunc(IEnumerable<Instruction> In, BasicBlock block) =>
+
             gen_block[block].Union(In.Except(kill_block[block]));
 
+        public IEnumerable<Instruction> Transfer(BasicBlock basicBlock, IEnumerable<Instruction> input)
+            => ApplyTransferFunc(input, basicBlock);
+        
     }
 }
