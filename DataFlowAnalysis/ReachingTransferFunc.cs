@@ -71,6 +71,7 @@ namespace SimpleLang
         }
 
         public IEnumerable<Instruction> ApplyTransferFunc(IEnumerable<Instruction> In, BasicBlock block) =>
+
             gen_block[block].Union(In.Except(kill_block[block]));
 
         public IEnumerable<Instruction> Transfer(BasicBlock basicBlock, IEnumerable<Instruction> input)

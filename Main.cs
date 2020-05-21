@@ -86,11 +86,6 @@ namespace SimpleCompiler
                     activeVariable.Execute(cfg);
                     Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
 
-                    //var a = new OptimizedGenericIterativeAlgorithm<HashSet<string>>();
-                    //var tmp = new LiveVariableAnalysis();
-                    //tmp.Execute(cfg);
-                    //foreach(var x in tmp.dictInOut)
-                    //    Console.WriteLine(x.ToString());
 
                     Console.WriteLine();
                     Console.WriteLine();

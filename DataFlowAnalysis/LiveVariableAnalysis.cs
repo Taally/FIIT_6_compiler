@@ -5,25 +5,24 @@ using System.Text;
 
 namespace SimpleLang
 {
-    public class InOutSet
-    {
-        public HashSet<string> In { get; set; }
-        public HashSet<string> Out { get; set; }
+    public class InOutSet {
+        public HashSet<string> IN { get; set; }
+        public HashSet<string> OUT { get; set; }
 
         public InOutSet() {
-            In = new HashSet<string>();
-            Out = new HashSet<string>();
+            IN = new HashSet<string>();
+            OUT = new HashSet<string>();
         }
 
         public override string ToString()
         {
             StringBuilder str = new StringBuilder();
             str.Append("{");
-            foreach (string i in In)
+            foreach (string i in IN)
                 str.Append($" {i}");
             str.Append(" } ");
             str.Append("{");
-            foreach (string i in Out)
+            foreach (string i in OUT)
                 str.Append($" {i}");
             str.Append(" } ");
 
@@ -44,21 +43,6 @@ namespace SimpleLang
         public DefUseSet((HashSet<string> def, HashSet<string> use) a) {
             def = a.def;
             use = a.use;
-        }
-
-        public override string ToString()
-        {
-            StringBuilder str = new StringBuilder();
-            str.Append("{");
-            foreach (string i in def)
-                str.Append($" {i}");
-            str.Append(" } ");
-            str.Append("{");
-            foreach (string i in use)
-                str.Append($" {i}");
-            str.Append(" } ");
-
-            return str.ToString();
         }
     }
 
@@ -83,22 +67,21 @@ namespace SimpleLang
                 for (int i = blocks.Count - 1; i >= 0; --i){
                     var children = cfg.GetChildrenBasicBlocks(i);
 
-                    dictInOut[i].Out =
+                    dictInOut[i].OUT =
                         children
-                        .Select(x => dictInOut[x.Item1].In)
+                        .Select(x => dictInOut[x.Item1].IN)
                         .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
 
-                    var pred = dictInOut[i].In;
+                    var pred = dictInOut[i].IN;
 
-                    dictInOut[i].In =
+                    dictInOut[i].IN =
                         (new HashSet<string>().Union(dictDefUse[i].use))
-                        .Union(dictInOut[i].Out.Except(dictDefUse[i].def))
+                        .Union(dictInOut[i].OUT.Except(dictDefUse[i].def))
                         .ToHashSet();
 
-                    isChanged = !dictInOut[i].In.SetEquals(pred) || isChanged;
+                    isChanged = !dictInOut[i].IN.SetEquals(pred) || isChanged;
                 }
             }
-
         }
 
         public LiveVariableAnalysis() {
@@ -146,12 +129,12 @@ namespace SimpleLang
                 str.Append(" }");
                 str.Append($"\n\n---IN set---\n");
                 str.Append("{");
-                foreach (string i in dictInOut[n].In)
+                foreach (string i in dictInOut[n].IN)
                     str.Append($" {i}");
                 str.Append(" }");
                 str.Append($"\n\n---OUT set---\n");
                 str.Append("{");
-                foreach (string i in dictInOut[n].Out)
+                foreach (string i in dictInOut[n].OUT)
                     str.Append($" {i}");
                 str.Append(" }\n\n");
             }
