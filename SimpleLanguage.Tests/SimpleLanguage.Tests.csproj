@@ -71,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFG\CFGcreateTest.cs" />
-    <Compile Include="DataAnalysis\LiveVariableTest.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariableTest.cs" />
     <Compile Include="CFG\ReachingDefinitionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
