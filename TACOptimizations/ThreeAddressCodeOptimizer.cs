@@ -13,7 +13,7 @@ namespace SimpleLang
             ThreeAddressCodeDefUse.DeleteDeadCode,
             ThreeAddressCodeFoldConstants.FoldConstants,
             ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
-            DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+            //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeCopyPropagation.PropagateCopies
         };

@@ -7,7 +7,6 @@ using SimpleLang;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleCompiler
 {
@@ -22,13 +21,6 @@ namespace SimpleCompiler
 
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
-
-                /*Console.WriteLine(" \nDefUseSet");
-                var livev = new LiveVariableAnalysis();
-                livev.FillDefUse();
-                Console.WriteLine(livev.ToString());
-                */
-
 
                 Parser parser = new Parser(scanner);
 
@@ -66,6 +58,7 @@ namespace SimpleCompiler
 
                     Console.WriteLine("\n\nDivided three address code");
                     var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
+                    
 
                     foreach (var x in divResult)
                     {
@@ -89,22 +82,35 @@ namespace SimpleCompiler
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 
+                    /*var activeVariable = new LiveVariableAnalysis();
+                    activeVariable.Execute(cfg);
+                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
 
-                    var a = new OptimizedGenericIterativeAlgorithm();
+                    //var a = new OptimizedGenericIterativeAlgorithm<HashSet<string>>();
+                    //var tmp = new LiveVariableAnalysis();
+                    //tmp.Execute(cfg);
+                    //foreach(var x in tmp.dictInOut)
+                    //    Console.WriteLine(x.ToString());
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    var a = new OptimizedGenericIterativeAlgorithm<IEnumerable<Instruction>>();
                     var tmp = new ReachingDefinitions();
-                    var res = a.Analyze(cfg, tmp.Execute(cfg), new ReachingTransferFunc(cfg));
+                    var inout = tmp.Execute(cfg);
 
-                    Console.WriteLine();
-                    Console.WriteLine();
+                    var res = a.Analyze(cfg, new ReachingDefinitions.Operation(optResult), new ReachingTransferFunc(cfg));
 
-                    foreach (var Superres in res)
+                    foreach(var x in res)
                     {
-                        Console.WriteLine("BasicBloc---------------------");
-                        foreach (var y1 in Superres.Key.GetInstructions())
-                            Console.WriteLine(y1);
-                        Console.WriteLine("MyOut---------------------");
-                        foreach (var y2 in Superres.Value)
-                            Console.WriteLine(y2);
+                        foreach(var y in x.Value.In)
+                        {
+                            Console.WriteLine("In " + y);
+                        }
+                        Console.WriteLine();
+                        foreach (var y in x.Value.Out)
+                        {
+                            Console.WriteLine("Out " + y);
+                        }
                     }
 
                     Console.WriteLine(" \nDone");

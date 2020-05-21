@@ -71,12 +71,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFG\CFGcreateTest.cs" />
+    <Compile Include="DataAnalysis\LiveVariableTest.cs" />
+    <Compile Include="CFG\ReachingDefinitionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
-    <Compile Include="TAC\TACCombinedTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTest.cs" />
     <Compile Include="TAC\Simple\DefUseTests.cs" />
-    <Compile Include="TAC\TACSimpleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TAC\TACTestsBase.cs" />
     <Compile Include="TAC\Simple\DeleteDeadCodeWithDeadVarsTest.cs" />
