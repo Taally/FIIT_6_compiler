@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static SimpleLang.ReachingDefinitions;
 
-namespace SimpleLanguage.Tests.CFG
+namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
     class ReachingDefinitionsTests : TACTestsBase
