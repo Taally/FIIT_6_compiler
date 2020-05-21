@@ -24,9 +24,9 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             (_, var inOutInfo) = GenGraphAndGetInOutInfo(@"
 var a;
 ");
-            // no basic blocks
-            Assert.AreEqual(0, inOutInfo.In.Count);
-            Assert.AreEqual(0, inOutInfo.Out.Count);
+            // no basic blocks + entry and exit
+            Assert.AreEqual(2, inOutInfo.In.Count);
+            Assert.AreEqual(2, inOutInfo.Out.Count);
         }
 
         [Test]
@@ -36,9 +36,9 @@ var a;
 var a;
 a = 1;
 ");
-            // only one basic block
-            Assert.AreEqual(1, inOutInfo.In.Count);
-            Assert.AreEqual(1, inOutInfo.Out.Count);
+            // only one basic block + entry and exit
+            Assert.AreEqual(3, inOutInfo.In.Count);
+            Assert.AreEqual(3, inOutInfo.Out.Count);
 
             Assert.AreEqual(0, inOutInfo.In[blocks[0]].Count());
             Assert.AreEqual(1, inOutInfo.Out[blocks[0]].Count());
@@ -53,9 +53,9 @@ var a;
 a = 1;
 a = 2;
 ");
-            // only one basic block
-            Assert.AreEqual(1, inOutInfo.In.Count);
-            Assert.AreEqual(1, inOutInfo.Out.Count);
+            // only one basic block + entry and exit
+            Assert.AreEqual(3, inOutInfo.In.Count);
+            Assert.AreEqual(3, inOutInfo.Out.Count);
 
             Assert.AreEqual(0, inOutInfo.In[blocks[0]].Count());
             Assert.AreEqual(1, inOutInfo.Out[blocks[0]].Count());
@@ -76,9 +76,9 @@ b = a;
 c = a;
 c = b;
 ");
-            // only one basic block
-            Assert.AreEqual(1, inOutInfo.In.Count);
-            Assert.AreEqual(1, inOutInfo.Out.Count);
+            // only one basic block + entry and exit
+            Assert.AreEqual(3, inOutInfo.In.Count);
+            Assert.AreEqual(3, inOutInfo.Out.Count);
 
             Assert.AreEqual(0, inOutInfo.In[blocks[0]].Count());
             Assert.AreEqual(3, inOutInfo.Out[blocks[0]].Count());
@@ -98,8 +98,9 @@ a = 1;
 goto 1;
 1: b = 2;
 ");
-            Assert.AreEqual(2, inOutInfo.In.Count);
-            Assert.AreEqual(2, inOutInfo.Out.Count);
+            // two basic blocks + entry and exit
+            Assert.AreEqual(4, inOutInfo.In.Count);
+            Assert.AreEqual(4, inOutInfo.Out.Count);
 
             Assert.AreEqual(1, inOutInfo.In[blocks[1]].Count());
             Assert.AreEqual(blocks[0].GetInstructions().Take(1), inOutInfo.In[blocks[1]]);
@@ -118,8 +119,9 @@ a = 1;
 goto 1;
 1: a = 2;
 ");
-            Assert.AreEqual(2, inOutInfo.In.Count);
-            Assert.AreEqual(2, inOutInfo.Out.Count);
+            // two basic blocks + entry and exit
+            Assert.AreEqual(4, inOutInfo.In.Count);
+            Assert.AreEqual(4, inOutInfo.Out.Count);
 
             Assert.AreEqual(1, inOutInfo.In[blocks[1]].Count());
             Assert.AreEqual(blocks[0].GetInstructions().Take(1), inOutInfo.In[blocks[1]]);
@@ -139,8 +141,9 @@ else
 	a = 1;
 b = a;
 ");
-            Assert.AreEqual(4, inOutInfo.In.Count);
-            Assert.AreEqual(4, inOutInfo.Out.Count);
+            // four basic blocks + entry and exit
+            Assert.AreEqual(6, inOutInfo.In.Count);
+            Assert.AreEqual(6, inOutInfo.Out.Count);
 
             var falseBranch = blocks[1].GetInstructions().Take(1); // a = 1;
             var trueBranch = blocks[2].GetInstructions().Take(1); // a = 0;
@@ -161,8 +164,9 @@ else
 	a = 1;
 b = a;
 ");
-            Assert.AreEqual(4, inOutInfo.In.Count);
-            Assert.AreEqual(4, inOutInfo.Out.Count);
+            // four basic blocks + entry and exit
+            Assert.AreEqual(6, inOutInfo.In.Count);
+            Assert.AreEqual(6, inOutInfo.Out.Count);
 
             var initialDef = blocks[0].GetInstructions().Take(1); // input(a);
             var falseBranch = blocks[1].GetInstructions().Take(1); // a = 1;
@@ -180,8 +184,9 @@ var i, k;
 for k = 0, 2
 	i = i + 1;
 ");
-            Assert.AreEqual(5, inOutInfo.In.Count);
-            Assert.AreEqual(5, inOutInfo.Out.Count);
+            // five basic blocks + entry and exit
+            Assert.AreEqual(7, inOutInfo.In.Count);
+            Assert.AreEqual(7, inOutInfo.Out.Count);
 
             // 2nd block
             var expectedIn = new List<Instruction>()
@@ -209,8 +214,9 @@ var a;
 goto 1;
 a = 4;
 ");
-            Assert.AreEqual(2, inOutInfo.In.Count);
-            Assert.AreEqual(2, inOutInfo.Out.Count);
+            // two basic blocks + entry and exit
+            Assert.AreEqual(4, inOutInfo.In.Count);
+            Assert.AreEqual(4, inOutInfo.Out.Count);
 
             CollectionAssert.AreEquivalent(blocks[0].GetInstructions().Take(1), inOutInfo.Out[blocks[0]]);
 
@@ -238,9 +244,9 @@ for k = 0, 1
     i = u3;
 }
 ");
-
-            Assert.AreEqual(8, inOutInfo.In.Count);
-            Assert.AreEqual(8, inOutInfo.Out.Count);
+            // eight basic blocks + entry and exit
+            Assert.AreEqual(10, inOutInfo.In.Count);
+            Assert.AreEqual(10, inOutInfo.Out.Count);
 
             // 1st block
             /*
