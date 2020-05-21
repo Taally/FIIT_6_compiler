@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.DataAnalysis
+namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
     class LiveVariableTest: TACTestsBase
