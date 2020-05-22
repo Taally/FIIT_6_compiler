@@ -86,18 +86,38 @@ namespace SimpleCompiler
                     activeVariable.Execute(cfg);
                     Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
 
-
-                    Console.WriteLine();
+                    ///
+                    /// ReachingDefinitionsAlgorithm
+                    ///
+                    Console.WriteLine("------------");
                     Console.WriteLine();
                     var a = new OptimizedGenericIterativeAlgorithm<IEnumerable<Instruction>>();
-                    var tmp = new ReachingDefinitions();
-                    var inout = tmp.Execute(cfg);
-
                     var res = a.Analyze(cfg, new ReachingDefinitions.Operation(optResult), new ReachingTransferFunc(cfg));
 
                     foreach(var x in res)
                     {
                         foreach(var y in x.Value.In)
+                        {
+                            Console.WriteLine("In " + y);
+                        }
+                        Console.WriteLine();
+                        foreach (var y in x.Value.Out)
+                        {
+                            Console.WriteLine("Out " + y);
+                        }
+                    }
+
+                    ///
+                    /// LiveVariableAnalysisAlgorithm
+                    ///
+                    Console.WriteLine("------------");
+                    Console.WriteLine();
+                    var a1 = new OptimizedGenericIterativeAlgorithm<HashSet<string>>();
+                    var res1 = a1.Analyze(cfg, new LiveVariableAnalysis.Operation(optResult), new LiveVariableTransferFunc(cfg));
+
+                    foreach (var x in res1)
+                    {
+                        foreach (var y in x.Value.In)
                         {
                             Console.WriteLine("In " + y);
                         }

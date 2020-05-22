@@ -45,20 +45,25 @@ namespace SimpleLang{
         }
     }
 
-    public class LiveVariableAnalysis{
-        public Dictionary<int, InOutSet> dictInOut; 
+    public class LiveVariableAnalysis
+    {
+        public Dictionary<int, InOutSet> dictInOut;
 
-        public void Execute(ControlFlowGraph cfg) {
+        public void Execute(ControlFlowGraph cfg)
+        {
             var blocks = cfg.GetCurrentBasicBlocks();
             var transferFunc = new LiveVariableTransferFunc(cfg);
 
             foreach (var x in blocks)
-                dictInOut.Add(cfg.VertexOf(x),new InOutSet());
+                dictInOut.Add(cfg.VertexOf(x), new InOutSet());
+
 
             bool isChanged = true;
-            while (isChanged){
+            while (isChanged)
+            {
                 isChanged = false;
-                for (int i = blocks.Count - 1; i >= 0; --i){
+                for (int i = blocks.Count - 1; i >= 0; --i)
+                {
                     var children = cfg.GetChildrenBasicBlocks(i);
 
                     dictInOut[i].OUT =
@@ -72,6 +77,34 @@ namespace SimpleLang{
                 }
             }
         }
+
+        public class Operation : ICompareOperations<HashSet<string>>
+        {
+            HashSet<string> _instructions = new HashSet<string>();
+            public Operation(List<Instruction> instructions)
+            {
+                foreach (var x in instructions)
+                {
+                    if (x.Operation == "assign")
+                        _instructions.Add(x.Result);
+                }
+            }
+            // => _instructions = instructions.Where(x => x.Operation == "assign");
+
+            public HashSet<string> Upper => new HashSet<string>();
+
+            public HashSet<string> Lower => _instructions;
+
+            public bool Compare(HashSet<string> a, HashSet<string> b)
+                => !a.Except(b).Any();
+
+            public (HashSet<string>, HashSet<string>) Init()
+                => (Lower, Lower);
+
+            public HashSet<string> Operator(HashSet<string> a, HashSet<string> b)
+                => a.Intersect(b).ToHashSet();
+        }
+    
 
         public LiveVariableAnalysis() {
             dictInOut = new Dictionary<int, InOutSet>();
