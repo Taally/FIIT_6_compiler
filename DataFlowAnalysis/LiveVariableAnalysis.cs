@@ -57,6 +57,7 @@ namespace SimpleLang{
             foreach (var x in blocks)
                 dictInOut.Add(cfg.VertexOf(x), new InOutSet());
 
+
             bool isChanged = true;
             while (isChanged)
             {
