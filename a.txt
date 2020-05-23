@@ -29,11 +29,6 @@ goto 55;
 if a>a goto 10; 
 else goto 111; 
  
-if (true)  
-	goto 45; 
-else 
-	c = 55; 
- 
 c = c; 
 if a==b 
 	b = b; 
@@ -97,4 +92,5 @@ else
 for i=1,10
 {	a = a + 3;
 	a = b + 1;
-}	
+}
+

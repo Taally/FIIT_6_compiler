@@ -6,6 +6,7 @@ using SimpleLang.Visitors;
 using SimpleLang;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleCompiler
 {
@@ -20,13 +21,6 @@ namespace SimpleCompiler
 
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
-
-                /*Console.WriteLine(" \nDefUseSet");
-                var livev = new LiveVariableAnalysis();
-                livev.FillDefUse();
-                Console.WriteLine(livev.ToString());
-                */
-
 
                 Parser parser = new Parser(scanner);
 
@@ -64,12 +58,74 @@ namespace SimpleCompiler
 
                     Console.WriteLine("\n\nDivided three address code");
                     var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
+                    
 
                     foreach (var x in divResult)
                     {
                         foreach (var y in x.GetInstructions())
                             Console.WriteLine(y);
                         Console.WriteLine("--------------");
+                    }
+
+
+                    var cfg = new ControlFlowGraph(divResult);
+
+                    foreach(var block in cfg.GetCurrentBasicBlocks())
+                    {
+                        Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions()[0]}");
+                        var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
+                        var childrenStr = String.Join(" | ", children.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        Console.WriteLine($" children: {childrenStr}");
+
+                        var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
+                        var parentsStr = String.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        Console.WriteLine($" parents: {parentsStr}");
+                    }
+
+                    /*var activeVariable = new LiveVariableAnalysis();
+                    activeVariable.Execute(cfg);
+                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
+
+                    ///
+                    /// ReachingDefinitionsAlgorithm
+                    ///
+                    Console.WriteLine("------------");
+                    Console.WriteLine();
+                    var a = new OptimizedGenericIterativeAlgorithm<IEnumerable<Instruction>>();
+                    var res = a.Analyze(cfg, new ReachingDefinitions.Operation(optResult), new ReachingTransferFunc(cfg));
+
+                    foreach(var x in res)
+                    {
+                        foreach(var y in x.Value.In)
+                        {
+                            Console.WriteLine("In " + y);
+                        }
+                        Console.WriteLine();
+                        foreach (var y in x.Value.Out)
+                        {
+                            Console.WriteLine("Out " + y);
+                        }
+                    }
+
+                    ///
+                    /// LiveVariableAnalysisAlgorithm
+                    ///
+                    Console.WriteLine("------------");
+                    Console.WriteLine();
+                    var a1 = new OptimizedGenericIterativeAlgorithm<HashSet<string>>();
+                    var res1 = a1.Analyze(cfg, new LiveVariableAnalysis.Operation(optResult), new LiveVariableTransferFunc(cfg));
+
+                    foreach (var x in res1)
+                    {
+                        foreach (var y in x.Value.In)
+                        {
+                            Console.WriteLine("In " + y);
+                        }
+                        Console.WriteLine();
+                        foreach (var y in x.Value.Out)
+                        {
+                            Console.WriteLine("Out " + y);
+                        }
                     }
 
                     Console.WriteLine(" \nDone");

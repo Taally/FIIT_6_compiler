@@ -9,72 +9,82 @@ namespace SimpleLang
         private List<BasicBlock> _basicBlocks;
         private List<List<(int, BasicBlock)>> _children;
         private List<List<(int, BasicBlock)>> _parents;
+        private Dictionary<BasicBlock,int> _blockToVertex;
 
         public ControlFlowGraph()
         {
             _basicBlocks = new List<BasicBlock>();
+            _blockToVertex = new Dictionary<BasicBlock, int>();
         }
 
         public ControlFlowGraph(List<BasicBlock> basicBlocks)
         {
-            _basicBlocks = basicBlocks;
+            _basicBlocks = new List<BasicBlock>(basicBlocks.Count+2);
+            _basicBlocks.Add(new BasicBlock(new List<Instruction> { new Instruction("#in", "noop", "", "", "") }));
+            _basicBlocks.AddRange(basicBlocks);
+            _basicBlocks.Add(new BasicBlock(new List<Instruction> { new Instruction("#out", "noop", "", "", "") }));
 
-            _children = new List<List<(int, BasicBlock)>>(basicBlocks.Count);
-            _parents = new List<List<(int, BasicBlock)>>(basicBlocks.Count);
 
-            for (int i = 0; i < basicBlocks.Count; ++i)
+            _blockToVertex = _basicBlocks.Select((b, i) => new { b, i }).ToDictionary(v => v.b, v => v.i);
+
+            _children = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
+            _parents = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
+
+            for (int i = 0; i < _basicBlocks.Count; ++i)
             {
                 _children.Add(new List<(int, BasicBlock)>());
                 _parents.Add(new List<(int, BasicBlock)>());
             }
 
-            for (int i = 0; i < basicBlocks.Count; ++i)
+            for (int i = 0; i < _basicBlocks.Count; ++i)
             {
-                var instructions = basicBlocks[i].GetInstructions();
+                var instructions = _basicBlocks[i].GetInstructions();
                 var instr = instructions.Last();
                 switch (instr.Operation)
                 {
                     case "goto":
                         var gotoOutLabel = instr.Argument1;
-                        var gotoOutBlock = basicBlocks.FindIndex(block =>
+                        var gotoOutBlock = _basicBlocks.FindIndex(block =>
                                 string.Equals(block.GetInstructions().First().Label, gotoOutLabel));
 
                         if (gotoOutBlock == -1)
                             throw new Exception($"label {gotoOutLabel} not found");
 
-                        _children[i].Add((gotoOutBlock, basicBlocks[gotoOutBlock]));
-                        _parents[gotoOutBlock].Add((i, basicBlocks[i]));
+                        _children[i].Add((gotoOutBlock, _basicBlocks[gotoOutBlock]));
+                        _parents[gotoOutBlock].Add((i, _basicBlocks[i]));
                         break;
 
                     case "ifgoto":
                         var ifgotoOutLabel = instr.Argument2;
-                        var ifgotoOutBlock = basicBlocks.FindIndex(block =>
+                        var ifgotoOutBlock = _basicBlocks.FindIndex(block =>
                                 string.Equals(block.GetInstructions().First().Label, ifgotoOutLabel));
 
                         if (ifgotoOutBlock == -1)
                             throw new Exception($"label {ifgotoOutLabel} not found");
 
-                        _children[i].Add((ifgotoOutBlock, basicBlocks[ifgotoOutBlock]));
-                        _parents[ifgotoOutBlock].Add((i, basicBlocks[i]));
+                        _children[i].Add((ifgotoOutBlock, _basicBlocks[ifgotoOutBlock]));
+                        _parents[ifgotoOutBlock].Add((i, _basicBlocks[i]));
 
-                        _children[i].Add((i + 1, basicBlocks[i + 1]));
-                        _parents[i + 1].Add((i, basicBlocks[i]));
+                        _children[i].Add((i + 1, _basicBlocks[i + 1]));
+                        _parents[i + 1].Add((i, _basicBlocks[i]));
                         break;
 
                     default:
-                        if (i < basicBlocks.Count - 1)
-                            _children[i].Add((i + 1, basicBlocks[i + 1]));
-                        if (i > 0)
-                            _parents[i + 1].Add((i, basicBlocks[i]));
+                        if (i < _basicBlocks.Count - 1)
+                        {
+                            _children[i].Add((i + 1, _basicBlocks[i + 1]));
+                            _parents[i + 1].Add((i, _basicBlocks[i]));
+                        }
                         break;
                 }
             }
         }
 
-        public List<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks;
+        public int VertexOf(BasicBlock block) => _blockToVertex[block];
+        public List<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.ToList();
 
-        public List<(int, BasicBlock)> GetChildrenBasicBlocks(int index) => _children[index];
+        public List<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex];
 
-        public List<(int, BasicBlock)> GetParentsBasicBlocks(int index) => _parents[index];
+        public List<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex];
     }
 }
