@@ -92,12 +92,12 @@ namespace SimpleLang{
                 }
             }
 
-            public HashSet<string> Upper => new HashSet<string>();
+            public HashSet<string> Upper => _instructions; //???
 
-            public HashSet<string> Lower => _instructions;
+            public HashSet<string> Lower => new HashSet<string>();
 
             public bool Compare(HashSet<string> a, HashSet<string> b)
-                => !a.Except(b).Any();
+                => a.SetEquals(b);
 
             public (HashSet<string>, HashSet<string>) Init()
                 => (Lower, Lower);
