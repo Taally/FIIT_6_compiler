@@ -87,27 +87,6 @@ namespace SimpleCompiler
                     Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
 
                     ///
-                    /// ReachingDefinitionsAlgorithm
-                    ///
-                    Console.WriteLine("------------");
-                    Console.WriteLine();
-                    var a = new OptimizedGenericIterativeAlgorithm<IEnumerable<Instruction>>();
-                    var res = a.Analyze(cfg, new ReachingDefinitions.Operation(optResult), new ReachingTransferFunc(cfg));
-
-                    foreach(var x in res)
-                    {
-                        foreach(var y in x.Value.In)
-                        {
-                            Console.WriteLine("In " + y);
-                        }
-                        Console.WriteLine();
-                        foreach (var y in x.Value.Out)
-                        {
-                            Console.WriteLine("Out " + y);
-                        }
-                    }
-
-                    ///
                     /// LiveVariableAnalysisAlgorithm
                     ///
                     Console.WriteLine("------------");
