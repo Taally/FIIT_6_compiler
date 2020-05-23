@@ -99,7 +99,7 @@ namespace SimpleLang{
             public bool Compare(HashSet<string> a, HashSet<string> b)
                 => a.SetEquals(b);
 
-            public (HashSet<string>, HashSet<string>) Init()
+            public (HashSet<string>, HashSet<string>) Init
                 => (Lower, Lower);
 
             public HashSet<string> Operator(HashSet<string> a, HashSet<string> b)
