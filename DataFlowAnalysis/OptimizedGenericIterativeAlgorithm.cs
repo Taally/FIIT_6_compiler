@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace SimpleLang
 {
-
     public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)>
     {
         public override string ToString()
@@ -21,6 +20,8 @@ namespace SimpleLang
             return sb.ToString();
         }
     }
+
+    public enum Pass { Forward, Backward }
 
     // Upper = Полное множество, все возможные определения 
     // Lower = Пустое множество\ кроме обратной ходки
@@ -45,13 +46,30 @@ namespace SimpleLang
 
     public class OptimizedGenericIterativeAlgorithm<T>
     {
+        Func<ControlFlowGraph, BasicBlock, List<BasicBlock>> getNextBlocks;
+        Pass type;
+
+        public OptimizedGenericIterativeAlgorithm(Pass _type)
+        {
+            type = _type;
+            if (_type == Pass.Forward)
+                getNextBlocks = ParentsBlock;
+            else if (_type == Pass.Backward)
+                getNextBlocks = ChildrenBlock;
+        }
+
+        public OptimizedGenericIterativeAlgorithm()
+        {
+            getNextBlocks = ParentsBlock;
+        }
 
         public InOutData<T> Analyze(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f) 
         {
-            var data = new InOutData<T>();
-            data[graph.GetCurrentBasicBlocks().ElementAt(0)] = ops.Init();          
-            
+            if (type == Pass.Backward)
+                return AnalyzeBackward(graph, ops, f);
 
+            var data = new InOutData<T>();
+             
             foreach (var node in graph.GetCurrentBasicBlocks())
                 data[node] = ops.Init();
 
@@ -61,25 +79,62 @@ namespace SimpleLang
                 outChanged = false;
                 foreach (var block in graph.GetCurrentBasicBlocks())
                 {
-                    var inset = ParentsBlock(graph, block).Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].Out));
+                    var inset = getNextBlocks(graph, block).Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].Out));
                     var outset = f.Transfer(block, inset);
 
+                    //Изменить применение Compare?
                     if (!(ops.Compare(outset, data[block].Out) && ops.Compare(data[block].Out, outset)))
                     {
                         outChanged = true;
                     }
                     data[block] = (inset, outset);
-               
                 }
             }
-
             return data;
         }
 
-        public List<BasicBlock> ParentsBlock(ControlFlowGraph graph, BasicBlock block)
+        //Либо надо придумать, как по-другому инвертировать 
+        //множества IN OUT для алгоритмов с обратным проходом
+        //не впихивая if внутрь циклов
+        public InOutData<T> AnalyzeBackward(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f){
+            var data = new InOutData<T>();
+
+            foreach (var node in graph.GetCurrentBasicBlocks())
+                data[node] = ops.Init();
+
+            var inChanged = true;
+            while (inChanged){
+                inChanged = false;
+                foreach (var block in graph.GetCurrentBasicBlocks()){
+                    var outset = getNextBlocks(graph, block)
+                        .Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].In));
+                    var inset = f.Transfer(block, outset);
+
+                    if (!ops.Compare(inset, data[block].In))
+                    {
+                        inChanged = true;
+                    }
+                    data[block] = (inset, outset);
+                }
+            }
+            return data;
+        }
+
+        List<BasicBlock> ParentsBlock(ControlFlowGraph graph, BasicBlock block)
         {
             List<BasicBlock> tmp = new List<BasicBlock>();
             foreach (var xx in ControlFlowGraphExtensions.GetParentsBasicBlocks(graph, block))
+            {
+                tmp.Add(xx.Item2);
+            }
+
+            return tmp;
+        }
+
+        List<BasicBlock> ChildrenBlock(ControlFlowGraph graph, BasicBlock block)
+        {
+            List<BasicBlock> tmp = new List<BasicBlock>();
+            foreach (var xx in ControlFlowGraphExtensions.GetChildrenBasicBlocks(graph, block))
             {
                 tmp.Add(xx.Item2);
             }
