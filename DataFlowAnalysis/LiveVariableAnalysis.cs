@@ -85,11 +85,12 @@ namespace SimpleLang{
             {
                 foreach (var x in instructions)
                 {
-                    if (x.Operation == "assign")
+                    if (x.Operation == "assign" 
+                        || x.Operation == "input" 
+                        || x.Operation == "PLUS")
                         _instructions.Add(x.Result);
                 }
             }
-            // => _instructions = instructions.Where(x => x.Operation == "assign");
 
             public HashSet<string> Upper => new HashSet<string>();
 
@@ -102,7 +103,7 @@ namespace SimpleLang{
                 => (Lower, Lower);
 
             public HashSet<string> Operator(HashSet<string> a, HashSet<string> b)
-                => a.Intersect(b).ToHashSet();
+                => a.Union(b).ToHashSet();
         }
     
 
