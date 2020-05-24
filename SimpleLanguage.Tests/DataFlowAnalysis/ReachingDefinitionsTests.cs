@@ -5,10 +5,11 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
+    using InOutInfo = InOutData<IEnumerable<Instruction>>;
     [TestFixture]
     class ReachingDefinitionsTests : TACTestsBase
     {
-        private (List<BasicBlock> basicBlocks, InOutData<IEnumerable<Instruction>> inOutInfo) GenGraphAndGetInOutInfo(string program)
+        private (List<BasicBlock> basicBlocks, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
         {
             var TAC = GenTAC(program);
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
