@@ -114,8 +114,6 @@ print (c+a+b);"
             var listAct = liveAct.dictInOut
                 .Select(x => x.Value)
                 .Select(y => (y.IN, y.OUT));
-            //.Skip(1);
-            //return listAct.Take(listAct.Count() - 1).ToList();
             return listAct.ToList();
         }
 

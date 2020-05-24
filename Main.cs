@@ -67,7 +67,6 @@ namespace SimpleCompiler
                         Console.WriteLine("--------------");
                     }
 
-
                     var cfg = new ControlFlowGraph(divResult);
 
                     foreach(var block in cfg.GetCurrentBasicBlocks())
@@ -82,19 +81,15 @@ namespace SimpleCompiler
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 
-                    /*var activeVariable = new LiveVariableAnalysis();
-                    activeVariable.Execute(cfg);
-                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
-
                     ///
                     /// LiveVariableAnalysisAlgorithm
                     ///
                     Console.WriteLine("------------");
                     Console.WriteLine();
-                    var a1 = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
-                    var res1 = a1.Analyze(cfg, new LiveVariableAnalysis.Operation(optResult), new LiveVariableTransferFunc(cfg));
+                    var activeVariable = new LiveVariableAnalysis();
+                    var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
 
-                    foreach (var x in res1)
+                    foreach (var x in resActiveVariable)
                     {
                         foreach (var y in x.Value.In)
                         {

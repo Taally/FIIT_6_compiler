@@ -63,11 +63,9 @@ namespace SimpleLang
 
         public InOutData<T> Analyze(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f) 
         {
-            if (type == Pass.Backward)
-                return AnalyzeBackward(graph, ops, f);
+            if (type == Pass.Backward) return AnalyzeBackward(graph, ops, f);
 
             var data = new InOutData<T>();
-             
             foreach (var node in graph.GetCurrentBasicBlocks())
                 data[node] = ops.Init;
 
