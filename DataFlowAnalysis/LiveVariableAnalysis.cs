@@ -78,6 +78,11 @@ namespace SimpleLang{
             }
         }
 
+        public InOutData<HashSet<string>> ExecuteThroughItAlg(ControlFlowGraph cfg){
+            var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
+            return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
+        }
+
         public class Operation : ICompareOperations<HashSet<string>>
         {
             HashSet<string> _instructions = new HashSet<string>();
@@ -91,6 +96,8 @@ namespace SimpleLang{
                         _instructions.Add(x.Result);
                 }
             }
+
+            public Operation(){ }
 
             public HashSet<string> Upper => _instructions; //???
 
