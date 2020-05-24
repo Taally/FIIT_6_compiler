@@ -91,7 +91,7 @@ namespace SimpleCompiler
                     ///
                     Console.WriteLine("------------");
                     Console.WriteLine();
-                    var a1 = new OptimizedGenericIterativeAlgorithm<HashSet<string>>();
+                    var a1 = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
                     var res1 = a1.Analyze(cfg, new LiveVariableAnalysis.Operation(optResult), new LiveVariableTransferFunc(cfg));
 
                     foreach (var x in res1)

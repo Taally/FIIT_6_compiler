@@ -7,7 +7,7 @@ namespace SimpleLang
     {
         public InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
         {
-            var iterativeAlgorithm = new OptimizedGenericIterativeAlgorithm<IEnumerable<Instruction>>();
+            var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<Instruction>>();
             return iterativeAlgorithm.Analyze(graph, new Operation(), new ReachingTransferFunc(graph));
         }
 
@@ -20,7 +20,7 @@ namespace SimpleLang
             public IEnumerable<Instruction> Upper =>
                 null;
 
-            public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init() =>
+            public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init =>
                 (Lower, Lower);
 
             public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
