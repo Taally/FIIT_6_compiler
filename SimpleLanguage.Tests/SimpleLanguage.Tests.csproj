@@ -75,7 +75,7 @@
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
-    <Compile Include="TAC\Simple\AlgebraicIdentitiesTest.cs" />
+    <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />
     <Compile Include="TAC\Simple\DefUseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TAC\TACTestsBase.cs" />

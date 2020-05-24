@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
 {
+    using InOutInfo = InOutData<IEnumerable<Instruction>>;
     public class ReachingDefinitions
     {
-        public InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
+        public InOutInfo Execute(ControlFlowGraph graph)
         {
             var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<Instruction>>();
             return iterativeAlgorithm.Analyze(graph, new Operation(), new ReachingTransferFunc(graph));
@@ -16,9 +18,8 @@ namespace SimpleLang
             public IEnumerable<Instruction> Lower =>
                 new List<Instruction>();
 
-            // I don't even know why it's needed as it's never used
             public IEnumerable<Instruction> Upper =>
-                null;
+                throw new NotImplementedException("I don't even know why it's needed as it's never used.");
 
             public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init =>
                 (Lower, Lower);
