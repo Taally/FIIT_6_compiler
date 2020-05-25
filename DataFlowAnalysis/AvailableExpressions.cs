@@ -276,12 +276,10 @@ namespace SimpleLang
                 result.Add(blockWithID.Item2);
             return result;
         }
+        
         public class Operation : ICompareOperations<List<Instruction>>
         {
-            public Operation(List<Instruction> instructions)
-            {
-                this.Upper = new List<Instruction>(instructions);
-            }
+            public Operation(List<Instruction> instructions) => Upper = new List<Instruction>(instructions);
             public List<Instruction> Lower => new List<Instruction>();
             public List<Instruction> Upper { get; }
             public bool Compare(List<Instruction> a, List<Instruction> b) => a.SequenceEqual(b);
