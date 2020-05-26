@@ -67,7 +67,6 @@ namespace SimpleCompiler
                         Console.WriteLine("--------------");
                     }
 
-
                     var cfg = new ControlFlowGraph(divResult);
 
                     foreach(var block in cfg.GetCurrentBasicBlocks())
@@ -82,40 +81,15 @@ namespace SimpleCompiler
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 
-                    /*var activeVariable = new LiveVariableAnalysis();
-                    activeVariable.Execute(cfg);
-                    Console.WriteLine($"\n\n{activeVariable.ToString(cfg)}");*/
-
-                    ///
-                    /// ReachingDefinitionsAlgorithm
-                    ///
-                    Console.WriteLine("------------");
-                    Console.WriteLine();
-                    var a = new OptimizedGenericIterativeAlgorithm<IEnumerable<Instruction>>();
-                    var res = a.Analyze(cfg, new ReachingDefinitions.Operation(optResult), new ReachingTransferFunc(cfg));
-
-                    foreach(var x in res)
-                    {
-                        foreach(var y in x.Value.In)
-                        {
-                            Console.WriteLine("In " + y);
-                        }
-                        Console.WriteLine();
-                        foreach (var y in x.Value.Out)
-                        {
-                            Console.WriteLine("Out " + y);
-                        }
-                    }
-
                     ///
                     /// LiveVariableAnalysisAlgorithm
                     ///
                     Console.WriteLine("------------");
                     Console.WriteLine();
-                    var a1 = new OptimizedGenericIterativeAlgorithm<HashSet<string>>();
-                    var res1 = a1.Analyze(cfg, new LiveVariableAnalysis.Operation(optResult), new LiveVariableTransferFunc(cfg));
+                    var activeVariable = new LiveVariableAnalysis();
+                    var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
 
-                    foreach (var x in res1)
+                    foreach (var x in resActiveVariable)
                     {
                         foreach (var y in x.Value.In)
                         {

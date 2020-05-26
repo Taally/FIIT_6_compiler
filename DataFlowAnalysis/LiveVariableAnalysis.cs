@@ -78,6 +78,11 @@ namespace SimpleLang{
             }
         }
 
+        public InOutData<HashSet<string>> ExecuteThroughItAlg(ControlFlowGraph cfg){
+            var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
+            return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
+        }
+
         public class Operation : ICompareOperations<HashSet<string>>
         {
             HashSet<string> _instructions = new HashSet<string>();
@@ -85,24 +90,27 @@ namespace SimpleLang{
             {
                 foreach (var x in instructions)
                 {
-                    if (x.Operation == "assign")
+                    if (x.Operation == "assign" 
+                        || x.Operation == "input" 
+                        || x.Operation == "PLUS")
                         _instructions.Add(x.Result);
                 }
             }
-            // => _instructions = instructions.Where(x => x.Operation == "assign");
 
-            public HashSet<string> Upper => new HashSet<string>();
+            public Operation(){ }
 
-            public HashSet<string> Lower => _instructions;
+            public HashSet<string> Upper => _instructions; //???
+
+            public HashSet<string> Lower => new HashSet<string>();
 
             public bool Compare(HashSet<string> a, HashSet<string> b)
-                => !a.Except(b).Any();
+                => a.SetEquals(b);
 
-            public (HashSet<string>, HashSet<string>) Init()
+            public (HashSet<string>, HashSet<string>) Init
                 => (Lower, Lower);
 
             public HashSet<string> Operator(HashSet<string> a, HashSet<string> b)
-                => a.Intersect(b).ToHashSet();
+                => a.Union(b).ToHashSet();
         }
     
 
