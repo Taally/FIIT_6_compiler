@@ -11,10 +11,24 @@ namespace SimpleLang
         private List<List<(int, BasicBlock)>> _parents;
         private Dictionary<BasicBlock,int> _blockToVertex;
 
+        private List<int> _nlr;
+        public List<int> NLR => _nlr.ToList();
+        
+
+        private List<int> _lrn;
+        public List<int> LRN => _lrn.ToList();
+
+        private List<(int, int)> _dfst;
+        public List<(int, int)> DFST => _dfst.ToList();
+
+        private int[] _dfn;
+        public List<int> DFN => _dfn.ToList();
+
         public ControlFlowGraph()
         {
             _basicBlocks = new List<BasicBlock>();
             _blockToVertex = new Dictionary<BasicBlock, int>();
+            _dfst = new List<(int, int)>();
         }
 
         public ControlFlowGraph(List<BasicBlock> basicBlocks)
@@ -78,13 +92,44 @@ namespace SimpleLang
                         break;
                 }
             }
+
+            DFS();
+        }
+
+        public void DFS()
+        {
+            _dfst = new List<(int, int)>();
+
+            var c = _basicBlocks.Count;
+            _lrn = new List<int>(c);
+            _nlr = new List<int>(c);
+            _dfn = new int[c];
+
+            var used = new bool[c];
+
+            Action<int> dfs = null;
+            dfs = (int vertex) =>
+            {
+                used[vertex] = true;
+                _nlr.Add(vertex);
+                foreach ((var v, _) in _children[vertex])
+                    if (!used[v])
+                    {
+                        _dfst.Add((vertex, v));
+                        dfs(v);
+                    }
+                _lrn.Add(vertex);
+                _dfn[vertex] = --c;
+            };
+
+            dfs(0);
         }
 
         public int VertexOf(BasicBlock block) => _blockToVertex[block];
         public List<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.ToList();
 
-        public List<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex];
+        public List<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex].ToList();
 
-        public List<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex];
+        public List<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex].ToList();
     }
 }

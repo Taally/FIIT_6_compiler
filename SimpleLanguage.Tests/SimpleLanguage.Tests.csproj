@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CFG\CFGdfsTest.cs" />
     <Compile Include="CFG\CFGcreateTest.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTest.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableTest.cs" />
