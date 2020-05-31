@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ProgramTree;
 
 namespace SimpleLang
 {
-    public class ReachingTransferFunc
+    public class ReachingTransferFunc : ITransFunc<IEnumerable<Instruction>>
     {
         private ILookup<string, Instruction> defs_groups;
         private ILookup<BasicBlock, Instruction> gen_block;
@@ -19,7 +16,9 @@ namespace SimpleLang
             {
                 foreach (var instruction in block.GetInstructions())
                 {
-                    if (instruction.Operation == "assign")
+                    if (instruction.Operation == "assign" ||
+                        instruction.Operation == "input" ||
+                        instruction.Operation == "PLUS" && !instruction.Result.StartsWith("#"))
                     {
                         defs.Add(instruction);
                     }
@@ -28,36 +27,46 @@ namespace SimpleLang
             defs_groups = defs.ToLookup(x => x.Result, x => x);
         }
 
+        private class DefinitionInfo
+        {
+            public BasicBlock BasicBlock { get; set; }
+            public Instruction Instruction { get; set; }
+        }
+
         private void GetGenKill(List<BasicBlock> blocks)
         {
-            List<(BasicBlock, Instruction)> gen = new List<ValueTuple<BasicBlock, Instruction>>();
-            List<(BasicBlock, Instruction)> kill = new List<ValueTuple<BasicBlock, Instruction>>();
+            var gen = new List<DefinitionInfo>();
+            var kill = new List<DefinitionInfo>();
             foreach (var block in blocks)
             {
                 var used = new HashSet<string>();
                 foreach (var instruction in block.GetInstructions().Reverse<Instruction>())
                 {
-                    if (!used.Contains(instruction.Result) && instruction.Operation == "assign")
+                    if (!used.Contains(instruction.Result) &&
+                        (instruction.Operation == "assign" ||
+                        instruction.Operation == "input" ||
+                        instruction.Operation == "PLUS" && !instruction.Result.StartsWith("#")))
                     {
-                        gen.Add((block, instruction));
+                        gen.Add(new DefinitionInfo { BasicBlock = block, Instruction = instruction });
                         used.Add(instruction.Result);
                     }
                     foreach (var killed_def in defs_groups[instruction.Result].Where(x => x != instruction))
                     {
-                        kill.Add((block, killed_def));
+                        kill.Add(new DefinitionInfo { BasicBlock = block, Instruction = killed_def });
                     }
                 }
             }
-            gen_block = gen.ToLookup(x => x.Item1, x => x.Item2);
-            //delete duplicates
+            gen_block = gen.ToLookup(x => x.BasicBlock, x => x.Instruction);
+            // delete duplicates
             kill = kill.Distinct().ToList();
-            kill_block = kill.ToLookup(x => x.Item1, x => x.Item2);
+            kill_block = kill.ToLookup(x => x.BasicBlock, x => x.Instruction);
         }
 
         public ReachingTransferFunc(ControlFlowGraph g)
         {
-            GetDefs(g.GetCurrentBasicBlocks());
-            GetGenKill(g.GetCurrentBasicBlocks());
+            var basicBlocks = g.GetCurrentBasicBlocks();
+            GetDefs(basicBlocks);
+            GetGenKill(basicBlocks);
         }
 
         public ReachingTransferFunc(List<BasicBlock> g)
@@ -68,6 +77,8 @@ namespace SimpleLang
 
         public IEnumerable<Instruction> ApplyTransferFunc(IEnumerable<Instruction> In, BasicBlock block) =>
             gen_block[block].Union(In.Except(kill_block[block]));
-        
+
+        public IEnumerable<Instruction> Transfer(BasicBlock basicBlock, IEnumerable<Instruction> input) =>
+            ApplyTransferFunc(input, basicBlock);
     }
 }

@@ -22,13 +22,6 @@ namespace SimpleCompiler
                 Scanner scanner = new Scanner();
                 scanner.SetSource(Text, 0);
 
-                /*Console.WriteLine(" \nDefUseSet");
-                var livev = new LiveVariableAnalysis();
-                livev.FillDefUse();
-                Console.WriteLine(livev.ToString());
-                */
-
-
                 Parser parser = new Parser(scanner);
 
                 var b = parser.Parse();
@@ -65,6 +58,7 @@ namespace SimpleCompiler
 
                     Console.WriteLine("\n\nDivided three address code");
                     var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
+                    
 
                     foreach (var x in divResult)
                     {
@@ -72,7 +66,6 @@ namespace SimpleCompiler
                             Console.WriteLine(y);
                         Console.WriteLine("--------------");
                     }
-
 
                     var cfg = new ControlFlowGraph(divResult);
 
@@ -86,6 +79,27 @@ namespace SimpleCompiler
                         var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
                         var parentsStr = String.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
+                    }
+
+                    ///
+                    /// LiveVariableAnalysisAlgorithm
+                    ///
+                    Console.WriteLine("------------");
+                    Console.WriteLine();
+                    var activeVariable = new LiveVariableAnalysis();
+                    var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
+
+                    foreach (var x in resActiveVariable)
+                    {
+                        foreach (var y in x.Value.In)
+                        {
+                            Console.WriteLine("In " + y);
+                        }
+                        Console.WriteLine();
+                        foreach (var y in x.Value.Out)
+                        {
+                            Console.WriteLine("Out " + y);
+                        }
                     }
 
                     Console.WriteLine(" \nDone");
