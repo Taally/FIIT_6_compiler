@@ -62,7 +62,7 @@ namespace SimpleLang
             getNextBlocks = GetParents;
         }
 
-        public InOutData<T> Analyze(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f) 
+        public InOutData<T> Analyze(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f)
         {
             if (type == Pass.Backward) return AnalyzeBackward(graph, ops, f);
 
@@ -96,16 +96,19 @@ namespace SimpleLang
         // Либо надо придумать, как по-другому инвертировать 
         // множества IN OUT для алгоритмов с обратным проходом
         // не впихивая if внутрь циклов
-        public InOutData<T> AnalyzeBackward(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f){
+        public InOutData<T> AnalyzeBackward(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f)
+        {
             var data = new InOutData<T>();
-
-            foreach (var node in graph.GetCurrentBasicBlocks())
+            foreach (var node in graph.GetCurrentBasicBlocks().Take(graph.GetCurrentBasicBlocks().Count - 1))
                 data[node] = ops.Init;
+            data[graph.GetCurrentBasicBlocks().Last()] = ops.EnterInit;
 
             var inChanged = true;
-            while (inChanged){
+            while (inChanged)
+            {
                 inChanged = false;
-                foreach (var block in graph.GetCurrentBasicBlocks()){
+                foreach (var block in graph.GetCurrentBasicBlocks().Take(graph.GetCurrentBasicBlocks().Count - 1))
+                {
                     var outset = getNextBlocks(graph, block)
                         .Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].In));
                     var inset = f.Transfer(block, outset);
