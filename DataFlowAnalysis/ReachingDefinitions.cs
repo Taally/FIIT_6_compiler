@@ -4,16 +4,16 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    using InOutInfo = InOutData<IEnumerable<Instruction>>;
+    using InOutInfo = InOutData<Instruction>;
     public class ReachingDefinitions
     {
         public InOutInfo Execute(ControlFlowGraph graph)
         {
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<Instruction>>();
+            var iterativeAlgorithm = new GenericIterativeAlgorithm<Instruction>();
             return iterativeAlgorithm.Analyze(graph, new Operation(), new ReachingTransferFunc(graph));
         }
 
-        private class Operation : ICompareOperations<IEnumerable<Instruction>>
+        private class Operation : ICompareOperations<Instruction>
         {
             public IEnumerable<Instruction> Lower =>
                 new List<Instruction>();
@@ -24,11 +24,13 @@ namespace SimpleLang
             public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init =>
                 (Lower, Lower);
 
-            public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
-                => a.Union(b);
+            public (IEnumerable<Instruction>, IEnumerable<Instruction>) EnterInit => Init;
+
+            public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b) =>
+                a.Union(b);
             
-            public bool Compare(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
-                => !a.Except(b).Any();
+            public bool Compare(IEnumerable<Instruction> a, IEnumerable<Instruction> b) =>
+                !a.Except(b).Any();
         }
     }
 }

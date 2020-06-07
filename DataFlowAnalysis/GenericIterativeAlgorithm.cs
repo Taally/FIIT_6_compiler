@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SimpleLang
 {
-    public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)>
+    public class InOutData<T> : Dictionary<BasicBlock, (IEnumerable<T> In, IEnumerable<T> Out)>
     {
         public override string ToString()
         {
@@ -25,21 +25,22 @@ namespace SimpleLang
     public interface ICompareOperations<T>
     {
         // пересечение или объединение 
-        T Operator(T a, T b);
+        IEnumerable<T> Operator(IEnumerable<T> a, IEnumerable<T> b);
 
-        bool Compare(T a, T b);
+        bool Compare(IEnumerable<T> a, IEnumerable<T> b);
 
         // Lower = Пустое множество\ кроме обратной ходки
-        T Lower { get; }
+        IEnumerable<T> Lower { get; }
         // Upper = Полное множество, все возможные определения
-        T Upper { get; }
+        IEnumerable<T> Upper { get; }
 
-        (T, T) Init { get; }
+        (IEnumerable<T>, IEnumerable<T>) Init { get; }
+        (IEnumerable<T>, IEnumerable<T>) EnterInit { get; }
     }
 
     public interface ITransFunc<T>
     {
-        T Transfer(BasicBlock basicBlock, T input);
+        IEnumerable<T> Transfer(BasicBlock basicBlock, IEnumerable<T> input);
     }
 
     public class GenericIterativeAlgorithm<T>
@@ -65,15 +66,18 @@ namespace SimpleLang
         {
             if (type == Pass.Backward) return AnalyzeBackward(graph, ops, f);
 
-            var data = new InOutData<T>();
-            foreach (var node in graph.GetCurrentBasicBlocks())
+            var data = new InOutData<T>
+            {
+                [graph.GetCurrentBasicBlocks().First()] = ops.EnterInit
+            };
+            foreach (var node in graph.GetCurrentBasicBlocks().Skip(1))
                 data[node] = ops.Init;
 
             var outChanged = true;
             while (outChanged)
             {
                 outChanged = false;
-                foreach (var block in graph.GetCurrentBasicBlocks())
+                foreach (var block in graph.GetCurrentBasicBlocks().Skip(1))
                 {
                     var inset = getNextBlocks(graph, block).Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].Out));
                     var outset = f.Transfer(block, inset);

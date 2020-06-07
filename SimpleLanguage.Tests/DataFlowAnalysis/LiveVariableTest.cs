@@ -113,7 +113,7 @@ print (c+a+b);"
 
             var listAct = liveAct.dictInOut
                 .Select(x => x.Value)
-                .Select(y => (y.IN, y.OUT));
+                .Select(y => (y.IN as HashSet<string>, y.OUT as HashSet<string>));
             return listAct.ToList();
         }
 
