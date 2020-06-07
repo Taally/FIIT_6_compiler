@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFG\CFGcreateTest.cs" />
+    <Compile Include="DataFlowAnalysis\DominatorTreeTests.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTest.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableTest.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />

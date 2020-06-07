@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
+    <Compile Include="DataFlowAnalysis\DominatorTree.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableAnalysis.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithm.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitions.cs" />
