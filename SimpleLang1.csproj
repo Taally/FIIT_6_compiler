@@ -53,8 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
+    <Compile Include="DataFlowAnalysis\BitUtils.cs" />
+    <Compile Include="DataFlowAnalysis\DefinitionInfo.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableAnalysis.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithm.cs" />
+    <Compile Include="DataFlowAnalysis\ReachingDefinitionBinary.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitions.cs" />
     <Compile Include="DataFlowAnalysis\ReachingTransferFunc.cs" />
     <Compile Include="Main.cs" />

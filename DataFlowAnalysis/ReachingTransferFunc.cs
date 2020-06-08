@@ -27,12 +27,6 @@ namespace SimpleLang
             defs_groups = defs.ToLookup(x => x.Result, x => x);
         }
 
-        private class DefinitionInfo
-        {
-            public BasicBlock BasicBlock { get; set; }
-            public Instruction Instruction { get; set; }
-        }
-
         private void GetGenKill(List<BasicBlock> blocks)
         {
             var gen = new List<DefinitionInfo>();
