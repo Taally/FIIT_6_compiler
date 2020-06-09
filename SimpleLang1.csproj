@@ -55,7 +55,7 @@
     <Compile Include="ASTOptimizer.cs" />
     <Compile Include="DataFlowAnalysis\BitUtils.cs" />
     <Compile Include="DataFlowAnalysis\DefinitionInfo.cs" />
-    <Compile Include="DataFlowAnalysis\DominatorTree.cs" />
+    <Compile Include="CyclesInCFG\DominatorTree.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableAnalysis.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithm.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionBinary.cs" />
@@ -115,9 +115,7 @@
   <ItemGroup>
     <Content Include="a.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CyclesInCFG\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
