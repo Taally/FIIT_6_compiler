@@ -61,14 +61,17 @@ namespace SimpleLang
 
                         result = result
                             .Select(com =>
-                                com.Operation == "goto" && com.Argument1 == currentLabel
+                                (com.Operation == "goto") && com.Argument1 == currentLabel
                                     ? new Instruction(com.Label, com.Operation, nextLabel, com.Argument2, com.Result)
-                                    : com
+                                    : (com.Operation == "ifgoto") && com.Argument2 == currentLabel
+                                        ? new Instruction(com.Label, com.Operation, com.Argument1, nextLabel, com.Result)
+                                        : com
                             ).ToList();
 
                         for (var j = i + 1; j < commands.Count; j++)
                         {
-                            commands[j] = commands[j].Operation == "goto" && commands[j].Argument1 == currentLabel
+                            commands[j] = (commands[j].Operation == "goto") 
+                                          && commands[j].Argument1 == currentLabel
                                 ? new Instruction(
                                     commands[j].Label,
                                     commands[j].Operation,
@@ -76,7 +79,14 @@ namespace SimpleLang
                                     commands[j].Argument2,
                                     commands[j].Result
                                 )
-                                : commands[j];
+                                : (commands[j].Operation == "ifgoto" && commands[j].Argument2 == currentLabel)
+                                    ? new Instruction(
+                                        commands[j].Label, 
+                                        commands[j].Operation, 
+                                        commands[j].Argument1, 
+                                        nextLabel, 
+                                        commands[j].Result)
+                                    : commands[j];
                         }
                     }
                 }

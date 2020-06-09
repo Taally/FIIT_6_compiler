@@ -86,5 +86,13 @@ namespace SimpleLang
         public List<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex];
 
         public List<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex];
+        
+        public IEnumerable<Instruction> GetAssigns() =>
+            _basicBlocks.Select(b => b.GetInstructions().Where(instr =>
+                instr.Operation == "assign" || instr.Operation == "input" ||
+                (instr.Operation == "PLUS" && !instr.Result.StartsWith("#"))
+            )).SelectMany(i => i);
+
+        public int GetAmountOfAssigns() => GetAssigns().Count();
     }
 }

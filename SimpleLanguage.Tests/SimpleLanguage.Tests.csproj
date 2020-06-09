@@ -71,8 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFG\CFGcreateTest.cs" />
+    <Compile Include="DataFlowAnalysis\BitUtilsTest.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTest.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableTest.cs" />
+    <Compile Include="DataFlowAnalysis\ReachingDefinitionBinaryOperationTest.cs" />
+    <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
