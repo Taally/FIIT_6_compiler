@@ -18,6 +18,14 @@ namespace SimpleLang
             sb.AppendLine("++++");
             return sb.ToString();
         }
+        
+        public InOutData() { }
+        
+        public InOutData(Dictionary<BasicBlock, (T, T)> dictionary)
+        {
+            foreach (var b in dictionary)
+                this[b.Key] = b.Value;
+        }
     }
 
     public enum Pass { Forward, Backward }
