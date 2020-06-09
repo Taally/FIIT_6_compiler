@@ -71,7 +71,6 @@
     <Compile Include="TACOptimizations\BasicBlock.cs" />
     <Compile Include="TACOptimizations\BasicBlockLeader.cs" />
     <Compile Include="TACOptimizations\ControlFlowGraph.cs" />
-    <Compile Include="DataFlowAnalysis\ControlFlowGraphExtensions.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />
@@ -116,7 +115,9 @@
   <ItemGroup>
     <Content Include="a.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CyclesInCFG\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
