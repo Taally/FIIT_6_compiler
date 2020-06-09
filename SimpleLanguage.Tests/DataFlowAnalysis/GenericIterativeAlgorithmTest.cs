@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using SimpleLang;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
@@ -24,18 +25,18 @@ print (c);"
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
             var activeVariable = new LiveVariableAnalysis();
-            var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
+            var resActiveVariable = activeVariable.Execute(cfg);
             HashSet<string> In = new HashSet<string>();
             HashSet<string> Out = new HashSet<string>();
             List<(HashSet<string> IN, HashSet<string> OUT)> actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
-            foreach (var x in resActiveVariable)
+            foreach (var x in cfg.GetCurrentBasicBlocks().Select(z => resActiveVariable[z]))
             {
-                foreach (var y in x.Value.In)
+                foreach (var y in x.In)
                 {
                     In.Add(y);
                 }
 
-                foreach (var y in x.Value.Out)
+                foreach (var y in x.Out)
                 {
                     Out.Add(y);
                 }

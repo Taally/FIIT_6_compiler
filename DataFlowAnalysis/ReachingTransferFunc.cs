@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    public class ReachingTransferFunc : ITransFunc<IEnumerable<Instruction>>
+    public class ReachingTransferFunc
     {
         private ILookup<string, Instruction> defs_groups;
         private ILookup<BasicBlock, Instruction> gen_block;

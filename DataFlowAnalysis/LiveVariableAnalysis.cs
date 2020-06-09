@@ -53,7 +53,7 @@ namespace SimpleLang
     {
         public Dictionary<int, InOutSet> dictInOut;
 
-        public void Execute(ControlFlowGraph cfg)
+        public void ExecuteInternal(ControlFlowGraph cfg)
         {
             var blocks = cfg.GetCurrentBasicBlocks();
             var transferFunc = new LiveVariableTransferFunc(cfg);
@@ -82,34 +82,18 @@ namespace SimpleLang
             }
         }
 
-        public InOutData<HashSet<string>> ExecuteThroughItAlg(ControlFlowGraph cfg)
-        {
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
-            return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
-        }
-
-        public class Operation : ICompareOperations<HashSet<string>>
-        {
-            public Operation() { }
-
-            public HashSet<string> Upper =>
-                throw new NotImplementedException("I don't even know why it's needed as it's never used.");
-
-            public HashSet<string> Lower =>
-                new HashSet<string>();
-
-            public bool Compare(HashSet<string> a, HashSet<string> b)
-                => a.SetEquals(b);
-
-            public (HashSet<string>, HashSet<string>) Init =>
-                (Lower, Lower);
-
-            public (HashSet<string>, HashSet<string>) EnterInit =>
-                Init;
-
-            public HashSet<string> Operator(HashSet<string> a, HashSet<string> b) =>
-                a.Union(b).ToHashSet();
-        }
+        public InOutData<HashSet<string>> Execute(ControlFlowGraph cfg) =>
+            GenericIterativeAlgorithm<HashSet<string>>.Analyze(
+                cfg,
+                new AlgorithmInfo<HashSet<string>>
+                {
+                    CollectingOperator = (a, b) => a.Union(b).ToHashSet(),
+                    Compare = (a, b) => a.SetEquals(b),
+                    Init = () => new HashSet<string>(),
+                    InitFirst = () => new HashSet<string>(),
+                    TransferFunction = new LiveVariableTransferFunc(cfg).Transfer,
+                    Direction = Direction.Backward
+                });
 
         public LiveVariableAnalysis()
         {
@@ -143,7 +127,7 @@ namespace SimpleLang
         }
     }
 
-    public class LiveVariableTransferFunc : ITransFunc<HashSet<string>>
+    public class LiveVariableTransferFunc
     {
         readonly Dictionary<BasicBlock, DefUseSet> dictDefUse;
 

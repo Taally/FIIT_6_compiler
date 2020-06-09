@@ -1,3 +1,4 @@
+/*
 using System.Collections;
 using NUnit.Framework;
 using SimpleLang;
@@ -29,3 +30,4 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         }
     }
 }
+*/

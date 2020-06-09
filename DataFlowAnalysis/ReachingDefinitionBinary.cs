@@ -17,9 +17,17 @@ namespace SimpleLang
 
             var instructions = assigns;
 
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<BitArray>();
-
-            var inOutData = iterativeAlgorithm.Analyze(graph, new Operation(graph.GetAmountOfAssigns()), new ReachingTransferFunc(graph, idByInstruction));
+            var inOutData = GenericIterativeAlgorithm<BitArray>.Analyze(
+                graph,
+                new AlgorithmInfo<BitArray>
+                {
+                    CollectingOperator = (a, b) => a.Or(b),
+                    Compare = (a, b) => BitUtils.AreEqual(a, b),
+                    Init = () => new BitArray(graph.GetAmountOfAssigns(), false),
+                    InitFirst = () => new BitArray(graph.GetAmountOfAssigns(), false),
+                    TransferFunction = new ReachingTransferFunc(graph, idByInstruction).Transfer,
+                    Direction = Direction.Forward
+                });
 
             var modifiedBackData = inOutData
                 .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })
@@ -33,35 +41,8 @@ namespace SimpleLang
             var (In, Out) = inOut;
             return (BitUtils.TurnIntoInstructions(In, instructions), BitUtils.TurnIntoInstructions(Out, instructions));
         }
-        public class Operation : ICompareOperations<BitArray>
-        {
-            private readonly int _size;
 
-            public Operation(int assigns)
-            {
-                _size = assigns;
-            }
-
-            public BitArray Lower =>
-                new BitArray(_size, false);
-
-            public BitArray Upper =>
-                throw new NotImplementedException("Upper shouldn't be used in Reaching Definitions");
-
-            public (BitArray, BitArray) Init =>
-                (Lower, Lower);
-
-            public (BitArray, BitArray) EnterInit =>
-                Init;
-
-            public BitArray Operator(BitArray a, BitArray b)
-                => a.Or(b);
-
-            public bool Compare(BitArray a, BitArray b) =>
-                BitUtils.AreEqual(a, b);
-        }
-
-        public class ReachingTransferFunc : ITransFunc<BitArray>
+        public class ReachingTransferFunc
         {
             private readonly Dictionary<Instruction, int> _ids_by_instruction;
             private ILookup<string, Instruction> defs_groups;

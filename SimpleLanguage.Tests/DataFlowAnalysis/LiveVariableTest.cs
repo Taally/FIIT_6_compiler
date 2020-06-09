@@ -109,7 +109,7 @@ print (c+a+b);"
             var cfg = new ControlFlowGraph(blocks);
 
             var liveAct = new LiveVariableAnalysis();
-            liveAct.Execute(cfg);
+            liveAct.ExecuteInternal(cfg);
 
             var listAct = liveAct.dictInOut
                 .Select(x => x.Value)

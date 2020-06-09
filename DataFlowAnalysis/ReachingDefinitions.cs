@@ -7,31 +7,17 @@ namespace SimpleLang
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
     public class ReachingDefinitions
     {
-        public InOutInfo Execute(ControlFlowGraph graph)
-        {
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<Instruction>>();
-            return iterativeAlgorithm.Analyze(graph, new Operation(), new ReachingTransferFunc(graph));
-        }
-
-        private class Operation : ICompareOperations<IEnumerable<Instruction>>
-        {
-            public IEnumerable<Instruction> Lower =>
-                Enumerable.Empty<Instruction>();
-
-            public IEnumerable<Instruction> Upper =>
-                throw new NotImplementedException("I don't even know why it's needed as it's never used.");
-
-            public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init =>
-                (Lower, Lower);
-
-            public (IEnumerable<Instruction>, IEnumerable<Instruction>) EnterInit =>
-                Init;
-
-            public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b) =>
-                a.Union(b).ToList();
-            
-            public bool Compare(IEnumerable<Instruction> a, IEnumerable<Instruction> b) =>
-                !a.Except(b).Any();
-        }
+        public InOutInfo Execute(ControlFlowGraph graph) =>
+            GenericIterativeAlgorithm<IEnumerable<Instruction>>.Analyze(
+                graph,
+                new AlgorithmInfo<IEnumerable<Instruction>>
+                {
+                    CollectingOperator = (a, b) => a.Union(b),
+                    Compare = (a, b) => !a.Except(b).Any() && !b.Except(a).Any(),
+                    Init = () => Enumerable.Empty<Instruction>(),
+                    InitFirst = () => Enumerable.Empty<Instruction>(),
+                    TransferFunction = new ReachingTransferFunc(graph).Transfer,
+                    Direction = Direction.Forward
+                });
     }
 }

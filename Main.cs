@@ -87,7 +87,7 @@ namespace SimpleCompiler
                     Console.WriteLine("------------");
                     Console.WriteLine();
                     var activeVariable = new LiveVariableAnalysis();
-                    var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
+                    var resActiveVariable = activeVariable.Execute(cfg);
 
                     foreach (var x in resActiveVariable)
                     {
