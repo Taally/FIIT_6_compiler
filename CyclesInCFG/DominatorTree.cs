@@ -14,7 +14,7 @@ namespace SimpleLang
                 {
                     CollectingOperator = (x, y) => x.Intersect(y),
                     Compare = (x, y) => !x.Except(y).Any() && !y.Except(x).Any(),
-                    Init = () => graph.GetCurrentBasicBlocks().Skip(1),
+                    Init = () => graph.GetCurrentBasicBlocks(),
                     InitFirst = () => graph.GetCurrentBasicBlocks().Take(1),
                     TransferFunction = (block, blockList) => blockList.Union(new[] { block }),
                     Direction = Direction.Forward
