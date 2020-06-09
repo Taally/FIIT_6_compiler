@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
-    using InOutInfo = InOutData<Instruction>;
+    using InOutInfo = InOutData<IEnumerable<Instruction>>;
     [TestFixture]
     class ReachingDefinitionsTests : TACTestsBase
     {

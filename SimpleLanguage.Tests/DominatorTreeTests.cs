@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
-    using InOutInfo = InOutData<IEnumerable<BasicBlock>>;
+    using InOutInfo = InOutData<BasicBlock>;
     [TestFixture]
     class DominatorTreeTests : TACTestsBase
     {

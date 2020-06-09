@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    using InOutInfo = InOutData<BasicBlock>;
+    using InOutInfo = InOutData<IEnumerable<BasicBlock>>;
     public class DominatorTree
     {
-        private class TransferFunc : ITransFunc<BasicBlock>
+        private class TransferFunc : ITransFunc<IEnumerable<BasicBlock>>
         {
             public IEnumerable<BasicBlock> Transfer(BasicBlock basicBlock, IEnumerable<BasicBlock> input) =>
                 input.Union(Enumerable.Repeat(basicBlock, 1));
@@ -15,7 +15,7 @@ namespace SimpleLang
 
         public InOutInfo Execute(ControlFlowGraph graph)
         {
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<BasicBlock>();
+            var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<BasicBlock>>();
             return iterativeAlgorithm.Analyze(
                 graph,
                 new Operation()
@@ -26,7 +26,7 @@ namespace SimpleLang
                 new TransferFunc());
         }
 
-        private class Operation : ICompareOperations<BasicBlock>
+        private class Operation : ICompareOperations<IEnumerable<BasicBlock>>
         {
             public IEnumerable<BasicBlock> Lower { get; set; }
 

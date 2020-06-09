@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Permissions;
 
 namespace SimpleLang
 {
@@ -11,21 +10,21 @@ namespace SimpleLang
         public InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
         {
             var assigns = graph.GetAssigns().ToList();
-            
+
             var idByInstruction = assigns
-                .Select((value, index) => new {value, index})
+                .Select((value, index) => new { value, index })
                 .ToDictionary(x => x.value, x => x.index);
 
             var instructions = assigns;
-            
+
             var iterativeAlgorithm = new GenericIterativeAlgorithm<BitArray>();
-            
-            var inOutData = iterativeAlgorithm.Analyze(graph, new Operation(graph.GetAmountOfAssigns()), new ReachingTransferFunc(graph, instructions, idByInstruction));
+
+            var inOutData = iterativeAlgorithm.Analyze(graph, new Operation(graph.GetAmountOfAssigns()), new ReachingTransferFunc(graph, idByInstruction));
 
             var modifiedBackData = inOutData
-                .Select(x => new {x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions)})
+                .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })
                 .ToDictionary(x => x.Key, x => x.ModifyInOutBack);
-            
+
             return new InOutData<IEnumerable<Instruction>>(modifiedBackData);
         }
 
@@ -42,14 +41,18 @@ namespace SimpleLang
             {
                 _size = assigns;
             }
-            
-            public BitArray Lower => new BitArray(_size, false);
 
-            public BitArray Upper => 
+            public BitArray Lower =>
+                new BitArray(_size, false);
+
+            public BitArray Upper =>
                 throw new NotImplementedException("Upper shouldn't be used in Reaching Definitions");
-            
+
             public (BitArray, BitArray) Init =>
                 (Lower, Lower);
+
+            public (BitArray, BitArray) EnterInit =>
+                Init;
 
             public BitArray Operator(BitArray a, BitArray b)
                 => a.Or(b);
@@ -57,11 +60,10 @@ namespace SimpleLang
             public bool Compare(BitArray a, BitArray b) =>
                 BitUtils.AreEqual(a, b);
         }
-        
+
         public class ReachingTransferFunc : ITransFunc<BitArray>
         {
-            private IEnumerable<Instruction> _instructions;
-            private Dictionary<Instruction, int> _ids_by_instruction;
+            private readonly Dictionary<Instruction, int> _ids_by_instruction;
             private ILookup<string, Instruction> defs_groups;
             private IDictionary<BasicBlock, BitArray> gen_block;
             private IDictionary<BasicBlock, BitArray> kill_block;
@@ -83,9 +85,9 @@ namespace SimpleLang
                 }
                 defs_groups = defs.ToLookup(x => x.Result, x => x);
             }
-            
+
             private void GetGenKill(List<BasicBlock> blocks)
-            { 
+            {
                 var gen = new List<DefinitionInfo>();
                 var kill = new List<DefinitionInfo>();
                 foreach (var block in blocks)
@@ -114,13 +116,12 @@ namespace SimpleLang
                 kill = kill.Distinct().ToList();
                 var kb = BitUtils.GroupByBlockAndTurnIntoInstructions(kill, _ids_by_instruction);
                 kill_block = kb;
-                
+
                 Console.WriteLine("Start blocks: " + blocks.Count + "; genBlocks: " + gen_block.Count + "; killBlocks: " + kill_block.Count);
             }
 
-            public ReachingTransferFunc(ControlFlowGraph g, IEnumerable<Instruction> instructions, Dictionary<Instruction, int> idByInstruction)
+            public ReachingTransferFunc(ControlFlowGraph g, Dictionary<Instruction, int> idByInstruction)
             {
-                _instructions = instructions;
                 _ids_by_instruction = idByInstruction;
                 var basicBlocks = g.GetCurrentBasicBlocks();
                 GetDefs(basicBlocks);
@@ -129,7 +130,7 @@ namespace SimpleLang
 
             public BitArray Transfer(BasicBlock basicBlock, BitArray input) =>
                 ApplyTransferFunc(input, basicBlock);
-            
+
             private BitArray ApplyTransferFunc(BitArray @in, BasicBlock block)
             {
                 var gen = gen_block.ContainsKey(block) ? gen_block[block] : new BitArray(@in.Count, false);

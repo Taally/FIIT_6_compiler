@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace SimpleLang
 {
-    public class InOutData<T> : Dictionary<BasicBlock, (IEnumerable<T> In, IEnumerable<T> Out)>
+    public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)>
+        where T : IEnumerable
     {
         public override string ToString()
         {
@@ -31,27 +33,30 @@ namespace SimpleLang
     public enum Pass { Forward, Backward }
 
     public interface ICompareOperations<T>
+        where T : IEnumerable
     {
         // пересечение или объединение 
-        IEnumerable<T> Operator(IEnumerable<T> a, IEnumerable<T> b);
+        T Operator(T a, T b);
 
-        bool Compare(IEnumerable<T> a, IEnumerable<T> b);
+        bool Compare(T a, T b);
 
         // Lower = Пустое множество\ кроме обратной ходки
-        IEnumerable<T> Lower { get; }
+        T Lower { get; }
         // Upper = Полное множество, все возможные определения
-        IEnumerable<T> Upper { get; }
+        T Upper { get; }
 
-        (IEnumerable<T>, IEnumerable<T>) Init { get; }
-        (IEnumerable<T>, IEnumerable<T>) EnterInit { get; }
+        (T, T) Init { get; }
+        (T, T) EnterInit { get; }
     }
 
     public interface ITransFunc<T>
+        where T : IEnumerable
     {
-        IEnumerable<T> Transfer(BasicBlock basicBlock, IEnumerable<T> input);
+        T Transfer(BasicBlock basicBlock, T input);
     }
 
     public class GenericIterativeAlgorithm<T>
+        where T : IEnumerable
     {
         readonly Func<ControlFlowGraph, BasicBlock, List<BasicBlock>> getNextBlocks;
         readonly Pass type;

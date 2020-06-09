@@ -7,8 +7,8 @@ namespace SimpleLang
 {
     public class InOutSet
     {
-        public IEnumerable<string> IN { get; set; }
-        public IEnumerable<string> OUT { get; set; }
+        public HashSet<string> IN { get; set; }
+        public HashSet<string> OUT { get; set; }
 
         public InOutSet()
         {
@@ -34,18 +34,18 @@ namespace SimpleLang
 
     class DefUseSet
     {
-        public HashSet<string> def { get; set; }
-        public HashSet<string> use { get; set; }
+        public HashSet<string> Def { get; set; }
+        public HashSet<string> Use { get; set; }
 
         public DefUseSet()
         {
-            def = new HashSet<string>();
-            use = new HashSet<string>();
+            Def = new HashSet<string>();
+            Use = new HashSet<string>();
         }
         public DefUseSet((HashSet<string> def, HashSet<string> use) a)
         {
-            def = a.def;
-            use = a.use;
+            Def = a.def;
+            Use = a.use;
         }
     }
 
@@ -77,49 +77,39 @@ namespace SimpleLang
 
                     var pred = dictInOut[i].IN;
                     dictInOut[i].IN = transferFunc.Transfer(blocks[i], dictInOut[i].OUT);
-                    isChanged = !(dictInOut[i].IN as HashSet<string>).SetEquals(pred) || isChanged;
+                    isChanged = !dictInOut[i].IN.SetEquals(pred) || isChanged;
                 }
             }
         }
 
-        public InOutData<string> ExecuteThroughItAlg(ControlFlowGraph cfg)
+        public InOutData<HashSet<string>> ExecuteThroughItAlg(ControlFlowGraph cfg)
         {
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<string>(Pass.Backward);
+            var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
             return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
         }
 
-        public class Operation : ICompareOperations<string>
+        public class Operation : ICompareOperations<HashSet<string>>
         {
-            IEnumerable<string> _instructions = new HashSet<string>();
-            public Operation(List<Instruction> instructions)
-            {
-                foreach (var x in instructions)
-                {
-                    if (x.Operation == "assign"
-                        || x.Operation == "input"
-                        || x.Operation == "PLUS")
-                        (_instructions as HashSet<string>).Add(x.Result);
-                }
-            }
-
             public Operation() { }
 
-            public IEnumerable<string> Upper => _instructions; //???
+            public HashSet<string> Upper =>
+                throw new NotImplementedException("I don't even know why it's needed as it's never used.");
 
-            public IEnumerable<string> Lower => new HashSet<string>();
+            public HashSet<string> Lower =>
+                new HashSet<string>();
 
-            public bool Compare(IEnumerable<string> a, IEnumerable<string> b)
-                => (a as HashSet<string>).SetEquals(b);
+            public bool Compare(HashSet<string> a, HashSet<string> b)
+                => a.SetEquals(b);
 
-            public (IEnumerable<string>, IEnumerable<string>) Init
-                => (Lower, Lower);
+            public (HashSet<string>, HashSet<string>) Init =>
+                (Lower, Lower);
 
-            public (IEnumerable<string>, IEnumerable<string>) EnterInit => Init;
+            public (HashSet<string>, HashSet<string>) EnterInit =>
+                Init;
 
-            public IEnumerable<string> Operator(IEnumerable<string> a, IEnumerable<string> b)
-                => a.Union(b).ToHashSet();
+            public HashSet<string> Operator(HashSet<string> a, HashSet<string> b) =>
+                a.Union(b).ToHashSet();
         }
-
 
         public LiveVariableAnalysis()
         {
@@ -153,9 +143,9 @@ namespace SimpleLang
         }
     }
 
-    public class LiveVariableTransferFunc : ITransFunc<string>
+    public class LiveVariableTransferFunc : ITransFunc<HashSet<string>>
     {
-        Dictionary<BasicBlock, DefUseSet> dictDefUse;
+        readonly Dictionary<BasicBlock, DefUseSet> dictDefUse;
 
         private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> block)
         {
@@ -185,7 +175,7 @@ namespace SimpleLang
                 dictDefUse.Add(x, new DefUseSet(FillDefUse(x.GetInstructions())));
         }
 
-        public IEnumerable<string> Transfer(BasicBlock basicBlock, IEnumerable<string> OUT) =>
-            dictDefUse[basicBlock].use.Union(OUT.Except(dictDefUse[basicBlock].def)).ToHashSet();
+        public HashSet<string> Transfer(BasicBlock basicBlock, HashSet<string> OUT) =>
+            dictDefUse[basicBlock].Use.Union(OUT.Except(dictDefUse[basicBlock].Def)).ToHashSet();
     }
 }
