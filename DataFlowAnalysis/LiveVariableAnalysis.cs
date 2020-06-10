@@ -1,4 +1,3 @@
-using SimpleLang;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,12 +52,12 @@ namespace SimpleLang
     public class LiveVariableAnalysis : GenericIterativeAlgorithm<HashSet<string>>
     {
         /// <inheritdoc/>
-        public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator
-            => (a, b) => a.Union(b).ToHashSet();
+        public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator =>
+            (a, b) => a.Union(b).ToHashSet();
 
         /// <inheritdoc/>
-        public override Func<HashSet<string>, HashSet<string>, bool> Compare
-            => (a, b) => a.SetEquals(b);
+        public override Func<HashSet<string>, HashSet<string>, bool> Compare =>
+            (a, b) => a.SetEquals(b);
 
         /// <inheritdoc/>
         public override HashSet<string> Init { get => new HashSet<string>(); protected set { } }

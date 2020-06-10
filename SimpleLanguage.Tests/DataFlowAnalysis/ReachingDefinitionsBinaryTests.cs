@@ -13,7 +13,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             var TAC = GenTAC(program);
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
-            var inOutInfo = new ReachingDefinitionBinary().ExecuteInternal(cfg);
+            var inOutInfo = new ReachingDefinitionBinary().Execute(cfg);
             return (blocks, inOutInfo);
         }
 

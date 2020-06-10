@@ -21,7 +21,7 @@ namespace SimpleLang
         /// <inheritdoc/>
         public override Func<BasicBlock, BitArray, BitArray> TransferFunction { get; protected set; }
 
-        public InOutData<IEnumerable<Instruction>> ExecuteInternal(ControlFlowGraph graph)
+        public InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
         {
             var assigns = graph.GetAssigns().ToList();
 

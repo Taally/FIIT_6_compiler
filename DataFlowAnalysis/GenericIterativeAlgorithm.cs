@@ -46,6 +46,7 @@ namespace SimpleLang
 
         /// <summary>
         /// Начальное значение для всех блоков, кроме первого
+        /// (при движении с конца - кроме последнего)
         /// </summary>
         public abstract T Init { get; protected set; }
 
@@ -128,7 +129,7 @@ namespace SimpleLang
                     combine = (x, y) => (y, x);
                     break;
                 default:
-                    throw new NotImplementedException("undefined direction type");
+                    throw new NotImplementedException("Undefined direction type");
             }
         }
     }

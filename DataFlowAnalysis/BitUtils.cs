@@ -6,7 +6,6 @@ namespace SimpleLang
 {
     public static class BitUtils
     {
-
         public static BitArray TurnIntoBits(
             IEnumerable<Instruction> instructions,
             IDictionary<Instruction, int> map)

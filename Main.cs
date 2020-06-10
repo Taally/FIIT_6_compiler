@@ -4,8 +4,6 @@ using SimpleScanner;
 using SimpleParser;
 using SimpleLang.Visitors;
 using SimpleLang;
-using NUnit.Framework;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleCompiler
@@ -73,11 +71,11 @@ namespace SimpleCompiler
                     {
                         Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions()[0]}");
                         var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
-                        var childrenStr = String.Join(" | ", children.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        var childrenStr = string.Join(" | ", children.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" children: {childrenStr}");
 
                         var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
-                        var parentsStr = String.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        var parentsStr = string.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 

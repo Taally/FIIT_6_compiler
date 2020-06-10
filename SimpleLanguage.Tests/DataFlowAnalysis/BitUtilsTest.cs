@@ -266,7 +266,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 
             var idsByInstruction = instructions
                 .Select((value, index) => (value, index))
-                .ToDictionary(x => x.Item1, x => x.Item2);
+                .ToDictionary(x => x.value, x => x.index);
             
             var block1 = new BasicBlock(new List<Instruction>() { instructions[0], instructions[1] });
             var block2 = new BasicBlock(new List<Instruction>() { instructions[2], instructions[3] });
