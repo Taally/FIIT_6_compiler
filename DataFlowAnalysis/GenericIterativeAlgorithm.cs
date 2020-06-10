@@ -18,6 +18,14 @@ namespace SimpleLang
             sb.AppendLine("++++");
             return sb.ToString();
         }
+        
+        public InOutData() { }
+        
+        public InOutData(Dictionary<BasicBlock, (T, T)> dictionary)
+        {
+            foreach (var b in dictionary)
+                this[b.Key] = b.Value;
+        }
     }
 
     public enum Pass { Forward, Backward }
@@ -78,7 +86,6 @@ namespace SimpleLang
                     var inset = getNextBlocks(graph, block).Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].Out));
                     var outset = f.Transfer(block, inset);
 
-                    // Изменить применение Compare?
                     if (!(ops.Compare(outset, data[block].Out) && ops.Compare(data[block].Out, outset)))
                     {
                         outChanged = true;
@@ -89,9 +96,6 @@ namespace SimpleLang
             return data;
         }
 
-        // Либо надо придумать, как по-другому инвертировать 
-        // множества IN OUT для алгоритмов с обратным проходом
-        // не впихивая if внутрь циклов
         public InOutData<T> AnalyzeBackward(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f){
             var data = new InOutData<T>();
 

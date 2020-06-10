@@ -114,7 +114,7 @@ var a;
         a = 4 + 5 * 6;
     else
         goto 4;");
-            
+
             var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
             {
                 ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
@@ -134,7 +134,7 @@ var a;
                 "a = #t3",
                 "L2: noop"
             };
-            
+
             AssertEquality(result, expected);
         }
     }
