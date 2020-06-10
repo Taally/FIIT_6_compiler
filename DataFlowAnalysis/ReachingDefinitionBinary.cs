@@ -5,9 +5,23 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    public class ReachingDefinitionBinary
+    public class ReachingDefinitionBinary : GenericIterativeAlgorithm<BitArray>
     {
-        public InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
+        /// <inheritdoc/>
+        public override Func<BitArray, BitArray, BitArray> CollectingOperator => (a, b) => a.Or(b);
+
+        /// <inheritdoc/>
+        public override Func<BitArray, BitArray, bool> Compare => (a, b) => BitUtils.AreEqual(a, b);
+
+        /// <inheritdoc/>
+        public override BitArray Init { get => new BitArray(_graph.GetAmountOfAssigns(), false); protected set { } }
+
+        private ControlFlowGraph _graph;
+
+        /// <inheritdoc/>
+        public override Func<BasicBlock, BitArray, BitArray> TransferFunction { get; protected set; }
+
+        public InOutData<IEnumerable<Instruction>> ExecuteInternal(ControlFlowGraph graph)
         {
             var assigns = graph.GetAssigns().ToList();
 
@@ -17,17 +31,9 @@ namespace SimpleLang
 
             var instructions = assigns;
 
-            var inOutData = GenericIterativeAlgorithm<BitArray>.Analyze(
-                graph,
-                new AlgorithmInfo<BitArray>
-                {
-                    CollectingOperator = (a, b) => a.Or(b),
-                    Compare = (a, b) => BitUtils.AreEqual(a, b),
-                    Init = () => new BitArray(graph.GetAmountOfAssigns(), false),
-                    InitFirst = () => new BitArray(graph.GetAmountOfAssigns(), false),
-                    TransferFunction = new ReachingTransferFunc(graph, idByInstruction).Transfer,
-                    Direction = Direction.Forward
-                });
+            _graph = graph;
+            TransferFunction = new ReachingTransferFunc(graph, idByInstruction).Transfer;
+            var inOutData = Analyse(graph);
 
             var modifiedBackData = inOutData
                 .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })

@@ -1,3 +1,4 @@
+using SimpleLang;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,8 +50,25 @@ namespace SimpleLang
         }
     }
 
-    public class LiveVariableAnalysis
+    public class LiveVariableAnalysis : GenericIterativeAlgorithm<HashSet<string>>
     {
+        /// <inheritdoc/>
+        public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator
+            => (a, b) => a.Union(b).ToHashSet();
+
+        /// <inheritdoc/>
+        public override Func<HashSet<string>, HashSet<string>, bool> Compare
+            => (a, b) => a.SetEquals(b);
+
+        /// <inheritdoc/>
+        public override HashSet<string> Init { get => new HashSet<string>(); protected set { } }
+
+        /// <inheritdoc/>
+        public override Func<BasicBlock, HashSet<string>, HashSet<string>> TransferFunction { get; protected set; }
+
+        /// <inheritdoc/>
+        public override Direction Direction => Direction.Backward;
+
         public Dictionary<int, InOutSet> dictInOut;
 
         public void ExecuteInternal(ControlFlowGraph cfg)
@@ -82,18 +100,11 @@ namespace SimpleLang
             }
         }
 
-        public InOutData<HashSet<string>> Execute(ControlFlowGraph cfg) =>
-            GenericIterativeAlgorithm<HashSet<string>>.Analyze(
-                cfg,
-                new AlgorithmInfo<HashSet<string>>
-                {
-                    CollectingOperator = (a, b) => a.Union(b).ToHashSet(),
-                    Compare = (a, b) => a.SetEquals(b),
-                    Init = () => new HashSet<string>(),
-                    InitFirst = () => new HashSet<string>(),
-                    TransferFunction = new LiveVariableTransferFunc(cfg).Transfer,
-                    Direction = Direction.Backward
-                });
+        public InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
+        {
+            TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
+            return Analyse(cfg);
+        }
 
         public LiveVariableAnalysis()
         {

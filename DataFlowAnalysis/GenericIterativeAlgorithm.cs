@@ -32,55 +32,48 @@ namespace SimpleLang
 
     public enum Direction { Forward, Backward }
 
-    public class AlgorithmInfo<T> where T : IEnumerable
+    public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
     {
-        // оператор сбора
-        public Func<T, T, T> CollectingOperator { get; set; }
+        /// <summary>
+        /// Оператор сбора
+        /// </summary>
+        public abstract Func<T, T, T> CollectingOperator { get; }
 
-        // сравнение двух последовательностей (условие продолжения цикла)
-        public Func<T, T, bool> Compare { get; set; }
+        /// <summary>
+        /// Сравнение двух последовательностей (условие продолжения цикла)
+        /// </summary>
+        public abstract Func<T, T, bool> Compare { get; }
 
-        // начальное значение для всех блоков, кроме первого
-        public Func<T> Init { get; set; }
+        /// <summary>
+        /// Начальное значение для всех блоков, кроме первого
+        /// </summary>
+        public abstract T Init { get; protected set; }
 
-        // начальное значение для первого блока
-        // (при движении с конца - для последнего)
-        public Func<T> InitFirst { get; set; }
+        /// <summary>
+        /// Начальное значение для первого блока
+        /// (при движении с конца - для последнего)
+        /// </summary>
+        public virtual T InitFirst { get => Init; protected set { } }
 
-        // передаточная функция
-        public Func<BasicBlock, T, T> TransferFunction { get; set; }
+        /// <summary>
+        /// Передаточная функция
+        /// </summary>
+        public abstract Func<BasicBlock, T, T> TransferFunction { get; protected set; }
 
-        // направление
-        public Direction Direction { get; set; }
-    }
+        /// <summary>
+        /// Направление
+        /// </summary>
+        public virtual Direction Direction => Direction.Forward;
 
-    public static class GenericIterativeAlgorithm<T> where T : IEnumerable
-    {
-        public static InOutData<T> Analyze(
-            ControlFlowGraph graph, 
-            AlgorithmInfo<T> info)
+        /// <summary>
+        /// Выполнить алгоритм
+        /// </summary>
+        /// <param name="graph"> Граф потока управления </param>
+        /// <returns></returns>
+        public InOutData<T> Analyse(ControlFlowGraph graph)
         {
-            var start = info.Direction == Direction.Backward 
-                ? graph.GetCurrentBasicBlocks().Last() 
-                : graph.GetCurrentBasicBlocks().First();
-            var blocks = graph.GetCurrentBasicBlocks().Except(new[] { start });
-
-            var data = new InOutData<T>
-            {
-                [start] = (info.InitFirst(), info.InitFirst())
-            };
-            foreach (var block in blocks)
-                data[block] = (info.Init(), info.Init());
-
-            Func<BasicBlock, IEnumerable<BasicBlock>> getPreviousBlocks = info.Direction == Direction.Backward
-                ? (Func<BasicBlock, IEnumerable<BasicBlock>>)(x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2))
-                : x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
-            Func<BasicBlock, T> getDataValue = info.Direction == Direction.Backward
-                ? (Func<BasicBlock, T>)(x => data[x].In)
-                : x => data[x].Out;
-            Func<T, T, (T, T)> combine = info.Direction == Direction.Backward
-                ? (Func<T, T, (T, T)>)((x, y) => (y, x))
-                : (x, y) => (x, y);
+            GetInitData(graph, out var blocks, out var data, 
+                out var getPreviousBlocks, out var getDataValue, out var combine);
 
             var outChanged = true;
             while (outChanged)
@@ -88,10 +81,10 @@ namespace SimpleLang
                 outChanged = false;
                 foreach (var block in blocks)
                 {
-                    var inset = getPreviousBlocks(block).Aggregate(info.Init(), (x, y) => info.CollectingOperator(x, getDataValue(y)));
-                    var outset = info.TransferFunction(block, inset);
+                    var inset = getPreviousBlocks(block).Aggregate(Init, (x, y) => CollectingOperator(x, getDataValue(y)));
+                    var outset = TransferFunction(block, inset);
 
-                    if (!info.Compare(outset, getDataValue(block)))
+                    if (!Compare(outset, getDataValue(block)))
                     {
                         outChanged = true;
                     }
@@ -99,6 +92,44 @@ namespace SimpleLang
                 }
             }
             return data;
+        }
+
+        private void GetInitData(
+            ControlFlowGraph graph,
+            out IEnumerable<BasicBlock> blocks,
+            out InOutData<T> data,
+            out Func<BasicBlock, IEnumerable<BasicBlock>> getPreviousBlocks,
+            out Func<BasicBlock, T> getDataValue,
+            out Func<T, T, (T, T)> combine)
+        {
+            var start = Direction == Direction.Backward
+                ? graph.GetCurrentBasicBlocks().Last()
+                : graph.GetCurrentBasicBlocks().First();
+            blocks = graph.GetCurrentBasicBlocks().Except(new[] { start });
+
+            var dataTemp = new InOutData<T>
+            {
+                [start] = (InitFirst, InitFirst)
+            };
+            foreach (var block in blocks)
+                dataTemp[block] = (Init, Init);
+            data = dataTemp;
+
+            switch (Direction)
+            {
+                case Direction.Forward:
+                    getPreviousBlocks = x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getDataValue = x => dataTemp[x].Out;
+                    combine = (x, y) => (x, y);
+                    break;
+                case Direction.Backward:
+                    getPreviousBlocks = x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getDataValue = x => dataTemp[x].In;
+                    combine = (x, y) => (y, x);
+                    break;
+                default:
+                    throw new NotImplementedException("undefined direction type");
+            }
         }
     }
 }
