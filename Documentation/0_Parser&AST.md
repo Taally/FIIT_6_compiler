@@ -156,7 +156,7 @@ public class UnOpNode : ExprNode{
 ```charp
 a = 5;
 ```
-![Рис1](Documentation/0_Parser%26AST/pic1.png)
+![Рис1](0_Parser%26AST/pic1.png)
 2.
 ```charp
 if a > 10
@@ -166,4 +166,4 @@ else {
     a = b;
 }
 ```
-![Рис2](Documentation/0_Parser%26AST/pic2.png)
+![Рис2](0_Parser%26AST/pic2.png)
