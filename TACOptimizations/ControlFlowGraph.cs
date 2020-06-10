@@ -6,10 +6,10 @@ namespace SimpleLang
 {
     public class ControlFlowGraph
     {
-        private List<BasicBlock> _basicBlocks;
-        private List<List<(int, BasicBlock)>> _children;
-        private List<List<(int, BasicBlock)>> _parents;
-        private Dictionary<BasicBlock,int> _blockToVertex;
+        private readonly List<BasicBlock> _basicBlocks;
+        private readonly List<List<(int, BasicBlock)>> _children;
+        private readonly List<List<(int, BasicBlock)>> _parents;
+        private readonly Dictionary<BasicBlock, int> _blockToVertex;
 
         public ControlFlowGraph()
         {
@@ -19,8 +19,10 @@ namespace SimpleLang
 
         public ControlFlowGraph(List<BasicBlock> basicBlocks)
         {
-            _basicBlocks = new List<BasicBlock>(basicBlocks.Count+2);
-            _basicBlocks.Add(new BasicBlock(new List<Instruction> { new Instruction("#in", "noop", "", "", "") }));
+            _basicBlocks = new List<BasicBlock>(basicBlocks.Count + 2)
+            {
+                new BasicBlock(new List<Instruction> { new Instruction("#in", "noop", "", "", "") })
+            };
             _basicBlocks.AddRange(basicBlocks);
             _basicBlocks.Add(new BasicBlock(new List<Instruction> { new Instruction("#out", "noop", "", "", "") }));
 
@@ -81,12 +83,12 @@ namespace SimpleLang
         }
 
         public int VertexOf(BasicBlock block) => _blockToVertex[block];
-        public List<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.ToList();
+        public IReadOnlyList<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.AsReadOnly();
 
-        public List<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex];
+        public IReadOnlyList<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex].AsReadOnly();
 
-        public List<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex];
-        
+        public IReadOnlyList<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex].AsReadOnly();
+
         public IEnumerable<Instruction> GetAssigns() =>
             _basicBlocks.Select(b => b.GetInstructions().Where(instr =>
                 instr.Operation == "assign" || instr.Operation == "input" ||

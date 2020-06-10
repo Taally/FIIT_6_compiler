@@ -55,7 +55,7 @@ namespace SimpleLang
             private IDictionary<BasicBlock, BitArray> gen_block;
             private IDictionary<BasicBlock, BitArray> kill_block;
 
-            private void GetDefs(List<BasicBlock> blocks)
+            private void GetDefs(IReadOnlyCollection<BasicBlock> blocks)
             {
                 List<Instruction> defs = new List<Instruction>();
                 foreach (var block in blocks)
@@ -73,7 +73,7 @@ namespace SimpleLang
                 defs_groups = defs.ToLookup(x => x.Result, x => x);
             }
 
-            private void GetGenKill(List<BasicBlock> blocks)
+            private void GetGenKill(IReadOnlyCollection<BasicBlock> blocks)
             {
                 var gen = new List<DefinitionInfo>();
                 var kill = new List<DefinitionInfo>();
