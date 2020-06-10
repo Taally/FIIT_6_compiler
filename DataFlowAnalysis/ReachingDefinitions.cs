@@ -21,10 +21,10 @@ namespace SimpleLang
         /// <inheritdoc/>
         public override Func<BasicBlock, IEnumerable<Instruction>, IEnumerable<Instruction>> TransferFunction { get; protected set; }
 
-        public InOutInfo Execute(ControlFlowGraph graph)
+        public override InOutInfo Execute(ControlFlowGraph graph)
         {
             TransferFunction = new ReachingTransferFunc(graph).Transfer;
-            return Analyse(graph);
+            return base.Execute(graph);
         }
     }
 }

@@ -99,10 +99,10 @@ namespace SimpleLang
             }
         }
 
-        public InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
+        public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
         {
             TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
-            return Analyse(cfg);
+            return base.Execute(cfg);
         }
 
         public LiveVariableAnalysis()

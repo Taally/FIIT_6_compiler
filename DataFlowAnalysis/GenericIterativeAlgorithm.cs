@@ -71,7 +71,7 @@ namespace SimpleLang
         /// </summary>
         /// <param name="graph"> Граф потока управления </param>
         /// <returns></returns>
-        public InOutData<T> Analyse(ControlFlowGraph graph)
+        public virtual InOutData<T> Execute(ControlFlowGraph graph)
         {
             GetInitData(graph, out var blocks, out var data, 
                 out var getPreviousBlocks, out var getDataValue, out var combine);

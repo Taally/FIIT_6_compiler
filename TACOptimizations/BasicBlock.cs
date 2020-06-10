@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace SimpleLang
 {
     public class BasicBlock
     {
-        private List<Instruction> _instructions;
+        private readonly List<Instruction> _instructions;
 
         public BasicBlock()
         {

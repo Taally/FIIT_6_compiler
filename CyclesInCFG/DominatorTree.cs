@@ -30,11 +30,11 @@ namespace SimpleLang
         }
 
         /// <inheritdoc/>
-        public InOutInfo Execute(ControlFlowGraph graph)
+        public override InOutInfo Execute(ControlFlowGraph graph)
         {
             Init = graph.GetCurrentBasicBlocks();
             InitFirst = graph.GetCurrentBasicBlocks().Take(1);
-            return Analyse(graph);
+            return base.Execute(graph);
         }
     }
 }
