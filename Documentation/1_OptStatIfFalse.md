@@ -1,4 +1,4 @@
-### OptExprsSimilarNotEqual
+### AST-оптимизация замены if(false) на его else ветку
 #### Постановка задачи
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
 #### Команда
