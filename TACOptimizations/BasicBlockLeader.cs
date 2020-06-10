@@ -4,10 +4,8 @@ namespace SimpleLang
 {
     public class BasicBlockLeader
     {
-        //public Dictionary<int, List<Instruction>> DivideLeaderToLeader(List<Instruction> instructions)
        static public List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
        {
-            //Dictionary<int, List<Instruction>> BasicBlockList = new Dictionary<int, List<Instruction>>();
             List<BasicBlock> basicBlockList = new List<BasicBlock>();
             List<Instruction> temp = new List<Instruction>();
             List<int> listOfLeaders = new List<int>();
@@ -44,7 +42,6 @@ namespace SimpleLang
                     }
                 }
             }
-            //int currentLeader = listOfLeaders[0];
             int j = 0;
             for (int i = 0; i < instructions.Count; i++) // заполняем BasicBlock
             {   //Заполняем временный список
@@ -57,7 +54,6 @@ namespace SimpleLang
                 if (i + 1 >= instructions.Count 
                     || i == listOfLeaders[((j + 1) >= listOfLeaders.Count ? j : j + 1)] - 1) // Следующая команда в списке принадлежит другому лидеру или последняя
                 {
-                    //BasicBlockList.Add(j, temp);
                     basicBlockList.Add(new BasicBlock(temp));
                     temp = new List<Instruction>();
                     j++;

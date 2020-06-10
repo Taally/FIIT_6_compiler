@@ -1,0 +1,207 @@
+### GotoToGoto
+#### Постановка задачи
+Создать оптимизирующий модуль програмы устраняющий переходы к переходам.
+#### Команда
+К. Галицкий, А. Черкашин
+#### Зависимые и предшествующие задачи
+Предшествующие задачи:
+* Трехадресный код
+
+#### Теоретическая часть
+В рамках этой задачи необходимо было реализовать оптимизацию устранения переходов к переходам. Если оператор goto ведет на метку, содержащую в goto переход на следующую метку. Необходимо протянуть финальную метку до начального goto.
+Были поставленны следующие задачи:
+* До
+  ```csharp
+  goto L1;
+  ...
+  L1: goto L2;
+  ```
+  После
+  ```csharp
+  goto L2;
+  ...
+  L1: goto L2;
+  ```
+* До
+  ```csharp
+  if (/*усл*/) goto L1;
+  ...
+  L1: goto L2;
+  ```
+  После
+  ```csharp
+  if (/*усл*/) goto L2;
+  ...
+  L1: goto L2;
+  ```
+* До
+  ```csharp
+  goto L1;
+  ...
+  L1: if (/*усл*/) goto L2;
+  L3:
+  ```
+  После
+  ```csharp
+  ...
+  L1: if (/*усл*/) goto L2;
+  goto L3;
+  ...
+  L3:
+  ```
+
+#### Практическая часть
+Реализовали структуру:
+```csharp
+public struct GtotScaner
+        {
+            public int index;
+            public string label;
+            public string labelfrom;
+
+            public GtotScaner(int index, string label, string labelfrom)
+            {
+                this.index = index;
+                this.label = label;
+                this.labelfrom = labelfrom;
+            }
+        }
+```
+Номер команды в трёхадресном коде, для обеспечения поиска сложности О(1)
+```csharp
+public int index;
+```
+Метка в трехадресном коде на которой стоит goto или ifgoto
+```csharp
+public string label;
+```
+Метка на которую существует goto стоящий в трехадресном коде предыдущей метки вида
+L1: goto L2;
+где L1 - label
+    L2 - labelfrom
+```csharp
+public string labelfrom;
+```
+
+Примеры реализации метода:
+
+```csharp
+        public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
+        {
+            bool changed = false; // флаг, проведенной оптимизации
+            List<GtotScaner> list = new List<GtotScaner>();  // Список всех переходов и их меток
+            List<Instruction> tmpcommands = new List<Instruction>();  // Трехадресный код
+```
+
+Зполнение списка переходов:
+```csharp
+            for (int i = 0; i < commands.Count; i++)
+            {
+                tmpcommands.Add(commands[i]);
+                if (commands[i].Operation == "goto")  // Добавление в список если команда вида goto
+                {
+                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument1));  // Добавление номера (строки, метки, метки перехода)
+                }
+
+                if (commands[i].Operation == "ifgoto")  // Добавление в список если команда вида if()goto
+                {
+                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument2));  // Добавление номера (строки, метки, метки перехода)
+                }
+            }
+```
+
+Поиск по списку переходов и применение оптимизации:
+```csharp
+            for (int i = 0; i < tmpcommands.Count; i++)
+            {
+
+                if (tmpcommands[i].Operation == "goto")  // Если операция goto
+                {
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        if (list[j].label == tmpcommands[i].Argument1)  //  Если левая метка совпадает с меткой команды
+                        {
+                            if (tmpcommands[i].Argument1.ToString() == list[j].labelfrom.ToString())  // Если правая метка совпадает
+                            {
+                                changed |= false;  //  Изменений проведенно не было
+                            }
+                            else
+                            {
+                                changed |= true; //  Изменения были проведены
+                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "goto", list[j].labelfrom.ToString(), "", "");  // Меняем инструкцию меняя в ней правую часть на необхзодимю нам метку
+                            }
+
+                        }
+                    }
+                }
+
+                if (tmpcommands[i].Operation == "ifgoto")  // Если операция if()goto
+                {
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        if (list[j].label == tmpcommands[i].Argument2) //  Если левая метка совпадает с меткой команды
+                        {
+
+                            if (tmpcommands[i].Argument2.ToString() == list[j].labelfrom.ToString()) // Если правая метка совпадает
+                            {
+                                changed |= false; //  Изменений проведенно не было
+                            }
+                            else
+                            {
+                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), ""); // Меняем инструкцию меняя в ней правую часть на необхзодимю нам метку
+                                changed |= true; //  Изменения были проведены
+                            }
+
+                        }
+                    }
+                }
+            }
+```
+Результатом работы программы является пара значений, была ли применена оптимизация и список инструкций с примененной оптимизацией
+```csharp
+    return Tuple.Create(changed, tmpcommands);
+```
+
+#### Место в общем проекте (Интеграция)
+Используется после создания трехадресного кода:
+```csharp
+/* ThreeAddressCodeOptimizer.cs */
+private static List<Optimization> BasicBlockOptimizations => new List<Optimization>()
+{
+    /* ... */
+};
+private static List<Optimization> AllCodeOptimizations => new List<Optimization>
+{
+  ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+ /* ... */
+};
+
+public static List<Instruction> OptimizeAll(List<Instruction> instructions) =>
+    Optimize(instructions, BasicBlockOptimizations, AllCodeOptimizations);
+
+/* Main.cs */
+var threeAddrCodeVisitor = new ThreeAddrGenVisitor();
+parser.root.Visit(threeAddrCodeVisitor);
+var threeAddressCode = threeAddrCodeVisitor.Instructions;
+var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
+```
+#### Пример работы
+Исходный код программы:
+```csharp
+var a, b;
+1: goto 2;
+2: goto 5;
+3: goto 6;
+4: a = 1;
+5: goto 6;
+6: a = b;
+```
+Результат работы GotoToGoto:
+```csharp
+1: goto 6;
+2: goto 6;
+3: goto 6;
+4: a = 1;
+5: goto 6;
+6: a = b;
+```
