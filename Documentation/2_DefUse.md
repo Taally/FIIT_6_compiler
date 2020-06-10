@@ -107,7 +107,7 @@ var threeAddressCode = threeAddrCodeVisitor.Instructions;
 var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 ```
 
-#### Тесты и их описание
+#### Тесты
 В тестах проверяется, что для заданного трехадресного кода ББл оптимизация возвращает ожидаемый результат:
 ```csharp
 [Test]
