@@ -1,13 +1,10 @@
 ﻿using NUnit.Framework;
 using SimpleLang;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.CFG
 {
     [TestFixture]
-    class CFGcreate : TACTestsBase
+    internal class CFGcreate : TACTestsBase
     {
         [Test]
         public void Test1()

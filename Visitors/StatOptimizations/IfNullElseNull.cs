@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    class IfNullElseNull : ChangeVisitor
+    internal class IfNullElseNull : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {
@@ -10,7 +10,9 @@ namespace SimpleLang.Visitors
             {
                 if ((ifn.FalseStat is EmptyNode || ifn.FalseStat == null)
                     && (ifn.TrueStat is EmptyNode || ifn.TrueStat == null))
+                {
                     ReplaceStat(ifn, new EmptyNode());
+                }
             }
         }
     }

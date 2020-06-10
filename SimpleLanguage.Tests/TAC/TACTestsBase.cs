@@ -3,7 +3,6 @@ using SimpleLang.Visitors;
 using SimpleParser;
 using SimpleScanner;
 using System.Collections.Generic;
-using System;
 
 namespace SimpleLanguage.Tests
 {

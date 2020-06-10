@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System;
 
@@ -32,13 +32,13 @@ namespace SimpleLang
             _children = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
             _parents = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
 
-            for (int i = 0; i < _basicBlocks.Count; ++i)
+            for (var i = 0; i < _basicBlocks.Count; ++i)
             {
                 _children.Add(new List<(int, BasicBlock)>());
                 _parents.Add(new List<(int, BasicBlock)>());
             }
 
-            for (int i = 0; i < _basicBlocks.Count; ++i)
+            for (var i = 0; i < _basicBlocks.Count; ++i)
             {
                 var instructions = _basicBlocks[i].GetInstructions();
                 var instr = instructions.Last();
@@ -50,7 +50,9 @@ namespace SimpleLang
                                 string.Equals(block.GetInstructions().First().Label, gotoOutLabel));
 
                         if (gotoOutBlock == -1)
+                        {
                             throw new Exception($"label {gotoOutLabel} not found");
+                        }
 
                         _children[i].Add((gotoOutBlock, _basicBlocks[gotoOutBlock]));
                         _parents[gotoOutBlock].Add((i, _basicBlocks[i]));
@@ -62,7 +64,9 @@ namespace SimpleLang
                                 string.Equals(block.GetInstructions().First().Label, ifgotoOutLabel));
 
                         if (ifgotoOutBlock == -1)
+                        {
                             throw new Exception($"label {ifgotoOutLabel} not found");
+                        }
 
                         _children[i].Add((ifgotoOutBlock, _basicBlocks[ifgotoOutBlock]));
                         _parents[ifgotoOutBlock].Add((i, _basicBlocks[i]));
@@ -92,7 +96,7 @@ namespace SimpleLang
         public IEnumerable<Instruction> GetAssigns() =>
             _basicBlocks.Select(b => b.GetInstructions().Where(instr =>
                 instr.Operation == "assign" || instr.Operation == "input" ||
-                (instr.Operation == "PLUS" && !instr.Result.StartsWith("#"))
+                instr.Operation == "PLUS" && !instr.Result.StartsWith("#")
             )).SelectMany(i => i);
 
         public int GetAmountOfAssigns() => GetAssigns().Count();

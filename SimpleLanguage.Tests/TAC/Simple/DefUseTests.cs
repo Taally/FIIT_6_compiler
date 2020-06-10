@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
 
     [TestFixture]
-    class DefUseTests : TACTestsBase
+    internal class DefUseTests : TACTestsBase
     {
         [Test]
         public void VarAssignSimple()

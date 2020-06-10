@@ -17,10 +17,7 @@
             Result = result;
         }
 
-        public Instruction Copy()
-        {
-            return (new Instruction(Label, Operation, Argument1, Argument2, Result));
-        }
+        public Instruction Copy() => new Instruction(Label, Operation, Argument1, Argument2, Result);
 
         public override string ToString()
         {
@@ -39,7 +36,7 @@
                     return $"{label}print {Argument1}";
                 case "NOT":
                 case "UNMINUS":
-                    return $"{label}{Result} = {ConvertToMathNotation(Operation)}{Argument1}";                
+                    return $"{label}{Result} = {ConvertToMathNotation(Operation)}{Argument1}";
                 case "OR":
                 case "AND":
                 case "EQUAL":

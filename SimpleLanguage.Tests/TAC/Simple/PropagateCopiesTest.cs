@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
 
     [TestFixture]
-    class PropagateCopiesTest : TACTestsBase
+    internal class PropagateCopiesTest : TACTestsBase
     {
         [Test]
         public void Test1()

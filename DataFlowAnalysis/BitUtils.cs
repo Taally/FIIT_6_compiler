@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,8 +12,12 @@ namespace SimpleLang
         {
             var result = new BitArray(map.Count);
             foreach (var instruction in instructions)
+            {
                 if (map.ContainsKey(instruction))
+                {
                     result[map[instruction]] = true;
+                }
+            }
             return result;
         }
 
@@ -24,23 +28,34 @@ namespace SimpleLang
         {
             var result = new List<Instruction>();
             for (var i = 0; i < bits.Count; i++)
-                if (bits[i]) result.Add(allInstructions[i]);
+            {
+                if (bits[i])
+                {
+                    result.Add(allInstructions[i]);
+                }
+            }
             return result;
         }
-        
+
         public static BitArray Except(BitArray a, BitArray b)
         {
             var result = new BitArray(a.Count);
             for (var i = 0; i < a.Count; i++)
+            {
                 result[i] = !b[i] && a[i];
+            }
             return result;
         }
 
         public static bool AreEqual(BitArray a, BitArray b)
         {
             for (var i = 0; i < a.Count; i++)
+            {
                 if (a[i] != b[i])
+                {
                     return false;
+                }
+            }
             return true;
         }
 

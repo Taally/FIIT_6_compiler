@@ -20,13 +20,15 @@ namespace SimpleLang
             sb.AppendLine("++++");
             return sb.ToString();
         }
-        
+
         public InOutData() { }
-        
+
         public InOutData(Dictionary<BasicBlock, (T, T)> dictionary)
         {
             foreach (var b in dictionary)
+            {
                 this[b.Key] = b.Value;
+            }
         }
     }
 
@@ -73,7 +75,7 @@ namespace SimpleLang
         /// <returns></returns>
         public virtual InOutData<T> Execute(ControlFlowGraph graph)
         {
-            GetInitData(graph, out var blocks, out var data, 
+            GetInitData(graph, out var blocks, out var data,
                 out var getPreviousBlocks, out var getDataValue, out var combine);
 
             var outChanged = true;
@@ -113,7 +115,9 @@ namespace SimpleLang
                 [start] = (InitFirst, InitFirst)
             };
             foreach (var block in blocks)
+            {
                 dataTemp[block] = (Init, Init);
+            }
             data = dataTemp;
 
             switch (Direction)

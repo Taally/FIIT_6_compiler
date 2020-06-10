@@ -9,12 +9,14 @@ namespace SimpleLang
         public static Tuple<bool, List<Instruction>> RemoveGotoThroughGoto(List<Instruction> instructions)
         {
             if (instructions is null)
+            {
                 throw new ArgumentNullException("instructions is null");
+            }
 
-            bool isChange = false;
+            var isChange = false;
             var newInstructions = new List<Instruction>();
 
-            for (int i = 0; i < instructions.Count; ++i)
+            for (var i = 0; i < instructions.Count; ++i)
             {
                 if (instructions[i].Operation == "ifgoto" && 4 <= (instructions.Count - i))
                 {
@@ -26,7 +28,7 @@ namespace SimpleLang
                     // только одна операция
                     if (com1.Operation == "goto" && com1.Label == "" && com2.Operation != "noop" && com0.Argument2 == com2.Label && com1.Argument1 == com3.Label)
                     {
-                        string tmpName = ThreeAddressCodeTmp.GenTmpName();
+                        var tmpName = ThreeAddressCodeTmp.GenTmpName();
                         newInstructions.Add(new Instruction(com0.Label, "NOT", com0.Argument1, "", tmpName));
                         newInstructions.Add(new Instruction("", "ifgoto", tmpName, com3.Label, ""));
                         newInstructions.Add(new Instruction("", com2.Operation, com2.Argument1, com2.Argument2, com2.Result));

@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
 
     [TestFixture]
-    class FoldConstantsTest : TACTestsBase
+    internal class FoldConstantsTest : TACTestsBase
     {
         [Test]
         public void Test1()

@@ -7,7 +7,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     using InOutInfo = InOutData<IEnumerable<BasicBlock>>;
     [TestFixture]
-    class DominatorTreeTests : TACTestsBase
+    internal class DominatorTreeTests : TACTestsBase
     {
         private (List<BasicBlock> basicBlocks, ControlFlowGraph cfg, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
         {
