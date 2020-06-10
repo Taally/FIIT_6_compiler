@@ -27,7 +27,7 @@ namespace SimpleLang
             }
         }
 
-        static List<string> operations = new List<string>()
+        static readonly List<string> operations = new List<string>()
             { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR",
             "UNMINUS", "NOT", "assign", "input"};
 
@@ -64,7 +64,7 @@ namespace SimpleLang
                 var curDefInd = DefList.FindIndex(x => x.OrderNum == i);
 
                 if (curDefInd != -1 && DefList[curDefInd].Uses.Count == 0
-                        && (c.Result[0] != '#' ? curDefInd != lastDefInd : true))
+                        && (c.Result[0] == '#' || curDefInd != lastDefInd))
                 {
                     DeleteUse(commands[i].Argument1, i);
                     DeleteUse(commands[i].Argument2, i);

@@ -14,8 +14,7 @@ namespace SimpleLang
             {
                 string currentArg1 = instructions[i].Argument1, currentArg2 = instructions[i].Argument2;
                 string currentOp = instructions[i].Operation;
-                int arg;
-                if (!int.TryParse(instructions[i].Argument1, out arg))
+                if (!int.TryParse(instructions[i].Argument1, out int arg))
                 {
                     int index1 = instructions.GetRange(0, i).FindLastIndex(x => x.Result == instructions[i].Argument1);
                     if (index1 != -1

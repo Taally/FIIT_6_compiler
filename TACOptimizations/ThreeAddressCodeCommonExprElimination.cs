@@ -31,11 +31,11 @@ namespace SimpleLang
             var changed = false;
             var newInstructions = new List<Instruction>(instructions.Count);
 
-            Func<Instruction, string> uniqueExpr = (Instruction instr) =>
+            string uniqueExpr(Instruction instr) =>
                 string.Format(IsCommutative(instr) && string.Compare(instr.Argument1, instr.Argument2) > 0 ?
                         "{2}{1}{0}" : "{0}{1}{2}", instr.Argument1, instr.Operation, instr.Argument2);
 
-            Action<StringToStrings, string, string> addLink = (StringToStrings dict, string key, string value) =>
+            void addLink(StringToStrings dict, string key, string value)
             {
                 if (key != null)
                 {
@@ -43,8 +43,8 @@ namespace SimpleLang
                         dict[key].Add(value);
                     else
                         dict[key] = new HashSet<string>() { value };
-                }               
-            };
+                }
+            }
 
             for (int i = 0; i < instructions.Count; ++i)
             {

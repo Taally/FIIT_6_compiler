@@ -14,7 +14,7 @@ namespace SimpleLang
             for (int i = 0; i < commands.Count; i++)
             {
                 //a - a == 0
-                bool variablesAreNotBool = !bool.TryParse(commands[i].Argument1, out bool b) && !bool.TryParse(commands[i].Argument2, out b);
+                bool variablesAreNotBool = !bool.TryParse(commands[i].Argument1, out _) && !bool.TryParse(commands[i].Argument2, out _);
                 if (variablesAreNotBool && commands[i].Argument1 == commands[i].Argument2 && commands[i].Operation == "MINUS")
                 {
                     result.Add(new Instruction(commands[i].Label, "assign", "0", "", commands[i].Result));
