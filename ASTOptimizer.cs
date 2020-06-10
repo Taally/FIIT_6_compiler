@@ -1,6 +1,8 @@
-﻿using SimpleLang.Visitors;
+﻿using System.Collections.Generic;
+
+using SimpleLang.Visitors;
+
 using SimpleParser;
-using System.Collections.Generic;
 
 namespace SimpleLang
 {

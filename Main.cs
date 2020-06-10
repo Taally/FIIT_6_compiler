@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
-using SimpleScanner;
-using SimpleParser;
-using SimpleLang.Visitors;
-using SimpleLang;
 using System.Linq;
+
+using SimpleLang;
+using SimpleLang.Visitors;
+
+using SimpleParser;
+
+using SimpleScanner;
 
 namespace SimpleCompiler
 {

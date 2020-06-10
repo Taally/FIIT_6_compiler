@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using SimpleLang;
+
 using NUnit.Framework;
-using System;
+
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {

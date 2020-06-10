@@ -21,10 +21,10 @@ namespace SimpleLang
         }
         public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
         {
-            bool changed = false;
-            List<GtotScaner> list = new List<GtotScaner>();
-            List<Instruction> tmpcommands = new List<Instruction>();
-            for (int i = 0; i < commands.Count; i++)
+            var changed = false;
+            var list = new List<GtotScaner>();
+            var tmpcommands = new List<Instruction>();
+            for (var i = 0; i < commands.Count; i++)
             {
                 tmpcommands.Add(commands[i]);
                 if (commands[i].Operation == "goto")
@@ -38,12 +38,12 @@ namespace SimpleLang
                 }
             }
 
-            for (int i = 0; i < tmpcommands.Count; i++)
+            for (var i = 0; i < tmpcommands.Count; i++)
             {
 
                 if (tmpcommands[i].Operation == "goto")
                 {
-                    for (int j = 0; j < list.Count; j++)
+                    for (var j = 0; j < list.Count; j++)
                     {
                         if (list[j].label == tmpcommands[i].Argument1)
                         {
@@ -63,7 +63,7 @@ namespace SimpleLang
 
                 if (tmpcommands[i].Operation == "ifgoto")
                 {
-                    for (int j = 0; j < list.Count; j++)
+                    for (var j = 0; j < list.Count; j++)
                     {
                         if (list[j].label == tmpcommands[i].Argument2)
                         {

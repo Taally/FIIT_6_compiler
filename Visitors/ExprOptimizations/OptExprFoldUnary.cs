@@ -49,7 +49,6 @@ namespace SimpleLang.Visitors
                     ReplaceExpr(binop, new BoolValNode(true));
                 }
             }
-
             else
             {
                 base.VisitBinOpNode(binop);

@@ -57,7 +57,7 @@ namespace SimpleLang
 
             private void GetDefs(IReadOnlyCollection<BasicBlock> blocks)
             {
-                List<Instruction> defs = new List<Instruction>();
+                var defs = new List<Instruction>();
                 foreach (var block in blocks)
                 {
                     foreach (var instruction in block.GetInstructions())

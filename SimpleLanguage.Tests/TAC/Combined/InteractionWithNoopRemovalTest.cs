@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using NUnit.Framework;
+
 using SimpleLang;
-using SimpleLanguage.Tests.TAC.Simple;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {
@@ -40,9 +41,9 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             };
-            
+
             var result = ThreeAddressCodeOptimizer.Optimize(TAC, opts);
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "b = 22",
                 "c = 1",
@@ -54,8 +55,8 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 "#t4 = -b",
                 "a = #t4",
             };
-            
-            AssertEquality(result, expected);   
+
+            AssertEquality(result, expected);
         }
 
         [Test]
@@ -86,7 +87,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 new Instruction("", "noop", null, null, null),
                 new Instruction("5", "assign", "b", null, "a"),
             };
-            
+
             var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
             {
                 ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
@@ -95,13 +96,13 @@ namespace SimpleLanguage.Tests.TAC.Combined
 
             var result = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: opts);
 
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "1: goto 5",
                 "2: goto 5",
                 "5: a = b",
             };
-            
+
             AssertEquality(result, expected);
         }
 

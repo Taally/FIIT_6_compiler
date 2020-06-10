@@ -24,9 +24,9 @@ namespace SimpleLang
 
         /// <inheritdoc/>
         public override Func<BasicBlock, IEnumerable<BasicBlock>, IEnumerable<BasicBlock>> TransferFunction
-        { 
-            get => (block, blockList) => blockList.Union(new[] { block }); 
-            protected set { } 
+        {
+            get => (block, blockList) => blockList.Union(new[] { block });
+            protected set { }
         }
 
         /// <inheritdoc/>
