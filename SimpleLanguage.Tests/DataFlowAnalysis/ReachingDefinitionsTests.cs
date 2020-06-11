@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
-using SimpleLang;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
     [TestFixture]
-    class ReachingDefinitionsTests : TACTestsBase
+    internal class ReachingDefinitionsTests : TACTestsBase
     {
         private (List<BasicBlock> basicBlocks, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
         {

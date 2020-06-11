@@ -1,15 +1,15 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace SimpleLang
 {
     public class ControlFlowGraph
     {
-        private List<BasicBlock> _basicBlocks;
-        private List<List<(int, BasicBlock)>> _children;
-        private List<List<(int, BasicBlock)>> _parents;
-        private Dictionary<BasicBlock,int> _blockToVertex;
+        private readonly List<BasicBlock> _basicBlocks;
+        private readonly List<List<(int, BasicBlock)>> _children;
+        private readonly List<List<(int, BasicBlock)>> _parents;
+        private readonly Dictionary<BasicBlock, int> _blockToVertex;
 
         public ControlFlowGraph()
         {
@@ -19,8 +19,10 @@ namespace SimpleLang
 
         public ControlFlowGraph(List<BasicBlock> basicBlocks)
         {
-            _basicBlocks = new List<BasicBlock>(basicBlocks.Count+2);
-            _basicBlocks.Add(new BasicBlock(new List<Instruction> { new Instruction("#in", "noop", "", "", "") }));
+            _basicBlocks = new List<BasicBlock>(basicBlocks.Count + 2)
+            {
+                new BasicBlock(new List<Instruction> { new Instruction("#in", "noop", "", "", "") })
+            };
             _basicBlocks.AddRange(basicBlocks);
             _basicBlocks.Add(new BasicBlock(new List<Instruction> { new Instruction("#out", "noop", "", "", "") }));
 
@@ -30,13 +32,13 @@ namespace SimpleLang
             _children = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
             _parents = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
 
-            for (int i = 0; i < _basicBlocks.Count; ++i)
+            for (var i = 0; i < _basicBlocks.Count; ++i)
             {
                 _children.Add(new List<(int, BasicBlock)>());
                 _parents.Add(new List<(int, BasicBlock)>());
             }
 
-            for (int i = 0; i < _basicBlocks.Count; ++i)
+            for (var i = 0; i < _basicBlocks.Count; ++i)
             {
                 var instructions = _basicBlocks[i].GetInstructions();
                 var instr = instructions.Last();
@@ -48,7 +50,9 @@ namespace SimpleLang
                                 string.Equals(block.GetInstructions().First().Label, gotoOutLabel));
 
                         if (gotoOutBlock == -1)
+                        {
                             throw new Exception($"label {gotoOutLabel} not found");
+                        }
 
                         _children[i].Add((gotoOutBlock, _basicBlocks[gotoOutBlock]));
                         _parents[gotoOutBlock].Add((i, _basicBlocks[i]));
@@ -60,7 +64,9 @@ namespace SimpleLang
                                 string.Equals(block.GetInstructions().First().Label, ifgotoOutLabel));
 
                         if (ifgotoOutBlock == -1)
+                        {
                             throw new Exception($"label {ifgotoOutLabel} not found");
+                        }
 
                         _children[i].Add((ifgotoOutBlock, _basicBlocks[ifgotoOutBlock]));
                         _parents[ifgotoOutBlock].Add((i, _basicBlocks[i]));
@@ -81,16 +87,16 @@ namespace SimpleLang
         }
 
         public int VertexOf(BasicBlock block) => _blockToVertex[block];
-        public List<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.ToList();
+        public IReadOnlyList<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.AsReadOnly();
 
-        public List<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex];
+        public IReadOnlyList<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex].AsReadOnly();
 
-        public List<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex];
-        
+        public IReadOnlyList<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex].AsReadOnly();
+
         public IEnumerable<Instruction> GetAssigns() =>
             _basicBlocks.Select(b => b.GetInstructions().Where(instr =>
                 instr.Operation == "assign" || instr.Operation == "input" ||
-                (instr.Operation == "PLUS" && !instr.Result.StartsWith("#"))
+                instr.Operation == "PLUS" && !instr.Result.StartsWith("#")
             )).SelectMany(i => i);
 
         public int GetAmountOfAssigns() => GetAssigns().Count();

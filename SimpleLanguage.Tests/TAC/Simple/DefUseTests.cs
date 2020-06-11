@@ -1,15 +1,15 @@
-﻿using NUnit.Framework;
-using SimpleLang;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
 
     [TestFixture]
-    class DefUseTests : TACTestsBase
+    internal class DefUseTests : TACTestsBase
     {
         [Test]
         public void VarAssignSimple()
@@ -185,7 +185,7 @@ x = !a;
 
             CollectionAssert.AreEqual(expected, actual);
         }
-        
+
         [Test]
         public void NoDeadCode()
         {
@@ -212,7 +212,8 @@ c = a * b;
         }
 
         [Test]
-        public void DeadBeforeInput() {
+        public void DeadBeforeInput()
+        {
             var TAC = GenTAC(@"
 var a, b;
 a = 1;
@@ -356,8 +357,6 @@ c = 1;
 
             CollectionAssert.AreEqual(expected, actual);
         }
-
-/* For now it is working only for one Base Block, so we don't need these tests (yet). */
 
         [Test]
         public void GotoNoDead()

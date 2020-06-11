@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using SimpleScanner;
-using SimpleParser;
-using SimpleLang.Visitors;
-using SimpleLang;
-using NUnit.Framework;
-using System.Collections.Generic;
 using System.Linq;
+using SimpleLang;
+using SimpleLang.Visitors;
+using SimpleParser;
+using SimpleScanner;
 
 namespace SimpleCompiler
 {
@@ -14,18 +12,21 @@ namespace SimpleCompiler
     {
         public static void Main()
         {
-            string FileName = @"../../a.txt";
+            var FileName = @"../../a.txt";
             try
             {
-                string Text = File.ReadAllText(FileName);
+                var Text = File.ReadAllText(FileName);
 
-                Scanner scanner = new Scanner();
+                var scanner = new Scanner();
                 scanner.SetSource(Text, 0);
 
-                Parser parser = new Parser(scanner);
+                var parser = new Parser(scanner);
 
                 var b = parser.Parse();
-                if (!b) Console.WriteLine("Error");
+                if (!b)
+                {
+                    Console.WriteLine("Error");
+                }
                 else
                 {
                     Console.WriteLine("Syntax tree built");
@@ -48,36 +49,41 @@ namespace SimpleCompiler
                     parser.root.Visit(threeAddrCodeVisitor);
                     var threeAddressCode = threeAddrCodeVisitor.Instructions;
                     foreach (var instruction in threeAddressCode)
+                    {
                         Console.WriteLine(instruction);
-
+                    }
 
                     Console.WriteLine("\n\nOptimized three address code");
                     var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
                     foreach (var x in optResult)
+                    {
                         Console.WriteLine(x);
+                    }
 
                     Console.WriteLine("\n\nDivided three address code");
                     var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
-                    
+
 
                     foreach (var x in divResult)
                     {
                         foreach (var y in x.GetInstructions())
+                        {
                             Console.WriteLine(y);
+                        }
                         Console.WriteLine("--------------");
                     }
 
                     var cfg = new ControlFlowGraph(divResult);
 
-                    foreach(var block in cfg.GetCurrentBasicBlocks())
+                    foreach (var block in cfg.GetCurrentBasicBlocks())
                     {
                         Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions()[0]}");
                         var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
-                        var childrenStr = String.Join(" | ", children.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        var childrenStr = string.Join(" | ", children.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" children: {childrenStr}");
 
                         var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
-                        var parentsStr = String.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        var parentsStr = string.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 
@@ -87,7 +93,7 @@ namespace SimpleCompiler
                     Console.WriteLine("------------");
                     Console.WriteLine();
                     var activeVariable = new LiveVariableAnalysis();
-                    var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
+                    var resActiveVariable = activeVariable.Execute(cfg);
 
                     foreach (var x in resActiveVariable)
                     {

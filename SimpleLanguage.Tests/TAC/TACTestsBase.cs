@@ -1,9 +1,8 @@
-﻿using SimpleLang;
+﻿using System.Collections.Generic;
+using SimpleLang;
 using SimpleLang.Visitors;
 using SimpleParser;
 using SimpleScanner;
-using System.Collections.Generic;
-using System;
 
 namespace SimpleLanguage.Tests
 {
