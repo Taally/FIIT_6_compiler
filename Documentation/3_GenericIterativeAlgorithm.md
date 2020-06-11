@@ -39,135 +39,144 @@
 #### Практическая часть
 Реализовали класс выходных данных:
 ```csharp
-public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)> // Выходные данные вида (Базовый блок, (его входы, его выходы))
-   {
-       public override string ToString()
-       {
-           var sb = new StringBuilder();
-           sb.AppendLine("++++");
-           foreach (var kv in this)
-           {
-               sb.AppendLine(kv.Key + ":\n" + kv.Value);
-           }
-           sb.AppendLine("++++");
-           return sb.ToString();
-       }
-   }
+public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)> // Вид выходных данных вида (Базовый блок, (его входы, его выходы))
+        where T : IEnumerable
+    {
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("++++");
+            foreach (var kv in this)
+            {
+                sb.AppendLine(kv.Key + ":\n" + kv.Value);
+            }
+            sb.AppendLine("++++");
+            return sb.ToString();
+        }
+
+        public InOutData() { }  // конструктор по умолчанию
+
+        public InOutData(Dictionary<BasicBlock, (T, T)> dictionary)  // Конструктор заполнения выходных данных
+        {
+            foreach (var b in dictionary)
+            {
+                this[b.Key] = b.Value;
+            }
+        }
+    }
 ```
 
 Указываем вид прохода алгоритма:
 ```csharp
-public enum Pass { Forward, Backward }
-```
-
-Создали интерфейс оператора сбора:
-```csharp
-public interface ICompareOperations<T>
-{
-    // пересечение или объединение
-    T Operator(T a, T b);
-
-    bool Compare(T a, T b);  // Сравнение множеств
-
-    // Lower = Пустое множество\ кроме обратной ходки
-    T Lower { get; }
-    // Upper = Полное множество, все возможные определения
-    T Upper { get; }
-
-    (T, T) Init { get; }  // Функция инициализации начальными значениями
-}
-```
-
-Создали интерфейс передаточной функции:
-```csharp
-public interface ITransFunc<T>
-{
-    T Transfer(BasicBlock basicBlock, T input);
-}
+public enum Direction { Forward, Backward }
 ```
 
 Реализовали алгоритм:
 ```csharp
-public class GenericIterativeAlgorithm<T>
-{
-    readonly Func<ControlFlowGraph, BasicBlock, List<BasicBlock>> getNextBlocks;
-    readonly Pass type;
-
-    public GenericIterativeAlgorithm(Pass _type)  // определение вывова необходимой функции для каждого прохода
+public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
     {
-        type = _type;
-        if (_type == Pass.Forward)
-            getNextBlocks = GetParents;
-        else if (_type == Pass.Backward)
-            getNextBlocks = GetChildren;
-    }
+        /// <summary>
+        /// Оператор сбора
+        /// </summary>
+        public abstract Func<T, T, T> CollectingOperator { get; }
 
-    public GenericIterativeAlgorithm()
-    {
-        getNextBlocks = GetParents;
-    }
+        /// <summary>
+        /// Сравнение двух последовательностей (условие продолжения цикла)
+        /// </summary>
+        public abstract Func<T, T, bool> Compare { get; }
 
-    public InOutData<T> Analyze(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f)
-    {
-        if (type == Pass.Backward) return AnalyzeBackward(graph, ops, f);
+        /// <summary>
+        /// Начальное значение для всех блоков, кроме первого
+        /// (при движении с конца - кроме последнего)
+        /// </summary>
+        public abstract T Init { get; protected set; }
 
-        var data = new InOutData<T>();
-        foreach (var node in graph.GetCurrentBasicBlocks())
-            data[node] = ops.Init;
+        /// <summary>
+        /// Начальное значение для первого блока
+        /// (при движении с конца - для последнего)
+        /// </summary>
+        public virtual T InitFirst { get => Init; protected set { } }
 
-        var outChanged = true;  // Внесены ли изменения
-        while (outChanged)
+        /// <summary>
+        /// Передаточная функция
+        /// </summary>
+        public abstract Func<BasicBlock, T, T> TransferFunction { get; protected set; }
+
+        /// <summary>
+        /// Направление
+        /// </summary>
+        public virtual Direction Direction => Direction.Forward;
+
+        /// <summary>
+        /// Выполнить алгоритм
+        /// </summary>
+        /// <param name="graph"> Граф потока управления </param>
+        /// <returns></returns>
+        public virtual InOutData<T> Execute(ControlFlowGraph graph)
         {
-            outChanged = false;
-            foreach (var block in graph.GetCurrentBasicBlocks())  // цикл по базовым блокам
-            {
-                var inset = getNextBlocks(graph, block).Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].Out));  // Применение оператора сбора для всех блоков
-                var outset = f.Transfer(block, inset);  // Прмиенение передаточной функции
+            GetInitData(graph, out var blocks, out var data,
+                out var getPreviousBlocks, out var getDataValue, out var combine);  
+                // Заполнение первого элемента верхним или нижним элементом полурешетки в зависимости от прохода
 
-                if (!(ops.Compare(outset, data[block].Out) && ops.Compare(data[block].Out, outset)))  // Сравнение на равенство множеств
+            var outChanged = true;  // Были ли внесены изменения
+            while (outChanged)
+            {
+                outChanged = false;
+                foreach (var block in blocks)  //  цикл по блокам
                 {
-                    outChanged = true;
+                    var inset = getPreviousBlocks(block).Aggregate(Init, (x, y) => CollectingOperator(x, getDataValue(y)));  // Применение оператора сбора для всей колекции
+                    var outset = TransferFunction(block, inset);  // применение передаточной функции
+
+                    if (!Compare(outset, getDataValue(block)))  // Сравнение на равенство множеств методом пересечения
+                    {
+                        outChanged = true;
+                    }
+                    data[block] = combine(inset, outset);  // Запись выходных данных
                 }
-                data[block] = (inset, outset);  // Запись входов и выходов дял определенного блока
+            }
+            return data;
+        }
+
+        private void GetInitData(  // функция инициализации данных относительно вида прохода алгоритма
+            ControlFlowGraph graph,
+            out IEnumerable<BasicBlock> blocks,
+            out InOutData<T> data,
+            out Func<BasicBlock, IEnumerable<BasicBlock>> getPreviousBlocks,
+            out Func<BasicBlock, T> getDataValue,
+            out Func<T, T, (T, T)> combine)
+        {
+            var start = Direction == Direction.Backward  // Если обратный проход то мы берем блоки с конца, в обратном случае с начала
+                ? graph.GetCurrentBasicBlocks().Last()
+                : graph.GetCurrentBasicBlocks().First();
+            blocks = graph.GetCurrentBasicBlocks().Except(new[] { start }); 
+
+            var dataTemp = new InOutData<T>
+            {
+                [start] = (InitFirst, InitFirst)  // иницаиализация первого элеменнтом полурешетки
+            };
+            foreach (var block in blocks)
+            {
+                dataTemp[block] = (Init, Init); // иницаиализация остальных элеменнтом полурешетки
+            }
+            data = dataTemp;
+
+            switch (Direction) // иницаиализация свойств для каждого типа прохода
+            {
+                case Direction.Forward:
+                    getPreviousBlocks = x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getDataValue = x => dataTemp[x].Out;
+                    combine = (x, y) => (x, y);
+                    break;
+                case Direction.Backward:
+                    getPreviousBlocks = x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getDataValue = x => dataTemp[x].In;
+                    combine = (x, y) => (y, x);
+                    break;
+                default:
+                    throw new NotImplementedException("Undefined direction type");
             }
         }
-        return data;
     }
-
-    public InOutData<T> AnalyzeBackward(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f){
-        var data = new InOutData<T>();
-
-        foreach (var node in graph.GetCurrentBasicBlocks())
-            data[node] = ops.Init;
-
-        var inChanged = true;// Внесены ли изменения
-        while (inChanged)
-        {
-            inChanged = false;
-            foreach (var block in graph.GetCurrentBasicBlocks()) // цикл по базовым блокам
-            {
-                var outset = getNextBlocks(graph, block)
-                    .Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].In)); // Применение оператора сбора для всех блоков
-                var inset = f.Transfer(block, outset);  // Прмиенение передаточной функции
-
-                if (!ops.Compare(inset, data[block].In)) // Сравнение на равенство множеств
-                {
-                    inChanged = true;
-                }
-                data[block] = (inset, outset); // Запись входов и выходов дял определенного блока
-            }
-        }
-        return data;
-    }
-```
-
-Вспомогательные функции:
-```csharp
-List<BasicBlock> GetParents(ControlFlowGraph graph, BasicBlock block) =>
-    graph.GetParentsBasicBlocks(block).Select(z => z.Item2).ToList(); // Вернуть родитлей блока
-
-List<BasicBlock> GetChildren(ControlFlowGraph graph, BasicBlock block) =>
-    graph.GetChildrenBasicBlocks(block).Select(z => z.Item2).ToList(); // Вернуть детей блока
 ```
 
 #### Место в общем проекте (Интеграция)
@@ -203,7 +212,7 @@ print (c);"
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
             var activeVariable = new LiveVariableAnalysis();
-            var resActiveVariable = activeVariable.ExecuteThroughItAlg(cfg);
+            var resActiveVariable = activeVariable.Execute(cfg);
             HashSet<string> In = new HashSet<string>();
             HashSet<string> Out = new HashSet<string>();
             List<(HashSet<string> IN, HashSet<string> OUT)> actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
