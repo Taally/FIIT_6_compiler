@@ -11,10 +11,22 @@ namespace SimpleLang
         private readonly List<List<(int, BasicBlock)>> _parents;
         private readonly Dictionary<BasicBlock, int> _blockToVertex;
 
+        private List<int> _nlr;
+        public IReadOnlyList<int> PreOrderNumeration => _nlr.AsReadOnly();
+        private List<int> _lrn;
+        public IReadOnlyList<int> PostOrderNumeration => _lrn.AsReadOnly();
+
+        private List<(int, int)> _dfst;
+        public IReadOnlyList<(int, int)> DepthFirstSpanningTree => _dfst.AsReadOnly();
+
+        private List<int> _dfn;
+        public IReadOnlyList<int> DepthFirstNumeration => _dfn.AsReadOnly();
+
         public ControlFlowGraph()
         {
             _basicBlocks = new List<BasicBlock>();
             _blockToVertex = new Dictionary<BasicBlock, int>();
+            _dfst = new List<(int, int)>();
         }
 
         public ControlFlowGraph(List<BasicBlock> basicBlocks)
@@ -84,6 +96,38 @@ namespace SimpleLang
                         break;
                 }
             }
+
+            DFS();
+        }
+
+        private void DFS()
+        {
+            _dfst = new List<(int, int)>();
+
+            var c = _basicBlocks.Count;
+            _lrn = new List<int>(c);
+            _nlr = new List<int>(c);
+            _dfn = new List<int>(new int[c]);
+
+            var used = new bool[c];
+
+            void dfs(int vertex)
+            {
+                used[vertex] = true;
+                _nlr.Add(vertex);
+                foreach ((var v, _) in _children[vertex])
+                {
+                    if (!used[v])
+                    {
+                        _dfst.Add((vertex, v));
+                        dfs(v);
+                    }
+                }
+                _lrn.Add(vertex);
+                _dfn[vertex] = --c;
+            }
+
+            dfs(0);
         }
 
         public int VertexOf(BasicBlock block) => _blockToVertex[block];
