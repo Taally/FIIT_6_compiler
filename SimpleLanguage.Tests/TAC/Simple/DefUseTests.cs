@@ -360,8 +360,6 @@ c = 1;
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /* For now it is working only for one Base Block, so we don't need these tests (yet). */
-
         [Test]
         public void GotoNoDead()
         {
