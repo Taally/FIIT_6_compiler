@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 using ProgramTree;
 
 namespace SimpleLang.Visitors

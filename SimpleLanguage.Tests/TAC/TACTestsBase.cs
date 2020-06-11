@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-
 using SimpleLang;
 using SimpleLang.Visitors;
-
 using SimpleParser;
-
 using SimpleScanner;
 
 namespace SimpleLanguage.Tests

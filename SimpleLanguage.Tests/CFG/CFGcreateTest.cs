@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.CFG

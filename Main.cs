@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-
 using SimpleLang;
 using SimpleLang.Visitors;
-
 using SimpleParser;
-
 using SimpleScanner;
 
 namespace SimpleCompiler

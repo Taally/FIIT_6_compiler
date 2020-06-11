@@ -92,11 +92,6 @@ csharp_prefer_braces = true:warning
 # Miscellaneous preferences
 csharp_style_pattern_local_over_anonymous_function = true:warning
 ###############################
-# .NET Formatting Rules       #
-###############################
-dotnet_sort_system_directives_first = true
-dotnet_separate_import_directive_groups = true
-###############################
 # C# Formatting Rules         #
 ###############################
 # New line preferences

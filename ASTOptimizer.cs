@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-
 using SimpleLang.Visitors;
-
 using SimpleParser;
 
 namespace SimpleLang
