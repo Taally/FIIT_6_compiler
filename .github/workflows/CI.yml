@@ -11,7 +11,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   check_changes:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
       source_files: ${{ steps.check_changes.outputs.source_files }}
@@ -21,9 +21,8 @@ jobs:
       id: check_changes
       run: |
         git fetch -u origin master:master
-        $source_files=git diff --name-only master | findstr /c:'\.cs' /c:'\.sln'
+        source_files="$(git diff --name-only master | grep '\.cs\|\.sln' || true)"
         echo "::set-output name=source_files::$source_files"
-        if (-NOT $source_files) { exit 0 }
         
   build_and_test:
     # The type of runner that the job will run on
