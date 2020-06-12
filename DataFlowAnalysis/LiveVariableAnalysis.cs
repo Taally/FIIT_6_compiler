@@ -1,68 +1,94 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SimpleLang{
-    public class InOutSet {
+namespace SimpleLang
+{
+    public class InOutSet
+    {
         public HashSet<string> IN { get; set; }
         public HashSet<string> OUT { get; set; }
 
-        public InOutSet() {
+        public InOutSet()
+        {
             IN = new HashSet<string>();
             OUT = new HashSet<string>();
         }
 
         public override string ToString()
         {
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
             str.Append("{");
-            foreach (string i in IN)
+            foreach (var i in IN)
+            {
                 str.Append($" {i}");
+            }
             str.Append(" } ");
             str.Append("{");
-            foreach (string i in OUT)
+            foreach (var i in OUT)
+            {
                 str.Append($" {i}");
+            }
             str.Append(" } ");
 
             return str.ToString();
         }
     }
 
-    class DefUseSet
+    internal class DefUseSet
     {
-        public HashSet<string> def { get; set; }
-        public HashSet<string> use { get; set; }
+        public HashSet<string> Def { get; set; }
+        public HashSet<string> Use { get; set; }
 
         public DefUseSet()
         {
-            def = new HashSet<string>();
-            use = new HashSet<string>();
+            Def = new HashSet<string>();
+            Use = new HashSet<string>();
         }
-        public DefUseSet((HashSet<string> def, HashSet<string> use) a) {
-            def = a.def;
-            use = a.use;
+        public DefUseSet((HashSet<string> def, HashSet<string> use) a)
+        {
+            Def = a.def;
+            Use = a.use;
         }
     }
 
-    public class LiveVariableAnalysis
+    public class LiveVariableAnalysis : GenericIterativeAlgorithm<HashSet<string>>
     {
+        /// <inheritdoc/>
+        public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator =>
+            (a, b) => a.Union(b).ToHashSet();
+
+        /// <inheritdoc/>
+        public override Func<HashSet<string>, HashSet<string>, bool> Compare =>
+            (a, b) => a.SetEquals(b);
+
+        /// <inheritdoc/>
+        public override HashSet<string> Init { get => new HashSet<string>(); protected set { } }
+
+        /// <inheritdoc/>
+        public override Func<BasicBlock, HashSet<string>, HashSet<string>> TransferFunction { get; protected set; }
+
+        /// <inheritdoc/>
+        public override Direction Direction => Direction.Backward;
+
         public Dictionary<int, InOutSet> dictInOut;
 
-        public void Execute(ControlFlowGraph cfg)
+        public void ExecuteInternal(ControlFlowGraph cfg)
         {
             var blocks = cfg.GetCurrentBasicBlocks();
             var transferFunc = new LiveVariableTransferFunc(cfg);
 
             foreach (var x in blocks)
+            {
                 dictInOut.Add(cfg.VertexOf(x), new InOutSet());
+            }
 
-
-            bool isChanged = true;
+            var isChanged = true;
             while (isChanged)
             {
                 isChanged = false;
-                for (int i = blocks.Count - 1; i >= 0; --i)
+                for (var i = blocks.Count - 1; i >= 0; --i)
                 {
                     var children = cfg.GetChildrenBasicBlocks(i);
 
@@ -78,101 +104,86 @@ namespace SimpleLang{
             }
         }
 
-        public InOutData<HashSet<string>> ExecuteThroughItAlg(ControlFlowGraph cfg){
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
-            return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
-        }
-
-        public class Operation : ICompareOperations<HashSet<string>>
+        public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
         {
-            HashSet<string> _instructions = new HashSet<string>();
-            public Operation(List<Instruction> instructions)
+            TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
+            return base.Execute(cfg);
+        }
+
+        public LiveVariableAnalysis() => dictInOut = new Dictionary<int, InOutSet>();
+
+        public string ToString(ControlFlowGraph cfg)
+        {
+            var str = new StringBuilder();
+
+            foreach (var x in cfg.GetCurrentBasicBlocks())
             {
-                foreach (var x in instructions)
-                {
-                    if (x.Operation == "assign" 
-                        || x.Operation == "input" 
-                        || x.Operation == "PLUS")
-                        _instructions.Add(x.Result);
-                }
-            }
-
-            public Operation(){ }
-
-            public HashSet<string> Upper => _instructions; //???
-
-            public HashSet<string> Lower => new HashSet<string>();
-
-            public bool Compare(HashSet<string> a, HashSet<string> b)
-                => a.SetEquals(b);
-
-            public (HashSet<string>, HashSet<string>) Init
-                => (Lower, Lower);
-
-            public HashSet<string> Operator(HashSet<string> a, HashSet<string> b)
-                => a.Union(b).ToHashSet();
-        }
-    
-
-        public LiveVariableAnalysis() {
-            dictInOut = new Dictionary<int, InOutSet>();
-        }
-
-        public string ToString(ControlFlowGraph cfg){
-            StringBuilder str = new StringBuilder();
-
-            foreach (var x in cfg.GetCurrentBasicBlocks()) {
-                int n = cfg.VertexOf(x);
+                var n = cfg.VertexOf(x);
                 str.Append($"Block № {n} \n\n");
-                foreach (var b in x.GetInstructions()) {
+                foreach (var b in x.GetInstructions())
+                {
                     str.Append(b.ToString() + "\n");
                 }
                 str.Append($"\n\n---IN set---\n");
                 str.Append("{");
-                foreach (string i in dictInOut[n].IN)
+                foreach (var i in dictInOut[n].IN)
+                {
                     str.Append($" {i}");
+                }
                 str.Append(" }");
                 str.Append($"\n\n---OUT set---\n");
                 str.Append("{");
-                foreach (string i in dictInOut[n].OUT)
+                foreach (var i in dictInOut[n].OUT)
+                {
                     str.Append($" {i}");
+                }
                 str.Append(" }\n\n");
             }
             return str.ToString();
         }
     }
 
-    public class LiveVariableTransferFunc : ITransFunc<HashSet<string>> {
-        Dictionary<BasicBlock, DefUseSet> dictDefUse;
+    public class LiveVariableTransferFunc
+    {
+        private readonly Dictionary<BasicBlock, DefUseSet> dictDefUse;
 
         private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> block)
         {
             Func<string, bool> IsId = ThreeAddressCodeDefUse.IsId;
 
-            HashSet<string> def = new HashSet<string>();
-            HashSet<string> use = new HashSet<string>();
-            for (int i = 0; i < block.Count; ++i)
+            var def = new HashSet<string>();
+            var use = new HashSet<string>();
+            for (var i = 0; i < block.Count; ++i)
             {
                 var inst = block[i];
 
                 if (IsId(inst.Argument1) && !def.Contains(inst.Argument1))
+                {
                     use.Add(inst.Argument1);
+                }
                 if (IsId(inst.Argument2) && !def.Contains(inst.Argument2))
+                {
                     use.Add(inst.Argument2);
+                }
                 if (IsId(inst.Result) && !use.Contains(inst.Result))
+                {
                     def.Add(inst.Result);
+                }
             }
             return (def, use);
         }
 
-        public LiveVariableTransferFunc(ControlFlowGraph cfg) {
+        public LiveVariableTransferFunc(ControlFlowGraph cfg)
+        {
             var blocks = cfg.GetCurrentBasicBlocks();
             dictDefUse = new Dictionary<BasicBlock, DefUseSet>();
             foreach (var x in blocks)
+            {
                 dictDefUse.Add(x, new DefUseSet(FillDefUse(x.GetInstructions())));
+            }
         }
 
         public HashSet<string> Transfer(BasicBlock basicBlock, HashSet<string> OUT) =>
-            dictDefUse[basicBlock].use.Union(OUT.Except(dictDefUse[basicBlock].def)).ToHashSet();
+            dictDefUse[basicBlock].Use.Union(OUT.Except(dictDefUse[basicBlock].Def)).ToHashSet();
     }
 }

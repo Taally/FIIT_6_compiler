@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ProgramTree;
+﻿using ProgramTree;
 
-namespace SimpleLang.Visitors{
-    public abstract class Visitor{
+namespace SimpleLang.Visitors
+{
+    public abstract class Visitor
+    {
         public virtual void VisitIdNode(IdNode id) { }
         public virtual void VisitIntNumNode(IntNumNode num) { }
         public virtual void VisitBinOpNode(BinOpNode binop) { }

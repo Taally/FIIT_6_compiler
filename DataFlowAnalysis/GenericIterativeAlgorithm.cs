@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Text;
 namespace SimpleLang
 {
     public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)>
+        where T : IEnumerable
     {
         public override string ToString()
         {
@@ -18,112 +20,121 @@ namespace SimpleLang
             sb.AppendLine("++++");
             return sb.ToString();
         }
-        
+
         public InOutData() { }
-        
+
         public InOutData(Dictionary<BasicBlock, (T, T)> dictionary)
         {
             foreach (var b in dictionary)
+            {
                 this[b.Key] = b.Value;
+            }
         }
     }
 
-    public enum Pass { Forward, Backward }
+    public enum Direction { Forward, Backward }
 
-    public interface ICompareOperations<T>
+    public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
     {
-        // пересечение или объединение 
-        T Operator(T a, T b);
+        /// <summary>
+        /// Оператор сбора
+        /// </summary>
+        public abstract Func<T, T, T> CollectingOperator { get; }
 
-        bool Compare(T a, T b);
+        /// <summary>
+        /// Сравнение двух последовательностей (условие продолжения цикла)
+        /// </summary>
+        public abstract Func<T, T, bool> Compare { get; }
 
-        // Lower = Пустое множество\ кроме обратной ходки
-        T Lower { get; }
-        // Upper = Полное множество, все возможные определения
-        T Upper { get; }
+        /// <summary>
+        /// Начальное значение для всех блоков, кроме первого
+        /// (при движении с конца - кроме последнего)
+        /// </summary>
+        public abstract T Init { get; protected set; }
 
-        (T, T) Init { get; }
-    }
+        /// <summary>
+        /// Начальное значение для первого блока
+        /// (при движении с конца - для последнего)
+        /// </summary>
+        public virtual T InitFirst { get => Init; protected set { } }
 
-    public interface ITransFunc<T>
-    {
-        T Transfer(BasicBlock basicBlock, T input);
-    }
+        /// <summary>
+        /// Передаточная функция
+        /// </summary>
+        public abstract Func<BasicBlock, T, T> TransferFunction { get; protected set; }
 
-    public class GenericIterativeAlgorithm<T>
-    {
-        readonly Func<ControlFlowGraph, BasicBlock, List<BasicBlock>> getNextBlocks;
-        readonly Pass type;
+        /// <summary>
+        /// Направление
+        /// </summary>
+        public virtual Direction Direction => Direction.Forward;
 
-        public GenericIterativeAlgorithm(Pass _type)
+        /// <summary>
+        /// Выполнить алгоритм
+        /// </summary>
+        /// <param name="graph"> Граф потока управления </param>
+        /// <returns></returns>
+        public virtual InOutData<T> Execute(ControlFlowGraph graph)
         {
-            type = _type;
-            if (_type == Pass.Forward)
-                getNextBlocks = GetParents;
-            else if (_type == Pass.Backward)
-                getNextBlocks = GetChildren;
-        }
-
-        public GenericIterativeAlgorithm()
-        {
-            getNextBlocks = GetParents;
-        }
-
-        public InOutData<T> Analyze(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f) 
-        {
-            if (type == Pass.Backward) return AnalyzeBackward(graph, ops, f);
-
-            var data = new InOutData<T>();
-            foreach (var node in graph.GetCurrentBasicBlocks())
-                data[node] = ops.Init;
+            GetInitData(graph, out var blocks, out var data,
+                out var getPreviousBlocks, out var getDataValue, out var combine);
 
             var outChanged = true;
             while (outChanged)
             {
                 outChanged = false;
-                foreach (var block in graph.GetCurrentBasicBlocks())
+                foreach (var block in blocks)
                 {
-                    var inset = getNextBlocks(graph, block).Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].Out));
-                    var outset = f.Transfer(block, inset);
+                    var inset = getPreviousBlocks(block).Aggregate(Init, (x, y) => CollectingOperator(x, getDataValue(y)));
+                    var outset = TransferFunction(block, inset);
 
-                    if (!(ops.Compare(outset, data[block].Out) && ops.Compare(data[block].Out, outset)))
+                    if (!Compare(outset, getDataValue(block)))
                     {
                         outChanged = true;
                     }
-                    data[block] = (inset, outset);
+                    data[block] = combine(inset, outset);
                 }
             }
             return data;
         }
 
-        public InOutData<T> AnalyzeBackward(ControlFlowGraph graph, ICompareOperations<T> ops, ITransFunc<T> f){
-            var data = new InOutData<T>();
+        private void GetInitData(
+            ControlFlowGraph graph,
+            out IEnumerable<BasicBlock> blocks,
+            out InOutData<T> data,
+            out Func<BasicBlock, IEnumerable<BasicBlock>> getPreviousBlocks,
+            out Func<BasicBlock, T> getDataValue,
+            out Func<T, T, (T, T)> combine)
+        {
+            var start = Direction == Direction.Backward
+                ? graph.GetCurrentBasicBlocks().Last()
+                : graph.GetCurrentBasicBlocks().First();
+            blocks = graph.GetCurrentBasicBlocks().Except(new[] { start });
 
-            foreach (var node in graph.GetCurrentBasicBlocks())
-                data[node] = ops.Init;
-
-            var inChanged = true;
-            while (inChanged){
-                inChanged = false;
-                foreach (var block in graph.GetCurrentBasicBlocks()){
-                    var outset = getNextBlocks(graph, block)
-                        .Aggregate(ops.Lower, (x, y) => ops.Operator(x, data[y].In));
-                    var inset = f.Transfer(block, outset);
-
-                    if (!ops.Compare(inset, data[block].In))
-                    {
-                        inChanged = true;
-                    }
-                    data[block] = (inset, outset);
-                }
+            var dataTemp = new InOutData<T>
+            {
+                [start] = (InitFirst, InitFirst)
+            };
+            foreach (var block in blocks)
+            {
+                dataTemp[block] = (Init, Init);
             }
-            return data;
+            data = dataTemp;
+
+            switch (Direction)
+            {
+                case Direction.Forward:
+                    getPreviousBlocks = x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getDataValue = x => dataTemp[x].Out;
+                    combine = (x, y) => (x, y);
+                    break;
+                case Direction.Backward:
+                    getPreviousBlocks = x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getDataValue = x => dataTemp[x].In;
+                    combine = (x, y) => (y, x);
+                    break;
+                default:
+                    throw new NotImplementedException("Undefined direction type");
+            }
         }
-
-        List<BasicBlock> GetParents(ControlFlowGraph graph, BasicBlock block) =>
-            graph.GetParentsBasicBlocks(block).Select(z => z.Item2).ToList();
-
-        List<BasicBlock> GetChildren(ControlFlowGraph graph, BasicBlock block) =>
-            graph.GetChildrenBasicBlocks(block).Select(z => z.Item2).ToList();
     }
 }

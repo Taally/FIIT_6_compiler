@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    class OptExprAlgebraic : ChangeVisitor
+    internal class OptExprAlgebraic : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {

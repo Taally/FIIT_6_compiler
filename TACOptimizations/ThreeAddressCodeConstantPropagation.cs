@@ -5,16 +5,16 @@ namespace SimpleLang
 {
     public static class ThreeAddressCodeConstantPropagation
     {
-        static public Tuple<bool, List<Instruction>> PropagateConstants(List<Instruction> instructions)
+        public static Tuple<bool, List<Instruction>> PropagateConstants(List<Instruction> instructions)
         {
-            int count = instructions.Count;
-            bool Changed = false;
+            var count = instructions.Count;
+            var Changed = false;
             var result = new List<Instruction>();
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 string currentArg1 = instructions[i].Argument1, currentArg2 = instructions[i].Argument2;
-                int arg1, arg2;
-                string currentOp = instructions[i].Operation;
+                int arg1;
+                var currentOp = instructions[i].Operation;
                 if (instructions[i].Operation == "assign"
                     && instructions.GetRange(0, i).FindLast(x => x.Result == instructions[i].Argument1) is Instruction cmnd)
                 {
@@ -38,7 +38,7 @@ namespace SimpleLang
                     }
                     if (instructions.GetRange(0, i).FindLast(x => x.Result == instructions[i].Argument2) is Instruction cmnd2
                         && cmnd2.Operation == "assign"
-                        && int.TryParse(cmnd2.Argument1, out arg2))
+                        && int.TryParse(cmnd2.Argument1, out var arg2))
                     {
                         currentArg2 = cmnd2.Argument1;
                         Changed = true;

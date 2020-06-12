@@ -37,8 +37,10 @@ namespace SimpleLang
             allCodeOptimizations = allCodeOptimizations ?? new List<Optimization>();
 
             var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
-            for (int i = 0; i < blocks.Count; ++i)
+            for (var i = 0; i < blocks.Count; ++i)
+            {
                 blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
+            }
 
             var preResult = blocks.SelectMany(b => b.GetInstructions()).ToList();
             var result = OptimizeAllCode(preResult, allCodeOptimizations);
@@ -48,7 +50,7 @@ namespace SimpleLang
         private static BasicBlock OptimizeBlock(BasicBlock block, List<Optimization> opts)
         {
             var result = block.GetInstructions();
-            int currentOpt = 0;
+            var currentOpt = 0;
             while (currentOpt < opts.Count)
             {
                 var answer = opts[currentOpt++](result);
@@ -64,7 +66,7 @@ namespace SimpleLang
         private static List<Instruction> OptimizeAllCode(List<Instruction> instructions, List<Optimization> opts)
         {
             var result = instructions;
-            int currentOpt = 0;
+            var currentOpt = 0;
             while (currentOpt < opts.Count)
             {
                 var answer = opts[currentOpt++](result);

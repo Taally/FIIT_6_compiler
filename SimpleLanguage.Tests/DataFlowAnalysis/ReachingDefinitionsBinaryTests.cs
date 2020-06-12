@@ -1,12 +1,12 @@
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    class ReachingDefinitionsBinaryTests : TACTestsBase
+    internal class ReachingDefinitionsBinaryTests : TACTestsBase
     {
         private (List<BasicBlock> basicBlocks, InOutData<IEnumerable<Instruction>> inOutInfo) GenGraphAndGetInOutInfo(string program)
         {

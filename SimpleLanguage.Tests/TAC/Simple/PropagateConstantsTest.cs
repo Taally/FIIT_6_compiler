@@ -1,15 +1,15 @@
-using NUnit.Framework;
-using SimpleLang;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
 
     [TestFixture]
-    class PropagateConstantsTest : TACTestsBase
+    internal class PropagateConstantsTest : TACTestsBase
     {
         [Test]
         public void Test1()
@@ -45,7 +45,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 x = b;
                 y = 7;
                 x = y + y;
-                "); 
+                ");
             var optimizations = new List<Optimization> { ThreeAddressCodeConstantPropagation.PropagateConstants };
 
             var expected = new List<string>()
@@ -82,30 +82,5 @@ namespace SimpleLanguage.Tests.TAC.Simple
 
             CollectionAssert.AreEqual(expected, actual);
         }
-
-        // Почему - то некорректно генерировался TAC для инструкций с унарными операциями
-        // Поэтому и закоментировал
-        //[Test]
-        //public void Test4()
-        //{
-        //    var TAC = GenTAC(@"
-        //        var x, y, b;
-        //        x = -5;
-        //        y = x + x;
-        //        ");
-        //    ThreeAddressCodeOptimizer.Optimizations.Clear();
-        //    ThreeAddressCodeOptimizer.Optimizations.Add(ThreeAddressCodeConstantPropagation.PropagateConstants);
-
-        //    var expected = new List<string>()
-        //    {
-        //        "x = -5",
-        //        "#t1 = -5 + -5",
-        //        "y = #t1"
-        //    };
-        //    var actual = ThreeAddressCodeOptimizer.OptimizeBlocks(TAC)
-        //        .Select(instruction => instruction.ToString());
-
-        //    CollectionAssert.AreEqual(expected, actual);
-        //}
     }
 }
