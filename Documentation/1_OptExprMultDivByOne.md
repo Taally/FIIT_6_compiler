@@ -12,41 +12,54 @@
 #### Теоретическая часть
 Эта оптимизация представляет собой визитор, унаследованный от ChangeVisitor и меняющий ссылки между узлами ACT.
 Рассмотрим некий узел АСТ:
+
 ![Картинощка](1_OptExprMultDivByOne/pic1.png)
 Эта блок-схема соответствует строчке  ```b = a * 1```.
 Данная оптимизация должна отработать так: ``` b = a ```.
 Блок-схема ниже показывает, что происходит с деревом после применения этой оптимизации:
+
 ![Картинощка](1_OptExprMultDivByOne/pic2.png)
 
 #### Практическая часть
 Алгоритм заходит только в узлы бинарных операций. Прежде всего проверяются необходимые условия: тип операции либо умножение, либо деление и что один из операндов это единица. Если условия выполняются, в родительском узле происходит замена бинарной операции на переменную. В противном случае узел обрабатывается по умолчанию.
 ```csharp
-class OptExprMultDivByOne : ChangeVisitor{
-    public override void VisitBinOpNode(BinOpNode binop){
-        switch (binop.Op){
+internal class OptExprMultDivByOne : ChangeVisitor
+{
+    public override void VisitBinOpNode(BinOpNode binop)
+    {
+		switch (binop.Op)
+        {
             case OpType.MULT:
-                if (binop.Left is IntNumNode && (binop.Left as IntNumNode).Num == 1){
+                if (binop.Left is IntNumNode && (binop.Left as IntNumNode).Num == 1)
+                {
                     binop.Right.Visit(this);
                     ReplaceExpr(binop, binop.Right);
                 }
-                else if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1){
+                else if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1)
+                {
                     binop.Left.Visit(this);
                     ReplaceExpr(binop, binop.Left);
                 }
-                else base.VisitBinOpNode(binop);
+                else
+                {
+				    base.VisitBinOpNode(binop);
+                }
                 break;
+
             case OpType.DIV:
-                if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1){
+                if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1)
+                {
                     binop.Left.Visit(this);
                     ReplaceExpr(binop, binop.Left);
                 }
                 break;
+
             default:
                 base.VisitBinOpNode(binop);
                 break;
+            }
         }
     }
-}
 ```
 #### Место в общем проекте (Интеграция)
 Данная оптимизация выполняется вместе с остальными АСТ оптимизациями после построения абстрактного синтаксического дерева, но до генерации трехадресного кода. 

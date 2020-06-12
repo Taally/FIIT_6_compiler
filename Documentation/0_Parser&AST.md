@@ -111,7 +111,8 @@ goto 777; //оператор безусловного перехода
 %type <stVal> assign statement for while if input print varlist var labelstatement goto block
 
 stlist	: statement { $$ = new StListNode($1); }
-		| stlist statement { 
+		| stlist statement 
+			{ 
 				$1.Add($2); 
 				$$ = $1; 
 			}
