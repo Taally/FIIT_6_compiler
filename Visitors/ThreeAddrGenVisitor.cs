@@ -10,8 +10,8 @@ namespace SimpleLang.Visitors
         public override void VisitLabelstatementNode(LabelStatementNode l)
         {
             var instructionIndex = Instructions.Count;
-            // Чтобы не затиралась временная метка у циклов
-            if (l.Stat is WhileNode || l.Stat is ForNode)
+            // Чтобы не затиралась временная метка у while
+            if (l.Stat is WhileNode)
             {
                 GenCommand("", "noop", "", "", "");
             }
@@ -74,7 +74,6 @@ namespace SimpleLang.Visitors
         {
             var Id = f.Id.Name;
             var forHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            var forBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
             var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
 
             var fromTmpName = Gen(f.From);
@@ -83,14 +82,10 @@ namespace SimpleLang.Visitors
             var toTmpName = Gen(f.To);
             // Делаем допущение, что for шагает на +1 до границы, не включая ее
             var condTmpName = ThreeAddressCodeTmp.GenTmpName();
-            GenCommand(forHeadLabel, "LESS", Id, toTmpName, condTmpName);
+            GenCommand(forHeadLabel, "EQGREATER", Id, toTmpName, condTmpName);
+            GenCommand("", "ifgoto", condTmpName, exitLabel, "");
 
-            GenCommand("", "ifgoto", condTmpName, forBodyLabel, "");
-            GenCommand("", "goto", exitLabel, "", "");
-
-            var instructionIndex = Instructions.Count;
             f.Stat.Visit(this);
-            Instructions[instructionIndex].Label = forBodyLabel;
 
             GenCommand("", "PLUS", Id, "1", Id);
             GenCommand("", "goto", forHeadLabel, "", "");
