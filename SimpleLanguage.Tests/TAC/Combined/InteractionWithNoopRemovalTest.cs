@@ -136,5 +136,39 @@ var a;
 
             AssertEquality(result, expected);
         }
+
+        [Test]
+        public void RemoveGotoThroughGotoShouldNotRemoveExtraLabelsAfterRemoveEmptyNodes()
+        {
+            var TAC = GenTAC(@"
+var a;
+input(a);
+1: if a == 0
+    goto 3;
+2: a = 2;
+3: a = 3;
+");
+
+            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            {
+                ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
+                ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
+            };
+
+            var result = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: opts);
+
+            var expected = new List<string>
+            {
+                "input a",
+                "1: #t1 = a == 0",
+                "#t2 = !#t1",
+                "#t3 = !#t2",
+                "if #t3 goto 3",
+                "2: a = 2",
+                "3: a = 3"
+            };
+
+            AssertEquality(result, expected);
+        }
     }
 }
