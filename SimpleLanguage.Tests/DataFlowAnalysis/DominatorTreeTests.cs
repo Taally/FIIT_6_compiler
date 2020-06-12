@@ -5,9 +5,9 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
+    using ChildrenDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
     using DominatorDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
     using ParentsDictionary = Dictionary<int, BasicBlock>;
-    using ChildrenDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
 
     [TestFixture]
     internal class DominatorTreeTests : TACTestsBase
@@ -20,9 +20,9 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             return new ControlFlowGraph(blocks);
         }
 
-        private void TestInternal(ControlFlowGraph graph, 
-            DominatorDictionary expectedDoms, 
-            ParentsDictionary expectedParents, 
+        private void TestInternal(ControlFlowGraph graph,
+            DominatorDictionary expectedDoms,
+            ParentsDictionary expectedParents,
             ChildrenDictionary expectedChildren)
         {
             var dt = new DominatorTree();
@@ -240,7 +240,6 @@ a = 2;
             TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
         }
 
-        // TODO: должен ли быть перед последним блоком блок с одной пустой операцией?
         [Test]
         public void BranchingAtTheEndTest()
         {
@@ -286,7 +285,6 @@ else
             TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
         }
 
-        // TODO: должен ли быть перед последним блоком блок с одной пустой операцией?
         // TODO: правильно ли переводится цикл for в трёхадресный код? (лишний goto => лишний ББл)
         [Test]
         public void SimpleCycleTest()
