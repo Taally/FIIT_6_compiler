@@ -5,49 +5,155 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
-    using InOutInfo = InOutData<IEnumerable<BasicBlock>>;
+    using ChildrenDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
+    using DominatorDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
+    using ParentsDictionary = Dictionary<int, BasicBlock>;
+
     [TestFixture]
     internal class DominatorTreeTests : TACTestsBase
     {
-        private (List<BasicBlock> basicBlocks, ControlFlowGraph cfg, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
+        private ControlFlowGraph BuildCFG(string program)
         {
             var TAC = GenTAC(program);
             var optResult = ThreeAddressCodeOptimizer.OptimizeAll(TAC);
             var blocks = BasicBlockLeader.DivideLeaderToLeader(optResult);
-            var cfg = new ControlFlowGraph(blocks);
-            var inOutInfo = new DominatorTree().Execute(cfg);
-            return (blocks, cfg, inOutInfo);
+            return new ControlFlowGraph(blocks);
+        }
+
+        private void TestInternal(ControlFlowGraph graph,
+            DominatorDictionary expectedDoms,
+            ParentsDictionary expectedParents,
+            ChildrenDictionary expectedChildren)
+        {
+            var dt = new DominatorTree();
+            var dominators = dt.GetDominators(graph);
+            var tree = dt.Execute(graph);
+            var blocks = graph.GetCurrentBasicBlocks();
+
+            Assert.AreEqual(blocks.Count, dominators.Count(), "Dominators count and blocks count are different");
+
+            for (var i = 0; i < blocks.Count(); ++i)
+            {
+                CollectionAssert.AreEquivalent(expectedDoms[i], dominators[blocks[i]], $"Check dominators: error for block #{i}");
+            }
+
+            for (var i = 0; i < blocks.Count(); ++i)
+            {
+                Assert.AreEqual(expectedParents[i], tree.Parent(blocks[i]), $"Check parents: error for block #{i}");
+                CollectionAssert.AreEquivalent(expectedChildren[i], tree.Children(blocks[i]), $"Check children: error for block #{i}");
+            }
         }
 
         [Test]
         public void EmptyProgram()
         {
-            (_, _, var inOutInfo) = GenGraphAndGetInOutInfo(@"
+            var graph = BuildCFG(@"
 var a;
 ");
-            // no basic blocks + entry and exit
-            Assert.AreEqual(2, inOutInfo.Count);
+            var blocks = graph.GetCurrentBasicBlocks();
+
+            var expectedDoms = new DominatorDictionary
+            {
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] }
+            };
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
         }
 
         [Test]
         public void BasicTest()
         {
-            (var blocks, var cfg, var inOutInfo) = GenGraphAndGetInOutInfo(@"
+            var graph = BuildCFG(@"
 var a;
 a = 1;
 ");
-            // only one basic block + entry and exit
-            Assert.AreEqual(3, inOutInfo.Count);
+            var blocks = graph.GetCurrentBasicBlocks();
 
-            Assert.AreEqual(2, inOutInfo[blocks[0]].Out.Count()); // entry block and itself
-            var expected = new BasicBlock[] { blocks[0], cfg.GetCurrentBasicBlocks().First() };
-            CollectionAssert.AreEquivalent(expected, inOutInfo[blocks[0]].Out);
+            var expectedDoms = new DominatorDictionary
+            {
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] },
+                [2] = new[] { blocks[0], blocks[1], blocks[2] }
+            };
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0],
+                [2] = blocks[1]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = new[] { blocks[2] },
+                [2] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
         }
 
         [Test]
-        public void BranchingTest()
+        public void LinearStructTest()
         {
-            (var blocks, var cfg, var inOutInfo) = GenGraphAndGetInOutInfo(@"
+            var graph = BuildCFG(@"
+var a, b, c, d, e, f;
+1: a = 1;
+b = 2;
+goto 2;
+2: c = 3;
+d = 4;
+goto 3;
+3: e = 5;
+goto 4;
+4: f = 6;
+");
+            var blocks = graph.GetCurrentBasicBlocks();
+
+            var expectedDoms = new DominatorDictionary
+            {
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] },
+                [2] = new[] { blocks[0], blocks[1], blocks[2] },
+                [3] = new[] { blocks[0], blocks[1], blocks[2], blocks[3] },
+                [4] = new[] { blocks[0], blocks[1], blocks[2], blocks[3], blocks[4] },
+                [5] = new[] { blocks[0], blocks[1], blocks[2], blocks[3], blocks[4], blocks[5] }
+            };
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0],
+                [2] = blocks[1],
+                [3] = blocks[2],
+                [4] = blocks[3],
+                [5] = blocks[4]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = new[] { blocks[2] },
+                [2] = new[] { blocks[3] },
+                [3] = new[] { blocks[4] },
+                [4] = new[] { blocks[5] },
+                [5] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
+        }
+
+        [Test]
+        public void SimpleBranchingTest()
+        {
+            var graph = BuildCFG(@"
 var a;
 input(a);
 1: if a == 0
@@ -55,41 +161,177 @@ input(a);
 a = 2;
 2: a = 3;
 ");
-            /*
-            input(a);
-            1: if a == 0
-                goto 2;
-            */
-            Assert.AreEqual(2, inOutInfo[blocks[0]].Out.Count()); // entry block and itself
-            var expected = new BasicBlock[] { cfg.GetCurrentBasicBlocks().First(), blocks[0] };
-            CollectionAssert.AreEquivalent(expected, inOutInfo[blocks[0]].Out);
+            var blocks = graph.GetCurrentBasicBlocks();
 
-            /*
-            a = 2
-             */
-            Assert.AreEqual(3, inOutInfo[blocks[1]].Out.Count()); // entry block, itself and first block
-            expected = new BasicBlock[] { cfg.GetCurrentBasicBlocks().First(), blocks[1], blocks[0] };
-            CollectionAssert.AreEquivalent(expected, inOutInfo[blocks[1]].Out);
-
-            /*
-            2: a = 3;
-             */
-            Assert.AreEqual(3, inOutInfo[blocks[2]].Out.Count()); // entry block, itself and first block
-            expected = new BasicBlock[] { cfg.GetCurrentBasicBlocks().First(), blocks[2], blocks[0] };
-            CollectionAssert.AreEquivalent(expected, inOutInfo[blocks[2]].Out);
-
-            /*
-            exit block
-             */
-            Assert.AreEqual(4, inOutInfo[cfg.GetCurrentBasicBlocks().Last()].Out.Count()); // entry block, itself, first block and `2: a = 3;`
-            expected = new BasicBlock[]
+            var expectedDoms = new DominatorDictionary
             {
-                cfg.GetCurrentBasicBlocks().First(),
-                cfg.GetCurrentBasicBlocks().Last(),
-                blocks[0],
-                blocks[2]
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] },
+                [2] = new[] { blocks[0], blocks[1], blocks[2] },
+                [3] = new[] { blocks[0], blocks[1], blocks[3] },
+                [4] = new[] { blocks[0], blocks[4], blocks[1], blocks[3] }
             };
-            CollectionAssert.AreEquivalent(expected, inOutInfo[cfg.GetCurrentBasicBlocks().Last()].Out);
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0],
+                [2] = blocks[1],
+                [3] = blocks[1],
+                [4] = blocks[3]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = new[] { blocks[2], blocks[3] },
+                [2] = Enumerable.Empty<BasicBlock>(),
+                [3] = new[] { blocks[4] },
+                [4] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
+        }
+
+        [Test]
+        public void DoubleBranchingTest()
+        {
+            var graph = BuildCFG(@"
+var a;
+input(a);
+1: if a == 0
+    goto 2;
+if a == 1
+    goto 2;
+a = 2;
+2: a = 3;
+");
+            var blocks = graph.GetCurrentBasicBlocks();
+
+            var expectedDoms = new DominatorDictionary
+            {
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] },
+                [2] = new[] { blocks[0], blocks[1], blocks[2] },
+                [3] = new[] { blocks[0], blocks[1], blocks[3] },
+                [4] = new[] { blocks[0], blocks[1], blocks[3], blocks[4] },
+                [5] = new[] { blocks[0], blocks[1], blocks[5] },
+                [6] = new[] { blocks[0], blocks[1], blocks[5], blocks[6] }
+            };
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0],
+                [2] = blocks[1],
+                [3] = blocks[1],
+                [4] = blocks[3],
+                [5] = blocks[1],
+                [6] = blocks[5]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = new[] { blocks[2], blocks[3], blocks[5] },
+                [2] = Enumerable.Empty<BasicBlock>(),
+                [3] = new[] { blocks[4] },
+                [4] = Enumerable.Empty<BasicBlock>(),
+                [5] = new[] { blocks[6] },
+                [6] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
+        }
+
+        [Test]
+        public void BranchingAtTheEndTest()
+        {
+            var graph = BuildCFG(@"
+var a, b, c;
+input(a);
+b = a * a;
+if b == 25
+    c = 0;
+else
+    c = 1;
+");
+            var blocks = graph.GetCurrentBasicBlocks();
+
+            var expectedDoms = new DominatorDictionary
+            {
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] },
+                [2] = new[] { blocks[0], blocks[1], blocks[2] },
+                [3] = new[] { blocks[0], blocks[1], blocks[3] },
+                [4] = new[] { blocks[0], blocks[1], blocks[4] },
+                [5] = new[] { blocks[0], blocks[1], blocks[4], blocks[5] }
+            };
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0],
+                [2] = blocks[1],
+                [3] = blocks[1],
+                [4] = blocks[1],
+                [5] = blocks[4]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = new[] { blocks[2], blocks[3], blocks[4] },
+                [2] = Enumerable.Empty<BasicBlock>(),
+                [3] = Enumerable.Empty<BasicBlock>(),
+                [4] = new[] { blocks[5] },
+                [5] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
+        }
+
+        // TODO: правильно ли переводится цикл for в трёхадресный код? (лишний goto => лишний ББл)
+        [Test]
+        public void SimpleCycleTest()
+        {
+            var graph = BuildCFG(@"
+var a, b, i;
+input(a);
+for i = 1, 10
+{
+    b = b + a * a;
+    a = a + 1;
+}
+");
+            var blocks = graph.GetCurrentBasicBlocks();
+
+            var expectedDoms = new DominatorDictionary
+            {
+                [0] = new[] { blocks[0] },
+                [1] = new[] { blocks[0], blocks[1] },
+                [2] = new[] { blocks[0], blocks[1], blocks[2] },
+                [3] = new[] { blocks[0], blocks[1], blocks[2], blocks[3] },
+                [4] = new[] { blocks[0], blocks[1], blocks[2], blocks[4] },
+                [5] = new[] { blocks[0], blocks[1], blocks[2], blocks[3], blocks[5] },
+                [6] = new[] { blocks[0], blocks[1], blocks[2], blocks[3], blocks[5], blocks[6] }
+            };
+            var expectedParents = new ParentsDictionary
+            {
+                [0] = null,
+                [1] = blocks[0],
+                [2] = blocks[1],
+                [3] = blocks[2],
+                [4] = blocks[2],
+                [5] = blocks[3],
+                [6] = blocks[5]
+            };
+            var expectedChildren = new ChildrenDictionary
+            {
+                [0] = new[] { blocks[1] },
+                [1] = new[] { blocks[2] },
+                [2] = new[] { blocks[3], blocks[4] },
+                [3] = new[] { blocks[5] },
+                [4] = Enumerable.Empty<BasicBlock>(),
+                [5] = new[] { blocks[6] },
+                [6] = Enumerable.Empty<BasicBlock>()
+            };
+
+            TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
         }
     }
 }
