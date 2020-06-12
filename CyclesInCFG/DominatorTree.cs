@@ -79,6 +79,34 @@ namespace SimpleLang
             private readonly Dictionary<BasicBlock, BasicBlock> parents = new Dictionary<BasicBlock, BasicBlock>();
 
             /// <summary>
+            /// Получить потомков узла
+            /// </summary>
+            /// <param name="node"> Узел </param>
+            /// <returns> Потомки </returns>
+            public IReadOnlyCollection<BasicBlock> Children(BasicBlock node)
+            {
+                if (!nodes.Contains(node))
+                {
+                    throw new ArgumentException("The tree doesn't contain the node");
+                }
+                return children.TryGetValue(node, out var result) ? result : new List<BasicBlock>();
+            }
+
+            /// <summary>
+            /// Получить предка узла
+            /// </summary>
+            /// <param name="node"> Узел </param>
+            /// <returns> Предок </returns>
+            public BasicBlock Parent(BasicBlock node)
+            {
+                if (!nodes.Contains(node))
+                {
+                    throw new ArgumentException("The tree doesn't contain the node");
+                }
+                return parents.TryGetValue(node, out var result) ? result : null;
+            }
+
+            /// <summary>
             /// Создать дерево
             /// </summary>
             /// <param name="root"> Корень </param>
