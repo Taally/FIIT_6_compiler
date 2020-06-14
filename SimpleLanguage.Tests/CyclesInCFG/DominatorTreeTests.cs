@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.DataFlowAnalysis
+namespace SimpleLanguage.Tests.CyclesInCFG
 {
     using ChildrenDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
     using DominatorDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
@@ -285,7 +285,6 @@ else
             TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
         }
 
-        // TODO: правильно ли переводится цикл for в трёхадресный код? (лишний goto => лишний ББл)
         [Test]
         public void SimpleCycleTest()
         {
@@ -307,8 +306,7 @@ for i = 1, 10
                 [2] = new[] { blocks[0], blocks[1], blocks[2] },
                 [3] = new[] { blocks[0], blocks[1], blocks[2], blocks[3] },
                 [4] = new[] { blocks[0], blocks[1], blocks[2], blocks[4] },
-                [5] = new[] { blocks[0], blocks[1], blocks[2], blocks[3], blocks[5] },
-                [6] = new[] { blocks[0], blocks[1], blocks[2], blocks[3], blocks[5], blocks[6] }
+                [5] = new[] { blocks[0], blocks[1], blocks[2], blocks[4], blocks[5] },
             };
             var expectedParents = new ParentsDictionary
             {
@@ -317,18 +315,16 @@ for i = 1, 10
                 [2] = blocks[1],
                 [3] = blocks[2],
                 [4] = blocks[2],
-                [5] = blocks[3],
-                [6] = blocks[5]
+                [5] = blocks[4],
             };
             var expectedChildren = new ChildrenDictionary
             {
                 [0] = new[] { blocks[1] },
                 [1] = new[] { blocks[2] },
                 [2] = new[] { blocks[3], blocks[4] },
-                [3] = new[] { blocks[5] },
-                [4] = Enumerable.Empty<BasicBlock>(),
-                [5] = new[] { blocks[6] },
-                [6] = Enumerable.Empty<BasicBlock>()
+                [3] = Enumerable.Empty<BasicBlock>(),
+                [4] = new[] { blocks[5] },
+                [5] = Enumerable.Empty<BasicBlock>()
             };
 
             TestInternal(graph, expectedDoms, expectedParents, expectedChildren);
