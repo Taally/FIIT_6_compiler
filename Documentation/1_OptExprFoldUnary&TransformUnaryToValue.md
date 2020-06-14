@@ -25,11 +25,11 @@
 
 1. 
 
-![Оптимизация свертки унарных операций](1_OptExprFoldUnary&TransformUnaryToValue/pic1)
+![Оптимизация свертки унарных операций](1_OptExprFoldUnary&TransformUnaryToValue/pic1.png)
 
 2. 
 
-![Оптимизация устранения унарных операций](1_OptExprFoldUnary&TransformUnaryToValue/pic2)
+![Оптимизация устранения унарных операций](1_OptExprFoldUnary&TransformUnaryToValue/pic2.png)
 
 
 #### Практическая часть
