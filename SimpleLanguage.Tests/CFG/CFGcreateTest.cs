@@ -58,15 +58,15 @@ else
 
             Assert.AreEqual(children3[0].Item1, 5); // for body
             var forBody = children3[0].Item2.GetInstructions();
-            Assert.AreEqual(forBody[0].ToString(), "L2: x = 1");
-            Assert.AreEqual(cfg.GetChildrenBasicBlocks(children3[0].Item1).Count, 1); // only goto for
+            Assert.AreEqual(forBody[0].ToString(), "L2: noop");
+            Assert.AreEqual(cfg.GetChildrenBasicBlocks(children3[0].Item1).Count, 2);
 
             Assert.AreEqual(children3[1].Item1, 4); // next
             ///
             var vertex6 = cfg.VertexOf(graphBlocks[6]); // if
             Assert.AreEqual(vertex6, 6);
             var children6 = cfg.GetChildrenBasicBlocks(vertex6);
-            Assert.AreEqual(children6.Count, 2); // 2 ways from if
+            Assert.AreEqual(children6.Count, 1);
         }
     }
 }

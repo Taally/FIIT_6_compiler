@@ -92,10 +92,9 @@ print (c+a+b);"
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
                     (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","a"}),
-                    (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","i","b","a"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-                    (new HashSet<string>(){"c","a","b"}, new HashSet<string>(){"c","a","b"}),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","i","b"}, new HashSet<string>(){"c","a","b", "i"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
