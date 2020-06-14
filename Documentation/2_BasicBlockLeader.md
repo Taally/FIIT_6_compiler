@@ -1,8 +1,11 @@
 ### Разбиение на ББл (от лидера до лидера)
+
 #### Постановка задачи
 Реализовать разбиение на базовые блоки от лидера до лидера.
+
 #### Команда
 К. Галицкий, А. Черкашин
+
 #### Зависимые и предшествующие задачи
 Предшествующие задачи:
 * Трехадресный код
@@ -105,6 +108,7 @@ var threeAddressCode = threeAddrCodeVisitor.Instructions;
 var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
 ```
+
 #### Тесты
 В тестах проверяется, что для заданного трехадресного кода разбиение на ББл возвращает ожидаемый результат:
 ```csharp
