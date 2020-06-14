@@ -298,13 +298,6 @@ if #t2 goto L2
             CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[1]].In);
             CollectionAssert.AreEquivalent(inOutInfo[blocks[1]].In, inOutInfo[blocks[1]].Out);
 
-            //            // 3rd block
-            //            /*
-            //goto L3
-            //             */
-            //            CollectionAssert.AreEquivalent(inOutInfo[blocks[1]].Out, inOutInfo[blocks[2]].In);
-            //            CollectionAssert.AreEquivalent(inOutInfo[blocks[2]].In, inOutInfo[blocks[2]].Out);
-
             // 3rd block
             /*
 #t3 = i + 1
