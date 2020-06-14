@@ -17,10 +17,10 @@ namespace SimpleLang.Visitors
                     {
                         ReplaceExpr(binop, new BoolValNode(true));
                     }
-                }
-                if (binop.Op == OpType.NOTEQUAL)
-                {
-                    ReplaceExpr(binop, new BoolValNode(false));
+                    if (binop.Op == OpType.NOTEQUAL)
+                    {
+                        ReplaceExpr(binop, new BoolValNode(false));
+                    }
                 }
             }
             else
