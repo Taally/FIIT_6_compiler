@@ -11,10 +11,10 @@ namespace SimpleLang
             var result = new List<Instruction>();
             var changed = false;
 
-            for (int i = 0; i < commands.Count; i++)
+            for (var i = 0; i < commands.Count; i++)
             {
                 //a - a == 0
-                bool variablesAreNotBool = !bool.TryParse(commands[i].Argument1, out bool b) && !bool.TryParse(commands[i].Argument2, out b);
+                var variablesAreNotBool = !bool.TryParse(commands[i].Argument1, out _) && !bool.TryParse(commands[i].Argument2, out _);
                 if (variablesAreNotBool && commands[i].Argument1 == commands[i].Argument2 && commands[i].Operation == "MINUS")
                 {
                     result.Add(new Instruction(commands[i].Label, "assign", "0", "", commands[i].Result));
@@ -23,14 +23,14 @@ namespace SimpleLang
                 }
 
                 //Умножение на 1
-                bool arg1IsNumber = double.TryParse(commands[i].Argument1, out double arg1);
+                var arg1IsNumber = double.TryParse(commands[i].Argument1, out var arg1);
                 if (commands[i].Operation == "MULT" && variablesAreNotBool && arg1IsNumber && arg1 == 1)
                 {
                     result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument2, "", commands[i].Result));
                     changed = true;
                     continue;
                 }
-                bool arg2IsNumber = double.TryParse(commands[i].Argument2, out double arg2);
+                var arg2IsNumber = double.TryParse(commands[i].Argument2, out var arg2);
                 if (commands[i].Operation == "MULT" && variablesAreNotBool && arg2IsNumber && arg2 == 1)
                 {
                     result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument1, "", commands[i].Result));

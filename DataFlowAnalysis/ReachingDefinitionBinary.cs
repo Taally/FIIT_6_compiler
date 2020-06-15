@@ -2,30 +2,43 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Permissions;
 
 namespace SimpleLang
 {
-    public class ReachingDefinitionBinary
+    public class ReachingDefinitionBinary : GenericIterativeAlgorithm<BitArray>
     {
-        public InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
+        /// <inheritdoc/>
+        public override Func<BitArray, BitArray, BitArray> CollectingOperator => (a, b) => a.Or(b);
+
+        /// <inheritdoc/>
+        public override Func<BitArray, BitArray, bool> Compare => (a, b) => BitUtils.AreEqual(a, b);
+
+        /// <inheritdoc/>
+        public override BitArray Init { get => new BitArray(_graph.GetAmountOfAssigns(), false); protected set { } }
+
+        private ControlFlowGraph _graph;
+
+        /// <inheritdoc/>
+        public override Func<BasicBlock, BitArray, BitArray> TransferFunction { get; protected set; }
+
+        public new InOutData<IEnumerable<Instruction>> Execute(ControlFlowGraph graph)
         {
             var assigns = graph.GetAssigns().ToList();
-            
+
             var idByInstruction = assigns
-                .Select((value, index) => new {value, index})
+                .Select((value, index) => new { value, index })
                 .ToDictionary(x => x.value, x => x.index);
 
             var instructions = assigns;
-            
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<BitArray>();
-            
-            var inOutData = iterativeAlgorithm.Analyze(graph, new Operation(graph.GetAmountOfAssigns()), new ReachingTransferFunc(graph, instructions, idByInstruction));
+
+            _graph = graph;
+            TransferFunction = new ReachingTransferFunc(graph, idByInstruction).Transfer;
+            var inOutData = base.Execute(graph);
 
             var modifiedBackData = inOutData
-                .Select(x => new {x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions)})
+                .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })
                 .ToDictionary(x => x.Key, x => x.ModifyInOutBack);
-            
+
             return new InOutData<IEnumerable<Instruction>>(modifiedBackData);
         }
 
@@ -34,41 +47,17 @@ namespace SimpleLang
             var (In, Out) = inOut;
             return (BitUtils.TurnIntoInstructions(In, instructions), BitUtils.TurnIntoInstructions(Out, instructions));
         }
-        public class Operation : ICompareOperations<BitArray>
+
+        public class ReachingTransferFunc
         {
-            private readonly int _size;
-
-            public Operation(int assigns)
-            {
-                _size = assigns;
-            }
-            
-            public BitArray Lower => new BitArray(_size, false);
-
-            public BitArray Upper => 
-                throw new NotImplementedException("Upper shouldn't be used in Reaching Definitions");
-            
-            public (BitArray, BitArray) Init =>
-                (Lower, Lower);
-
-            public BitArray Operator(BitArray a, BitArray b)
-                => a.Or(b);
-
-            public bool Compare(BitArray a, BitArray b) =>
-                BitUtils.AreEqual(a, b);
-        }
-        
-        public class ReachingTransferFunc : ITransFunc<BitArray>
-        {
-            private IEnumerable<Instruction> _instructions;
-            private Dictionary<Instruction, int> _ids_by_instruction;
+            private readonly Dictionary<Instruction, int> _ids_by_instruction;
             private ILookup<string, Instruction> defs_groups;
             private IDictionary<BasicBlock, BitArray> gen_block;
             private IDictionary<BasicBlock, BitArray> kill_block;
 
-            private void GetDefs(List<BasicBlock> blocks)
+            private void GetDefs(IReadOnlyCollection<BasicBlock> blocks)
             {
-                List<Instruction> defs = new List<Instruction>();
+                var defs = new List<Instruction>();
                 foreach (var block in blocks)
                 {
                     foreach (var instruction in block.GetInstructions())
@@ -83,9 +72,9 @@ namespace SimpleLang
                 }
                 defs_groups = defs.ToLookup(x => x.Result, x => x);
             }
-            
-            private void GetGenKill(List<BasicBlock> blocks)
-            { 
+
+            private void GetGenKill(IReadOnlyCollection<BasicBlock> blocks)
+            {
                 var gen = new List<DefinitionInfo>();
                 var kill = new List<DefinitionInfo>();
                 foreach (var block in blocks)
@@ -114,13 +103,12 @@ namespace SimpleLang
                 kill = kill.Distinct().ToList();
                 var kb = BitUtils.GroupByBlockAndTurnIntoInstructions(kill, _ids_by_instruction);
                 kill_block = kb;
-                
+
                 Console.WriteLine("Start blocks: " + blocks.Count + "; genBlocks: " + gen_block.Count + "; killBlocks: " + kill_block.Count);
             }
 
-            public ReachingTransferFunc(ControlFlowGraph g, IEnumerable<Instruction> instructions, Dictionary<Instruction, int> idByInstruction)
+            public ReachingTransferFunc(ControlFlowGraph g, Dictionary<Instruction, int> idByInstruction)
             {
-                _instructions = instructions;
                 _ids_by_instruction = idByInstruction;
                 var basicBlocks = g.GetCurrentBasicBlocks();
                 GetDefs(basicBlocks);
@@ -129,7 +117,7 @@ namespace SimpleLang
 
             public BitArray Transfer(BasicBlock basicBlock, BitArray input) =>
                 ApplyTransferFunc(input, basicBlock);
-            
+
             private BitArray ApplyTransferFunc(BitArray @in, BasicBlock block)
             {
                 var gen = gen_block.ContainsKey(block) ? gen_block[block] : new BitArray(@in.Count, false);

@@ -1,9 +1,11 @@
 ### Анализ активных переменных
+
 #### Постановка задачи
 Необходимо накопить IN-OUT информацию для дальнейшей оптимизации «Живые и мертвые переменные» между базовыми блоками.
 
 #### Команда
 А. Татарова, Т. Шкуро
+
 #### Зависимые и предшествующие задачи
 Предшествующие:
 - Построение графа потока управления
@@ -31,18 +33,27 @@ __useB__ -  множество переменных, значения котор
 #### Практическая часть
 Первым шагом для каждого блока строятся def и use множества переменных. 
 ```csharp
-private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> block){
-    HashSet<string> def = new HashSet<string>();
-    HashSet<string> use = new HashSet<string>();
-    for (int i = 0; i < block.Count; ++i){
+private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> block)
+{
+    Func<string, bool> IsId = ThreeAddressCodeDefUse.IsId;
+    var def = new HashSet<string>();
+    var use = new HashSet<string>();
+    for (var i = 0; i < block.Count; ++i)
+    {
         var inst = block[i];
         if (IsId(inst.Argument1) && !def.Contains(inst.Argument1))
+        {
             use.Add(inst.Argument1);
+        }
         if (IsId(inst.Argument2) && !def.Contains(inst.Argument2))
+        {
             use.Add(inst.Argument2);
+        }
         if (IsId(inst.Result) && !use.Contains(inst.Result))
+        {
             def.Add(inst.Result);
         }
+    }
     return (def, use);
 }
 ```
@@ -50,33 +61,36 @@ private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> 
 Далее определяется передаточная функция по уравнению (3)
 ```csharp
 public HashSet<string> Transfer(BasicBlock basicBlock, HashSet<string> OUT) =>
-    dictDefUse[basicBlock].use.Union(OUT.Except(dictDefUse[basicBlock].def)).ToHashSet();
+    dictDefUse[basicBlock].Use.Union(OUT.Except(dictDefUse[basicBlock].Def)).ToHashSet();
 ```
-где dictDefUse - структура для хранения def-use для каждого блока, OUT - множество, вычисленное уже для этого блока.
+где ```dictDefUse``` - структура для хранения def-use для каждого блока, ```OUT``` - множество, вычисленное уже для этого блока.
 
 Сам анализ запускается на графе потока управления и выдает IN-OUT множества для каждого блока графа.
 ```csharp
-public void Execute(ControlFlowGraph cfg){
+public void ExecuteInternal(ControlFlowGraph cfg)
+{
     var blocks = cfg.GetCurrentBasicBlocks();
     var transferFunc = new LiveVariableTransferFunc(cfg); //определение передаточной функции
     
     //каждый блок в начале работы алгоритма хранит пустые IN и OUT множества
     //в том числе входной и выходной блоки
     foreach (var x in blocks)
+	{
         dictInOut.Add(cfg.VertexOf(x), new InOutSet()); 
-    
+    }
     //алгоритм вычисляет до тех пор, пока IN-OUT множества меняются на очередной итерации
     bool isChanged = true;
-    while (isChanged){
+    while (isChanged)
+	{
         isChanged = false;
-        for (int i = blocks.Count - 1; i >= 0; --i){
+        for (int i = blocks.Count - 1; i >= 0; --i)
+		{
             var children = cfg.GetChildrenBasicBlocks(i);
             //здесь собирается информация IN множеств от дочерних узлов
             dictInOut[i].OUT =
                 children
                 .Select(x => dictInOut[x.Item1].IN)
                 .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
-            
             var pred = dictInOut[i].IN;
             //Вычисление IN передаточной функцией
             dictInOut[i].IN = transferFunc.Transfer(blocks[i], dictInOut[i].OUT);
@@ -85,16 +99,28 @@ public void Execute(ControlFlowGraph cfg){
     }
 }
 ```
+
 #### Место в общем проекте (Интеграция)
 Анализ активных переменных является одним из итерационных алгоритмов по графу потока управления, преобразующих глобально текст программы. 
-На данный момент анализ представлен как отдельный метод (представлен выше) и как реализация интерфейса для обобщенного итерационного алгоритма:
+На данный момент анализ представлен как отдельный метод (```ExecuteInternal```) и как реализация абстрактного класса, представляющего собой обобщенный итерационный алгоритм:
+
 ```csharp
-public InOutData<HashSet<string>> ExecuteThroughItAlg(ControlFlowGraph cfg){
-    var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
-    return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
-}
+    public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator =>
+        (a, b) => a.Union(b).ToHashSet();
+    public override Func<HashSet<string>, HashSet<string>, bool> Compare =>
+        (a, b) => a.SetEquals(b);
+    public override HashSet<string> Init { get => new HashSet<string>(); protected set { } }
+    public override Func<BasicBlock, HashSet<string>, HashSet<string>> TransferFunction 
+        { get; protected set; }
+    public override Direction Direction => Direction.Backward;
+        /*...*/
+    public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
+    {
+        TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
+        return base.Execute(cfg);
+    }
 ```
-где ```iterativeAlgorithm``` --- обобщенный итерационный алгоритм (флаг Pass.Backward показывает необходимый порядок прохода графа), а ```Operation``` содержит в себе реализацию уравнения (2) --- сбора информации из IN множеств дочерних блоков и компаратор для сравнения множеств на равенство. 
+
 #### Тесты
 В тестах проверяется, что для заданного текста программы (для которого генерируется трехадресный код и граф потока управления по нему) анализ активных переменных возвращает ожидаемые IN-OUT множества для каждого блока:
 ```csharp

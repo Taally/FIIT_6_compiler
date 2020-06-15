@@ -10,26 +10,28 @@ namespace SimpleLang.Visitors
         public override void VisitLabelstatementNode(LabelStatementNode l)
         {
             var instructionIndex = Instructions.Count;
-            // Чтобы не затиралась временная метка у циклов
-            if (l.Stat is WhileNode || l.Stat is ForNode)
+            // Чтобы не затиралась временная метка у while
+            if (l.Stat is WhileNode)
+            {
                 GenCommand("", "noop", "", "", "");
+            }
             l.Stat.Visit(this);
             Instructions[instructionIndex].Label = l.Label.Num.ToString();
         }
 
         public override void VisitAssignNode(AssignNode a)
         {
-            string argument1 = Gen(a.Expr);
+            var argument1 = Gen(a.Expr);
             GenCommand("", "assign", argument1, "", a.Id.Name);
         }
 
         public override void VisitIfElseNode(IfElseNode i)
         {
             // перевод в трёхадресный код условия
-            string exprTmpName = Gen(i.Expr);
+            var exprTmpName = Gen(i.Expr);
 
-            string trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            string falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
             GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
 
             // перевод в трёхадресный код false ветки
@@ -44,23 +46,17 @@ namespace SimpleLang.Visitors
             GenCommand(falseLabel, "noop", "", "", "");
         }
 
-        public override void VisitEmptyNode(EmptyNode w)
-        {
-           GenCommand("", "noop", "", "", "");
-        }
+        public override void VisitEmptyNode(EmptyNode w) => GenCommand("", "noop", "", "", "");
 
-        public override void VisitGotoNode(GotoNode g)
-        {
-            GenCommand("", "goto", g.Label.Num.ToString(), "", "");
-        }
+        public override void VisitGotoNode(GotoNode g) => GenCommand("", "goto", g.Label.Num.ToString(), "", "");
 
         public override void VisitWhileNode(WhileNode w)
         {
-            string exprTmpName = Gen(w.Expr);
+            var exprTmpName = Gen(w.Expr);
 
-            string whileHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            string whileBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            string exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var whileHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var whileBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
 
             Instructions[Instructions.Count - 1].Label = whileHeadLabel;
 
@@ -76,63 +72,55 @@ namespace SimpleLang.Visitors
 
         public override void VisitForNode(ForNode f)
         {
-            string Id = f.Id.Name;
-            string forHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            string forBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            string exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var Id = f.Id.Name;
+            var forHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
 
-            string fromTmpName = Gen(f.From);
+            var fromTmpName = Gen(f.From);
             GenCommand("", "assign", fromTmpName, "", Id);
 
-            string toTmpName = Gen(f.To);
+            var toTmpName = Gen(f.To);
             // Делаем допущение, что for шагает на +1 до границы, не включая ее
-            string condTmpName = ThreeAddressCodeTmp.GenTmpName();
-            GenCommand(forHeadLabel, "LESS", Id, toTmpName, condTmpName);
+            var condTmpName = ThreeAddressCodeTmp.GenTmpName();
+            GenCommand(forHeadLabel, "EQGREATER", Id, toTmpName, condTmpName);
+            GenCommand("", "ifgoto", condTmpName, exitLabel, "");
 
-            GenCommand("", "ifgoto", condTmpName, forBodyLabel, "");
-            GenCommand("", "goto", exitLabel, "", "");
-
-            var instructionIndex = Instructions.Count;
             f.Stat.Visit(this);
-            Instructions[instructionIndex].Label = forBodyLabel;
 
             GenCommand("", "PLUS", Id, "1", Id);
             GenCommand("", "goto", forHeadLabel, "", "");
             GenCommand(exitLabel, "noop", "", "", "");
         }
 
-        public override void VisitInputNode(InputNode i)
-        {
-            GenCommand("", "input","","",i.Ident.Name);
-        }
+        public override void VisitInputNode(InputNode i) => GenCommand("", "input", "", "", i.Ident.Name);
 
-        public override void VisitPrintNode(PrintNode p) {
-            foreach (var x in p.ExprList.ExprChildren) {
-                string exprTmpName = Gen(x);
+        public override void VisitPrintNode(PrintNode p)
+        {
+            foreach (var x in p.ExprList.ExprChildren)
+            {
+                var exprTmpName = Gen(x);
                 GenCommand("", "print", exprTmpName, "", "");
             }
         }
 
-        void GenCommand(string label, string operation, string argument1, string argument2, string result)
-        {
-            Instructions.Add(new Instruction(label, operation, argument1, argument2, result));
-        }
+        private void GenCommand(string label, string operation, string argument1, string argument2, string result) => Instructions.Add(new Instruction(label, operation, argument1, argument2, result));
 
-        string Gen(ExprNode ex)
+        private string Gen(ExprNode ex)
         {
             if (ex.GetType() == typeof(BinOpNode))
             {
                 var bin = (BinOpNode)ex;
-                string argument1 = Gen(bin.Left);
-                string argument2 = Gen(bin.Right);
-                string result = ThreeAddressCodeTmp.GenTmpName();
+                var argument1 = Gen(bin.Left);
+                var argument2 = Gen(bin.Right);
+                var result = ThreeAddressCodeTmp.GenTmpName();
                 GenCommand("", bin.Op.ToString(), argument1, argument2, result);
                 return result;
             }
-            else if (ex.GetType() == typeof(UnOpNode)) {
+            else if (ex.GetType() == typeof(UnOpNode))
+            {
                 var unop = (UnOpNode)ex;
-                string argument1 = Gen(unop.Expr);
-                string result = ThreeAddressCodeTmp.GenTmpName();
+                var argument1 = Gen(unop.Expr);
+                var result = ThreeAddressCodeTmp.GenTmpName();
                 GenCommand("", unop.Op.ToString(), argument1, "", result);
                 return result;
             }

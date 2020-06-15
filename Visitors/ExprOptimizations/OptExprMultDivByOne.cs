@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    class OptExprMultDivByOne : ChangeVisitor
+    internal class OptExprMultDivByOne : ChangeVisitor
     {
         public override void VisitBinOpNode(BinOpNode binop)
         {
@@ -20,7 +20,10 @@ namespace SimpleLang.Visitors
                         ReplaceExpr(binop, binop.Left);
 
                     }
-                    else base.VisitBinOpNode(binop);
+                    else
+                    {
+                        base.VisitBinOpNode(binop);
+                    }
                     break;
 
                 case OpType.DIV:

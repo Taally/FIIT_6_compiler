@@ -5,30 +5,26 @@ using System.Linq;
 namespace SimpleLang
 {
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
-    public class ReachingDefinitions
+    public class ReachingDefinitions : GenericIterativeAlgorithm<IEnumerable<Instruction>>
     {
-        public InOutInfo Execute(ControlFlowGraph graph)
+        /// <inheritdoc/>
+        public override Func<IEnumerable<Instruction>, IEnumerable<Instruction>, IEnumerable<Instruction>> CollectingOperator
+            => (a, b) => a.Union(b);
+
+        /// <inheritdoc/>
+        public override Func<IEnumerable<Instruction>, IEnumerable<Instruction>, bool> Compare
+            => (a, b) => !a.Except(b).Any() && !b.Except(a).Any();
+
+        /// <inheritdoc/>
+        public override IEnumerable<Instruction> Init { get => Enumerable.Empty<Instruction>(); protected set { } }
+
+        /// <inheritdoc/>
+        public override Func<BasicBlock, IEnumerable<Instruction>, IEnumerable<Instruction>> TransferFunction { get; protected set; }
+
+        public override InOutInfo Execute(ControlFlowGraph graph)
         {
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<Instruction>>();
-            return iterativeAlgorithm.Analyze(graph, new Operation(), new ReachingTransferFunc(graph));
-        }
-
-        private class Operation : ICompareOperations<IEnumerable<Instruction>>
-        {
-            public IEnumerable<Instruction> Lower =>
-                new List<Instruction>();
-
-            public IEnumerable<Instruction> Upper =>
-                throw new NotImplementedException("I don't even know why it's needed as it's never used.");
-
-            public (IEnumerable<Instruction>, IEnumerable<Instruction>) Init =>
-                (Lower, Lower);
-
-            public IEnumerable<Instruction> Operator(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
-                => a.Union(b);
-            
-            public bool Compare(IEnumerable<Instruction> a, IEnumerable<Instruction> b)
-                => !a.Except(b).Any();
+            TransferFunction = new ReachingTransferFunc(graph).Transfer;
+            return base.Execute(graph);
         }
     }
 }

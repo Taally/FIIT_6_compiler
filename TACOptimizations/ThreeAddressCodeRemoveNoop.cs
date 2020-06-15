@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,8 +8,11 @@ namespace SimpleLang
     {
         public static Tuple<bool, List<Instruction>> RemoveEmptyNodes(List<Instruction> commands)
         {
-            if (commands.Count == 0) return new Tuple<bool, List<Instruction>>(false, commands);
-        
+            if (commands.Count == 0)
+            {
+                return new Tuple<bool, List<Instruction>>(false, commands);
+            }
+
             var result = new List<Instruction>();
             var changed = false;
             var toAddLast = true;
@@ -61,16 +64,16 @@ namespace SimpleLang
 
                         result = result
                             .Select(com =>
-                                (com.Operation == "goto") && com.Argument1 == currentLabel
+                                com.Operation == "goto" && com.Argument1 == currentLabel
                                     ? new Instruction(com.Label, com.Operation, nextLabel, com.Argument2, com.Result)
-                                    : (com.Operation == "ifgoto") && com.Argument2 == currentLabel
+                                    : com.Operation == "ifgoto" && com.Argument2 == currentLabel
                                         ? new Instruction(com.Label, com.Operation, com.Argument1, nextLabel, com.Result)
                                         : com
                             ).ToList();
 
                         for (var j = i + 1; j < commands.Count; j++)
                         {
-                            commands[j] = (commands[j].Operation == "goto") 
+                            commands[j] = commands[j].Operation == "goto"
                                           && commands[j].Argument1 == currentLabel
                                 ? new Instruction(
                                     commands[j].Label,
@@ -81,10 +84,10 @@ namespace SimpleLang
                                 )
                                 : (commands[j].Operation == "ifgoto" && commands[j].Argument2 == currentLabel)
                                     ? new Instruction(
-                                        commands[j].Label, 
-                                        commands[j].Operation, 
-                                        commands[j].Argument1, 
-                                        nextLabel, 
+                                        commands[j].Label,
+                                        commands[j].Operation,
+                                        commands[j].Argument1,
+                                        nextLabel,
                                         commands[j].Result)
                                     : commands[j];
                         }
@@ -106,7 +109,7 @@ namespace SimpleLang
                 }
                 else
                 {
-                    result.Add(commands[commands.Count - 1]);   
+                    result.Add(commands[commands.Count - 1]);
                 }
             }
             return new Tuple<bool, List<Instruction>>(changed, result);

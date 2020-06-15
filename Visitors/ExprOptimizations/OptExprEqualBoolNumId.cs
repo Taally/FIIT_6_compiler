@@ -1,8 +1,8 @@
-using ProgramTree;
+﻿using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class OptExprEqualBoolNumId : ChangeVisitor
+    internal class OptExprEqualBoolNumId : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {
