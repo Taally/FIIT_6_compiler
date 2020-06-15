@@ -3,20 +3,20 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    public class NaturalСycle
+    public class NaturalLoop
     {
         /// <summary>
         /// Принимает Граф потока данных и по нему ищет все естественные циклы
         /// </summary>
         /// <param name="cfg">Граф потока управления</param>
         /// <returns>
-        /// Вернет все натуральыне циклы
+        /// Вернет все натуральные циклы
         /// </returns>
-        public static List<List<BasicBlock>> GetAllNaturalCycles(ControlFlowGraph cfg)
+        public static List<List<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg)
         {
-            var natCycles = new List<List<BasicBlock>>();
+            var natLoops = new List<List<BasicBlock>>();
             var allEdges = new BackEdges(cfg);
-            var StraightEdges = cfg.GetCurrentBasicBlocks();//allEdges.GetEnumEdges();
+            var ForwardEdges = cfg.GetCurrentBasicBlocks();
 
             foreach (var x in allEdges.BackEdgesFromGraph)
             {
@@ -25,38 +25,38 @@ namespace SimpleLang
                     var tmp = new List<BasicBlock>();
                     for (var i = cfg.VertexOf(x.Item2); i < cfg.VertexOf(x.Item1) + 1; i++)
                     {
-                        if (!tmp.Contains(StraightEdges[i]))
+                        if (!tmp.Contains(ForwardEdges[i]))
                         {
-                            tmp.Add(StraightEdges[i]);
+                            tmp.Add(ForwardEdges[i]);
                         }
                     }
 
-                    natCycles.Add(tmp);
+                    natLoops.Add(tmp);
                 }
             }
 
-            return natCycles.Where(cycle => IsNaturalCycle(cycle, cfg)).ToList();
+            return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
 
         }
 
         /// <summary>
         /// Првоерка цикла на естественность
         /// </summary>
-        /// <param name="cycle">Проверяемый цикл</param>
+        /// <param name="loop">Проверяемый цикл</param>
         /// <param name="cfg">Граф потока управления</param>
         /// <returns>
-        /// Вернет флаг естественнен ли он
+        /// Вернет флаг, естественнен ли он
         /// </returns>
-        private static bool IsNaturalCycle(List<BasicBlock> cycle, ControlFlowGraph cfg)
+        private static bool IsNaturalLoop(List<BasicBlock> loop, ControlFlowGraph cfg)
         {
-            for (var i = 1; i < cycle.Count; i++)
+            for (var i = 1; i < loop.Count; i++)
             {
-                var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(cycle[i]));
+                var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(loop[i]));
                 if (parents.Count > 1)
                 {
                     foreach (var parent in parents.Select(x => x.Item2))
                     {
-                        if (!cycle.Contains(parent))
+                        if (!loop.Contains(parent))
                         {
                             return false;
                         }

@@ -53,11 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
-    <Compile Include="CyclesInCFG\BackEdges.cs" />
-    <Compile Include="CyclesInCFG\NaturalСycle.cs" />
+    <Compile Include="LoopsInCFG\BackEdges.cs" />
+    <Compile Include="LoopsInCFG\NaturalLoop.cs" />
     <Compile Include="DataFlowAnalysis\BitUtils.cs" />
     <Compile Include="DataFlowAnalysis\DefinitionInfo.cs" />
-    <Compile Include="CyclesInCFG\DominatorTree.cs" />
+    <Compile Include="LoopsInCFG\DominatorTree.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableAnalysis.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithm.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionBinary.cs" />
@@ -125,7 +125,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\NUnit.3.12.0\build\NUnit.props'))" />
   </Target>
-
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

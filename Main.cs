@@ -111,8 +111,8 @@ namespace SimpleCompiler
 
                     Console.WriteLine();
                     Console.WriteLine();
-                    Console.WriteLine("NatCycle");
-                    var natcyc = NaturalСycle.GetAllNaturalCycles(cfg);
+                    Console.WriteLine("NatLoop");
+                    var natcyc = NaturalLoop.GetAllNaturalLoops(cfg);
                     foreach (var x in natcyc)
                     {
                         if (x.Count == 0)

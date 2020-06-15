@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.CyclesInCFG
+namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
     internal class BackEdgesTest : TACTestsBase
@@ -112,7 +112,7 @@ goto 4;
             Assert.AreEqual(1, backEdges.Count);
         }
         [Test]
-        public void ProgramWithCycle()
+        public void ProgramWithLoop()
         {
             var graph = BuildCFG(@"var a, b, i, j, p, x;
 input(a);

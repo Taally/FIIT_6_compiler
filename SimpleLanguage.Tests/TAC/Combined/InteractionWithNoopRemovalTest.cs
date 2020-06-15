@@ -58,7 +58,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
         }
 
         [Test]
-        public void RemoveEmptyNodesShouldNotDeleteNoopAfterLastCycle()
+        public void RemoveEmptyNodesShouldNotDeleteNoopAfterLastLoop()
         {
             var TAC = GenTAC(
                 @"
