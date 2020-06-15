@@ -16,7 +16,7 @@ namespace SimpleLang
         {
             List<List<BasicBlock>> natCycles = new List<List<BasicBlock>>();
             var allEdges = new BackEdges(cfg);
-            var StraightEdges = allEdges.GetEnumEdges();
+            var StraightEdges = cfg.GetCurrentBasicBlocks();//allEdges.GetEnumEdges();
 
             foreach (var x in allEdges.BackEdgesFromGraph)
             {
@@ -25,8 +25,8 @@ namespace SimpleLang
                     var tmp = new List<BasicBlock>();
                     for (int i = cfg.VertexOf(x.Item2); i < cfg.VertexOf(x.Item1) + 1; i++)
                     {
-                        if (!tmp.Contains(StraightEdges[i].From))
-                            tmp.Add(StraightEdges[i].From);
+                        if (!tmp.Contains(StraightEdges[i]))
+                            tmp.Add(StraightEdges[i]);
                     }
 
                     natCycles.Add(tmp);
