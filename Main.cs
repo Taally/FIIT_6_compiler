@@ -113,19 +113,21 @@ namespace SimpleCompiler
                     Console.WriteLine();
                     Console.WriteLine("NatCycle");
                     var natcyc = NaturalСycle.GetAllNaturalCycles(cfg);
-                    foreach(var x in natcyc)
+                    foreach (var x in natcyc)
                     {
                         if (x.Count == 0)
+                        {
                             continue;
+                        }
                         //Console.WriteLine("Loop");
-                        for(int i = 0; i < x.Count; i++)
+                        for (var i = 0; i < x.Count; i++)
                         {
                             Console.WriteLine("NumberBlock:" + i);
                             foreach (var xfrom in x[i].GetInstructions())
                             {
                                 Console.WriteLine(xfrom.ToString());
                             }
-                            
+
 
                         }
                         Console.WriteLine();
