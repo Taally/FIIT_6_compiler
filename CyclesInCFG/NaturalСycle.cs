@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    class NaturalСycle
+    public class NaturalСycle
     {
         /// <summary>
         /// Принимает Граф потока данных и по нему ищет все естественные циклы
@@ -49,10 +49,15 @@ namespace SimpleLang
         {
             for (int i = 1; i < cycle.Count; i++)
             {
-                if (cfg.GetParentsBasicBlocks(cfg.VertexOf(cycle[i])).Count > 1)
-                    return false;
+                var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(cycle[i]));
+                if (parents.Count > 1)
+                {
+                    foreach (var parent in parents.Select(x => x.Item2))
+                        if (!cycle.Contains(parent))
+                            return false;
+                }
             }
-
+            
             return true;
         }
     }
