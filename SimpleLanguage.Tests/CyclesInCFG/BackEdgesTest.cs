@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using SimpleLang;
-using SimpleLang;
 
 namespace SimpleLanguage.Tests.CyclesInCFG
 {

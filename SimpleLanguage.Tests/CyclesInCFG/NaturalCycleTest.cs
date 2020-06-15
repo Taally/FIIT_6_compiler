@@ -27,8 +27,8 @@ goto 55;
             {
                 new List<BasicBlock>()
                 {
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3]}),
-                    new BasicBlock(new List<Instruction>(){TAC[4]})
+                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
+                    new BasicBlock(new List<Instruction>(){ TAC[4] })
                 }
             };
 
@@ -55,13 +55,13 @@ goto 54;
             {
                 new List<BasicBlock>()
                 {
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3]})
+                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] })
                 },
                 new List<BasicBlock>()
                 {
-                    new BasicBlock(new List<Instruction>(){TAC[0]}),
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3]}),
-                    new BasicBlock(new List<Instruction>(){TAC[4]})
+                    new BasicBlock(new List<Instruction>(){ TAC[0] }),
+                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
+                    new BasicBlock(new List<Instruction>(){ TAC[4] })
                 },
 
 
@@ -89,14 +89,14 @@ goto 54;
             {
                 new List<BasicBlock>()
                 {
-                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2]})
+                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2] })
                 },
 
 
                 new List<BasicBlock>()
                 {
-                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2]}),
-                    new BasicBlock(new List<Instruction>(){ TAC[3]})
+                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2] }),
+                    new BasicBlock(new List<Instruction>(){ TAC[3] })
                 }
             };
 

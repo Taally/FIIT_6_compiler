@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+
 namespace SimpleLang
 {
     /// <summary>
@@ -22,10 +22,7 @@ namespace SimpleLang
         private readonly List<Edge> enumEdgesCFG = new List<Edge>();
         private readonly ControlFlowGraph controlFlowGraph;
 
-        public List<Edge> GetEnumEdges ()
-        {
-            return enumEdgesCFG;
-        }
+        public List<Edge> GetEnumEdges() => enumEdgesCFG;
 
         public BackEdges(ControlFlowGraph cfg)
         {
@@ -49,7 +46,7 @@ namespace SimpleLang
             var dominators = new DominatorTree().GetDominators(controlFlowGraph);
             foreach (var edge in enumEdgesCFG)
             {
-                if (dominators[edge.From].ToList().Contains(edge.To)) 
+                if (dominators[edge.From].ToList().Contains(edge.To))
                 {
                     enumBackEdges.Add(new Edge(edge.From, edge.To));
                 }
