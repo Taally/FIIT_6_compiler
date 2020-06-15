@@ -1,4 +1,5 @@
 var a, b, c, d, x, u, e,g, y,zz,i; 
+
 1: a = false; 
 b = true; 
 100: a = b; 

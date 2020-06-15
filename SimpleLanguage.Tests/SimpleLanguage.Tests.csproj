@@ -72,6 +72,8 @@
   <ItemGroup>
     <Compile Include="CFG\CFGcreateTest.cs" />
     <Compile Include="CFG\CFGdfsTest.cs" />
+    <Compile Include="CyclesInCFG\BackEdgesTest.cs" />
+    <Compile Include="CyclesInCFG\NaturalCycleTest.cs" />
     <Compile Include="DataFlowAnalysis\BitUtilsTest.cs" />
     <Compile Include="CyclesInCFG\DominatorTreeTests.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTest.cs" />
@@ -112,4 +114,5 @@
     <Error Condition="!Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.12.0\build\NUnit.props'))" />
     <Error Condition="!Exists('..\packages\NUnit3TestAdapter.3.16.1\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit3TestAdapter.3.16.1\build\net35\NUnit3TestAdapter.props'))" />
   </Target>
+
 </Project>
