@@ -2,7 +2,7 @@
 using SimpleLang;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.DataFlowAnalysis
+namespace SimpleLanguage.Tests.CyclesInCFG
 {
     [TestFixture]
     internal class BackEdgesTest : TACTestsBase
