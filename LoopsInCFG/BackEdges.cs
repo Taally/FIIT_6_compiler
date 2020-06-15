@@ -12,7 +12,7 @@ namespace SimpleLang
         /// Обратные ребра графа
         /// </summary>
         /// <returns> Список обратных рёбер (From BasicBlock, To BasicBlock) </returns>
-        public IReadOnlyList<(BasicBlock, BasicBlock)> BackEdgesFromGraph
+        public IReadOnlyList<(BasicBlock From, BasicBlock To)> BackEdgesFromGraph
         {
             get => enumBackEdges.Select(edge => (edge.From, edge.To)).ToList();
             private set { }
@@ -37,7 +37,7 @@ namespace SimpleLang
                 foreach (var element in controlFlowGraph
                     .GetChildrenBasicBlocks(controlFlowGraph.VertexOf(block)))
                 {
-                    enumEdgesCFG.Add(new Edge(block, element.Item2));
+                    enumEdgesCFG.Add(new Edge(block, element.block));
                 }
             }
         }

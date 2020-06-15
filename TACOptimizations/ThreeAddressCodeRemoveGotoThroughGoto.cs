@@ -6,14 +6,14 @@ namespace SimpleLang
     public static class ThreeAddressCodeRemoveGotoThroughGoto
     {
         // устранение переходов через переходы (пример из презентации Opt5.pdf слайд 32)
-        public static Tuple<bool, List<Instruction>> RemoveGotoThroughGoto(List<Instruction> instructions)
+        public static (bool wasChanged, List<Instruction> instructions) RemoveGotoThroughGoto(List<Instruction> instructions)
         {
             if (instructions is null)
             {
                 throw new ArgumentNullException("instructions is null");
             }
 
-            var isChange = false;
+            var wasChanged = false;
             var newInstructions = new List<Instruction>();
 
             for (var i = 0; i < instructions.Count; ++i)
@@ -34,14 +34,14 @@ namespace SimpleLang
                         newInstructions.Add(new Instruction(com2.Label.StartsWith("L") && uint.TryParse(com2.Label.Substring(1), out _) ? "" : com2.Label, com2.Operation, com2.Argument1, com2.Argument2, com2.Result));
                         newInstructions.Add(new Instruction(com3.Label, com3.Operation, com3.Argument1, com3.Argument2, com3.Result));
 
-                        isChange = true;
+                        wasChanged = true;
                         i += 3;
                         continue;
                     }
                 }
                 newInstructions.Add(new Instruction(instructions[i].Label, instructions[i].Operation, instructions[i].Argument1, instructions[i].Argument2, instructions[i].Result));
             }
-            return Tuple.Create(isChange, newInstructions);
+            return (wasChanged, newInstructions);
         }
     }
 }

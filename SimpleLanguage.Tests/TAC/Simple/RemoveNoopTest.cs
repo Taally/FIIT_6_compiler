@@ -9,27 +9,27 @@ namespace SimpleLanguage.Tests.TAC.Simple
     [TestFixture]
     internal class RemoveNoopTest : TACTestsBase
     {
-        public Tuple<bool, List<Instruction>> OptimizeLocal(List<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
+        public (bool wasChanged, List<Instruction> instructions) OptimizeLocal(List<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
 
-        public void AssertChanged(Tuple<bool, List<Instruction>> result, List<string> expected)
+        public void AssertChanged((bool wasChanged, List<Instruction> instructions) result, List<string> expected)
         {
-            Assert.IsTrue(result.Item1);
-            CollectionAssert.AreEqual(result.Item2.Select(x => x.ToString()), expected);
+            Assert.IsTrue(result.wasChanged);
+            CollectionAssert.AreEqual(result.instructions.Select(x => x.ToString()), expected);
         }
 
-        public void AssertNotChanged(Tuple<bool, List<Instruction>> result, List<string> expected)
+        public void AssertNotChanged((bool wasChanged, List<Instruction> instructions) result, List<string> expected)
         {
-            Assert.IsFalse(result.Item1);
-            CollectionAssert.AreEqual(result.Item2.Select(x => x.ToString()), expected);
+            Assert.IsFalse(result.wasChanged);
+            CollectionAssert.AreEqual(result.instructions.Select(x => x.ToString()), expected);
         }
 
         [Test]
         public void ShouldWorkWithEmptyList()
         {
             var TAC = new List<Instruction> { };
-            var result = OptimizeLocal(TAC);
-            CollectionAssert.AreEqual(result.Item2, TAC);
-            Assert.IsFalse(result.Item1);
+            var (wasChanged, instructions) = OptimizeLocal(TAC);
+            CollectionAssert.AreEqual(instructions, TAC);
+            Assert.IsFalse(wasChanged);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("7", "noop", null, null, null),
                 new Instruction("8", "noop", null, null, null),
             };
-            var optimizations = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>
+            var optimizations = new List<Func<List<Instruction>, (bool, List<Instruction>)>>
             {
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
             };

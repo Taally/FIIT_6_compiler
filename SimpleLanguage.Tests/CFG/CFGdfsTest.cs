@@ -36,7 +36,7 @@ else
             {
                 Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions()[0]}");
                 var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
-                var childrenStr = string.Join(" | ", children.Select(v => v.Item1.ToString() + ": " + v.Item2.GetInstructions()[0].ToString()));
+                var childrenStr = string.Join(" | ", children.Select(v => v.vertex.ToString() + ": " + v.block.GetInstructions()[0].ToString()));
                 Console.WriteLine($" children: {childrenStr}");
             }
 

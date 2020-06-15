@@ -56,12 +56,12 @@ else
             var children3 = cfg.GetChildrenBasicBlocks(vertex3);
             Assert.AreEqual(children3.Count, 2); // for and next block
 
-            Assert.AreEqual(children3[0].Item1, 5); // for body
-            var forBody = children3[0].Item2.GetInstructions();
+            Assert.AreEqual(children3[0].vertex, 5); // for body
+            var forBody = children3[0].block.GetInstructions();
             Assert.AreEqual(forBody[0].ToString(), "L2: noop");
-            Assert.AreEqual(cfg.GetChildrenBasicBlocks(children3[0].Item1).Count, 2);
+            Assert.AreEqual(cfg.GetChildrenBasicBlocks(children3[0].vertex).Count, 2);
 
-            Assert.AreEqual(children3[1].Item1, 4); // next
+            Assert.AreEqual(children3[1].vertex, 4); // next
             ///
             var vertex6 = cfg.VertexOf(graphBlocks[6]); // if
             Assert.AreEqual(vertex6, 6);

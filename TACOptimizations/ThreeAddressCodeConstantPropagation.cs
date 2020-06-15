@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleLang
 {
     public static class ThreeAddressCodeConstantPropagation
     {
-        public static Tuple<bool, List<Instruction>> PropagateConstants(List<Instruction> instructions)
+        public static (bool wasChanged, List<Instruction> instructions) PropagateConstants(List<Instruction> instructions)
         {
             var count = instructions.Count;
-            var Changed = false;
+            var wasChanged = false;
             var result = new List<Instruction>();
             for (var i = 0; i < count; i++)
             {
@@ -22,7 +21,7 @@ namespace SimpleLang
                         && int.TryParse(cmnd.Argument1, out arg1))
                     {
                         currentArg1 = cmnd.Argument1;
-                        Changed = true;
+                        wasChanged = true;
                     }
                     result.Add(new Instruction(instructions[i].Label, currentOp, currentArg1, currentArg2, instructions[i].Result));
                     continue;
@@ -34,21 +33,21 @@ namespace SimpleLang
                         && int.TryParse(cmnd1.Argument1, out arg1))
                     {
                         currentArg1 = cmnd1.Argument1;
-                        Changed = true;
+                        wasChanged = true;
                     }
                     if (instructions.GetRange(0, i).FindLast(x => x.Result == instructions[i].Argument2) is Instruction cmnd2
                         && cmnd2.Operation == "assign"
                         && int.TryParse(cmnd2.Argument1, out var arg2))
                     {
                         currentArg2 = cmnd2.Argument1;
-                        Changed = true;
+                        wasChanged = true;
                     }
                     result.Add(new Instruction(instructions[i].Label, currentOp, currentArg1, currentArg2, instructions[i].Result));
                     continue;
                 }
                 result.Add(instructions[i]);
             }
-            return Tuple.Create(Changed, result);
+            return (wasChanged, result);
         }
     }
 }

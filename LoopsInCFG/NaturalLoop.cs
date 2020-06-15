@@ -18,12 +18,12 @@ namespace SimpleLang
             var allEdges = new BackEdges(cfg);
             var ForwardEdges = cfg.GetCurrentBasicBlocks();
 
-            foreach (var x in allEdges.BackEdgesFromGraph)
+            foreach (var (From, To) in allEdges.BackEdgesFromGraph)
             {
-                if (cfg.VertexOf(x.Item2) > 0)
+                if (cfg.VertexOf(To) > 0)
                 {
                     var tmp = new List<BasicBlock>();
-                    for (var i = cfg.VertexOf(x.Item2); i < cfg.VertexOf(x.Item1) + 1; i++)
+                    for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
                     {
                         if (!tmp.Contains(ForwardEdges[i]))
                         {
@@ -54,7 +54,7 @@ namespace SimpleLang
                 var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(loop[i]));
                 if (parents.Count > 1)
                 {
-                    foreach (var parent in parents.Select(x => x.Item2))
+                    foreach (var parent in parents.Select(x => x.block))
                     {
                         if (!loop.Contains(parent))
                         {

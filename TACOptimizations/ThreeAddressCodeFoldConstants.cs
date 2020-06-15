@@ -5,9 +5,9 @@ namespace SimpleLang
 {
     public static class ThreeAddressCodeFoldConstants
     {
-        public static Tuple<bool, List<Instruction>> FoldConstants(List<Instruction> instructions)
+        public static (bool wasChanged, List<Instruction> instruction) FoldConstants(List<Instruction> instructions)
         {
-            var Changed = false;
+            var wasChanged = false;
             var result = new List<Instruction>();
             for (var i = 0; i < instructions.Count; ++i)
             {
@@ -17,20 +17,20 @@ namespace SimpleLang
                     {
                         var constant = CalculateConstant(instructions[i].Operation, intArg1, intArg2);
                         result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
-                        Changed = true;
+                        wasChanged = true;
                         continue;
                     }
                     else if (bool.TryParse(instructions[i].Argument1, out var boolArg1) && bool.TryParse(instructions[i].Argument2, out var boolArg2))
                     {
                         var constant = CalculateConstant(instructions[i].Operation, boolArg1, boolArg2);
                         result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
-                        Changed = true;
+                        wasChanged = true;
                         continue;
                     }
                 }
                 result.Add(instructions[i]);
             }
-            return Tuple.Create(Changed, result);
+            return (wasChanged, result);
         }
 
         private static string CalculateConstant(string operation, bool boolArg1, bool boolArg2)

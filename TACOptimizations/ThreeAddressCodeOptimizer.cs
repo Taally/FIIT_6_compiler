@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+    using Optimization = Func<List<Instruction>, (bool wasChanged, List<Instruction> instructions)>;
 
     public static class ThreeAddressCodeOptimizer
     {
@@ -13,7 +13,7 @@ namespace SimpleLang
             ThreeAddressCodeDefUse.DeleteDeadCode,
             ThreeAddressCodeFoldConstants.FoldConstants,
             ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
-            //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+            DeleteDeadCodeWithDeadVars.DeleteDeadCode,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeCopyPropagation.PropagateCopies
         };
@@ -53,11 +53,11 @@ namespace SimpleLang
             var currentOpt = 0;
             while (currentOpt < opts.Count)
             {
-                var answer = opts[currentOpt++](result);
-                if (answer.Item1)
+                var (wasChanged, instructions) = opts[currentOpt++](result);
+                if (wasChanged)
                 {
                     currentOpt = 0;
-                    result = answer.Item2;
+                    result = instructions;
                 }
             }
             return new BasicBlock(result);
@@ -70,10 +70,10 @@ namespace SimpleLang
             while (currentOpt < opts.Count)
             {
                 var answer = opts[currentOpt++](result);
-                if (answer.Item1)
+                if (answer.wasChanged)
                 {
                     currentOpt = 0;
-                    result = answer.Item2;
+                    result = answer.instructions;
                 }
             }
             return result;
