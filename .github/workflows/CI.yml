@@ -10,15 +10,31 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      source_files: ${{ steps.check_changes.outputs.source_files }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check if source files were changed
+      id: check_changes
+      run: |
+        git fetch -u origin master:master
+        source_files="$(git diff --name-only master | grep '\.cs\|\.sln' || true)"
+        echo "::set-output name=source_files::$source_files"
+        
   build_and_test:
     # The type of runner that the job will run on
     runs-on: windows-latest
+    needs: check_changes
+    if: ${{needs.check_changes.outputs.source_files}}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
     
