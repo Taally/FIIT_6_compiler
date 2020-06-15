@@ -1,13 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using SimpleLang;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    class BasicBlockLeaderTest : TACTestsBase
+    internal class BasicBlockLeaderTest : TACTestsBase
     {
         [Test]
         public void LabelAliveTest()
@@ -18,7 +16,7 @@ goto 3;
 a = 54;
 3: b = 11;
 ");
-            
+
 
             var expected = new List<BasicBlock>()
             {
@@ -96,11 +94,11 @@ b = 11;
             AssertSet(expected, actual);
         }
 
-        void AssertSet(
+        private void AssertSet(
             List<BasicBlock> expected,
             List<BasicBlock> actual)
         {
-            for (int i = 0; i < expected.Count; ++i)
+            for (var i = 0; i < expected.Count; ++i)
             {
                 Assert.True(expected[i].ToString() == actual[i].ToString());
             }

@@ -1,8 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Remoting;
 using NUnit.Framework;
 using SimpleLang;
 
@@ -10,7 +8,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    class BitUtilsTest
+    internal class BitUtilsTest
     {
 
         [Test]
@@ -25,7 +23,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             var map = new Dictionary<Instruction, int> { };
 
             var result = BitUtils.TurnIntoBits(instructions, map);
-            
+
             Assert.IsTrue(result.Count == 0);
         }
 
@@ -40,11 +38,11 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             };
 
             var result = BitUtils.TurnIntoBits(instructions, map);
-            
+
             Assert.IsTrue(result.Count == 1);
             Assert.IsFalse(result[0]);
         }
-        
+
         [Test]
         public void ToBitsTestAllTrue()
         {
@@ -53,15 +51,15 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                new Instruction("b", "", "", "", ""),
                new Instruction("c", "", "", "", ""),
             };
-            
+
             var map = new Dictionary<Instruction, int>
             {
                 { instructions[0], 0 },
                 { instructions[1], 1 },
                 { instructions[2], 2 },
             };
-            
-            
+
+
             var result = BitUtils.TurnIntoBits(instructions, map);
 
             Assert.IsTrue(result.Count == 3);
@@ -69,7 +67,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             Assert.IsTrue(result[1]);
             Assert.IsTrue(result[2]);
         }
-        
+
         [Test]
         public void ToBitsTestAllFalse()
         {
@@ -78,21 +76,21 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
             };
-            
+
             var map = new Dictionary<Instruction, int>
             {
                 { instructions[0], 0 },
                 { instructions[1], 1 },
                 { instructions[2], 2 },
             };
-            
+
             var instructionsToTestAgainst = new List<Instruction> {
                 new Instruction("d", "", "", "", ""),
                 new Instruction("e", "", "", "", ""),
                 new Instruction("f", "", "", "", ""),
             };
-            
-            
+
+
             var result = BitUtils.TurnIntoBits(instructionsToTestAgainst, map);
 
             Assert.IsTrue(result.Count == 3);
@@ -109,7 +107,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
             };
-            
+
             var map = new Dictionary<Instruction, int>
             {
                 { instructions[0], 0 },
@@ -117,15 +115,15 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 { instructions[2], 2 },
                 { new Instruction("z", "", "", "", ""), 3}
             };
-            
+
             var instructionsToTestAgainst = new List<Instruction> {
                 instructions[2],
                 new Instruction("e", "", "", "", ""),
                 instructions[0]
             };
-            
+
             var result = BitUtils.TurnIntoBits(instructionsToTestAgainst, map);
-            
+
             Assert.IsTrue(result.Count == 4);
             Assert.IsTrue(result[0]);
             Assert.IsFalse(result[1]);
@@ -141,11 +139,11 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
             };
-            
+
             var bits = new BitArray(0);
 
             var result = BitUtils.TurnIntoInstructions(bits, instructions);
-            
+
             Assert.IsTrue(result.ToList().Count == 0);
         }
 
@@ -155,26 +153,26 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             var instructions = new List<Instruction> {
                 new Instruction("a", "", "", "", ""),
             };
-            
-            var bits = new BitArray(new [] { true });
+
+            var bits = new BitArray(new[] { true });
 
             var result = BitUtils.TurnIntoInstructions(bits, instructions).ToList();
-            
+
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result[0] == instructions[0]);
         }
-        
+
         [Test]
         public void ToInstructionsTestOneFalse()
         {
             var instructions = new List<Instruction> {
                 new Instruction("a", "", "", "", ""),
             };
-            
-            var bits = new BitArray(new [] { false });
+
+            var bits = new BitArray(new[] { false });
 
             var result = BitUtils.TurnIntoInstructions(bits, instructions).ToList();
-            
+
             Assert.IsTrue(result.Count == 0);
         }
 
@@ -186,11 +184,11 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
             };
-            
-            var bits = new BitArray(new [] { true, false, true, false });
+
+            var bits = new BitArray(new[] { true, false, true, false });
 
             var result = BitUtils.TurnIntoInstructions(bits, instructions).ToList();
-            
+
             Assert.IsTrue(result.Count == 2);
             Assert.IsTrue(result[0] == instructions[0]);
             Assert.IsTrue(result[1] == instructions[2]);
@@ -203,47 +201,47 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             var b = new BitArray(0);
             Assert.IsEmpty(BitUtils.Except(a, b));
         }
-        
+
         [Test]
         public void ExceptTest1()
         {
-            var a = new BitArray(new [] { true });
-            var b = new BitArray(new [] { false });
+            var a = new BitArray(new[] { true });
+            var b = new BitArray(new[] { false });
             Assert.IsTrue(BitUtils.Except(a, b)[0]);
         }
-        
+
         [Test]
         public void ExceptTest2()
         {
-            var a = new BitArray(new [] { false });
-            var b = new BitArray(new [] { true });
+            var a = new BitArray(new[] { false });
+            var b = new BitArray(new[] { true });
             Assert.IsFalse(BitUtils.Except(a, b)[0]);
         }
-        
+
         [Test]
         public void ExceptTest3()
         {
-            var a = new BitArray(new [] { true });
-            var b = new BitArray(new [] { true });
+            var a = new BitArray(new[] { true });
+            var b = new BitArray(new[] { true });
             Assert.IsFalse(BitUtils.Except(a, b)[0]);
         }
-        
+
         [Test]
         public void ExceptTest4()
         {
-            var a = new BitArray(new [] { false });
-            var b = new BitArray(new [] { false });
+            var a = new BitArray(new[] { false });
+            var b = new BitArray(new[] { false });
             Assert.IsFalse(BitUtils.Except(a, b)[0]);
         }
 
         [Test]
         public void ExceptTestBasic()
         {
-            var a = new BitArray(new [] { true, true, true, false, false, false, false });
-            var b = new BitArray(new [] { true, true, false, false, false, false, true });
+            var a = new BitArray(new[] { true, true, true, false, false, false, false });
+            var b = new BitArray(new[] { true, true, false, false, false, false, true });
 
             var result = BitUtils.Except(a, b);
-            
+
             Assert.IsFalse(result[0]);
             Assert.IsFalse(result[1]);
             Assert.IsTrue(result[2]);
@@ -266,8 +264,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 
             var idsByInstruction = instructions
                 .Select((value, index) => (value, index))
-                .ToDictionary(x => x.Item1, x => x.Item2);
-            
+                .ToDictionary(x => x.value, x => x.index);
+
             var block1 = new BasicBlock(new List<Instruction>() { instructions[0], instructions[1] });
             var block2 = new BasicBlock(new List<Instruction>() { instructions[2], instructions[3] });
 
@@ -283,9 +281,9 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 
             var block1Instructions = result[block1];
             var block2Instructions = result[block2];
-            
-            CollectionAssert.AreEqual(block1Instructions, new BitArray(new []{ true, true, false, false, false }));
-            CollectionAssert.AreEqual(block2Instructions, new BitArray(new []{ false, false, true, true, false }));
+
+            CollectionAssert.AreEqual(block1Instructions, new BitArray(new[] { true, true, false, false, false }));
+            CollectionAssert.AreEqual(block2Instructions, new BitArray(new[] { false, false, true, true, false }));
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
-using SimpleLang;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
     [TestFixture]
-    class ReachingDefinitionsTests : TACTestsBase
+    internal class ReachingDefinitionsTests : TACTestsBase
     {
         private (List<BasicBlock> basicBlocks, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
         {
@@ -194,23 +194,46 @@ var i, k;
 for k = 0, 2
     i = i + 1;
 ");
-            // five basic blocks + entry and exit
-            Assert.AreEqual(7, inOutInfo.Count);
+            // four basic blocks + entry and exit
+            Assert.AreEqual(6, inOutInfo.Count);
+
+            // 1st block is a single k = 0
 
             // 2nd block
+            /*
+            L1: #t1 = k >= 2
+            if #t1 goto L2
+             */
             var expectedIn = new List<Instruction>()
             {
                 blocks[0].GetInstructions()[0], // k = 0;
-                blocks[3].GetInstructions()[1], // i = #t2
-                blocks[3].GetInstructions()[2], // k = k + 1
+                blocks[2].GetInstructions()[1], // i = #t2
+                blocks[2].GetInstructions()[2], // k = k + 1
             };
             CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[1]].In);
             CollectionAssert.AreEquivalent(inOutInfo[blocks[1]].In, inOutInfo[blocks[1]].Out);
 
-            // 4th block with k = k + 1
+            // 3rd block
+            /*
+            #t2 = i + 1
+            i = #t2
+            k = k + 1
+            goto L1
+             */
+            var expectedOut = new List<Instruction>()
+            {
+                blocks[2].GetInstructions()[1], // i = #t2
+                blocks[2].GetInstructions()[2], // k = k + 1
+            };
+            CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[2]].In);
+            CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[2]].Out);
+
+            // 4th block
+            /*
+            L2: noop
+             */
             CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[3]].In);
-            var expectedOut = blocks[3].GetInstructions().Skip(1).Take(2); // i = #t2; k = k + 1;
-            CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[3]].Out);
+            CollectionAssert.AreEquivalent(inOutInfo[blocks[3]].In, inOutInfo[blocks[3]].Out);
         }
 
         [Test]
@@ -252,8 +275,8 @@ for k = 0, 1
     i = u3;
 }
 ");
-            // eight basic blocks + entry and exit
-            Assert.AreEqual(10, inOutInfo.Count);
+            // seven basic blocks + entry and exit
+            Assert.AreEqual(9, inOutInfo.Count);
 
             // 1st block
             /*
@@ -268,7 +291,7 @@ k = 0
 
             // 2nd block
             /*
-L1: #t2 = k < 1
+L1: #t2 = k >= 1
 if #t2 goto L2
              */
             var expectedIn = inOutInfo[blocks[0]].Out.Union(inOutInfo[blocks[6]].Out);
@@ -277,80 +300,73 @@ if #t2 goto L2
 
             // 3rd block
             /*
-goto L3
-             */
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[1]].Out, inOutInfo[blocks[2]].In);
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[2]].In, inOutInfo[blocks[2]].Out);
-
-            // 4th block
-            /*
-L2: #t3 = i + 1
+#t3 = i + 1
 i = #t3
 #t4 = j - 1
 j = #t4
 #t5 = i < j
-if #t5 goto L4
+if #t5 goto L3
              */
-            expectedIn = inOutInfo[blocks[1]].Out.Union(inOutInfo[blocks[2]].Out);
-            CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[3]].In);
+            expectedIn = inOutInfo[blocks[1]].Out;
+            CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[2]].In);
             expectedOut = new List<Instruction>()
             {
-                blocks[3].GetInstructions()[1], // i = #t3
-                blocks[3].GetInstructions()[3], // j = #t4
+                blocks[2].GetInstructions()[1], // i = #t3
+                blocks[2].GetInstructions()[3], // j = #t4
                 blocks[0].GetInstructions()[3], // 3: a = u1
                 blocks[0].GetInstructions()[4], // k = 0
-                blocks[5].GetInstructions()[0], // L4: a = u2
-                blocks[6].GetInstructions()[2], // k = k + 1
+                blocks[4].GetInstructions()[0], // L3: a = u2
+                blocks[5].GetInstructions()[2], // k = k + 1
             };
-            CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[3]].Out);
+            CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[2]].Out);
+
+            // 4th block
+            /*
+goto L4
+             */
+            CollectionAssert.AreEquivalent(inOutInfo[blocks[2]].Out, inOutInfo[blocks[3]].In);
+            CollectionAssert.AreEquivalent(inOutInfo[blocks[3]].In, inOutInfo[blocks[3]].Out);
 
             // 5th block
             /*
-goto L5
+L3: a = u2
              */
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[3]].Out, inOutInfo[blocks[4]].In);
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[4]].In, inOutInfo[blocks[4]].Out);
+            CollectionAssert.AreEquivalent(inOutInfo[blocks[2]].Out, inOutInfo[blocks[4]].In);
+            expectedOut = new List<Instruction>()
+            {
+                blocks[2].GetInstructions()[1], // i = #t3
+                blocks[2].GetInstructions()[3], // j = #t4
+                blocks[0].GetInstructions()[4], // k = 0
+                blocks[4].GetInstructions()[0], // L3: a = u2
+                blocks[5].GetInstructions()[2], // k = k + 1
+            };
+            CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[4]].Out);
 
             // 6th block
             /*
-L4: a = u2
+L4: noop
+i = u3
+k = k + 1
+goto L1
              */
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[3]].Out, inOutInfo[blocks[5]].In);
+            expectedIn = inOutInfo[blocks[3]].Out.Union(inOutInfo[blocks[4]].Out);
+            CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[5]].In);
             expectedOut = new List<Instruction>()
             {
-                blocks[3].GetInstructions()[1], // i = #t3
-                blocks[3].GetInstructions()[3], // j = #t4
-                blocks[0].GetInstructions()[4], // k = 0
-                blocks[5].GetInstructions()[0], // L4: a = u2
-                blocks[6].GetInstructions()[2], // k = k + 1
+                blocks[5].GetInstructions()[1], // i = u3
+                blocks[5].GetInstructions()[2], // k = k + 1
+                blocks[2].GetInstructions()[3], // j = #t4
+                blocks[0].GetInstructions()[3], // 3: a = u1
+                blocks[4].GetInstructions()[0], // L3: a = u2
             };
             CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[5]].Out);
 
             // 7th block
             /*
-L5: noop
-i = u3
-k = k + 1
-goto L1
+L2: noop
              */
-            expectedIn = inOutInfo[blocks[4]].Out.Union(inOutInfo[blocks[5]].Out);
-            CollectionAssert.AreEquivalent(expectedIn, inOutInfo[blocks[6]].In);
-            expectedOut = new List<Instruction>()
-            {
-                blocks[6].GetInstructions()[1], // i = u3
-                blocks[6].GetInstructions()[2], // k = k + 1
-                blocks[3].GetInstructions()[3], // j = #t4
-                blocks[0].GetInstructions()[3], // 3: a = u1
-                blocks[5].GetInstructions()[0], // L4: a = u2
-            };
-            CollectionAssert.AreEquivalent(expectedOut, inOutInfo[blocks[6]].Out);
-
-            // 8th block
-            /*
-L3: noop
-             */
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[2]].Out, inOutInfo[blocks[7]].In);
-            CollectionAssert.AreEquivalent(inOutInfo[blocks[7]].In, inOutInfo[blocks[7]].Out);
+            CollectionAssert.AreEquivalent(inOutInfo[blocks[1]].Out, inOutInfo[blocks[6]].In);
+            CollectionAssert.AreEquivalent(inOutInfo[blocks[6]].In, inOutInfo[blocks[6]].Out);
         }
     }
 }

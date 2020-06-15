@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using SimpleLang;
 using NUnit.Framework;
-using System;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    class AlebraicIdentitiesTests : TACTestsBase
+    internal class AlebraicIdentitiesTests : TACTestsBase
     {
-        readonly string messageErrorResult = "Результат неверный";
-        readonly string messageErrorArgument1 = "Первый аргумент неверный";
-        readonly string messageErrorArgument2 = "Второй аргумент неверный";
-        readonly string messageErrorCheckOptimize = "Оптимизация не прошла";
-        readonly string messageErrorOperationIsWrong = "Тип оптимизации неверный";
-        readonly string messageErrorLabel = "Метка неверна";
+        private readonly string messageErrorResult = "Результат неверный";
+        private readonly string messageErrorArgument1 = "Первый аргумент неверный";
+        private readonly string messageErrorArgument2 = "Второй аргумент неверный";
+        private readonly string messageErrorCheckOptimize = "Оптимизация не прошла";
+        private readonly string messageErrorOperationIsWrong = "Тип оптимизации неверный";
+        private readonly string messageErrorLabel = "Метка неверна";
 
         private void Checker(Instruction instruction, string lbl, string op, string arg1, string arg2, string res)
         {

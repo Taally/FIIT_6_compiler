@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
-using SimpleLanguage.Tests.TAC.Simple;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {
@@ -40,9 +39,9 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             };
-            
+
             var result = ThreeAddressCodeOptimizer.Optimize(TAC, opts);
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "b = 22",
                 "c = 1",
@@ -54,8 +53,8 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 "#t4 = -b",
                 "a = #t4",
             };
-            
-            AssertEquality(result, expected);   
+
+            AssertEquality(result, expected);
         }
 
         [Test]
@@ -86,7 +85,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 new Instruction("", "noop", null, null, null),
                 new Instruction("5", "assign", "b", null, "a"),
             };
-            
+
             var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
             {
                 ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
@@ -95,13 +94,13 @@ namespace SimpleLanguage.Tests.TAC.Combined
 
             var result = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: opts);
 
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "1: goto 5",
                 "2: goto 5",
                 "5: a = b",
             };
-            
+
             AssertEquality(result, expected);
         }
 
@@ -133,6 +132,40 @@ var a;
                 "#t3 = 4 + #t2",
                 "a = #t3",
                 "L2: noop"
+            };
+
+            AssertEquality(result, expected);
+        }
+
+        [Test]
+        public void RemoveGotoThroughGotoShouldNotRemoveExtraLabelsAfterRemoveEmptyNodes()
+        {
+            var TAC = GenTAC(@"
+var a;
+input(a);
+1: if a == 0
+    goto 3;
+2: a = 2;
+3: a = 3;
+");
+
+            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            {
+                ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
+                ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
+            };
+
+            var result = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: opts);
+
+            var expected = new List<string>
+            {
+                "input a",
+                "1: #t1 = a == 0",
+                "#t2 = !#t1",
+                "#t3 = !#t2",
+                "if #t3 goto 3",
+                "2: a = 2",
+                "3: a = 3"
             };
 
             AssertEquality(result, expected);

@@ -1,26 +1,23 @@
-﻿using NUnit.Framework;
-using SimpleLang;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    class RemoveNoopTest : TACTestsBase
+    internal class RemoveNoopTest : TACTestsBase
     {
-        public Tuple<bool, List<Instruction>> OptimizeLocal(List<Instruction> tac)
-        {
-            return ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
-        }
+        public Tuple<bool, List<Instruction>> OptimizeLocal(List<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
 
-        public void AssertChanged(Tuple<bool, List<Instruction>> result, List<String> expected)
+        public void AssertChanged(Tuple<bool, List<Instruction>> result, List<string> expected)
         {
             Assert.IsTrue(result.Item1);
             CollectionAssert.AreEqual(result.Item2.Select(x => x.ToString()), expected);
         }
 
-        public void AssertNotChanged(Tuple<bool, List<Instruction>> result, List<String> expected)
+        public void AssertNotChanged(Tuple<bool, List<Instruction>> result, List<string> expected)
         {
             Assert.IsFalse(result.Item1);
             CollectionAssert.AreEqual(result.Item2.Select(x => x.ToString()), expected);
@@ -34,7 +31,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
             CollectionAssert.AreEqual(result.Item2, TAC);
             Assert.IsFalse(result.Item1);
         }
-        
+
         [Test]
         public void ShouldNotRemoveLastNoopIfItHasLabel()
         {
@@ -44,12 +41,12 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("L1", "noop", null, null, null)
             };
             var result = OptimizeLocal(TAC);
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "6: a = b",
                 "L1: noop"
             };
-            
+
             AssertNotChanged(result, expected);
         }
 
@@ -62,14 +59,14 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("", "noop", null, null, null)
             };
             var result = OptimizeLocal(TAC);
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "6: a = b"
             };
-            
+
             AssertChanged(result, expected);
         }
-        
+
         [Test]
         public void ShouldRemoveOnlyOneNoop()
         {
@@ -82,14 +79,14 @@ namespace SimpleLanguage.Tests.TAC.Simple
             };
 
             var result = OptimizeLocal(TAC);
-            
+
             var expected = new List<string>()
             {
                 "6: a = b",
                 "9: b = a",
                 "L1: noop"
             };
-            
+
             AssertChanged(result, expected);
         }
 
@@ -101,12 +98,12 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("L1", "noop", "", "", ""),
                 new Instruction("", "assign", "b", "", "a")
             };
-            
+
             var expected = new List<string>()
             {
                 "L1: a = b"
             };
-            
+
             AssertChanged(OptimizeLocal(TAC), expected);
         }
 
@@ -121,13 +118,13 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("", "goto", "old_label", "", "")
             };
 
-            var expected = new List<String>
+            var expected = new List<string>
             {
                 "goto new_label",
                 "new_label: b = a",
                 "goto new_label",
             };
-            
+
             AssertChanged(OptimizeLocal(TAC), expected);
         }
 
@@ -154,7 +151,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
             {
                 "3: a = 1",
                 "6: b = a",
-                "8: noop" 
+                "8: noop"
              };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
                 .Select(instruction => instruction.ToString());
