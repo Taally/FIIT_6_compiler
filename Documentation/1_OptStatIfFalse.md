@@ -36,7 +36,8 @@
                 ifNode.FalseStat.Visit(this);
                 ReplaceStat(ifNode, ifNode.FalseStat);  //  Меняем наш корень на ветку else
             }
-            else {
+            else 
+            {
                 ReplaceStat(ifNode, new EmptyNode());
             }
         }
