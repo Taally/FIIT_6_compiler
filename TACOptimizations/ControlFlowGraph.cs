@@ -7,8 +7,8 @@ namespace SimpleLang
     public class ControlFlowGraph
     {
         private readonly List<BasicBlock> _basicBlocks;
-        private readonly List<List<(int, BasicBlock)>> _children;
-        private readonly List<List<(int, BasicBlock)>> _parents;
+        private readonly List<List<(int vertex, BasicBlock block)>> _children;
+        private readonly List<List<(int vertex, BasicBlock block)>> _parents;
         private readonly Dictionary<BasicBlock, int> _blockToVertex;
 
         private List<int> _nlr;
@@ -17,7 +17,7 @@ namespace SimpleLang
         public IReadOnlyList<int> PostOrderNumeration => _lrn.AsReadOnly();
 
         private List<(int, int)> _dfst;
-        public IReadOnlyList<(int, int)> DepthFirstSpanningTree => _dfst.AsReadOnly();
+        public IReadOnlyList<(int from, int to)> DepthFirstSpanningTree => _dfst.AsReadOnly();
 
         private List<int> _dfn;
         public IReadOnlyList<int> DepthFirstNumeration => _dfn.AsReadOnly();
@@ -133,9 +133,9 @@ namespace SimpleLang
         public int VertexOf(BasicBlock block) => _blockToVertex[block];
         public IReadOnlyList<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.AsReadOnly();
 
-        public IReadOnlyList<(int, BasicBlock)> GetChildrenBasicBlocks(int vertex) => _children[vertex].AsReadOnly();
+        public IReadOnlyList<(int vertex, BasicBlock block)> GetChildrenBasicBlocks(int vertex) => _children[vertex].AsReadOnly();
 
-        public IReadOnlyList<(int, BasicBlock)> GetParentsBasicBlocks(int vertex) => _parents[vertex].AsReadOnly();
+        public IReadOnlyList<(int vertex, BasicBlock block)> GetParentsBasicBlocks(int vertex) => _parents[vertex].AsReadOnly();
 
         public IEnumerable<Instruction> GetAssigns() =>
             _basicBlocks.Select(b => b.GetInstructions().Where(instr =>

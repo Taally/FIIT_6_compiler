@@ -94,7 +94,7 @@ namespace SimpleLang
 
                     dictInOut[i].OUT =
                         children
-                        .Select(x => dictInOut[x.Item1].IN)
+                        .Select(x => dictInOut[x.vertex].IN)
                         .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
 
                     var pred = dictInOut[i].IN;

@@ -28,19 +28,17 @@ namespace SimpleLanguage.Tests.TAC.Simple
         [Test]
         public void SubstractionSameNumbers() // a - a = 0
         {
-            var threeAddressCode =
+            var (wasChanged, instructions) =
                 ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities(new List<Instruction>()
                 { new Instruction("0", "MINUS", "1", "1", "0") });
-            var checkOptimize = threeAddressCode.Item1;
-            var checkResult = threeAddressCode.Item2[0];
-            Assert.AreEqual(true, checkOptimize, messageErrorCheckOptimize);
-            Checker(checkResult, "0", "assign", "0", "", "0");
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
+            Checker(instructions[0], "0", "assign", "0", "", "0");
         }
 
         [Test]
         public void MultiplicationOnOne() // a * 1 = a || 1 * a = a
         {
-            var threeAddressCode =
+            var (wasChanged, listOfResult) =
                 ThreeAddressCodeRemoveAlgebraicIdentities
                 .RemoveAlgebraicIdentities(new List<Instruction>()
                 {
@@ -49,10 +47,8 @@ namespace SimpleLanguage.Tests.TAC.Simple
                     new Instruction("2", "MULT", "5", "1", "5"),
                     new Instruction("3", "MULT", "1", "5", "5"),
                 });
-            var checkOptimize = threeAddressCode.Item1;
-            var listOfResult = threeAddressCode.Item2;
 
-            Assert.AreEqual(true, checkOptimize, messageErrorCheckOptimize);
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
 
             Checker(listOfResult[0], "0", "assign", "a", "", "a");
             Checker(listOfResult[1], "1", "assign", "a", "", "a");
@@ -60,13 +56,13 @@ namespace SimpleLanguage.Tests.TAC.Simple
             Checker(listOfResult[3], "3", "assign", "5", "", "5");
         }
 
-        //Суммирование и вычитание с 0
-        //Умножение на 1
+        // Суммирование и вычитание с 0
+        // Умножение на 1
         /*------------------------------*/
         [Test]
         public void SummationWithZero()
         {
-            var threeAddressCode =
+            var (wasChanged, listOfResult) =
                 ThreeAddressCodeRemoveAlgebraicIdentities
                 .RemoveAlgebraicIdentities(new List<Instruction>()
                 {
@@ -76,8 +72,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                     new Instruction("3", "PLUS", "0", "5", "5"),
                 });
 
-            Assert.AreEqual(true, threeAddressCode.Item1, messageErrorCheckOptimize);
-            var listOfResult = threeAddressCode.Item2;
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
 
             Checker(listOfResult[0], "0", "assign", "a", "", "a");
             Checker(listOfResult[1], "1", "assign", "a", "", "a");
@@ -88,7 +83,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
         [Test]
         public void DifferenceWithZero()
         {
-            var threeAddressCode =
+            var (wasChanged, listOfResult) =
                 ThreeAddressCodeRemoveAlgebraicIdentities
                 .RemoveAlgebraicIdentities(new List<Instruction>()
                 {
@@ -98,8 +93,8 @@ namespace SimpleLanguage.Tests.TAC.Simple
                     new Instruction("3", "MINUS", "a", "0", "a"),
                 });
 
-            Assert.AreEqual(true, threeAddressCode.Item1, messageErrorCheckOptimize);
-            var listOfResult = threeAddressCode.Item2;
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
+
             Checker(listOfResult[0], "0", "assign", "-666", "", "-666");
             Checker(listOfResult[1], "1", "assign", "-a", "", "-a");
             Checker(listOfResult[2], "2", "assign", "1", "", "1");
@@ -110,7 +105,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
         [Test]
         public void MultiplicationOnZero()
         {
-            var threeAddressCode =
+            var (wasChanged, listOfResult) =
                 ThreeAddressCodeRemoveAlgebraicIdentities
                     .RemoveAlgebraicIdentities(new List<Instruction>()
                     {
@@ -121,8 +116,9 @@ namespace SimpleLanguage.Tests.TAC.Simple
                        new Instruction("4", "MULT", "true", "0", "b"),
                        new Instruction("5", "MULT", "0", "true", "b"),
                     });
-            var listOfResult = threeAddressCode.Item2;
-            Assert.AreEqual(true, threeAddressCode.Item1, messageErrorCheckOptimize);
+
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
+
             Checker(listOfResult[0], "0", "assign", "0", "", "b");
             Checker(listOfResult[1], "1", "assign", "0", "", "b");
             Checker(listOfResult[2], "2", "assign", "0", "", "b");
@@ -134,7 +130,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
         [Test]
         public void ZeroDivideOnNonZero()
         {
-            var threeAddressCode =
+            var (wasChanged, listOfResult) =
                 ThreeAddressCodeRemoveAlgebraicIdentities
                     .RemoveAlgebraicIdentities(new List<Instruction>()
                     {
@@ -143,10 +139,8 @@ namespace SimpleLanguage.Tests.TAC.Simple
                         new Instruction("2", "DIV", "0", "true", "b"),
                     });
 
-            var checkOptimize = threeAddressCode.Item1;
-            var listOfResult = threeAddressCode.Item2;
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
 
-            Assert.AreEqual(true, checkOptimize, messageErrorCheckOptimize);
             Checker(listOfResult[0], "0", "assign", "0", "", "b");
             Checker(listOfResult[1], "1", "assign", "0", "", "b");
             Checker(listOfResult[2], "2", "DIV", "0", "true", "b");
@@ -155,7 +149,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
         [Test]
         public void DivideOnOne()
         {
-            var threeAddressCode =
+            var (wasChanged, listOfResult) =
                 ThreeAddressCodeRemoveAlgebraicIdentities
                     .RemoveAlgebraicIdentities(new List<Instruction>()
                     {
@@ -164,27 +158,29 @@ namespace SimpleLanguage.Tests.TAC.Simple
                         new Instruction("2", "DIV", "0", "1", "b"),
                         new Instruction("3", "DIV", "true", "1", "b"),
                     });
-            var listOfResult = threeAddressCode.Item2;
-            Assert.AreEqual(true, threeAddressCode.Item1, messageErrorCheckOptimize);
+
+            Assert.AreEqual(true, wasChanged, messageErrorCheckOptimize);
+
             Checker(listOfResult[0], "0", "assign", "5", "", "b");
             Checker(listOfResult[1], "1", "assign", "a", "", "b");
             Checker(listOfResult[2], "2", "assign", "0", "", "b");
             Checker(listOfResult[3], "3", "DIV", "true", "1", "b");
         }
 
-        //a / a = 1
+        // a / a = 1
         [Test]
         public void DivideSameNumbers()
         {
-            var threeAddressCode =
+            var (_, instructions) =
                ThreeAddressCodeRemoveAlgebraicIdentities
                .RemoveAlgebraicIdentities(new List<Instruction>()
                {
                    new Instruction("0", "DIV", "10", "10", "a"),
                    new Instruction("1", "DIV", "b", "b", "a"),
                });
-            Checker(threeAddressCode.Item2[0], "0", "assign", "1", "", "a");
-            Checker(threeAddressCode.Item2[1], "1", "assign", "1", "", "a");
+
+            Checker(instructions[0], "0", "assign", "1", "", "a");
+            Checker(instructions[1], "1", "assign", "1", "", "a");
         }
 
         [Test]
@@ -230,7 +226,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                             "#t11 = 1",
                             "b = #t11"
                         };
-            var optimizations = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>
+            var optimizations = new List<Func<List<Instruction>, (bool, List<Instruction>)>>
             {
                 ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities
             };

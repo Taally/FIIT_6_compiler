@@ -3,13 +3,13 @@ using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.CyclesInCFG
+namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
-    internal class NaturalCycleTest : TACTestsBase
+    internal class NaturalLoopTest : TACTestsBase
     {
         [Test]
-        public void IntersectCyclesTest()
+        public void IntersectLoopsTest()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -22,7 +22,7 @@ goto 55;
 ");
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var actual = NaturalСycle.GetAllNaturalCycles(cfg);
+            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
                 new List<BasicBlock>()
@@ -36,7 +36,7 @@ goto 55;
         }
 
         [Test]
-        public void NestedCyclesTest()
+        public void NestedLoopsTest()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -50,7 +50,7 @@ goto 54;
 ");
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var actual = NaturalСycle.GetAllNaturalCycles(cfg);
+            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
                 new List<BasicBlock>()
@@ -71,7 +71,7 @@ goto 54;
         }
 
         [Test]
-        public void OneRootCyclesTest()
+        public void OneRootLoopsTest()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -84,7 +84,7 @@ goto 54;
 ");
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var actual = NaturalСycle.GetAllNaturalCycles(cfg);
+            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
                 new List<BasicBlock>()

@@ -123,12 +123,12 @@ namespace SimpleLang
             switch (Direction)
             {
                 case Direction.Forward:
-                    getPreviousBlocks = x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getPreviousBlocks = x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.block);
                     getDataValue = x => dataTemp[x].Out;
                     combine = (x, y) => (x, y);
                     break;
                 case Direction.Backward:
-                    getPreviousBlocks = x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
+                    getPreviousBlocks = x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.block);
                     getDataValue = x => dataTemp[x].In;
                     combine = (x, y) => (y, x);
                     break;

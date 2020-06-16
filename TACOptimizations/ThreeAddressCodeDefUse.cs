@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleLang
 {
@@ -59,11 +58,11 @@ namespace SimpleLang
             d.Uses.RemoveAt(d.Uses.FindLastIndex(x => x.OrderNum == i));
         }
 
-        public static Tuple<bool, List<Instruction>> DeleteDeadCode(List<Instruction> commands)
+        public static (bool wasChanged, List<Instruction> instructions) DeleteDeadCode(List<Instruction> commands)
         {
             var result = new List<Instruction>();
             FillLists(commands);
-            var isChange = false;
+            var wasChanged = false;
 
             for (var i = commands.Count - 1; i >= 0; --i)
             {
@@ -77,7 +76,7 @@ namespace SimpleLang
                     DeleteUse(commands[i].Argument1, i);
                     DeleteUse(commands[i].Argument2, i);
                     result.Add(new Instruction(commands[i].Label, "noop", null, null, null));
-                    isChange = true;
+                    wasChanged = true;
                 }
                 else
                 {
@@ -85,7 +84,7 @@ namespace SimpleLang
                 }
             }
             result.Reverse();
-            return Tuple.Create(isChange, result);
+            return (wasChanged, result);
         }
     }
 

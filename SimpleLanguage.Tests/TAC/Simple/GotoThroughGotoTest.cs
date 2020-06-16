@@ -6,7 +6,7 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+    using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
     internal class GotoThroughGotoTest : TACTestsBase
@@ -52,9 +52,6 @@ var a;
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
 
-            //ThreeAddressCodeTmp.ResetTmpName();
-            //ThreeAddressCodeTmp.ResetTmpLabel();
-
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
@@ -95,9 +92,6 @@ var a;
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
-
-            //ThreeAddressCodeTmp.ResetTmpName();
-            //ThreeAddressCodeTmp.ResetTmpLabel();
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
@@ -145,9 +139,6 @@ var a;
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
 
-            //ThreeAddressCodeTmp.ResetTmpName();
-            //ThreeAddressCodeTmp.ResetTmpLabel();
-
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
@@ -189,9 +180,6 @@ var a;
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
-
-            //ThreeAddressCodeTmp.ResetTmpName();
-            //ThreeAddressCodeTmp.ResetTmpLabel();
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 

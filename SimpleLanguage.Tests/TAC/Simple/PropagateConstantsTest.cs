@@ -6,7 +6,7 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+    using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
     internal class PropagateConstantsTest : TACTestsBase

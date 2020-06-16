@@ -186,7 +186,7 @@ b = a;
         }
 
         [Test]
-        public void ForCycle()
+        public void ForLoop()
         {
             (var blocks, var inOutInfo) = GenGraphAndGetInOutInfo(@"
 var i, k;

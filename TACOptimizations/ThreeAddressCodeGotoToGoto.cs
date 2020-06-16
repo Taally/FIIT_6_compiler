@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleLang
 {
@@ -19,9 +18,9 @@ namespace SimpleLang
                 this.labelfrom = labelfrom;
             }
         }
-        public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
+        public static (bool wasChanged, List<Instruction> instructions) ReplaceGotoToGoto(List<Instruction> commands)
         {
-            var changed = false;
+            var wasChanged = false;
             var list = new List<GtotScaner>();
             var tmpcommands = new List<Instruction>();
             for (var i = 0; i < commands.Count; i++)
@@ -49,11 +48,11 @@ namespace SimpleLang
                         {
                             if (tmpcommands[i].Argument1.ToString() == list[j].labelfrom.ToString())
                             {
-                                changed |= false;
+                                wasChanged |= false;
                             }
                             else
                             {
-                                changed |= true;
+                                wasChanged |= true;
                                 tmpcommands[i] = new Instruction(tmpcommands[i].Label, "goto", list[j].labelfrom.ToString(), "", "");
                             }
 
@@ -70,20 +69,19 @@ namespace SimpleLang
 
                             if (tmpcommands[i].Argument2.ToString() == list[j].labelfrom.ToString())
                             {
-                                changed |= false;
+                                wasChanged |= false;
                             }
                             else
                             {
                                 tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), "");
-                                changed |= true;
+                                wasChanged |= true;
                             }
 
                         }
                     }
                 }
             }
-            return Tuple.Create(changed, tmpcommands);
-
+            return (wasChanged, tmpcommands);
         }
     }
 }

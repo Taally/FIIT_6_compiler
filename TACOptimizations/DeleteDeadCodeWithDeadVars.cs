@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
 {
     public class DeleteDeadCodeWithDeadVars
     {
-        public static Tuple<bool, List<Instruction>> DeleteDeadCode(List<Instruction> instructions)
+        public static (bool wasChanged, List<Instruction> instructions) DeleteDeadCode(List<Instruction> instructions)
         {
-            var isChanged = false;
+            var wasChanged = false;
             var newInstructions = new List<Instruction>();
             var varStatus = new Dictionary<string, bool>();
 
@@ -36,7 +35,7 @@ namespace SimpleLang
                     || instruction.Result.First() == '#' && !varStatus.ContainsKey(instruction.Result))
                 {
                     newInstructions.Add(new Instruction(instruction.Label, "noop", null, null, null));
-                    isChanged = true;
+                    wasChanged = true;
                     continue;
                 }
 
@@ -53,7 +52,7 @@ namespace SimpleLang
                 newInstructions.Add(instruction);
             }
             newInstructions.Reverse();
-            return Tuple.Create(isChanged, newInstructions);
+            return (wasChanged, newInstructions);
         }
     }
 }

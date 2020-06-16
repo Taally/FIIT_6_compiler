@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleLang
 {
     public static class ThreeAddressCodeCopyPropagation
     {
-        public static Tuple<bool, List<Instruction>> PropagateCopies(List<Instruction> instructions)
+        public static (bool wasChanged, List<Instruction> instructions) PropagateCopies(List<Instruction> instructions)
         {
             var count = instructions.Count;
-            var Changed = false;
+            var wasChanged = false;
             var result = new List<Instruction>();
             for (var i = 0; i < count; i++)
             {
@@ -23,7 +22,7 @@ namespace SimpleLang
                         && instructions.GetRange(index1, i - index1).FindLastIndex(x => x.Result == instructions[index1].Argument1) == -1)
                     {
                         currentArg1 = instructions[index1].Argument1;
-                        Changed = true;
+                        wasChanged = true;
                     }
 
                 }
@@ -36,12 +35,12 @@ namespace SimpleLang
                         && instructions.GetRange(index2, i - index2).FindLastIndex(x => x.Result == instructions[index2].Argument1) == -1)
                     {
                         currentArg2 = instructions[index2].Argument1;
-                        Changed = true;
+                        wasChanged = true;
                     }
                 }
                 result.Add(new Instruction(instructions[i].Label, instructions[i].Operation, currentArg1, currentArg2, instructions[i].Result));
             }
-            return Tuple.Create(Changed, result);
+            return (wasChanged, result);
         }
     }
 }

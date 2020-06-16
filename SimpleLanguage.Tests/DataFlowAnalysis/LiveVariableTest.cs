@@ -38,7 +38,7 @@ print (c);"
         }
 
         [Test]
-        public void WithCycle()
+        public void WithLoop()
         {
             var TAC = GenTAC(@"
 var a,b,c;
@@ -68,7 +68,7 @@ print (c);"
         }
 
         [Test]
-        public void ComplexWithCycleTest()
+        public void ComplexWithLoopTest()
         {
             var TAC = GenTAC(@"
 var a,b,c,i;

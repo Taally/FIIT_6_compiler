@@ -79,11 +79,11 @@ namespace SimpleCompiler
                     {
                         Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions()[0]}");
                         var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
-                        var childrenStr = string.Join(" | ", children.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        var childrenStr = string.Join(" | ", children.Select(v => v.block.GetInstructions()[0].ToString()));
                         Console.WriteLine($" children: {childrenStr}");
 
                         var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
-                        var parentsStr = string.Join(" | ", parents.Select(v => v.Item2.GetInstructions()[0].ToString()));
+                        var parentsStr = string.Join(" | ", parents.Select(v => v.block.GetInstructions()[0].ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 
@@ -111,8 +111,8 @@ namespace SimpleCompiler
 
                     Console.WriteLine();
                     Console.WriteLine();
-                    Console.WriteLine("NatCycle");
-                    var natcyc = NaturalСycle.GetAllNaturalCycles(cfg);
+                    Console.WriteLine("NatLoop");
+                    var natcyc = NaturalLoop.GetAllNaturalLoops(cfg);
                     foreach (var x in natcyc)
                     {
                         if (x.Count == 0)

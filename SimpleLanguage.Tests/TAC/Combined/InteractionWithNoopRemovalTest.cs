@@ -34,7 +34,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 b = a - c;
                 a = -b;
                 ");
-            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
             {
                 DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
@@ -58,7 +58,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
         }
 
         [Test]
-        public void RemoveEmptyNodesShouldNotDeleteNoopAfterLastCycle()
+        public void RemoveEmptyNodesShouldNotDeleteNoopAfterLastLoop()
         {
             var TAC = GenTAC(
                 @"
@@ -66,7 +66,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 for i = 1,5
                     a = 10;
                 ");
-            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
             {
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             };
@@ -86,7 +86,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 new Instruction("5", "assign", "b", null, "a"),
             };
 
-            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
             {
                 ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
@@ -114,7 +114,7 @@ var a;
     else
         goto 4;");
 
-            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
             {
                 ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
@@ -149,7 +149,7 @@ input(a);
 3: a = 3;
 ");
 
-            var opts = new List<Func<List<Instruction>, Tuple<bool, List<Instruction>>>>()
+            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
             {
                 ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes

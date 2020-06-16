@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.CyclesInCFG
+namespace SimpleLanguage.Tests.LoopsInCFG
 {
     using ChildrenDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
     using DominatorDictionary = Dictionary<int, IEnumerable<BasicBlock>>;
@@ -286,7 +286,7 @@ else
         }
 
         [Test]
-        public void SimpleCycleTest()
+        public void SimpleLoopTest()
         {
             var graph = BuildCFG(@"
 var a, b, i;
