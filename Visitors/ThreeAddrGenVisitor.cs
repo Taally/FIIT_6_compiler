@@ -31,6 +31,17 @@ namespace SimpleLang.Visitors
             var exprTmpName = Gen(i.Expr);
 
             var trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            if (i.TrueStat is LabelStatementNode label)
+            {
+                trueLabel = label.Label.Num.ToString();
+            }
+            else
+            if (i.TrueStat is BlockNode block
+                && block.List.StatChildren[0] is LabelStatementNode labelB)
+            {
+                trueLabel = labelB.Label.Num.ToString();
+            }
+
             var falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
             GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
 
