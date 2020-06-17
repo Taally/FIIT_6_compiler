@@ -13,7 +13,7 @@
 #### Теоретическая часть
 В рамках этой задачи необходимо было реализовать оптимизацию устранения переходов к переходам. Если оператор goto ведет на метку, содержащую в goto переход на следующую метку, необходимо протянуть финальную метку до начального goto.
 Были поставлены  следующие задачи:
-* До
+* 1 До
   ```csharp
   goto L1;
   ...
@@ -25,7 +25,7 @@
   ...
   L1: goto L2;
   ```
-* До
+* 2 До
   ```csharp
   if (/*усл*/) goto L1;
   ...
@@ -37,7 +37,7 @@
   ...
   L1: goto L2;
   ```
-* До
+* 3 До
   ```csharp
   goto L1;
   ...
@@ -47,7 +47,7 @@
   После
   ```csharp
   ...
-  L1: if (/*усл*/) goto L2;
+  if (/*усл*/) goto L2;
   goto L3;
   ...
   L3:
@@ -58,15 +58,16 @@
 ```csharp
 public struct GtotScaner
         {
-            public int index;
-            public string label;
-            public string labelfrom;
-
-            public GtotScaner(int index, string label, string labelfrom)
+            public string Label { get; }
+            public string LabelFrom { get; }
+            public string Operation { get; }
+            public int InstructionNum { get; }
+            public GtotScaner(string label, string labelFrom, string operation, int instructionNum)
             {
-                this.index = index;
-                this.label = label;
-                this.labelfrom = labelfrom;
+                Label = label;
+                LabelFrom = labelFrom;
+                Operation = operation;
+                InstructionNum = instructionNum;
             }
         }
 ```
@@ -91,78 +92,128 @@ public string labelfrom;
 ```csharp
         public static Tuple<bool, List<Instruction>> ReplaceGotoToGoto(List<Instruction> commands)
         {
-            bool changed = false; // флаг, проведенной оптимизации
+            var wasChanged = false; // флаг, проведенной оптимизации
             List<GtotScaner> list = new List<GtotScaner>();  // Список всех переходов и их меток
             List<Instruction> tmpcommands = new List<Instruction>();  // Трехадресный код
 ```
 
 Заполнение  списка переходов:
 ```csharp
-            for (int i = 0; i < commands.Count; i++)
+            for (var i = 0; i < commands.Count; i++)
             {
-                tmpcommands.Add(commands[i]);
-                if (commands[i].Operation == "goto")  // Добавление в список если команда вида goto
+                if (commands[i].Operation == "goto") // Если операция вида goto
                 {
-                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument1));  // Добавление номера (строки, метки, метки перехода)
+                    // Заполнение списка переходов в виде (метка инструкции, метка перехода, операция, номер команды)
+                    list.Add(new GtotScaner(commands[i].Label, commands[i].Argument1, commands[i].Operation, i)); 
                 }
 
-                if (commands[i].Operation == "ifgoto")  // Добавление в список если команда вида if()goto
+                if (commands[i].Operation == "ifgoto") // Если операция вида if(усл) goto
                 {
-                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument2));  // Добавление номера (строки, метки, метки перехода)
+                    // Заполнение списка переходов в виде (метка инструкции, метка перехода, операция, номер команды)
+                    list.Add(new GtotScaner(commands[i].Label, commands[i].Argument2, commands[i].Operation, i));
                 }
             }
 ```
 
 Поиск по списку переходов и применение оптимизации:
 ```csharp
-            for (int i = 0; i < tmpcommands.Count; i++)
+            var addNewLabels = new Dictionary<int, string>();   // Словарь вида (номер строки, необходимая метка)
+            var k = 0;
+
+            for (var i = 0; i < commands.Count; i++)
             {
-
-                if (tmpcommands[i].Operation == "goto")  // Если операция goto
+                if (commands[i].Operation == "goto")   // Если операция вида goto
                 {
-                    for (int j = 0; j < list.Count; j++)
+                    for (var j = 0; j < list.Count; j++)
                     {
-                        if (list[j].label == tmpcommands[i].Argument1)  //  Если левая метка совпадает с меткой команды
+                    
+                        if (list[j].Label == commands[i].Argument1       // Если на метку есть переход
+                        && list[j].LabelFrom != commands[i].Argument1    // Метка не на себя
+                        && list[j].Operation == "goto")                  //  Тип операции goto
                         {
-                            if (tmpcommands[i].Argument1.ToString() == list[j].labelfrom.ToString())  // Если правая метка совпадает
+                            wasChanged = true;
+                            tmpCommands.Add(new Instruction(commands[i].Label, "goto", list[j].LabelFrom, "", ""));
+                            i++;
+                            break;
+                        }
+                        else if (list[j].Label == commands[i].Argument1 // Если на метку есть переход
+                        && list[j].LabelFrom != commands[i].Argument1   // Метка не на себя
+                        && list[j].Operation == "ifgoto"                //  Тип операции ifgoto
+                        && CountGoTo(list, list[j].Label) <= 1)         // условие работы для задания типа 3
+                        {
+                            k++;
+                            wasChanged = true;
+                            tmpCommands.Add(new Instruction("",
+                                commands[list[j].InstructionNum].Operation,
+                                commands[list[j].InstructionNum].Argument1,
+                                commands[list[j].InstructionNum].Argument2,
+                                commands[list[j].InstructionNum].Result));
+                                
+                                //Если следующая команда есть и на ней есть метка то заменим на неё
+                            if (commands[list[j].InstructionNum + 1] != null && commands[list[j].InstructionNum + 1].Label != "")
                             {
-                                changed |= false;  //  Изменений проведено не было
+                                tmpCommands.Add(new Instruction("", "goto", commands[list[j].InstructionNum + 1].Label, "", ""));
+                                i += 1;
+                                addNewLabels.Add(list[j].InstructionNum, commands[list[j].InstructionNum + 1].Label);
+                                break;
                             }
-                            else
+                            // Если следующей операции нет или на ней нет метки, вставим необходимую метку
+                            else if (commands[list[j].InstructionNum + 1] == null || commands[list[j].InstructionNum + 1].Label == "")
                             {
-                                changed |= true; //  Изменения были проведены
-                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "goto", list[j].labelfrom.ToString(), "", "");  // Меняем инструкцию, изменяя в ней правую часть на необходимую нам метку
+                                var tmpName = ThreeAddressCodeTmp.GenTmpLabel();
+                                tmpCommands.Add(new Instruction("", "goto", tmpName, "", ""));
+                                addNewLabels.Add(list[j].InstructionNum + k, tmpName);
+                                i += 1;
+                                break;
                             }
-
                         }
                     }
                 }
-
-                if (tmpcommands[i].Operation == "ifgoto")  // Если операция if()goto
+                // Если это операция ifgoto и не подлежит удалению
+                else if (commands[i].Operation == "ifgoto" && !addNewLabels.ContainsKey(i)) 
                 {
-                    for (int j = 0; j < list.Count; j++)
+                    for (var j = 0; j < list.Count; j++)
                     {
-                        if (list[j].label == tmpcommands[i].Argument2) //  Если левая метка совпадает с меткой команды
+                        if (list[j].Label == commands[i].Argument2)
                         {
-
-                            if (tmpcommands[i].Argument2.ToString() == list[j].labelfrom.ToString()) // Если правая метка совпадает
+                            if (list[j].Label == commands[i].Argument2 && list[j].LabelFrom != commands[i].Argument2)
                             {
-                                changed |= false; //  Изменений проведено не было
+                                wasChanged = true;
+                                tmpCommands.Add(new Instruction(commands[i].Label, "ifgoto", commands[i].Argument1, list[j].LabelFrom, ""));
+                                i++;
+                                break;
                             }
-                            else
-                            {
-                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), ""); // Меняем инструкцию, изменяя в ней правую часть на необходимую нам метку
-                                changed |= true; //  Изменения были проведены
-                            }
-
                         }
                     }
                 }
+                tmpCommands.Add(new Instruction(commands[i].Label, commands[i].Operation, commands[i].Argument1, commands[i].Argument2, commands[i].Result));
+            }
+
+            foreach (var x in addNewLabels.Keys) // Удаление if вида 3
+            {
+                tmpCommands[x] = new Instruction(addNewLabels[x], "noop", "", "", "");
             }
 ```
+
+Вспомогательная функция для реализации части 3
+```csharp
+    public static int CountGoTo(List<GtotScaner> a, string label)
+        {
+            var tmpCount = 0;
+            foreach (var x in a)
+            {
+                if (x.LabelFrom == label && (x.Operation == "goto" || x.Operation == "ifgoto"))
+                {
+                    tmpCount++;
+                }
+            }
+            return tmpCount;
+        }
+```
+
 Результатом работы программы является пара значений, была ли применена оптимизация и список инструкций с примененной оптимизацией
 ```csharp
-    return Tuple.Create(changed, tmpcommands);
+    return Tuple.Create(wasChanged, tmpcommands);
 ```
 
 #### Место в общем проекте (Интеграция)
