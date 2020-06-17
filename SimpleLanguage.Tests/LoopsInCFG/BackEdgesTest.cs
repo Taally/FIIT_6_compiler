@@ -13,6 +13,7 @@ namespace SimpleLanguage.Tests.LoopsInCFG
             var blocks = BasicBlockLeader.DivideLeaderToLeader(optResult);
             return new ControlFlowGraph(blocks);
         }
+
         [Test]
         public void EmptyGraph()
         {
@@ -22,6 +23,7 @@ var a;
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(0, backEdges.Count);
         }
+
         [Test]
         public void SimpleTestBackEdges()
         {
@@ -35,6 +37,7 @@ goto 2;
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(1, backEdges.Count);
         }
+
         [Test]
         public void SimpleNoBackEdgesWithoutGoTo()
         {
@@ -57,6 +60,7 @@ a = f + c;");
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(0, backEdges.Count);
         }
+
         [Test]
         public void BackEdgesWithGoTo()
         {
@@ -74,6 +78,7 @@ goto 5;");
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(1, backEdges.Count);
         }
+
         [Test]
         public void SimpleNoBackEdgesWithGoTo()
         {
@@ -87,10 +92,10 @@ goto 3;
 3: e = 5;
 goto 4;
 4: f = 6;");
-
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(0, backEdges.Count);
         }
+
         [Test]
         public void TrashProgram()
         {
@@ -111,6 +116,7 @@ goto 4;
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(1, backEdges.Count);
         }
+
         [Test]
         public void ProgramWithLoop()
         {
