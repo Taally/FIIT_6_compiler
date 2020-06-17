@@ -106,7 +106,7 @@ else
 
             Assert.AreEqual(check.Length - 1, cfg.DepthFirstSpanningTree.Count);
 
-            var ce = new List<(int v, int w, ControlFlowGraph.EdgeType type)>{
+            var ce = new List<(int from, int to, ControlFlowGraph.EdgeType type)>{
                 (0, 1, ControlFlowGraph.EdgeType.Advancing),
                 (1, 2, ControlFlowGraph.EdgeType.Advancing),
                 (2, 3, ControlFlowGraph.EdgeType.Advancing),
@@ -133,8 +133,8 @@ else
                 ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Advancing).Count, 
                 9
             );
-            Assert.IsTrue(ce.Find(x => x.v == 6 && x.w == 8).type == ControlFlowGraph.EdgeType.Cross);
-            Assert.IsTrue(ce.Find(x => x.v == 4 && x.w == 3).type == ControlFlowGraph.EdgeType.Retreating);
+            Assert.IsTrue(ce.Find(x => x.from == 6 && x.to == 8).type == ControlFlowGraph.EdgeType.Cross);
+            Assert.IsTrue(ce.Find(x => x.from == 4 && x.to == 3).type == ControlFlowGraph.EdgeType.Retreating);
             foreach (var c in cfg.ClassifiedEdges)
             {
                 Assert.Contains(c, ce);

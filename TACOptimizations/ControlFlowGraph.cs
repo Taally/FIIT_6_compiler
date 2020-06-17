@@ -22,8 +22,8 @@ namespace SimpleLang
         private List<int> _dfn;
         public IReadOnlyList<int> DepthFirstNumeration => _dfn;
 
-        private List<(int v, int w, EdgeType type)> _classifiedEdges;
-        public IReadOnlyList<(int v, int w, EdgeType type)> ClassifiedEdges => _classifiedEdges;
+        private List<(int from, int to, EdgeType type)> _classifiedEdges;
+        public IReadOnlyList<(int from, int to, EdgeType type)> ClassifiedEdges => _classifiedEdges;
 
         public ControlFlowGraph()
         {
