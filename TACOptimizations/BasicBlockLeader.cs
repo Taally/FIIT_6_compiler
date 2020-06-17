@@ -5,11 +5,11 @@ namespace SimpleLang
     public class BasicBlockLeader
     {
         /// <summary>
-        /// Разбивает список инструкций на ББ от лидера до лидера
+        /// Разбивает список инструкций на базовые блоки от лидера до лидера
         /// </summary>
-        /// <param name="instructions">Списпок инструкций</param>
+        /// <param name="instructions">Список инструкций</param>
         /// <returns>
-        /// Вернет разбитые по ББ от лидера до лидера инструкции
+        /// Вернет список базовых блоков
         /// </returns>
         public static List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
         {
@@ -63,12 +63,12 @@ namespace SimpleLang
         }
 
         /// <summary>
-        /// Проверка есть ли переход на метку
+        /// Проверка, есть ли переход на метку
         /// </summary>
         /// <param name="instructions">Список инструкций</param>
         /// <param name="checkLabel">Проверяемая метка</param>
         /// <returns>
-        /// Возвращает bool есть ли переход на эту метку
+        /// Возвращает true, если есть переход на эту метку
         /// </returns>
         public static bool IsLabelAlive(List<Instruction> instructions, string checkLabel) // Есть ли переход на метку ? 
         {
