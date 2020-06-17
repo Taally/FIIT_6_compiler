@@ -92,7 +92,6 @@ else
             }
             Console.WriteLine();
 
-
             var check = new bool[cfg.GetCurrentBasicBlocks().Count];
             foreach ((var u, var v) in cfg.DepthFirstSpanningTree)
             {
@@ -106,6 +105,46 @@ else
             }
 
             Assert.AreEqual(check.Length - 1, cfg.DepthFirstSpanningTree.Count);
+
+            var ce = new List<(int from, int to, ControlFlowGraph.EdgeType type)>{
+                (0, 1, ControlFlowGraph.EdgeType.Advancing),
+                (1, 2, ControlFlowGraph.EdgeType.Advancing),
+                (2, 3, ControlFlowGraph.EdgeType.Advancing),
+                (3, 5, ControlFlowGraph.EdgeType.Advancing),
+                (5, 7, ControlFlowGraph.EdgeType.Advancing),
+                (7, 8, ControlFlowGraph.EdgeType.Advancing),
+                (8, 9, ControlFlowGraph.EdgeType.Advancing),
+                (5, 6, ControlFlowGraph.EdgeType.Advancing),
+                (6, 8, ControlFlowGraph.EdgeType.Cross),
+                (3, 4, ControlFlowGraph.EdgeType.Advancing),
+                (4, 3, ControlFlowGraph.EdgeType.Retreating)
+                };
+            
+            Assert.AreEqual(ce.Count, cfg.ClassifiedEdges.Count);
+            Assert.AreEqual(
+                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Cross).Count, 
+                1
+            );
+            Assert.AreEqual(
+                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Retreating).Count, 
+                1
+            );
+            Assert.AreEqual(
+                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Advancing).Count, 
+                9
+            );
+            Assert.IsTrue(ce.Find(x => x.from == 6 && x.to == 8).type == ControlFlowGraph.EdgeType.Cross);
+            Assert.IsTrue(ce.Find(x => x.from == 4 && x.to == 3).type == ControlFlowGraph.EdgeType.Retreating);
+            foreach (var c in cfg.ClassifiedEdges)
+            {
+                Assert.Contains(c, ce);
+            }
+            CollectionAssert.AreEqual(ce, cfg.ClassifiedEdges);
+            Console.WriteLine("ClassifiedEdges");
+            foreach (var c in cfg.ClassifiedEdges)
+            {
+                Console.WriteLine(c);
+            }
         }
     }
 }

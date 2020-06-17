@@ -46,11 +46,7 @@ List<int> listOfLeaders = new List<int>(); //Список лидеров
         if (instructions[i].Label != null
             && IsLabelAlive(instructions, instructions[i].Label)) //Команда содержит метку, на которую существует переход
         {
-            if (listOfLeaders.Contains(i)) // проверка на наличие данного лидера в списке лидеров
-            {
-                continue;
-            }
-            else
+            if (!listOfLeaders.Contains(i)) // проверка на наличие данного лидера в списке лидеров
             {
                 listOfLeaders.Add(i);
             }
@@ -59,11 +55,7 @@ List<int> listOfLeaders = new List<int>(); //Список лидеров
         if (instructions[i].Operation == "goto"
             || instructions[i].Operation == "ifgoto") //Команда является следующей после операции перехода (goto или ifgoto)
         {
-            if (listOfLeaders.Contains(i + 1)) // проверка на наличие данного лидера в списке лидеров
-            {
-                continue;
-            }
-            else
+            if (!listOfLeaders.Contains(i + 1)) // проверка на наличие данного лидера в списке лидеров
             {
                 listOfLeaders.Add(i + 1);
             }

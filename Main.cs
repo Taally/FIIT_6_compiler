@@ -74,6 +74,17 @@ namespace SimpleCompiler
                     }
 
                     var cfg = new ControlFlowGraph(divResult);
+                    
+                    Console.WriteLine("\n\n Edge Classification");
+                    Console.WriteLine("----------");
+
+                    foreach (var pair in cfg.ClassifiedEdges)
+                    {
+                        Console.WriteLine(pair);
+                    }
+                    
+                    Console.WriteLine("----------");
+                    
 
                     foreach (var block in cfg.GetCurrentBasicBlocks())
                     {
@@ -112,8 +123,8 @@ namespace SimpleCompiler
                     Console.WriteLine();
                     Console.WriteLine();
                     Console.WriteLine("NatLoop");
-                    var natcyc = NaturalLoop.GetAllNaturalLoops(cfg);
-                    foreach (var x in natcyc)
+                    var natLoops = NaturalLoop.GetAllNaturalLoops(cfg);
+                    foreach (var x in natLoops)
                     {
                         if (x.Count == 0)
                         {
@@ -127,12 +138,9 @@ namespace SimpleCompiler
                             {
                                 Console.WriteLine(xfrom.ToString());
                             }
-
-
                         }
                         Console.WriteLine();
                         Console.WriteLine("-------------");
-
                     }
 
                     Console.WriteLine(" \nDone");
