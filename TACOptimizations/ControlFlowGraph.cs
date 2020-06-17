@@ -12,15 +12,18 @@ namespace SimpleLang
         private readonly Dictionary<BasicBlock, int> _blockToVertex;
 
         private List<int> _nlr;
-        public IReadOnlyList<int> PreOrderNumeration => _nlr.AsReadOnly();
+        public IReadOnlyList<int> PreOrderNumeration => _nlr;
         private List<int> _lrn;
-        public IReadOnlyList<int> PostOrderNumeration => _lrn.AsReadOnly();
+        public IReadOnlyList<int> PostOrderNumeration => _lrn;
 
         private List<(int, int)> _dfst;
-        public IReadOnlyList<(int from, int to)> DepthFirstSpanningTree => _dfst.AsReadOnly();
+        public IReadOnlyList<(int from, int to)> DepthFirstSpanningTree => _dfst;
 
         private List<int> _dfn;
-        public IReadOnlyList<int> DepthFirstNumeration => _dfn.AsReadOnly();
+        public IReadOnlyList<int> DepthFirstNumeration => _dfn;
+
+        private List<(int from, int to, EdgeType type)> _classifiedEdges;
+        public IReadOnlyList<(int from, int to, EdgeType type)> ClassifiedEdges => _classifiedEdges;
 
         public ControlFlowGraph()
         {
@@ -100,6 +103,20 @@ namespace SimpleLang
             DFS();
         }
 
+        public enum EdgeType
+        {
+            Advancing,
+            Retreating,
+            Cross
+        }
+
+        private enum VertexStatus
+        {
+            Init,
+            InProgress,
+            Done
+        }
+        
         private void DFS()
         {
             _dfst = new List<(int, int)>();
@@ -109,20 +126,35 @@ namespace SimpleLang
             _nlr = new List<int>(c);
             _dfn = new List<int>(new int[c]);
 
-            var used = new bool[c];
+            _classifiedEdges = new List<(int, int, EdgeType)>();
+            var vertexStatuses = Enumerable.Repeat(VertexStatus.Init, c).ToArray();
+            var pre = new int[c];
+            var counter = 0;
 
             void dfs(int vertex)
             {
-                used[vertex] = true;
+                vertexStatuses[vertex] = VertexStatus.InProgress;
+                pre[vertex] = counter++;
                 _nlr.Add(vertex);
-                foreach ((var v, _) in _children[vertex])
+                foreach (var (v, _) in _children[vertex])
                 {
-                    if (!used[v])
+                    switch (vertexStatuses[v])
                     {
-                        _dfst.Add((vertex, v));
-                        dfs(v);
+                        case VertexStatus.Init:
+                            _classifiedEdges.Add((vertex, v, EdgeType.Advancing));
+                            _dfst.Add((vertex, v));
+                            dfs(v);
+                            break;
+                        case VertexStatus.InProgress:
+                            _classifiedEdges.Add((vertex, v, EdgeType.Retreating));
+                            break;
+                        case VertexStatus.Done:
+                            var edgeType = (pre[v] < pre[vertex]) ? EdgeType.Cross : EdgeType.Advancing;
+                            _classifiedEdges.Add((vertex, v, edgeType));
+                            break;
                     }
                 }
+                vertexStatuses[vertex] = VertexStatus.Done;
                 _lrn.Add(vertex);
                 _dfn[vertex] = --c;
             }
@@ -131,11 +163,11 @@ namespace SimpleLang
         }
 
         public int VertexOf(BasicBlock block) => _blockToVertex[block];
-        public IReadOnlyList<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks.AsReadOnly();
+        public IReadOnlyList<BasicBlock> GetCurrentBasicBlocks() => _basicBlocks;
 
-        public IReadOnlyList<(int vertex, BasicBlock block)> GetChildrenBasicBlocks(int vertex) => _children[vertex].AsReadOnly();
+        public IReadOnlyList<(int vertex, BasicBlock block)> GetChildrenBasicBlocks(int vertex) => _children[vertex];
 
-        public IReadOnlyList<(int vertex, BasicBlock block)> GetParentsBasicBlocks(int vertex) => _parents[vertex].AsReadOnly();
+        public IReadOnlyList<(int vertex, BasicBlock block)> GetParentsBasicBlocks(int vertex) => _parents[vertex];
 
         public IEnumerable<Instruction> GetAssigns() =>
             _basicBlocks.Select(b => b.GetInstructions().Where(instr =>
