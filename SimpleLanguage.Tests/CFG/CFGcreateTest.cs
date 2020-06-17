@@ -1,13 +1,10 @@
 ﻿using NUnit.Framework;
 using SimpleLang;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.CFG
 {
     [TestFixture]
-    class CFGcreate : TACTestsBase
+    internal class CFGcreate : TACTestsBase
     {
         [Test]
         public void Test1()
@@ -58,18 +55,18 @@ else
             Assert.AreEqual(vertex3, 3);
             var children3 = cfg.GetChildrenBasicBlocks(vertex3);
             Assert.AreEqual(children3.Count, 2); // for and next block
-            
-            Assert.AreEqual(children3[0].Item1, 5); // for body
-            var forBody = children3[0].Item2.GetInstructions();
-            Assert.AreEqual(forBody[0].ToString(), "L2: x = 1");
-            Assert.AreEqual(cfg.GetChildrenBasicBlocks(children3[0].Item1).Count, 1); // only goto for
 
-            Assert.AreEqual(children3[1].Item1, 4); // next
+            Assert.AreEqual(children3[0].vertex, 5); // for body
+            var forBody = children3[0].block.GetInstructions();
+            Assert.AreEqual(forBody[0].ToString(), "L2: noop");
+            Assert.AreEqual(cfg.GetChildrenBasicBlocks(children3[0].vertex).Count, 2);
+
+            Assert.AreEqual(children3[1].vertex, 4); // next
             ///
             var vertex6 = cfg.VertexOf(graphBlocks[6]); // if
             Assert.AreEqual(vertex6, 6);
             var children6 = cfg.GetChildrenBasicBlocks(vertex6);
-            Assert.AreEqual(children6.Count, 2); // 2 ways from if
+            Assert.AreEqual(children6.Count, 1);
         }
     }
 }

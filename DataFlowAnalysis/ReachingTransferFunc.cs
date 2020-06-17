@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
@@ -10,9 +9,9 @@ namespace SimpleLang
         private ILookup<BasicBlock, Instruction> gen_block;
         private ILookup<BasicBlock, Instruction> kill_block;
 
-        private void GetDefs(List<BasicBlock> blocks)
+        private void GetDefs(IReadOnlyCollection<BasicBlock> blocks)
         {
-            List<Instruction> defs = new List<Instruction>();
+            var defs = new List<Instruction>();
             foreach (var block in blocks)
             {
                 foreach (var instruction in block.GetInstructions())
@@ -28,10 +27,10 @@ namespace SimpleLang
             defs_groups = defs.ToLookup(x => x.Result, x => x);
         }
 
-        private void GetGenKill(List<BasicBlock> blocks)
+        private void GetGenKill(IReadOnlyCollection<BasicBlock> blocks)
         {
-            List<(BasicBlock, Instruction)> gen = new List<ValueTuple<BasicBlock, Instruction>>();
-            List<(BasicBlock, Instruction)> kill = new List<ValueTuple<BasicBlock, Instruction>>();
+            var gen = new List<DefinitionInfo>();
+            var kill = new List<DefinitionInfo>();
             foreach (var block in blocks)
             {
                 var used = new HashSet<string>();
@@ -42,24 +41,24 @@ namespace SimpleLang
                         instruction.Operation == "input" ||
                         instruction.Operation == "PLUS" && !instruction.Result.StartsWith("#")))
                     {
-                        gen.Add((block, instruction));
+                        gen.Add(new DefinitionInfo { BasicBlock = block, Instruction = instruction });
                         used.Add(instruction.Result);
                     }
                     foreach (var killed_def in defs_groups[instruction.Result].Where(x => x != instruction))
                     {
-                        kill.Add((block, killed_def));
+                        kill.Add(new DefinitionInfo { BasicBlock = block, Instruction = killed_def });
                     }
                 }
             }
-            gen_block = gen.ToLookup(x => x.Item1, x => x.Item2);
-            //delete duplicates
+            gen_block = gen.ToLookup(x => x.BasicBlock, x => x.Instruction);
+            // delete duplicates
             kill = kill.Distinct().ToList();
-            kill_block = kill.ToLookup(x => x.Item1, x => x.Item2);
+            kill_block = kill.ToLookup(x => x.BasicBlock, x => x.Instruction);
         }
 
         public ReachingTransferFunc(ControlFlowGraph g)
         {
-            var basicBlocks = g.GetCurrentBasicBlocks().Skip(1).Take(g.GetCurrentBasicBlocks().Count - 2).ToList();
+            var basicBlocks = g.GetCurrentBasicBlocks();
             GetDefs(basicBlocks);
             GetGenKill(basicBlocks);
         }
@@ -73,5 +72,7 @@ namespace SimpleLang
         public IEnumerable<Instruction> ApplyTransferFunc(IEnumerable<Instruction> In, BasicBlock block) =>
             gen_block[block].Union(In.Except(kill_block[block]));
 
+        public IEnumerable<Instruction> Transfer(BasicBlock basicBlock, IEnumerable<Instruction> input) =>
+            ApplyTransferFunc(input, basicBlock);
     }
 }

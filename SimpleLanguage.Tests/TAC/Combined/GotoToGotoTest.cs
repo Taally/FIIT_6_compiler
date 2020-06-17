@@ -1,15 +1,15 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleLang;
 using NUnit.Framework;
-using System;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {
-    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+    using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    class GotoToGotoTest : TACTestsBase
+    internal class GotoToGotoTest : TACTestsBase
     {
         [Test]
         public void TestGotoIfElseTACGen1()

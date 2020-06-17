@@ -5,30 +5,32 @@ namespace SimpleLang
 {
     public static class ThreeAddressCodeFoldConstants
     {
-        static public Tuple<bool, List<Instruction>> FoldConstants(List<Instruction> instructions)
+        public static (bool wasChanged, List<Instruction> instruction) FoldConstants(List<Instruction> instructions)
         {
-            bool Changed = false;
+            var wasChanged = false;
             var result = new List<Instruction>();
-            for (int i = 0; i < instructions.Count; ++i)
+            for (var i = 0; i < instructions.Count; ++i)
             {
                 if (instructions[i].Argument2 != "")
+                {
                     if (int.TryParse(instructions[i].Argument1, out var intArg1) && int.TryParse(instructions[i].Argument2, out var intArg2))
                     {
                         var constant = CalculateConstant(instructions[i].Operation, intArg1, intArg2);
                         result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
-                        Changed = true;
+                        wasChanged = true;
                         continue;
                     }
                     else if (bool.TryParse(instructions[i].Argument1, out var boolArg1) && bool.TryParse(instructions[i].Argument2, out var boolArg2))
                     {
                         var constant = CalculateConstant(instructions[i].Operation, boolArg1, boolArg2);
                         result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
-                        Changed = true;
+                        wasChanged = true;
                         continue;
                     }
+                }
                 result.Add(instructions[i]);
             }
-            return Tuple.Create(Changed, result);
+            return (wasChanged, result);
         }
 
         private static string CalculateConstant(string operation, bool boolArg1, bool boolArg2)

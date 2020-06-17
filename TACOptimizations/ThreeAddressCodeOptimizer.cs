@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+    using Optimization = Func<List<Instruction>, (bool wasChanged, List<Instruction> instructions)>;
 
     public static class ThreeAddressCodeOptimizer
     {
@@ -13,7 +13,7 @@ namespace SimpleLang
             ThreeAddressCodeDefUse.DeleteDeadCode,
             ThreeAddressCodeFoldConstants.FoldConstants,
             ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
-            //DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+            DeleteDeadCodeWithDeadVars.DeleteDeadCode,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeCopyPropagation.PropagateCopies
         };
@@ -37,8 +37,10 @@ namespace SimpleLang
             allCodeOptimizations = allCodeOptimizations ?? new List<Optimization>();
 
             var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
-            for (int i = 0; i < blocks.Count; ++i)
+            for (var i = 0; i < blocks.Count; ++i)
+            {
                 blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
+            }
 
             var preResult = blocks.SelectMany(b => b.GetInstructions()).ToList();
             var result = OptimizeAllCode(preResult, allCodeOptimizations);
@@ -48,14 +50,14 @@ namespace SimpleLang
         private static BasicBlock OptimizeBlock(BasicBlock block, List<Optimization> opts)
         {
             var result = block.GetInstructions();
-            int currentOpt = 0;
+            var currentOpt = 0;
             while (currentOpt < opts.Count)
             {
-                var answer = opts[currentOpt++](result);
-                if (answer.Item1)
+                var (wasChanged, instructions) = opts[currentOpt++](result);
+                if (wasChanged)
                 {
                     currentOpt = 0;
-                    result = answer.Item2;
+                    result = instructions;
                 }
             }
             return new BasicBlock(result);
@@ -64,14 +66,14 @@ namespace SimpleLang
         private static List<Instruction> OptimizeAllCode(List<Instruction> instructions, List<Optimization> opts)
         {
             var result = instructions;
-            int currentOpt = 0;
+            var currentOpt = 0;
             while (currentOpt < opts.Count)
             {
                 var answer = opts[currentOpt++](result);
-                if (answer.Item1)
+                if (answer.wasChanged)
                 {
                     currentOpt = 0;
-                    result = answer.Item2;
+                    result = answer.instructions;
                 }
             }
             return result;

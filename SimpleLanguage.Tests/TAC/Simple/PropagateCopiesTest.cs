@@ -1,15 +1,15 @@
-using NUnit.Framework;
-using SimpleLang;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<List<Instruction>, Tuple<bool, List<Instruction>>>;
+    using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    class PropagateCopiesTest : TACTestsBase
+    internal class PropagateCopiesTest : TACTestsBase
     {
         [Test]
         public void Test1()

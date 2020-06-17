@@ -1,17 +1,19 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
 {
     public static class ThreeAddressCodeRemoveNoop
     {
-        public static Tuple<bool, List<Instruction>> RemoveEmptyNodes(List<Instruction> commands)
+        public static (bool wasChanged, List<Instruction> instructions) RemoveEmptyNodes(List<Instruction> commands)
         {
-            if (commands.Count == 0) return new Tuple<bool, List<Instruction>>(false, commands);
-        
+            if (commands.Count == 0)
+            {
+                return (false, commands);
+            }
+
             var result = new List<Instruction>();
-            var changed = false;
+            var wasChanged = false;
             var toAddLast = true;
 
             // three cases:
@@ -25,7 +27,7 @@ namespace SimpleLang
                 var currentCommand = commands[i];
                 if (currentCommand.Operation == "noop" && currentCommand.Label == "")
                 {
-                    changed = true;
+                    wasChanged = true;
                 }
                 // we have label here
                 else if (currentCommand.Operation == "noop")
@@ -34,7 +36,7 @@ namespace SimpleLang
                     if (commands[i + 1].Label == "")
                     {
                         var nextCommand = commands[i + 1];
-                        changed = true;
+                        wasChanged = true;
                         result.Add(
                             new Instruction(
                                 currentCommand.Label,
@@ -55,7 +57,7 @@ namespace SimpleLang
                     else
                     {
                         var nextCommand = commands[i + 1];
-                        changed = true;
+                        wasChanged = true;
                         var currentLabel = currentCommand.Label;
                         var nextLabel = nextCommand.Label;
 
@@ -63,12 +65,15 @@ namespace SimpleLang
                             .Select(com =>
                                 com.Operation == "goto" && com.Argument1 == currentLabel
                                     ? new Instruction(com.Label, com.Operation, nextLabel, com.Argument2, com.Result)
-                                    : com
+                                    : com.Operation == "ifgoto" && com.Argument2 == currentLabel
+                                        ? new Instruction(com.Label, com.Operation, com.Argument1, nextLabel, com.Result)
+                                        : com
                             ).ToList();
 
                         for (var j = i + 1; j < commands.Count; j++)
                         {
-                            commands[j] = commands[j].Operation == "goto" && commands[j].Argument1 == currentLabel
+                            commands[j] = commands[j].Operation == "goto"
+                                          && commands[j].Argument1 == currentLabel
                                 ? new Instruction(
                                     commands[j].Label,
                                     commands[j].Operation,
@@ -76,7 +81,14 @@ namespace SimpleLang
                                     commands[j].Argument2,
                                     commands[j].Result
                                 )
-                                : commands[j];
+                                : (commands[j].Operation == "ifgoto" && commands[j].Argument2 == currentLabel)
+                                    ? new Instruction(
+                                        commands[j].Label,
+                                        commands[j].Operation,
+                                        commands[j].Argument1,
+                                        nextLabel,
+                                        commands[j].Result)
+                                    : commands[j];
                         }
                     }
                 }
@@ -92,14 +104,14 @@ namespace SimpleLang
                 var toSkip = lastCommand.Operation == "noop" && lastCommand.Label == "";
                 if (toSkip)
                 {
-                    changed = true;
+                    wasChanged = true;
                 }
                 else
                 {
-                    result.Add(commands[commands.Count - 1]);   
+                    result.Add(commands[commands.Count - 1]);
                 }
             }
-            return new Tuple<bool, List<Instruction>>(changed, result);
+            return (wasChanged, result);
         }
     }
 }

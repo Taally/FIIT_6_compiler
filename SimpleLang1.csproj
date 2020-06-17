@@ -53,7 +53,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
+    <Compile Include="LoopsInCFG\BackEdges.cs" />
+    <Compile Include="LoopsInCFG\NaturalLoop.cs" />
+    <Compile Include="DataFlowAnalysis\BitUtils.cs" />
+    <Compile Include="DataFlowAnalysis\DefinitionInfo.cs" />
+    <Compile Include="LoopsInCFG\DominatorTree.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableAnalysis.cs" />
+    <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithm.cs" />
+    <Compile Include="DataFlowAnalysis\ReachingDefinitionBinary.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitions.cs" />
     <Compile Include="DataFlowAnalysis\ReachingTransferFunc.cs" />
     <Compile Include="Main.cs" />
@@ -66,7 +73,6 @@
     <Compile Include="TACOptimizations\BasicBlock.cs" />
     <Compile Include="TACOptimizations\BasicBlockLeader.cs" />
     <Compile Include="TACOptimizations\ControlFlowGraph.cs" />
-    <Compile Include="DataFlowAnalysis\ControlFlowGraphExtensions.cs" />
     <Compile Include="TACOptimizations\DeleteDeadCodeWithDeadVars.cs" />
     <Compile Include="TACOptimizations\Instruction.cs" />
     <Compile Include="TACOptimizations\ThreeAddressCodeCommonExprElimination.cs" />

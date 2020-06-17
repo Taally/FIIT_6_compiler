@@ -1,6 +1,6 @@
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleLang
 {
@@ -8,7 +8,7 @@ namespace SimpleLang
 
     public static class ThreeAddressCodeCommonExprElimination
     {
-        static public bool IsCommutative(Instruction instr)
+        public static bool IsCommutative(Instruction instr)
         {
             switch (instr.Operation)
             {
@@ -22,7 +22,7 @@ namespace SimpleLang
             }
             return false;
         }
-        static public Tuple<bool, List<Instruction>> CommonExprElimination(List<Instruction> instructions)
+        public static Tuple<bool, List<Instruction>> CommonExprElimination(List<Instruction> instructions)
         {
             var exprToResults = new StringToStrings();
             var argToExprs = new StringToStrings();
@@ -31,25 +31,29 @@ namespace SimpleLang
             var changed = false;
             var newInstructions = new List<Instruction>(instructions.Count);
 
-            Func<Instruction, string> uniqueExpr = (Instruction instr) =>
+            string uniqueExpr(Instruction instr) =>
                 string.Format(IsCommutative(instr) && string.Compare(instr.Argument1, instr.Argument2) > 0 ?
                         "{2}{1}{0}" : "{0}{1}{2}", instr.Argument1, instr.Operation, instr.Argument2);
 
-            Action<StringToStrings, string, string> addLink = (StringToStrings dict, string key, string value) =>
+            void addLink(StringToStrings dict, string key, string value)
             {
                 if (key != null)
                 {
                     if (dict.ContainsKey(key))
+                    {
                         dict[key].Add(value);
+                    }
                     else
+                    {
                         dict[key] = new HashSet<string>() { value };
-                }               
-            };
+                    }
+                }
+            }
 
-            for (int i = 0; i < instructions.Count; ++i)
+            for (var i = 0; i < instructions.Count; ++i)
             {
                 var expr = uniqueExpr(instructions[i]);
-                if (instructions[i].Operation !="assign" && exprToResults.TryGetValue(expr, out HashSet<string> results) && results.Count != 0)
+                if (instructions[i].Operation != "assign" && exprToResults.TryGetValue(expr, out var results) && results.Count != 0)
                 {
                     changed = true;
 
@@ -62,21 +66,31 @@ namespace SimpleLang
                     addLink(argToExprs, instructions[i].Argument2, expr);
                 }
 
-                if (resultToExpr.TryGetValue(instructions[i].Result, out string oldExpr))
+                if (resultToExpr.TryGetValue(instructions[i].Result, out var oldExpr))
+                {
                     if (exprToResults.ContainsKey(oldExpr))
+                    {
                         exprToResults[oldExpr].Remove(instructions[i].Result);
+                    }
+                }
 
                 resultToExpr[instructions[i].Result] = expr;
                 addLink(exprToResults, expr, instructions[i].Result);
 
                 if (argToExprs.ContainsKey(instructions[i].Result))
+                {
                     foreach (var delExpr in argToExprs[instructions[i].Result])
                     {
                         if (exprToResults.ContainsKey(delExpr))
+                        {
                             foreach (var res in exprToResults[delExpr])
+                            {
                                 resultToExpr.Remove(res);
+                            }
+                        }
                         exprToResults.Remove(delExpr);
                     }
+                }
             }
             return Tuple.Create(changed, newInstructions);
         }

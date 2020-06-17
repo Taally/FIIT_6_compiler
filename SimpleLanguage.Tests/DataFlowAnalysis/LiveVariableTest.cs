@@ -3,13 +3,14 @@ using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
-namespace SimpleLanguage.Tests.DataAnalysis
+namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    class LiveVariableTest: TACTestsBase
+    internal class LiveVariableTest : TACTestsBase
     {
         [Test]
-        public void SimpleTest() {
+        public void SimpleTest()
+        {
             var TAC = GenTAC(@"
 var a,b,c;
 
@@ -21,7 +22,7 @@ else
 	c = b + a;
 print (c);"
 );
-            List<(HashSet<string> IN, HashSet<string> OUT)> expected = 
+            var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
                     (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
@@ -37,7 +38,8 @@ print (c);"
         }
 
         [Test]
-        public void WithCycle() {
+        public void WithLoop()
+        {
             var TAC = GenTAC(@"
 var a,b,c;
 
@@ -50,7 +52,7 @@ while a > 5{
 
 print (c);"
 );
-            List<(HashSet<string> IN, HashSet<string> OUT)> expected =
+            var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
                     (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","c"}),
@@ -62,11 +64,12 @@ print (c);"
                     (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
             var actual = Execute(TAC);
-           AssertSet(expected, actual);
+            AssertSet(expected, actual);
         }
 
         [Test]
-        public void ComplexWithCycleTest() {
+        public void ComplexWithLoopTest()
+        {
             var TAC = GenTAC(@"
 var a,b,c,i;
 
@@ -85,14 +88,13 @@ for i = 1,b {
 
 print (c+a+b);"
 );
-            List<(HashSet<string> IN, HashSet<string> OUT)> expected =
+            var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
                     (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","a"}),
-                    (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","i","b","a"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-                    (new HashSet<string>(){"c","a","b"}, new HashSet<string>(){"c","a","b"}),
-                    (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i","a"}),
+                    (new HashSet<string>(){"c","i","b"}, new HashSet<string>(){"c","a","b", "i"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
                     (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
@@ -103,27 +105,25 @@ print (c+a+b);"
             AssertSet(expected, actual);
         }
 
-        List<(HashSet<string> IN, HashSet<string> OUT)> Execute(List<Instruction> TAC)
+        private List<(HashSet<string> IN, HashSet<string> OUT)> Execute(List<Instruction> TAC)
         {
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
 
             var liveAct = new LiveVariableAnalysis();
-            liveAct.Execute(cfg);
+            liveAct.ExecuteInternal(cfg);
 
             var listAct = liveAct.dictInOut
                 .Select(x => x.Value)
-                .Select(y => (y.IN, y.OUT));
-            //.Skip(1);
-            //return listAct.Take(listAct.Count() - 1).ToList();
+                .Select(y => (y.IN as HashSet<string>, y.OUT as HashSet<string>));
             return listAct.ToList();
         }
 
-        void AssertSet(
+        private void AssertSet(
             List<(HashSet<string> IN, HashSet<string> OUT)> expected,
             List<(HashSet<string> IN, HashSet<string> OUT)> actual)
         {
-            for (int i = 0; i < expected.Count; ++i)
+            for (var i = 0; i < expected.Count; ++i)
             {
                 Assert.True(expected[i].IN.SetEquals(actual[i].IN));
                 Assert.True(expected[i].OUT.SetEquals(actual[i].OUT));

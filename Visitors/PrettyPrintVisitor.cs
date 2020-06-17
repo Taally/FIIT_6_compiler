@@ -1,36 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    class PrettyPrintVisitor : Visitor
+    internal class PrettyPrintVisitor : Visitor
     {
         public string Text = "";
         private int Indent = 0;
 
-        private string IndentStr()
-        {
-            return new string(' ', Indent);
-        }
-        private void IndentPlus()
-        {
-            Indent += 2;
-        }
-        private void IndentMinus()
-        {
-            Indent -= 2;
-        }
-        public override void VisitIdNode(IdNode id)
-        {
-            Text += id.Name;
-        }
-        public override void VisitIntNumNode(IntNumNode num)
-        {
-            Text += num.Num.ToString();
-        }
+        private string IndentStr() => new string(' ', Indent);
+        private void IndentPlus() => Indent += 2;
+        private void IndentMinus() => Indent -= 2;
+        public override void VisitIdNode(IdNode id) => Text += id.Name;
+        public override void VisitIntNumNode(IntNumNode num) => Text += num.Num.ToString();
 
         private string GetOp(OpType t)
         {
@@ -105,7 +87,9 @@ namespace SimpleLang.Visitors
         {
             var Count = bl.StatChildren.Count;
             if (Count > 0)
+            {
                 bl.StatChildren[0].Visit(this);
+            }
             for (var i = 1; i < Count; i++)
             {
                 Text += Environment.NewLine;
@@ -116,8 +100,10 @@ namespace SimpleLang.Visitors
         public override void VisitVarListNode(VarListNode w)
         {
             Text += IndentStr() + "var " + w.vars[0].Name;
-            for (int i = 1; i < w.vars.Count; i++)
+            for (var i = 1; i < w.vars.Count; i++)
+            {
                 Text += ", " + w.vars[i].Name;
+            }
             Text += ";";
         }
 
@@ -187,7 +173,10 @@ namespace SimpleLang.Visitors
                 i.TrueStat.Visit(this);
                 IndentMinus();
             }
-            if (i.FalseStat == null) return;
+            if (i.FalseStat == null)
+            {
+                return;
+            }
             Text += Environment.NewLine + IndentStr() + "else";
             if (i.FalseStat is BlockNode)
             {
@@ -235,9 +224,6 @@ namespace SimpleLang.Visitors
             Text += ");";
         }
 
-        public override void VisitBoolValNode(BoolValNode b)
-        {
-            Text += b.Val.ToString().ToLower();
-        }
+        public override void VisitBoolValNode(BoolValNode b) => Text += b.Val.ToString().ToLower();
     }
 }

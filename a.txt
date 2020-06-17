@@ -1,4 +1,5 @@
 var a, b, c, d, x, u, e,g, y,zz,i; 
+
 1: a = false; 
 b = true; 
 100: a = b; 
@@ -93,3 +94,4 @@ for i=1,10
 {	a = a + 3;
 	a = b + 1;
 }
+

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleLang
 {
@@ -27,17 +26,19 @@ namespace SimpleLang
             }
         }
 
-        static List<string> operations = new List<string>()
+        private static readonly List<string> operations = new List<string>()
             { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR",
             "UNMINUS", "NOT", "assign", "input"};
 
         private static void FillLists(List<Instruction> commands)
         {
             DefList = new List<Def>();
-            for (int i = 0; i < commands.Count; ++i)
+            for (var i = 0; i < commands.Count; ++i)
             {
                 if (operations.Contains(commands[i].Operation))
+                {
                     DefList.Add(new Def(i, commands[i].Result));
+                }
                 AddUse(commands[i].Argument1, commands[i], i);
                 AddUse(commands[i].Argument2, commands[i], i);
             }
@@ -45,36 +46,45 @@ namespace SimpleLang
 
         private static void DeleteUse(string id, int i)
         {
-            if (id == "" || id == null) return;
+            if (id == "" || id == null)
+            {
+                return;
+            }
             var d = DefList.FindLast(x => x.Id == id && x.OrderNum < i);
-            if (d == null) return;
+            if (d == null)
+            {
+                return;
+            }
             d.Uses.RemoveAt(d.Uses.FindLastIndex(x => x.OrderNum == i));
         }
 
-        public static Tuple<bool, List<Instruction>> DeleteDeadCode(List<Instruction> commands)
+        public static (bool wasChanged, List<Instruction> instructions) DeleteDeadCode(List<Instruction> commands)
         {
-            List<Instruction> result = new List<Instruction>();
+            var result = new List<Instruction>();
             FillLists(commands);
-            bool isChange = false;
+            var wasChanged = false;
 
-            for (int i = commands.Count - 1; i >= 0; --i)
+            for (var i = commands.Count - 1; i >= 0; --i)
             {
                 var c = commands[i];
                 var lastDefInd = DefList.FindLastIndex(x => x.Id == c.Result);
                 var curDefInd = DefList.FindIndex(x => x.OrderNum == i);
 
                 if (curDefInd != -1 && DefList[curDefInd].Uses.Count == 0
-                        && (c.Result[0] != '#' ? curDefInd != lastDefInd : true))
+                        && (c.Result[0] == '#' || curDefInd != lastDefInd))
                 {
                     DeleteUse(commands[i].Argument1, i);
                     DeleteUse(commands[i].Argument2, i);
                     result.Add(new Instruction(commands[i].Label, "noop", null, null, null));
-                    isChange = true;
+                    wasChanged = true;
                 }
-                else result.Add(commands[i]);
+                else
+                {
+                    result.Add(commands[i]);
+                }
             }
             result.Reverse();
-            return Tuple.Create(isChange, result);
+            return (wasChanged, result);
         }
     }
 
