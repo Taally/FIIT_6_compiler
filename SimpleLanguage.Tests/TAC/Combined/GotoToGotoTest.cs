@@ -85,6 +85,7 @@ else
             var TAC = GenTAC(@"
 var a, b;
 goto 1;
+a = 1;
 1: if (true) 
     goto 2;
 2: a = 5;
@@ -97,9 +98,10 @@ goto 1;
 
             var expected = new List<string>()
             {
+                "if True goto 2",
                 "goto 2",
-                "1: if True goto 2",
-                "goto 2",
+                "a = 1",
+                "L3: goto 2",
                 "L1: goto 2",
                 "2: a = 5",
             };

@@ -12,7 +12,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     internal class GotoToGotoTest : TACTestsBase
     {
         [Test]
-        public void Test1()
+        public void MultiGoToTest()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -69,7 +69,7 @@ if(a > b)
         }
 
         [Test]
-        public void Test3()
+        public void GoToLabelTest()
         {
             var TAC = GenTAC(@"
 var a;
@@ -130,11 +130,12 @@ else
         }
 
         [Test]
-        public void Test2()
+        public void OptimizationLabelIfTest()
         {
             var TAC = GenTAC(@"
 var a, b;
 goto 1;
+a = 1;
 1: if (true) 
     goto 2;
 2: a = 5;
@@ -143,8 +144,10 @@ goto 1;
 
             var expected = new List<string>()
             {
-                "goto 2",
-                "1: if True goto 2",
+                "if True goto 2",
+                "goto L3",
+                "a = 1",
+                "L3: noop",
                 "goto L2",
                 "L1: goto 2",
                 "L2: noop",
