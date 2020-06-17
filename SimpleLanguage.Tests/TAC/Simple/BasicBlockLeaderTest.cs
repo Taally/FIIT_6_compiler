@@ -17,7 +17,6 @@ a = 54;
 3: b = 11;
 ");
 
-
             var expected = new List<BasicBlock>()
             {
                 new BasicBlock(new List<Instruction>(){new Instruction("3", "", "", "goto", "")}),
@@ -39,7 +38,6 @@ a = 54;
 3: b = 11;
 ");
 
-
             var expected = new List<BasicBlock>()
             {
                 new BasicBlock(new List<Instruction>(){new Instruction("4", "", "", "goto", "")}),
@@ -58,7 +56,6 @@ var a, b, c;
 a = 54;
 b = 11;
 ");
-
 
             var expected = new List<BasicBlock>()
             {
@@ -81,13 +78,32 @@ goto 5;
 b = 11;
 ");
 
-
             var expected = new List<BasicBlock>()
             {
                 new BasicBlock(new List<Instruction>(){new Instruction("3", "", "", "goto", "")}),
                 new BasicBlock(new List<Instruction>(){new Instruction("4", "", "", "goto", "")}),
                 new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"), new Instruction("5", "", "", "goto", "")}),
                 new BasicBlock(new List<Instruction>(){new Instruction("11", "", "", "assign", "b")}),
+            };
+            var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
+
+            AssertSet(expected, actual);
+        }
+
+        [Test]
+        public void DivBBGotoTest()
+        {
+            var TAC = GenTAC(@"
+goto 1;
+1: goto 1;
+2: goto 1;
+");
+
+            var expected = new List<BasicBlock>()
+            {
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "", "goto", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "1", "goto", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "2", "goto", "")}),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 

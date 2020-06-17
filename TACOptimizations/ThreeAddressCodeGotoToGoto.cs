@@ -4,84 +4,67 @@ namespace SimpleLang
 {
     public static class ThreeAddressCodeGotoToGoto
     {
-
-        public struct GtotScaner
+        private struct GtotScaner
         {
-            public int index;
-            public string label;
-            public string labelfrom;
+            public string Label { get; }
+            public string LabelFrom { get; }
 
-            public GtotScaner(int index, string label, string labelfrom)
+            public GtotScaner(string label, string labelFrom)
             {
-                this.index = index;
-                this.label = label;
-                this.labelfrom = labelfrom;
+                Label = label;
+                LabelFrom = labelFrom;
             }
         }
+
         public static (bool wasChanged, List<Instruction> instructions) ReplaceGotoToGoto(List<Instruction> commands)
         {
             var wasChanged = false;
             var list = new List<GtotScaner>();
-            var tmpcommands = new List<Instruction>();
-            for (var i = 0; i < commands.Count; i++)
+            var tmpCommands = new List<Instruction>();
+            foreach (var command in commands)
             {
-                tmpcommands.Add(commands[i]);
-                if (commands[i].Operation == "goto")
+                tmpCommands.Add(command);
+                if (command.Operation == "goto")
                 {
-                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument1));
+                    list.Add(new GtotScaner(command.Label, command.Argument1));
                 }
 
-                if (commands[i].Operation == "ifgoto")
+                if (command.Operation == "ifgoto")
                 {
-                    list.Add(new GtotScaner(i, commands[i].Label, commands[i].Argument2));
+                    list.Add(new GtotScaner(command.Label, command.Argument2));
                 }
             }
 
-            for (var i = 0; i < tmpcommands.Count; i++)
+            for (var i = 0; i < tmpCommands.Count; i++)
             {
-
-                if (tmpcommands[i].Operation == "goto")
+                if (tmpCommands[i].Operation == "goto")
                 {
                     for (var j = 0; j < list.Count; j++)
                     {
-                        if (list[j].label == tmpcommands[i].Argument1)
+                        if (list[j].Label == tmpCommands[i].Argument1 && list[j].LabelFrom != tmpCommands[i].Argument1)
                         {
-                            if (tmpcommands[i].Argument1.ToString() == list[j].labelfrom.ToString())
-                            {
-                                wasChanged |= false;
-                            }
-                            else
-                            {
-                                wasChanged |= true;
-                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "goto", list[j].labelfrom.ToString(), "", "");
-                            }
-
+                            wasChanged = true;
+                            tmpCommands[i] = new Instruction(tmpCommands[i].Label, "goto", list[j].LabelFrom, "", "");
                         }
                     }
                 }
 
-                if (tmpcommands[i].Operation == "ifgoto")
+                if (tmpCommands[i].Operation == "ifgoto")
                 {
                     for (var j = 0; j < list.Count; j++)
                     {
-                        if (list[j].label == tmpcommands[i].Argument2)
+                        if (list[j].Label == tmpCommands[i].Argument2)
                         {
-
-                            if (tmpcommands[i].Argument2.ToString() == list[j].labelfrom.ToString())
+                            if (list[j].Label == tmpCommands[i].Argument2 && list[j].LabelFrom != tmpCommands[i].Argument2)
                             {
-                                wasChanged |= false;
+                                wasChanged = true;
+                                tmpCommands[i] = new Instruction(tmpCommands[i].Label, "ifgoto", tmpCommands[i].Argument1, list[j].LabelFrom, "");
                             }
-                            else
-                            {
-                                tmpcommands[i] = new Instruction(tmpcommands[i].Label, "ifgoto", tmpcommands[i].Argument1, list[j].labelfrom.ToString(), "");
-                                wasChanged |= true;
-                            }
-
                         }
                     }
                 }
             }
-            return (wasChanged, tmpcommands);
+            return (wasChanged, tmpCommands);
         }
     }
 }
