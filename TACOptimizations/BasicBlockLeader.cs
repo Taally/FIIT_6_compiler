@@ -4,6 +4,13 @@ namespace SimpleLang
 {
     public class BasicBlockLeader
     {
+        /// <summary>
+        /// Разбивает список инструкций на ББ от лидера до лидера
+        /// </summary>
+        /// <param name="instructions">Списпок инструкций</param>
+        /// <returns>
+        /// Вернет разбитые по ББ от лидера до лидера инструкции
+        /// </returns>
         public static List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
         {
             var basicBlockList = new List<BasicBlock>();
@@ -19,11 +26,7 @@ namespace SimpleLang
                 if (instructions[i].Label != null
                     && IsLabelAlive(instructions, instructions[i].Label)) // Команда с меткой
                 {
-                    if (listOfLeaders.Contains(i))
-                    {
-                        continue;
-                    }
-                    else
+                    if (!listOfLeaders.Contains(i))
                     {
                         listOfLeaders.Add(i);
                     }
@@ -32,11 +35,7 @@ namespace SimpleLang
                 if (instructions[i].Operation == "goto"
                     || instructions[i].Operation == "ifgoto") // Следующая после Goto
                 {
-                    if (listOfLeaders.Contains(i + 1))
-                    {
-                        continue;
-                    }
-                    else
+                    if (!listOfLeaders.Contains(i + 1))
                     {
                         listOfLeaders.Add(i + 1);
                     }
@@ -63,6 +62,14 @@ namespace SimpleLang
             return basicBlockList;
         }
 
+        /// <summary>
+        /// Проверка есть ли переход на метку
+        /// </summary>
+        /// <param name="instructions">Список инструкций</param>
+        /// <param name="checkLabel">Проверяемая метка</param>
+        /// <returns>
+        /// Возвращает bool есть ли переход на эту метку
+        /// </returns>
         public static bool IsLabelAlive(List<Instruction> instructions, string checkLabel) // Есть ли переход на метку ? 
         {
             for (var i = 0; i < instructions.Count; i++)

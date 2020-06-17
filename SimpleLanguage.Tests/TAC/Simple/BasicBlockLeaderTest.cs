@@ -94,6 +94,27 @@ b = 11;
             AssertSet(expected, actual);
         }
 
+        [Test]
+        public void DivBBGotoTest()
+        {
+            var TAC = GenTAC(@"
+goto 1;
+1: goto 1;
+2: goto 1;
+");
+
+
+            var expected = new List<BasicBlock>()
+            {
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "", "goto", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "1", "goto", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "2", "goto", "")}),
+            };
+            var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
+
+            AssertSet(expected, actual);
+        }
+
         private void AssertSet(
             List<BasicBlock> expected,
             List<BasicBlock> actual)
