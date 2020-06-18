@@ -148,10 +148,7 @@ public string labelfrom;
                                 commands[list[j].InstructionNum].Argument1,
                                 commands[list[j].InstructionNum].Argument2,
                                 commands[list[j].InstructionNum].Result));
-                                
-                                //Если следующая команда есть и на ней есть метка то заменим на неё
-
-                            // Если следующей операции нет или на ней нет метки, вставим необходимую метку
+                            // Если на следующей операции нет метки, вставим необходимую метку
                             if (commands[list[j].InstructionNum + 1].Label == "")
                             {
                                 var tmpName = ThreeAddressCodeTmp.GenTmpLabel();
