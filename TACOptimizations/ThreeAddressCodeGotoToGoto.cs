@@ -39,7 +39,7 @@ namespace SimpleLang
             }
 
             var addNewLabels = new Dictionary<int, string>();
-            var k = 0;
+            var shiftNewLabels = 0;
 
             for (var i = 0; i < commands.Count; i++)
             {
@@ -56,25 +56,18 @@ namespace SimpleLang
                         }
                         else if (list[j].Label == commands[i].Argument1 && list[j].LabelFrom != commands[i].Argument1 && list[j].Operation == "ifgoto" && CountGoTo(list, list[j].Label) <= 1)
                         {
-                            k++;
+                            shiftNewLabels++;
                             wasChanged = true;
                             tmpCommands.Add(new Instruction("",
                                 commands[list[j].InstructionNum].Operation,
                                 commands[list[j].InstructionNum].Argument1,
                                 commands[list[j].InstructionNum].Argument2,
                                 commands[list[j].InstructionNum].Result));
-                            if (commands[list[j].InstructionNum + 1] != null && commands[list[j].InstructionNum + 1].Label != "")
-                            {
-                                tmpCommands.Add(new Instruction("", "goto", commands[list[j].InstructionNum + 1].Label, "", ""));
-                                i += 1;
-                                addNewLabels.Add(list[j].InstructionNum, commands[list[j].InstructionNum + 1].Label);
-                                break;
-                            }
-                            else if (commands[list[j].InstructionNum + 1] == null || commands[list[j].InstructionNum + 1].Label == "")
+                            if (commands[list[j].InstructionNum + 1].Label == "")
                             {
                                 var tmpName = ThreeAddressCodeTmp.GenTmpLabel();
                                 tmpCommands.Add(new Instruction("", "goto", tmpName, "", ""));
-                                addNewLabels.Add(list[j].InstructionNum + k, tmpName);
+                                addNewLabels.Add(list[j].InstructionNum + shiftNewLabels, tmpName);
                                 i += 1;
                                 break;
                             }
