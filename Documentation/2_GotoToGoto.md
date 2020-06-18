@@ -118,7 +118,7 @@ public string labelfrom;
 Поиск по списку переходов и применение оптимизации:
 ```csharp
             var addNewLabels = new Dictionary<int, string>();   // Словарь вида (номер строки, необходимая метка)
-            var k = 0;
+            var shiftNewLabels = 0;
 
             for (var i = 0; i < commands.Count; i++)
             {
@@ -141,7 +141,7 @@ public string labelfrom;
                         && list[j].Operation == "ifgoto"                //  Тип операции ifgoto
                         && CountGoTo(list, list[j].Label) <= 1)         // условие работы для задания типа 3
                         {
-                            k++;
+                            shiftNewLabels++;
                             wasChanged = true;
                             tmpCommands.Add(new Instruction("",
                                 commands[list[j].InstructionNum].Operation,
@@ -150,19 +150,13 @@ public string labelfrom;
                                 commands[list[j].InstructionNum].Result));
                                 
                                 //Если следующая команда есть и на ней есть метка то заменим на неё
-                            if (commands[list[j].InstructionNum + 1] != null && commands[list[j].InstructionNum + 1].Label != "")
-                            {
-                                tmpCommands.Add(new Instruction("", "goto", commands[list[j].InstructionNum + 1].Label, "", ""));
-                                i += 1;
-                                addNewLabels.Add(list[j].InstructionNum, commands[list[j].InstructionNum + 1].Label);
-                                break;
-                            }
+
                             // Если следующей операции нет или на ней нет метки, вставим необходимую метку
-                            else if (commands[list[j].InstructionNum + 1] == null || commands[list[j].InstructionNum + 1].Label == "")
+                            if (commands[list[j].InstructionNum + 1].Label == "")
                             {
                                 var tmpName = ThreeAddressCodeTmp.GenTmpLabel();
                                 tmpCommands.Add(new Instruction("", "goto", tmpName, "", ""));
-                                addNewLabels.Add(list[j].InstructionNum + k, tmpName);
+                                addNewLabels.Add(list[j].InstructionNum + shiftNewLabels, tmpName);
                                 i += 1;
                                 break;
                             }
