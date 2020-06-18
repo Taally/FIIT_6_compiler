@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.LoopsInCFG
@@ -13,7 +13,6 @@ namespace SimpleLanguage.Tests.LoopsInCFG
             var blocks = BasicBlockLeader.DivideLeaderToLeader(optResult);
             return new ControlFlowGraph(blocks);
         }
-
         [Test]
         public void EmptyGraph()
         {
@@ -23,7 +22,6 @@ var a;
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(0, backEdges.Count);
         }
-
         [Test]
         public void SimpleTestBackEdges()
         {
@@ -37,7 +35,6 @@ goto 2;
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(1, backEdges.Count);
         }
-
         [Test]
         public void SimpleNoBackEdgesWithoutGoTo()
         {
@@ -60,7 +57,6 @@ a = f + c;");
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(0, backEdges.Count);
         }
-
         [Test]
         public void BackEdgesWithGoTo()
         {
@@ -78,7 +74,6 @@ goto 5;");
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(1, backEdges.Count);
         }
-
         [Test]
         public void SimpleNoBackEdgesWithGoTo()
         {
@@ -92,10 +87,10 @@ goto 3;
 3: e = 5;
 goto 4;
 4: f = 6;");
+
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(0, backEdges.Count);
         }
-
         [Test]
         public void TrashProgram()
         {
@@ -116,7 +111,6 @@ goto 4;
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(1, backEdges.Count);
         }
-
         [Test]
         public void ProgramWithLoop()
         {
@@ -134,6 +128,129 @@ input(a);
 }");
             var backEdges = new BackEdges(graph).BackEdgesFromGraph;
             Assert.AreEqual(2, backEdges.Count);
+        }
+
+        //Тесты на приводимость / неприводимость графа потока управления (cfg)
+        [Test]
+        public void CheckIfGraphIsReducible1()
+        {
+            var graph = BuildCFG(@"var a, b, i, j, p, x;
+input(a);
+1: for i = 1, 5
+{
+    b = b + a * a;
+    a = a + 1;
+}
+goto 1;
+2: for j = 1, 5
+{
+    p = b + a * a;
+    x = a + 1;
+}
+goto 2;
+");
+            var backEdges = new BackEdges(graph);
+            Assert.AreEqual(true, backEdges.GraphIsReducible);
+        }
+
+        [Test]
+        public void CheckIfGraphIsReducible2()
+        {
+            var graph = BuildCFG(@"var a, b, c, d, i, j, p, x;
+a = b + 2;
+if a < b
+{
+    c = d + a;
+}
+else 
+{
+    a = d + c;
+}
+for i = 1, 5
+{
+    b = b + a * a;
+    a = a + 1;
+}
+while (c < b)
+{
+    a = a + 1;
+    b = b + 1;
+}
+while (a < b)
+{
+    x = a + b;
+    goto 2;
+}
+2: for i = 1, 5
+{
+    d = d + b * a;
+    b = b + 1;
+goto 3;
+while (a < b)
+{
+    x = a + b;
+    goto 2;
+}
+3: for i = 1, 5
+{
+    d = d + b * a;
+    b = b + 1;
+}
+}");
+            var backEdges = new BackEdges(graph);
+            Assert.AreEqual(true, backEdges.GraphIsReducible);
+        }
+        [Test]
+        public void CheckIfGraphIsNotReducible1()
+        {
+            var graph = BuildCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+if a > b
+{
+    c = d;
+    1:  x = e;
+    goto 2;
+}
+else
+{
+    e = g;
+    2: a = d;
+    goto 1;
+}");
+            var backEdges = new BackEdges(graph);
+            Assert.AreEqual(false, backEdges.GraphIsReducible);
+        }
+
+        [Test]
+        public void CheckIfGraphIsNotReducible2()
+        {
+            var graph = BuildCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+for i = 1, 10
+{
+    a = b;
+    1: c = d;
+    goto 2;
+}
+2: x = u;
+goto 1;");
+            var backEdges = new BackEdges(graph);
+            Assert.AreEqual(false, backEdges.GraphIsReducible);
+        }
+
+        [Test]
+        public void CheckIfGraphIsNotReducible3()
+        {
+            var graph = BuildCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+while (zz == i) 
+{    
+    a = b;
+    1: c = d;
+    goto 2;
+}
+2: x = u;
+goto 1;
+");
+            var backEdges = new BackEdges(graph);
+            Assert.AreEqual(false, backEdges.GraphIsReducible);
         }
     }
 }
