@@ -42,28 +42,37 @@ public class NaturalLoop
         /// </returns>
         public static List<List<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg) // принимаем граф потока данных
         {
-            var natLoops = new List<List<BasicBlock>>(); // список всех циклов
             var allEdges = new BackEdges(cfg); // получаем обратные ребра графа
-            var ForwardEdges = cfg.GetCurrentBasicBlocks(); // получаем вершины графа потока управления
-
-            foreach (var (From, To) in allEdges.BackEdgesFromGraph) // проход по всем обратным ребрам
+            if (allEdges.GraphIsReducible)  // Проверка графа на приводимость
             {
-                if (cfg.VertexOf(To) > 0) // проверка на наличие цикла
-                {
-                    var tmp = new List<BasicBlock>(); // временный список
-                    for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
-                    {
-                        if (!tmp.Contains(ForwardEdges[i])) // содержит ли список данный ББл
-                        {
-                            tmp.Add(ForwardEdges[i]);
-                        }
-                    }
+                var natLoops = new List<List<BasicBlock>>(); // список всех циклов
 
-                    natLoops.Add(tmp); // Добавляем все циклы 
+                var ForwardEdges = cfg.GetCurrentBasicBlocks(); // получаем вершины графа потока управления
+
+                foreach (var (From, To) in allEdges.BackEdgesFromGraph) // проход по всем обратным ребрам
+                {
+                    if (cfg.VertexOf(To) > 0) // проверка на наличие цикла
+                    {
+                        var tmp = new List<BasicBlock>(); // временный список
+                        for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
+                        {
+                            if (!tmp.Contains(ForwardEdges[i])) // содержит ли список данный ББл
+                            {
+                                tmp.Add(ForwardEdges[i]);
+                            }
+                        }
+
+                        natLoops.Add(tmp); // Добавляем все циклы 
+                    }
                 }
-            }
-            // Возвращаем только те циклы, которые являются естественными
-            return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
+                // Возвращаем только те циклы, которые являются естественными
+                return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
+              }
+              else
+              {
+                  Console.WriteLine("Граф не приводим");
+                  return new List<List<BasicBlock>>();  // Если он не приводим, алгоритм не может работать
+              }
         }
 ```
 
