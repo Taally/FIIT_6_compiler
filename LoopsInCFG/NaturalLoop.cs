@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
@@ -14,28 +15,38 @@ namespace SimpleLang
         /// </returns>
         public static List<List<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg)
         {
-            var natLoops = new List<List<BasicBlock>>();
+            
+            
             var allEdges = new BackEdges(cfg);
-            var ForwardEdges = cfg.GetCurrentBasicBlocks();
-
-            foreach (var (From, To) in allEdges.BackEdgesFromGraph)
+            if (allEdges.GraphIsReducible)
             {
-                if (cfg.VertexOf(To) > 0)
+                var natLoops = new List<List<BasicBlock>>();
+                var ForwardEdges = cfg.GetCurrentBasicBlocks();
+
+                foreach (var (From, To) in allEdges.BackEdgesFromGraph)
                 {
-                    var tmp = new List<BasicBlock>();
-                    for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
+                    if (cfg.VertexOf(To) > 0)
                     {
-                        if (!tmp.Contains(ForwardEdges[i]))
+                        var tmp = new List<BasicBlock>();
+                        for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
                         {
-                            tmp.Add(ForwardEdges[i]);
+                            if (!tmp.Contains(ForwardEdges[i]))
+                            {
+                                tmp.Add(ForwardEdges[i]);
+                            }
                         }
+
+                        natLoops.Add(tmp);
                     }
-
-                    natLoops.Add(tmp);
                 }
-            }
 
-            return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
+                return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
+            }
+            else
+            {
+                Console.WriteLine("Граф не приводим");
+                return new List<List<BasicBlock>>();
+            }
 
         }
 
