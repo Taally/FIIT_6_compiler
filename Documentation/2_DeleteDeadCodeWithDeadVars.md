@@ -18,13 +18,13 @@
 
 #### Практическая часть
 Оптимизация выполняется в классе `DeleteDeadCodeWithDeadVars`, в методе `DeleteDeadCode`. Вначале создаются новый список инструкций, который будет возвращён методом, и словарь, хранящий состояния переменных.
-```
+```csharp
 var newInstructions = new List<Instruction>();
 var varStatus = new Dictionary<string, bool>();
 ```
 
 Затем отдельно обрабатывается последняя инструкция в блоке: переменные, которые в ней использованы, считаются живыми.
-```
+```csharp
 var last = instructions.Last();
 newInstructions.Add(last);
 varStatus.Add(last.Result, false);
@@ -39,7 +39,7 @@ if (!int.TryParse(last.Argument2, out _) && last.Argument2 != "True" && last.Arg
 ```
 
 Затем выполняется цикл по всем инструкциям, кроме последней, в обратном порядке. Пустые операторы добавляются в новый список инструкций "как есть". Если переменная, которой выполняется присваивание, отмечена в словаре как мёртвая, либо является временной и отсутствует в словаре, то такое присваивание заменяется на пустой оператор.
-```
+```csharp
 if (varStatus.ContainsKey(instruction.Result) && !varStatus[instruction.Result]
     || instruction.Result.First() == '#' && !varStatus.ContainsKey(instruction.Result))
 {
@@ -50,7 +50,7 @@ if (varStatus.ContainsKey(instruction.Result) && !varStatus[instruction.Result]
 ```
 
 Если присваивание не является мёртвым кодом, то переменная, которой выполняется присваивание, отмечается как мёртвая, а переменные, использующиеся в правой части, помечаются как живые, и присваивание добавляется в новый список.
-```
+```csharp
 varStatus[instruction.Result] = false;
 if (!int.TryParse(instruction.Argument1, out _) && instruction.Argument1 != "True" && instruction.Argument1 != "False")
 {
@@ -71,7 +71,8 @@ newInstructions.Add(instruction);
 
 #### Тесты
 В тестах проверяется содержимое списка инструкций после выполнения данной оптимизации. Тесты выполняются для следующих примеров:
-```var a;
+```
+var a;
 a = -a;
 a = 1;
 ```
