@@ -10,6 +10,8 @@ namespace SimpleLang
         {
             new OptExprEqualToItself(),
             new OptExprMultDivByOne(),
+            new OptExprMultZero(),
+            new OptExprSumZero(),
             new OptStatIfTrue(),
             new OptStatIfFalse(),
             new OptExprEqualBoolNumId(),
