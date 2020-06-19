@@ -5,18 +5,22 @@ using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
-    internal class OptExprMultDivByOneTests : ASTTestsBase
+    internal class OptStatIfTrueTests : ASTTestsBase
     {
         [Test]
-        public void MultByRightOne() {
+        public void IfTrueTest()
+        {
             var AST = BuildAST(@"
 var a, b;
-a = b * 1;
+if true
+a = b;
+else
+a = 1;
 ");
             var expected = @"var a, b;
 a = b;";
 
-            var opt = new OptExprMultDivByOne();
+            var opt = new OptStatIfTrue();
             AST.root.Visit(opt);
             var pp = new PrettyPrintVisitor();
             AST.root.Visit(pp);
@@ -24,16 +28,22 @@ a = b;";
         }
 
         [Test]
-        public void MultByLeftOne()
+        public void IfTrueBlockTest()
         {
             var AST = BuildAST(@"
 var a, b;
-a = 1 * b;
+if true {
+a = b;
+b = 1;
+}
+else
+a = 1;
 ");
             var expected = @"var a, b;
-a = b;";
+a = b;
+b = 1;";
 
-            var opt = new OptExprMultDivByOne();
+            var opt = new OptStatIfTrue();
             AST.root.Visit(opt);
             var pp = new PrettyPrintVisitor();
             AST.root.Visit(pp);
@@ -41,33 +51,36 @@ a = b;";
         }
 
         [Test]
-        public void DivByRightOne()
+        public void IfTrueComplexTest()
         {
             var AST = BuildAST(@"
 var a, b;
-a = b / 1;
+if true
+if true {
+a = b;
+b = 1;
+}
+else
+a = 1;
+
+if a > b{
+a = b;
+if true{
+b = b + 1;
+b = b / 5;
+}
+}
 ");
             var expected = @"var a, b;
-a = b;";
+a = b;
+b = 1;
+if (a > b) {
+  a = b;
+  b = (b + 1);
+  b = (b / 5);
+}";
 
-            var opt = new OptExprMultDivByOne();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
-        }
-
-        [Test]
-        public void MultAndDivByLeftRightOne()
-        {
-            var AST = BuildAST(@"
-var a, b;
-a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
-");
-            var expected = @"var a, b;
-a = (a + b);";
-
-            var opt = new OptExprMultDivByOne();
+            var opt = new OptStatIfTrue();
             AST.root.Visit(opt);
             var pp = new PrettyPrintVisitor();
             AST.root.Visit(pp);
