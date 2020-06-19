@@ -91,7 +91,9 @@
     <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNumId.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprFoldUnary.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprMultZero.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprSubEqualVar.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprSumZero.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprTransformUnaryToValue.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
