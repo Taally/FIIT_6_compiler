@@ -31,19 +31,17 @@ namespace SimpleLang
         /// Свойство приводимости графа
         /// </summary>
         /// <returns>True - граф приводим, false - граф не приводим  </returns>
-        public bool GraphIsReducible { get; }
+        public bool GraphIsReducible => CheckReducibility();
+        #region
         private readonly List<Edge> enumBackEdges = new List<Edge>();
         private readonly List<Edge> enumEdgesCFG = new List<Edge>();
         private readonly ControlFlowGraph controlFlowGraph;
-        private IReadOnlyList<BasicBlock> BasicBlocks { get; }
         private readonly Dictionary<BasicBlock, BlockColor> BlockColorDictionary = new Dictionary<BasicBlock, BlockColor>();
         public BackEdges(ControlFlowGraph cfg)
         {
             controlFlowGraph = cfg;
-            BasicBlocks = controlFlowGraph.GetCurrentBasicBlocks();
             EdgesFromCFG();
             GetBackEdges();
-            GraphIsReducible = CheckReducibility();
         }
         private void EdgesFromCFG()
         {
@@ -69,11 +67,11 @@ namespace SimpleLang
         }
         private bool CheckReducibility()
         {
-            foreach (var block in BasicBlocks)
+            foreach (var block in controlFlowGraph.GetCurrentBasicBlocks())
             {
                 BlockColorDictionary[block] = BlockColor.White;
             }
-            foreach (var block in BasicBlocks)
+            foreach (var block in controlFlowGraph.GetCurrentBasicBlocks())
             {
                 if (BlockColorDictionary[block] == BlockColor.White && OpenBlock(block) == false)
                 {
@@ -88,18 +86,16 @@ namespace SimpleLang
             {
                 BlockColorDictionary[block] = BlockColor.Gray;
             }
-            var blockNumber = controlFlowGraph.VertexOf(block);
-            foreach (var child in controlFlowGraph.GetChildrenBasicBlocks(blockNumber))
+            foreach (var child in controlFlowGraph.GetChildrenBasicBlocks(controlFlowGraph.VertexOf(block)))
             {
-                var childBlock = child.block;
-                var isNotBackEdge = !enumBackEdges.ContainsEdge(block, childBlock);
-                if (isNotBackEdge && BlockColorDictionary[childBlock] == BlockColor.Gray)
+                var isNotBackEdge = !ContainsEdge(enumBackEdges, new Edge(block, child.block));
+                if (isNotBackEdge && BlockColorDictionary[child.block] == BlockColor.Gray)
                 {
                     return false;
                 }
                 if (isNotBackEdge
-                    && BlockColorDictionary[childBlock] == BlockColor.White
-                    && OpenBlock(childBlock) == false)
+                    && BlockColorDictionary[child.block] == BlockColor.White
+                    && OpenBlock(child.block) == false)
                 {
                     return false;
                 }
@@ -107,7 +103,20 @@ namespace SimpleLang
             BlockColorDictionary[block] = BlockColor.Black;
             return true;
         }
+        private bool ContainsEdge(List<Edge> edges, Edge edgeGraph)
+        {
+            foreach (var edge in edges)
+            {
+                if (edge.From == edgeGraph.From && edge.To == edgeGraph.To)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        #endregion
     }
+
     /// <summary>
     /// Класс ребро
     /// </summary>
@@ -119,21 +128,6 @@ namespace SimpleLang
         {
             From = fromNode;
             To = toNode;
-        }
-    }
-
-    public static class ListExtension
-    {
-        public static bool ContainsEdge(this List<Edge> edges, BasicBlock f, BasicBlock t)
-        {
-            foreach (var edge in edges)
-            {
-                if (edge.From == f && edge.To == t)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
