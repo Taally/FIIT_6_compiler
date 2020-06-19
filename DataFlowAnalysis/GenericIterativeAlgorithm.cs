@@ -97,7 +97,7 @@ namespace SimpleLang
             return data;
         }
 
-        private void GetInitData(
+        internal void GetInitData(
             ControlFlowGraph graph,
             out IEnumerable<BasicBlock> blocks,
             out InOutData<T> data,
