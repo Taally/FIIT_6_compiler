@@ -99,7 +99,9 @@ private static List<Instruction> StretchTransitions(string Label, List<Instructi
 	for (int i = 0; i < instructions.Count; i++)
 	{
 		// Если метка инструкции равна метке которую мы ищем, и на ней стоит оперецаия вида "goto" и метка слева не равна метке справа
-		if (instructions[i].Label == Label && instructions[i].Operation == "goto" && instructions[i].Argument1 != Label)
+		if (instructions[i].Label == Label 
+                && instructions[i].Operation == "goto" 
+                && instructions[i].Argument1 != Label)
 		{
 			string tmp = instructions[i].Argument1;
 			for (int j = 0; j < instructions.Count; j++)
@@ -131,7 +133,9 @@ private static List<Instruction> StretchIFWithoutLabel(string Label, List<Instru
 	for (int i = 0; i < instructions.Count; i++)
 	{
 		// Если метка инструкции равна метке которую мы ищем, и на ней стоит оперецаия вида "goto" и метка слева не равна метке справа
-		if (instructions[i].Label == Label && instructions[i].Operation == "goto" && instructions[i].Argument2 != Label)
+		if (instructions[i].Label == Label 
+                && instructions[i].Operation == "goto" 
+                && instructions[i].Argument2 != Label)
 		{
 			string tmp = instructions[i].Argument1;
 			for (int j = 0; j < instructions.Count; j++)
@@ -157,34 +161,29 @@ private static List<Instruction> StretchIFWithLabel(Instruction findInstruction,
 	
 	//проверка на наличие индекса. Проверка на наличие только одного перехода по условию для случая 3
 	if (findIndexIf == -1
-		|| instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto" && x.ToString() != instructions[findIndexIf].ToString()).Count() > 1)
+		|| instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 
+                && x.Operation == "goto" 
+                && x.ToString() != instructions[findIndexIf].ToString()).Count() > 1)
 	{
 		return instructions;
 	}
 	//поиск индекса перехода на требуемый "ifgoto"
-	int findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0));
+	int findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 
+                                                                                && x.Operation == "goto").ElementAt(0));
 
 	wasChanged = true;
 	
 	//Если следущая команда после "ifgoto" не содержит метку
 	if (instructions[findIndexIf + 1].Label == "")
 	{
-		instructions[findIndexGoto] = new Instruction("", 
-													  instructions[findIndexIf].Operation,
-													  instructions[findIndexIf].Argument1,
-													  instructions[findIndexIf].Argument2,
-													  instructions[findIndexIf].Result);
+		instructions[findIndexGoto] = new Instruction("",													  instructions[findIndexIf].Operation,													  instructions[findIndexIf].Argument1,													  instructions[findIndexIf].Argument2,													  instructions[findIndexIf].Result);
 		var tmp = ThreeAddressCodeTmp.GenTmpLabel();
 		instructions[findIndexIf] = new Instruction(tmp, "noop", "", "", "");
 		instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
 	}
 	else //Если следущая команда после "ifgoto" содержит метку
 	{
-		instructions[findIndexGoto] = new Instruction("",
-													  instructions[findIndexIf].Operation,
-													  instructions[findIndexIf].Argument1,
-													  instructions[findIndexIf].Argument2,
-													  instructions[findIndexIf].Result);
+		instructions[findIndexGoto] = new Instruction("",													  instructions[findIndexIf].Operation,													  instructions[findIndexIf].Argument1,													  instructions[findIndexIf].Argument2,													  instructions[findIndexIf].Result);
 		var tmp = instructions[findIndexIf + 1].Label;
 		instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
 		instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
