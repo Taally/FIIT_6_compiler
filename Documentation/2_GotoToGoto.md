@@ -176,14 +176,22 @@ private static List<Instruction> StretchIFWithLabel(Instruction findInstruction,
 	//Если следущая команда после "ifgoto" не содержит метку
 	if (instructions[findIndexIf + 1].Label == "")
 	{
-		instructions[findIndexGoto] = new Instruction("",													  instructions[findIndexIf].Operation,													  instructions[findIndexIf].Argument1,													  instructions[findIndexIf].Argument2,													  instructions[findIndexIf].Result);
+		instructions[findIndexGoto] = new Instruction("",
+                instructions[findIndexIf].Operation,
+                instructions[findIndexIf].Argument1,
+                instructions[findIndexIf].Argument2,
+                instructions[findIndexIf].Result);
 		var tmp = ThreeAddressCodeTmp.GenTmpLabel();
 		instructions[findIndexIf] = new Instruction(tmp, "noop", "", "", "");
 		instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
 	}
 	else //Если следущая команда после "ifgoto" содержит метку
 	{
-		instructions[findIndexGoto] = new Instruction("",													  instructions[findIndexIf].Operation,													  instructions[findIndexIf].Argument1,													  instructions[findIndexIf].Argument2,													  instructions[findIndexIf].Result);
+		instructions[findIndexGoto] = new Instruction("",
+                instructions[findIndexIf].Operation,
+                instructions[findIndexIf].Argument1,
+                instructions[findIndexIf].Argument2,
+                instructions[findIndexIf].Result);
 		var tmp = instructions[findIndexIf + 1].Label;
 		instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
 		instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
