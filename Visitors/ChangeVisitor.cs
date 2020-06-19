@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    internal class ChangeVisitor : AutoVisitor
+    public class ChangeVisitor : AutoVisitor
     {
         public bool Changed { get; set; }
 
