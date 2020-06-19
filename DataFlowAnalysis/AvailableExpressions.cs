@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +7,7 @@ namespace SimpleLang
     /// <summary>
     /// Вспомогательный класс для выражения
     /// </summary>
-    public class OneExpression : IEqualityComparer<OneExpression>
+    public class OneExpression
     {
         #region
         public string Operation { get; }
