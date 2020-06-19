@@ -26,6 +26,8 @@ namespace SimpleLang.Visitors
                         case OpType.MULT:
                             result.Num = (binop.Left as IntNumNode).Num * (binop.Right as IntNumNode).Num;
                             break;
+                        default:
+                            return;
                     }
                     ReplaceExpr(binop, result);
                 }
