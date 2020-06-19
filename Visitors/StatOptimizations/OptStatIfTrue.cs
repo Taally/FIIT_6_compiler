@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptStatIfTrue : ChangeVisitor
+    public class OptStatIfTrue : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {
