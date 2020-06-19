@@ -71,8 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AST\ASTTestsBase.cs" />
+    <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprMultDivByOneTests.cs" />
     <Compile Include="AST\OptExprMultZeroTests.cs" />
+    <Compile Include="AST\OptExprSubEqualVarTests.cs" />
     <Compile Include="AST\OptExprSumZeroTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="CFG\CFGcreateTest.cs" />
