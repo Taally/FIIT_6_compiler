@@ -74,6 +74,7 @@
     <Compile Include="AST\OptExprMultDivByOneTests.cs" />
     <Compile Include="AST\OptExprMultZeroTests.cs" />
     <Compile Include="AST\OptExprSumZeroTests.cs" />
+    <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="CFG\CFGcreateTest.cs" />
     <Compile Include="CFG\CFGdfsTest.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTest.cs" />
