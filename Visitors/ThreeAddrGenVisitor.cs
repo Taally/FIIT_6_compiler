@@ -30,17 +30,12 @@ namespace SimpleLang.Visitors
             // перевод в трёхадресный код условия
             var exprTmpName = Gen(i.Expr);
 
-            var trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            if (i.TrueStat is LabelStatementNode label)
-            {
-                trueLabel = label.Label.Num.ToString();
-            }
-            else
-            if (i.TrueStat is BlockNode block
-                && block.List.StatChildren[0] is LabelStatementNode labelB)
-            {
-                trueLabel = labelB.Label.Num.ToString();
-            }
+            var trueLabel = i.TrueStat is LabelStatementNode label
+                ? label.Label.Num.ToString()
+                : i.TrueStat is BlockNode block
+                    && block.List.StatChildren[0] is LabelStatementNode labelB
+                    ? labelB.Label.Num.ToString()
+                    : ThreeAddressCodeTmp.GenTmpLabel();
 
             var falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
             GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
@@ -66,7 +61,13 @@ namespace SimpleLang.Visitors
             var exprTmpName = Gen(w.Expr);
 
             var whileHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            var whileBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
+            var whileBodyLabel = w.Stat is LabelStatementNode label
+                ? label.Label.Num.ToString()
+                : w.Stat is BlockNode block
+                                && block.List.StatChildren[0] is LabelStatementNode labelB
+                    ? labelB.Label.Num.ToString()
+                    : ThreeAddressCodeTmp.GenTmpLabel();
+
             var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
 
             Instructions[Instructions.Count - 1].Label = whileHeadLabel;
