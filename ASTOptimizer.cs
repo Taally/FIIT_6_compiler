@@ -8,6 +8,8 @@ namespace SimpleLang
     {
         public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
         {
+            new OptExprMultZero(),
+            new OptExprSumZero(),
             new OptExprEqualToItself(),
             new OptExprMultDivByOne(),
             new OptStatIfTrue(),
