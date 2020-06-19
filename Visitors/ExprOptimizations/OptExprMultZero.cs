@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprMultZero : ChangeVisitor
+    public class OptExprMultZero : ChangeVisitor
     {
         public override void VisitBinOpNode(BinOpNode binOpNode)
         {
