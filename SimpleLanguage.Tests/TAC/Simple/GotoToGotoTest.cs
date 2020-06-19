@@ -158,5 +158,63 @@ a = 1;
 
             CollectionAssert.AreEqual(expected, actual);
         }
+
+        [Test]
+        public void InfinityLoopfTest()
+        {
+            var TAC = GenTAC(@"
+1: goto 2;
+2: goto 3;
+3: goto 1;
+");
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
+
+            var expected = new List<string>()
+            {
+                "1: goto 1",
+                "2: goto 1",
+                "3: goto 1",
+            };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+                .Select(instruction => instruction.ToString());
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+
+        [Test]
+        public void Task3Test()
+        {
+            var TAC = GenTAC(@"
+var a, b;
+goto 1;
+a = 1;
+1: if (true) 
+    goto 2;
+else 
+3: a=5;
+4: b = 2;
+");
+            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
+
+
+            var expected = new List<string>()
+            {
+                "if True goto 2",
+                "goto 3",
+                "a = 1",
+                "noop",
+                "3: a = 5",
+                "goto L2",
+                "L1: goto 2",
+                "L2: noop",
+                "4: b = 2",
+            };
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+                .Select(instruction => instruction.ToString());
+
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
     }
 }
