@@ -14,6 +14,7 @@
 В рамках этой задачи необходимо было реализовать оптимизацию устранения переходов к переходам. Если оператор goto ведет на метку, содержащую в goto переход на следующую метку, необходимо протянуть финальную метку до начального goto.
 Были поставлены  следующие 3 случая задачи:
 * 1 случай 
+  
   До
   ```csharp
   goto L1;
@@ -27,6 +28,7 @@
   L1: goto L2;
   ```
 * 2 случай
+  
   До
   ```csharp
   if (/*усл*/) goto L1;
@@ -41,6 +43,7 @@
   ```
 * 3 случай
   Если есть ровно один переход к L1 и оператору с L1 предшествует безусловный переход
+  
   До
   ```csharp
   goto L1;
@@ -59,146 +62,36 @@
 
 #### Практическая часть
 Реализовали метод для удаления переходов к переходам и разделили его на 3 случая:
+
+Простые goto (для случая 1)
 ```csharp
-wasChanged = false;
-var tmpCommands = new List<Instruction>();
-tmpCommands.AddRange(commands.ToArray()); // Перепишем набор наших инструкций в темповый массив
-
-foreach (var instr in commands)
+if (instr.Operation == "goto")
 {
-	if (instr.Operation == "goto") // Простые goto (для случая 1)
-	{
-		tmpCommands = StretchTransitions(instr.Argument1, tmpCommands);
-	}
-
-	if (instr.Operation == "ifgoto" && instr.Label == "") // Инструкции вида if(усл) goto (для случая 2)
-	{
-		tmpCommands = StretchIFWithoutLabel(instr.Argument2, tmpCommands);
-	}
-
-	if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (для случая 3)
-	{
-		tmpCommands = StretchIFWithLabel(instr, tmpCommands);
-	}
+        tmpCommands = StretchTransitions(instr.Argument1, tmpCommands);
 }
-return (wasChanged, tmpCommands);
+```
+Инструкции вида if(усл) goto (для случая 2)
+```csharp
+if (instr.Operation == "ifgoto" && instr.Label == "")
+{
+        tmpCommands = StretchIFWithoutLabel(instr.Argument2, tmpCommands);
+}
+```
+Инструкции вида l1: if(усл) goto (для случая 3)
+```csharp
+if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (для случая 3)
+{
+        tmpCommands = StretchIFWithLabel(instr, tmpCommands);
+}
 ```
 Реализовали три вспомогательные функции для каждого случая задачи.
-Вспомогательная функция для случая 1:
-```csharp
-/// <summary>
-/// Протягивает метки для goto
-/// </summary>
-/// <param name="Label">Метка которую мы ищем</param>
-/// <param name="instructions">Набор наших инструкций</param>
-/// <returns>
-/// Вернет измененные инструкции с протянутыми goto
-/// </returns>
-private static List<Instruction> StretchTransitions(string Label, List<Instruction> instructions)
-{
-	for (int i = 0; i < instructions.Count; i++)
-	{
-		// Если метка инструкции равна метке которую мы ищем, и на ней стоит оперецаия вида "goto" и метка слева не равна метке справа
-		if (instructions[i].Label == Label 
-                && instructions[i].Operation == "goto" 
-                && instructions[i].Argument1 != Label)
-		{
-			string tmp = instructions[i].Argument1;
-			for (int j = 0; j < instructions.Count; j++)
-			{
-				//Для всех "goto" с искомой меткой, протягиваем нужный нам Label
-				if (instructions[j].Operation == "goto" && instructions[j].Argument1 == Label)
-				{
-					wasChanged = true;
-					instructions[j] = new Instruction(instructions[j].Label, "goto", tmp, "", "");
-				}
-			}
-		}
-	}
-	return instructions;
-}
-```
-Вспомогательная функция для случая 2:
-```csharp
-/// <summary>
-/// Протягивает метки для if(усл) goto
-/// </summary>
-/// <param name="Label">Метка которую мы ищем</param>
-/// <param name="instructions">Набор наших инструкций</param>
-/// <returns>
-/// Вернет измененные инструкции с протянутыми goto из if
-/// </returns>
-private static List<Instruction> StretchIFWithoutLabel(string Label, List<Instruction> instructions)
-{
-	for (int i = 0; i < instructions.Count; i++)
-	{
-		// Если метка инструкции равна метке которую мы ищем, и на ней стоит оперецаия вида "goto" и метка слева не равна метке справа
-		if (instructions[i].Label == Label 
-                && instructions[i].Operation == "goto" 
-                && instructions[i].Argument2 != Label)
-		{
-			string tmp = instructions[i].Argument1;
-			for (int j = 0; j < instructions.Count; j++)
-			{
-				//Для всех "ifgoto" с искомой меткой, протягиваем нужный нам Label
-				if (instructions[j].Operation == "ifgoto" && instructions[j].Argument2 == Label)
-				{
-					wasChanged = true;
-					instructions[j] = new Instruction("", "ifgoto", instructions[j].Argument1, tmp, "");
-				}
-			}
-		}
-	}
-	return instructions;
-}
-```
+В первой вспомогательной функции если метка инструкции равна метке которую мы ищем, и на ней стоит оперецаия вида "goto" и метка слева не равна метке справа тогда необходимо для всех "goto" с искомой меткой протянуть необходимую метку.
 
-Вспомогательная функция для случая 3:
-```csharp
-private static List<Instruction> StretchIFWithLabel(Instruction findInstruction, List<Instruction> instructions)
-{
-	int findIndexIf = instructions.IndexOf(findInstruction); //Поиск индекса "ifgoto" на которую существует метка
-	
-	//проверка на наличие индекса. Проверка на наличие только одного перехода по условию для случая 3
-	if (findIndexIf == -1
-		|| instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 
-                && x.Operation == "goto" 
-                && x.ToString() != instructions[findIndexIf].ToString()).Count() > 1)
-	{
-		return instructions;
-	}
-	//поиск индекса перехода на требуемый "ifgoto"
-	int findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 
-                                                                                && x.Operation == "goto").ElementAt(0));
+Вспомогательная функция реализованная для случая 2:
+Если метка инструкции равна метке которую мы ищем, и на ней стоит оперецаия вида "goto" и метка слева не равна метке справа, тогда для всех "ifgoto" с искомой меткой, протягиваем необходимую метку.
 
-	wasChanged = true;
-	
-	//Если следущая команда после "ifgoto" не содержит метку
-	if (instructions[findIndexIf + 1].Label == "")
-	{
-		instructions[findIndexGoto] = new Instruction("",
-                instructions[findIndexIf].Operation,
-                instructions[findIndexIf].Argument1,
-                instructions[findIndexIf].Argument2,
-                instructions[findIndexIf].Result);
-		var tmp = ThreeAddressCodeTmp.GenTmpLabel();
-		instructions[findIndexIf] = new Instruction(tmp, "noop", "", "", "");
-		instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
-	}
-	else //Если следущая команда после "ifgoto" содержит метку
-	{
-		instructions[findIndexGoto] = new Instruction("",
-                instructions[findIndexIf].Operation,
-                instructions[findIndexIf].Argument1,
-                instructions[findIndexIf].Argument2,
-                instructions[findIndexIf].Result);
-		var tmp = instructions[findIndexIf + 1].Label;
-		instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
-		instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
-	}
-	return instructions;
-}
-```
+Вспомогательная функция реализованная для случая 3:
+Реализовали проверку на наличие только одного перехода по условию для случая 3. Находим "ifgoto" на которую ссылается оператор безусловного перехода, ставим на место оператора безусловного перехода оператор "ifgoto" без метки на него. На следующей строке вставляем оператор безусловного перехода на метку где прежде стоял "ifgoto". В случае, если следующая команда после оператора "ifgoto" содержала метку, то оператор "goto" будет ссылаться на нее, иначе генирируем временную метку, которую поместим на прежнее место оператора "ifgoto".
 
 Результатом работы программы является пара значений, была ли применена оптимизация и список инструкций с примененной оптимизацией
 ```csharp
@@ -236,14 +129,14 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 public void MultiGoToTest()
 {
 	var TAC = GenTAC(@"
-var a, b;
-1: goto 2;
-2: goto 5;
-3: goto 6;
-4: a = 1;
-5: goto 6;
-6: a = b;
-");
+        var a, b;
+        1: goto 2;
+        2: goto 5;
+        3: goto 6;
+        4: a = 1;
+        5: goto 6;
+        6: a = b;
+        ");
 	var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
 	var expected = new List<string>()
@@ -265,12 +158,12 @@ var a, b;
 public void TestGotoIfElseTACGen1()
 {
 	var TAC = GenTAC(@"
-var a,b;
-b = 5;
-if(a > b)
-goto 6;
-6: a = 4;
-");
+        var a,b;
+        b = 5;
+        if(a > b)
+        goto 6;
+        6: a = 4;
+        ");
 	var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
 	var expected = new List<string>()
@@ -282,33 +175,6 @@ goto 6;
 		"L1: goto 6",
 		"L2: noop",
 		"6: a = 4",
-	};
-	var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-		.Select(instruction => instruction.ToString());
-
-	CollectionAssert.AreEqual(expected, actual);
-}
-
-[Test]
-public void GoToLabelTest()
-{
-	var TAC = GenTAC(@"
-var a;
-goto 1;
-1: goto 2;
-2: goto 3;
-3: goto 4;
-4: a = 4;
-");
-	var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-	var expected = new List<string>()
-	{
-		"goto 4",
-		"1: goto 4",
-		"2: goto 4",
-		"3: goto 4",
-		"4: a = 4",
 	};
 	var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
 		.Select(instruction => instruction.ToString());
