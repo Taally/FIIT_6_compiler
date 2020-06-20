@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
-using SimpleLang.Visitors;
+﻿using NUnit.Framework;
 using ProgramTree;
+using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprTransformUnaryToValueTests : ASTTestsBase
     {
         [Test]
-        public void TransformToIntTest() {
+        public void TransformToIntTest()
+        {
             var AST = BuildAST(@"
 var a, b;
 a = (-1);

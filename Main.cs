@@ -74,7 +74,7 @@ namespace SimpleCompiler
                     }
 
                     var cfg = new ControlFlowGraph(divResult);
-                    
+
                     Console.WriteLine("\n\n Edge Classification");
                     Console.WriteLine("----------");
 
@@ -82,9 +82,9 @@ namespace SimpleCompiler
                     {
                         Console.WriteLine(pair);
                     }
-                    
+
                     Console.WriteLine("----------");
-                    
+
 
                     foreach (var block in cfg.GetCurrentBasicBlocks())
                     {
