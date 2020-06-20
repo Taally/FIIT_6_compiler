@@ -1,44 +1,43 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace SimpleLang
 {
-   
+    /// <summary>
+    /// Расширение для графа потока управления
+    /// </summary>
     public static class ControlFlowGraphExtension
     {
-        public static IReadOnlyList<(BasicBlock, BasicBlock)> BackEdgesFromCFG(this ControlFlowGraph cfg)
-            => new BackEdges(cfg).BackEdgesFromGraph;
+        /// <summary>
+        /// Приводимость графа
+        /// </summary>
         public static bool IsReducibleGraph(this ControlFlowGraph cfg)
             => new BackEdges(cfg).GraphIsReducible;
+        /// <summary>
+        /// Обратные рёбра
+        /// </summary>
+        /// <returns>Список обратных рёбер</returns>
+        public static IReadOnlyList<(BasicBlock, BasicBlock)> GetBackEdges(this ControlFlowGraph cfg)
+            => new BackEdges(cfg).BackEdgesFromCFG;
         /// <summary>
         /// Класс обратных рёбер
         /// </summary>
         private class BackEdges
         {
-            /// <summary>
-            /// Цвет, которым помечается вершина при исследование CFG на приводимость.
-            /// </summary>
             private enum BlockColor
             {
                 White,
                 Gray,
                 Black
             }
-            /// <summary>
-            /// Обратные ребра графа
-            /// </summary>
-            /// <returns> Список обратных рёбер (From BasicBlock, To BasicBlock) </returns>
-            public IReadOnlyList<(BasicBlock From, BasicBlock To)> BackEdgesFromGraph
+            internal IReadOnlyList<(BasicBlock From, BasicBlock To)> BackEdgesFromCFG
             {
                 get => enumBackEdges.Select(edge => (edge.From, edge.To)).ToList();
                 private set { }
             }
-            /// <summary>
-            /// Свойство приводимости графа
-            /// </summary>
-            /// <returns>True - граф приводим, false - граф не приводим  </returns>
-            public bool GraphIsReducible => CheckReducibility();
+            internal bool GraphIsReducible => CheckReducibility();
             #region
             private readonly List<Edge> enumBackEdges = new List<Edge>();
             private readonly List<Edge> enumEdgesCFG = new List<Edge>();
@@ -123,9 +122,7 @@ namespace SimpleLang
             }
             #endregion
         }
-        /// <summary>
-        /// Класс ребро
-        /// </summary>
+
         public class Edge
         {
             public BasicBlock From { get; protected set; }
