@@ -23,7 +23,7 @@ a = 1;
                 "a = b;"
             };
 
-            var result = ApplyOpt(new OptStatIfTrue());
+            var result = ApplyOpt(AST, new OptStatIfTrue());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -46,7 +46,7 @@ a = 1;
                 "b = 1;"
             };
 
-            var result = ApplyOpt(new OptStatIfTrue());
+            var result = ApplyOpt(AST, new OptStatIfTrue());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -83,7 +83,7 @@ b = b / 5;
                 "}"
             };
 
-            var result = ApplyOpt(new OptStatIfTrue());
+            var result = ApplyOpt(AST, new OptStatIfTrue());
             CollectionAssert.AreEqual(expected, result);
         }
     }

@@ -19,7 +19,7 @@ a = 1 + 41;
                 "a = 42;"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -35,7 +35,7 @@ a = 6 * 7;
                 "a = 42;"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -51,7 +51,7 @@ a = 55 - 13;
                 "a = 42;"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -67,7 +67,7 @@ a = 546 / 13;
                 "a = 42;"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -90,7 +90,7 @@ b = 42 == 13;
                 "b = (42 == 13);"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -106,7 +106,7 @@ a = 42 / 6 * 3 - 3 * (1 + 1) - 2;
                 "a = 13;"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -123,7 +123,7 @@ print(4 + 5, 2 - 1, 6 / 3, 2 * 5);
                 "print(9, 1, 2, 10);"
             };
 
-            var result = ApplyOpt(new OptExprAlgebraic());
+            var result = ApplyOpt(AST, new OptExprAlgebraic());
             CollectionAssert.AreEqual(expected, result);
         }
     }
