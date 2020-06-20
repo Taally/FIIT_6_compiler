@@ -82,6 +82,7 @@
     <Compile Include="LoopsInCFG\DominatorTreeTests.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTest.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariableTest.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionTest.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
