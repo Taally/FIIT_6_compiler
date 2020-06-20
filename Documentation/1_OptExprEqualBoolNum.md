@@ -31,7 +31,7 @@
 Эта оптимизация представляет собой визитор, унаследованный от ChangeVisitor. Пример реализации метода:
 
 ```csharp
-internal class OptExprEqualBoolNumId : ChangeVisitor
+internal class OptExprEqualBoolNum : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {
@@ -61,7 +61,7 @@ internal class OptExprEqualBoolNumId : ChangeVisitor
 public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
        {
              /* ... */
-           new OptExprEqualBoolNumId(),
+           new OptExprEqualBoolNum(),
              /* ... */
        };
 
@@ -90,4 +90,31 @@ while (true == true)
 ```csharp
 while (true) 
     a = 5; 
+```
+
+#### Тесты
+```csharp
+public class OptExprEqualBoolNumTests: ASTTestsBase
+    {
+        [Test]
+        public void SumNumTest()
+        {
+            var AST = BuildAST(@"var b, c, d;
+b = true == true;
+while (5 == 5)
+  c = true == false;
+d = 7 == 8;");
+            var expected = @"var b, c, d;
+b = true;
+while true
+  c = false;
+d = false;";
+
+            var opt = new OptExprEqualBoolNum();
+            AST.root.Visit(opt);
+            var pp = new PrettyPrintVisitor();
+            AST.root.Visit(pp);
+            Assert.AreEqual(expected, pp.Text);
+        }
+    }
 ```
