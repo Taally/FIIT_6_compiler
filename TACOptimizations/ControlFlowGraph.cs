@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SimpleLang
 {
     public class ControlFlowGraph
     {
-        private readonly List<BasicBlock> _basicBlocks;
-        private readonly List<List<(int vertex, BasicBlock block)>> _children;
-        private readonly List<List<(int vertex, BasicBlock block)>> _parents;
-        private readonly Dictionary<BasicBlock, int> _blockToVertex;
+        private List<BasicBlock> _basicBlocks;
+        private List<List<(int vertex, BasicBlock block)>> _children;
+        private List<List<(int vertex, BasicBlock block)>> _parents;
+        private Dictionary<BasicBlock, int> _blockToVertex;
 
         private List<int> _nlr;
         public IReadOnlyList<int> PreOrderNumeration => _nlr;
@@ -33,6 +34,14 @@ namespace SimpleLang
         }
 
         public ControlFlowGraph(List<BasicBlock> basicBlocks)
+        {
+            ConstructedCFG(basicBlocks);
+            DFS();
+            ConstructedCFG(UnreachableCodeElimination());
+            DFS();
+        }
+
+        private void ConstructedCFG(List<BasicBlock> basicBlocks)
         {
             _basicBlocks = new List<BasicBlock>(basicBlocks.Count + 2)
             {
@@ -99,8 +108,21 @@ namespace SimpleLang
                         break;
                 }
             }
+        }
 
-            DFS();
+        private List<BasicBlock> UnreachableCodeElimination()
+        {
+            var tmpBasicBlock = new List<BasicBlock>(_basicBlocks);
+
+            for (int i = 1; i < _dfn.Count - 1; i++)
+            {
+                if (_dfn[i] == 0)
+                {
+                    tmpBasicBlock[i] = null;
+                }
+            }
+            tmpBasicBlock.RemoveAll(x => x == null);
+            return tmpBasicBlock.Skip(1).Take(tmpBasicBlock.Count - 2).ToList();
         }
 
         public enum EdgeType
@@ -116,7 +138,7 @@ namespace SimpleLang
             InProgress,
             Done
         }
-        
+
         private void DFS()
         {
             _dfst = new List<(int, int)>();
