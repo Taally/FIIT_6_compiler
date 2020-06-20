@@ -20,7 +20,7 @@ namespace SimpleLang
                 var natLoops = new List<List<BasicBlock>>();
                 var ForwardEdges = cfg.GetCurrentBasicBlocks();
 
-                foreach (var (From, To) in cfg.BackEdgesFromCFG())
+                foreach (var (From, To) in cfg.GetBackEdges())
                 {
                     if (cfg.VertexOf(To) > 0)
                     {
