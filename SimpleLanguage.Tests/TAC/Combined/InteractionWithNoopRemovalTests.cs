@@ -7,7 +7,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.TAC.Combined
 {
     [TestFixture]
-    public class InteractionWithNoopRemovalTest : TACTestsBase
+    public class InteractionWithNoopRemovalTests : TACTestsBase
     {
         public void AssertEquality(List<Instruction> result, List<string> expected)
         {

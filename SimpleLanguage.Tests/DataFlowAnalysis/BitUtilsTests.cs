@@ -8,7 +8,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class BitUtilsTest
+    internal class BitUtilsTests
     {
 
         [Test]

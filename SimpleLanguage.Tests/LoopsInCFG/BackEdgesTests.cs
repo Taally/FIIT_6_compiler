@@ -1,10 +1,10 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
-    internal class BackEdgesTest : TACTestsBase
+    internal class BackEdgesTests : TACTestsBase
     {
         private ControlFlowGraph BuildCFG(string program)
         {
@@ -13,6 +13,7 @@ namespace SimpleLanguage.Tests.LoopsInCFG
             var blocks = BasicBlockLeader.DivideLeaderToLeader(optResult);
             return new ControlFlowGraph(blocks);
         }
+
         [Test]
         public void EmptyGraph()
         {
@@ -21,6 +22,7 @@ var a;
 ");
             Assert.AreEqual(0, graph.GetBackEdges().Count);
         }
+
         [Test]
         public void SimpleTestBackEdges()
         {
@@ -33,6 +35,7 @@ goto 2;
 ");
             Assert.AreEqual(1, graph.GetBackEdges().Count);
         }
+
         [Test]
         public void SimpleNoBackEdgesWithoutGoTo()
         {
@@ -54,6 +57,7 @@ else
 a = f + c;");
             Assert.AreEqual(0, graph.GetBackEdges().Count);
         }
+
         [Test]
         public void BackEdgesWithGoTo()
         {
@@ -70,6 +74,7 @@ goto 4;
 goto 5;");
             Assert.AreEqual(1, graph.GetBackEdges().Count);
         }
+
         [Test]
         public void SimpleNoBackEdgesWithGoTo()
         {
@@ -86,6 +91,7 @@ goto 4;
 
             Assert.AreEqual(0, graph.GetBackEdges().Count);
         }
+
         [Test]
         public void TrashProgram()
         {
@@ -105,6 +111,7 @@ goto 4;
 6: e = a + d;");
             Assert.AreEqual(1, graph.GetBackEdges().Count);
         }
+
         [Test]
         public void ProgramWithLoop()
         {
@@ -123,7 +130,7 @@ input(a);
             Assert.AreEqual(2, graph.GetBackEdges().Count);
         }
 
-        //Тесты на приводимость / неприводимость графа потока управления (cfg)
+        // Тесты на приводимость / неприводимость графа потока управления (cfg)
         [Test]
         public void CheckIfGraphIsReducible1()
         {
@@ -191,6 +198,7 @@ while (a < b)
 }");
             Assert.AreEqual(true, graph.IsReducibleGraph());
         }
+
         [Test]
         public void CheckIfGraphIsNotReducible1()
         {

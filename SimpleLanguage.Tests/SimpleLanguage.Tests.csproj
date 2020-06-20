@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\ASTOptimizerTests.cs" />
     <Compile Include="AST\ASTTestsBase.cs" />
     <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprEqualBoolNumTests.cs" />
@@ -81,34 +82,34 @@
     <Compile Include="AST\OptExprTransformUnaryToValueTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
-    <Compile Include="CFG\CFGcreateTest.cs" />
-    <Compile Include="CFG\CFGdfsTest.cs" />
-    <Compile Include="DataFlowAnalysis\ConstPropagationTest.cs" />
-    <Compile Include="CFG\CFGUnreachableCodeEliminationTest.cs" />
-    <Compile Include="LoopsInCFG\BackEdgesTest.cs" />
-    <Compile Include="LoopsInCFG\NaturalLoopTest.cs" />
-    <Compile Include="DataFlowAnalysis\BitUtilsTest.cs" />
+    <Compile Include="CFG\CFGcreateTests.cs" />
+    <Compile Include="CFG\CFGdfsTests.cs" />
+    <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
+    <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
+    <Compile Include="LoopsInCFG\BackEdgesTests.cs" />
+    <Compile Include="LoopsInCFG\NaturalLoopTests.cs" />
+    <Compile Include="DataFlowAnalysis\BitUtilsTests.cs" />
     <Compile Include="LoopsInCFG\DominatorTreeTests.cs" />
-    <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTest.cs" />
-    <Compile Include="DataFlowAnalysis\LiveVariableTest.cs" />
-    <Compile Include="DataFlowAnalysis\AvailableExpressionTest.cs" />
+    <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTests.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariableTests.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
-    <Compile Include="TAC\Combined\InteractionWithNoopRemovalTest.cs" />
-    <Compile Include="TAC\Combined\FoldPropagateConstantsTest.cs" />
+    <Compile Include="TAC\Combined\InteractionWithNoopRemovalTests.cs" />
+    <Compile Include="TAC\Combined\FoldPropagateConstantsTests.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />
-    <Compile Include="TAC\Simple\BasicBlockLeaderTest.cs" />
+    <Compile Include="TAC\Simple\BasicBlockLeaderTests.cs" />
     <Compile Include="TAC\Simple\DefUseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TAC\TACTestsBase.cs" />
-    <Compile Include="TAC\Simple\DeleteDeadCodeWithDeadVarsTest.cs" />
-    <Compile Include="TAC\Simple\FoldConstantsTest.cs" />
-    <Compile Include="TAC\Simple\GotoThroughGotoTest.cs" />
-    <Compile Include="TAC\Simple\GotoToGotoTest.cs" />
-    <Compile Include="TAC\Simple\PropagateConstantsTest.cs" />
-    <Compile Include="TAC\Simple\PropagateCopiesTest.cs" />
-    <Compile Include="TAC\Simple\RemoveNoopTest.cs" />
-    <Compile Include="TAC\Combined\GotoToGotoTest.cs" />
+    <Compile Include="TAC\Simple\DeleteDeadCodeWithDeadVarsTests.cs" />
+    <Compile Include="TAC\Simple\FoldConstantsTests.cs" />
+    <Compile Include="TAC\Simple\GotoThroughGotoTests.cs" />
+    <Compile Include="TAC\Simple\GotoToGotoTests.cs" />
+    <Compile Include="TAC\Simple\PropagateConstantsTests.cs" />
+    <Compile Include="TAC\Simple\PropagateCopiesTests.cs" />
+    <Compile Include="TAC\Simple\RemoveNoopTests.cs" />
+    <Compile Include="TAC\Combined\GotoToGotoTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

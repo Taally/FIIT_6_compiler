@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    internal class GotoToGotoTest : TACTestsBase
+    internal class GotoToGotoTests : TACTestsBase
     {
         [Test]
         public void MultiGoToTest()
