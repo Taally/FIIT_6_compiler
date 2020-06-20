@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
@@ -114,11 +114,9 @@ e = zz + i;"
                 ( new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
                   new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}
                 ),
+         
 
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "zz", "i") }),
-
-                (new List<OneExpression>() { new OneExpression("PLUS", "zz", "i") } ,
-                new List<OneExpression>() { new OneExpression("PLUS", "zz", "i")})
+                (new List<OneExpression>(), new List<OneExpression>())
 
             };
             Assert.AreEqual(expected.Count, actual.Count);
@@ -137,8 +135,7 @@ e = zz + i;");
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "c", "x")} ),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "zz", "i")}),
-                (new List<OneExpression>() {new OneExpression("PLUS", "zz", "i") }, new List<OneExpression>() {new OneExpression("PLUS", "zz", "i")})
+                (new List<OneExpression>(), new List<OneExpression>())
             };
             Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
@@ -234,10 +231,8 @@ i = a + b;");
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "b", "c") }),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "x", "u") }),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "x", "x") }),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "g", "zz")}),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "a", "b") }),
-                (new List<OneExpression>() { new OneExpression("PLUS", "a", "b")}, new List<OneExpression>() { new OneExpression("PLUS", "a", "b") })
+                (new List<OneExpression>(), new List<OneExpression>())
             };
             Assert.AreEqual(expected.Count, actual.Count, "Размер");
             AssertSet(expected, actual);
