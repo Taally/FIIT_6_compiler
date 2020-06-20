@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
@@ -45,12 +45,18 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         {
             for (var i = 0; i < expected.Count; i++)
             {
+                Assert.AreEqual(expected[i].Item1.Count, actual[i].Item1.Count);
+                Assert.AreEqual(expected[i].Item2.Count, actual[i].Item2.Count);
                 Assert.True(SetEquals(expected[i].Item1, actual[i].Item1));
                 Assert.True(SetEquals(expected[i].Item2, actual[i].Item2));
             }
         }
         private bool SetEquals(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
         {
+            if (listOfExpr1.Count != listOfExpr2.Count)
+            {
+                return false;
+            }
             for (var i = 0; i < listOfExpr1.Count; i++)
             {
                 if (listOfExpr1[i].ToString() != listOfExpr2[i].ToString())
@@ -115,10 +121,8 @@ e = zz + i;"
                   new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}
                 ),
 
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "zz", "i") }),
 
-                (new List<OneExpression>() { new OneExpression("PLUS", "zz", "i") } ,
-                new List<OneExpression>() { new OneExpression("PLUS", "zz", "i")})
+                (new List<OneExpression>(), new List<OneExpression>())
 
             };
             Assert.AreEqual(expected.Count, actual.Count);
@@ -137,8 +141,7 @@ e = zz + i;");
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "c", "x")} ),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "zz", "i")}),
-                (new List<OneExpression>() {new OneExpression("PLUS", "zz", "i") }, new List<OneExpression>() {new OneExpression("PLUS", "zz", "i")})
+                (new List<OneExpression>(), new List<OneExpression>())
             };
             Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
@@ -158,7 +161,7 @@ for i=2,7
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "i", "x")}),
                 (new List<OneExpression>(), new List<OneExpression>()),
-                (new List<OneExpression>(), new List<OneExpression>() 
+                (new List<OneExpression>(), new List<OneExpression>()
                 { new OneExpression("PLUS", "x", "d"), new OneExpression("PLUS", "a", "b"), new OneExpression("PLUS", "i", "1") }),
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>())
@@ -183,7 +186,7 @@ while (e < g)
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "i", "x") }),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("LESS", "e", "g") }),
                 (new List<OneExpression>() { new OneExpression("LESS", "e", "g")}, new List<OneExpression>() { new OneExpression("LESS", "e", "g") }),
-                (new List<OneExpression>() { new OneExpression("LESS", "e", "g") }, 
+                (new List<OneExpression>() { new OneExpression("LESS", "e", "g") },
                 new List<OneExpression>() { new OneExpression("PLUS", "x", "d"), new OneExpression("PLUS", "a", "b"), new OneExpression("LESS", "e", "g") }),
                 (new List<OneExpression>() { new OneExpression("LESS", "e", "g")}, new List<OneExpression>() { new OneExpression("LESS", "e", "g") }),
                 (new List<OneExpression>() { new OneExpression("LESS", "e", "g")}, new List<OneExpression>() { new OneExpression("LESS", "e", "g") })
@@ -233,11 +236,11 @@ i = a + b;");
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "b", "c") }),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "x", "u") }),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "x", "x") }),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "g", "zz")}),
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "a", "b") }),
-                (new List<OneExpression>() { new OneExpression("PLUS", "a", "b")}, new List<OneExpression>() { new OneExpression("PLUS", "a", "b") })
+                (new List<OneExpression>() { new OneExpression("PLUS", "b", "c")}, 
+                new List<OneExpression>() { new OneExpression("PLUS", "x", "u"), new OneExpression("PLUS", "b", "c")}),
+                (new List<OneExpression>() { new OneExpression("PLUS", "x", "u"), new OneExpression("PLUS", "b", "c")}
+                , new List<OneExpression>() { new OneExpression("PLUS", "g", "zz"), new OneExpression("PLUS", "x", "u"), new OneExpression("PLUS", "b", "c") }),
+                (new List<OneExpression>(), new List<OneExpression>())
             };
             Assert.AreEqual(expected.Count, actual.Count, "Размер");
             AssertSet(expected, actual);
