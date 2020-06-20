@@ -17,14 +17,14 @@ a = b;
 else
 a = 1;
 ");
-            var expected = @"var a, b;
-a = b;";
 
-            var opt = new OptStatIfTrue();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "a = b;"
+            };
+
+            var result = ApplyOpt(new OptStatIfTrue());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -39,15 +39,15 @@ b = 1;
 else
 a = 1;
 ");
-            var expected = @"var a, b;
-a = b;
-b = 1;";
 
-            var opt = new OptStatIfTrue();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "a = b;",
+                "b = 1;"
+            };
+
+            var result = ApplyOpt(new OptStatIfTrue());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -71,20 +71,20 @@ b = b / 5;
 }
 }
 ");
-            var expected = @"var a, b;
-a = b;
-b = 1;
-if (a > b) {
-  a = b;
-  b = (b + 1);
-  b = (b / 5);
-}";
 
-            var opt = new OptStatIfTrue();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "a = b;",
+                "b = 1;",
+                "if (a > b) {",
+                "  a = b;",
+                "  b = (b + 1);",
+                "  b = (b / 5);",
+                "}"
+            };
+
+            var result = ApplyOpt(new OptStatIfTrue());
+            CollectionAssert.AreEqual(expected, result);
         }
     }
 }

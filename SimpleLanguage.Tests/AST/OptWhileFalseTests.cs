@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
@@ -12,14 +12,12 @@ namespace SimpleLanguage.Tests.AST
             var AST = BuildAST(@"var a;
 while false
    a = true;");
-            var expected = @"var a;
-";
+            var expected = new[] {
+                "var a;"
+            };
 
-            var opt = new OptWhileFalseVisitor();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(new OptWhileFalseVisitor());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -30,16 +28,16 @@ while false
 a = false;
 while a
   a = true;");
-            var expected = @"var a;
-a = false;
-while a
-  a = true;";
 
-            var opt = new OptWhileFalseVisitor();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a;",
+                "a = false;",
+                "while a",
+                "  a = true;"
+            };
+
+            var result = ApplyOpt(new OptWhileFalseVisitor());
+            CollectionAssert.AreEqual(expected, result);
         }
     }
     
