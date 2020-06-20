@@ -19,7 +19,7 @@ a = b * 0;
                 "a = 0;"
             };
 
-            var result = ApplyOpt(new OptExprMultZero());
+            var result = ApplyOpt(AST, new OptExprMultZero());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -35,7 +35,7 @@ a = 0 * b;
                 "a = 0;"
             };
 
-            var result = ApplyOpt(new OptExprMultZero());
+            var result = ApplyOpt(AST, new OptExprMultZero());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -52,7 +52,7 @@ a = 0 * b + b * a * 0 + 5;
                 "a = ((0 + 0) + 5);"
             };
 
-            var result = ApplyOpt(new OptExprMultZero());
+            var result = ApplyOpt(AST, new OptExprMultZero());
             CollectionAssert.AreEqual(expected, result);
         }
     }

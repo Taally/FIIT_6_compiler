@@ -19,7 +19,7 @@ a = b - b;
                 "a = 0;"
             };
 
-            var result = ApplyOpt(new OptExprSubEqualVar());
+            var result = ApplyOpt(AST, new OptExprSubEqualVar());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -36,7 +36,7 @@ print(a - a, b - b, b - a, a - a - b);
                 "print(0, 0, (b - a), (0 - b));"
             };
 
-            var result = ApplyOpt(new OptExprSubEqualVar());
+            var result = ApplyOpt(AST, new OptExprSubEqualVar());
             CollectionAssert.AreEqual(expected, result);
         }
     }

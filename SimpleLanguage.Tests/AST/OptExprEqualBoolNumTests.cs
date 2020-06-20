@@ -24,7 +24,7 @@ d = 7 == 8;");
                 "d = false;"
             };
 
-            var result = ApplyOpt(new OptExprEqualBoolNum());
+            var result = ApplyOpt(AST, new OptExprEqualBoolNum());
             CollectionAssert.AreEqual(expected, result);
         }
     }

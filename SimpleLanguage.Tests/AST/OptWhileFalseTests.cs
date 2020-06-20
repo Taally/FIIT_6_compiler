@@ -16,7 +16,7 @@ while false
                 "var a;"
             };
 
-            var result = ApplyOpt(new OptWhileFalseVisitor());
+            var result = ApplyOpt(AST, new OptWhileFalseVisitor());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -36,7 +36,7 @@ while a
                 "  a = true;"
             };
 
-            var result = ApplyOpt(new OptWhileFalseVisitor());
+            var result = ApplyOpt(AST, new OptWhileFalseVisitor());
             CollectionAssert.AreEqual(expected, result);
         }
     }

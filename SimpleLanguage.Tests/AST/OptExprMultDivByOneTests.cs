@@ -18,7 +18,8 @@ a = b * 1;
                 "var a, b;",
                 "a = b;"
             };
-            var result = ApplyOpt(new OptExprMultDivByOne());
+            
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -34,7 +35,7 @@ a = 1 * b;
                 "a = b;"
             };
 
-            var result = ApplyOpt(new OptExprMultDivByOne());
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -50,7 +51,7 @@ a = b / 1;
                 "a = b;"
             };
 
-            var result = ApplyOpt(new OptExprMultDivByOne());
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
 
@@ -67,7 +68,7 @@ a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
                 "a = (a + b);"
             };
 
-            var result = ApplyOpt(new OptExprMultDivByOne());
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
     }
