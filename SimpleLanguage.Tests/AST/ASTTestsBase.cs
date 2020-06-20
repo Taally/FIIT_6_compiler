@@ -20,5 +20,12 @@ namespace SimpleLanguage.Tests.AST
             parser.root.Visit(fillParents);
             return parser;
         }
+
+        protected string[] ApplyOpt(Parser AST, ChangeVisitor opt) {
+            AST.root.Visit(opt);
+            var pp = new PrettyPrintVisitor();
+            AST.root.Visit(pp);
+            return pp.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        }
     }
 }

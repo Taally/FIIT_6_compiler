@@ -13,14 +13,13 @@ namespace SimpleLanguage.Tests.AST
 var a, b;
 a = b + 0;
 ");
-            var expected = @"var a, b;
-a = b;";
+            var expected = new[] {
+                "var a, b;",
+                "a = b;"
+            };
 
-            var opt = new OptExprSumZero();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(AST, new OptExprSumZero());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -30,14 +29,13 @@ a = b;";
 var a, b;
 a = 0 + b;
 ");
-            var expected = @"var a, b;
-a = b;";
+            var expected = new[] {
+                "var a, b;",
+                "a = b;"
+            };
 
-            var opt = new OptExprSumZero();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(AST, new OptExprSumZero());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -47,14 +45,14 @@ a = b;";
 var a, b;
 a = 0 + (0 + b + b * a + 0);
 ");
-            var expected = @"var a, b;
-a = (b + (b * a));";
 
-            var opt = new OptExprSumZero();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "a = (b + (b * a));"
+            };
+
+            var result = ApplyOpt(AST, new OptExprSumZero());
+            CollectionAssert.AreEqual(expected, result);
         }
     }
 }

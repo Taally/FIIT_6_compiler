@@ -60,9 +60,9 @@ namespace SimpleLang.Visitors
         public override void VisitExprListNode(ExprListNode e)
         {
             PreVisit(e);
-            foreach (var x in e.ExprChildren)
+            for (var i = 0; i < e.ExprChildren.Count; ++i)
             {
-                x.Visit(this);
+                e.ExprChildren[i].Visit(this);
             }
             PostVisit(e);
         }

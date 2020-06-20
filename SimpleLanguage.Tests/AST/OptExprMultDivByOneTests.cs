@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using SimpleLang;
-using SimpleParser;
-using ProgramTree;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
@@ -18,14 +13,14 @@ namespace SimpleLanguage.Tests.AST
 var a, b;
 a = b * 1;
 ");
-            var expected = @"var a, b;
-a = b;";
 
-            var opt = new OptExprMultDivByOne();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "a = b;"
+            };
+            
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -35,14 +30,13 @@ a = b;";
 var a, b;
 a = 1 * b;
 ");
-            var expected = @"var a, b;
-a = b;";
+            var expected = new[] {
+                "var a, b;",
+                "a = b;"
+            };
 
-            var opt = new OptExprMultDivByOne();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -52,14 +46,30 @@ a = b;";
 var a, b;
 a = b / 1;
 ");
-            var expected = @"var a, b;
-a = b;";
+            var expected = new[] {
+                "var a, b;",
+                "a = b;"
+            };
 
-            var opt = new OptExprMultDivByOne();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
+            CollectionAssert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void MultAndDivByLeftRightOne()
+        {
+            var AST = BuildAST(@"
+var a, b;
+a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
+");
+
+            var expected = new[] {
+                "var a, b;",
+                "a = (a + b);"
+            };
+
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
+            CollectionAssert.AreEqual(expected, result);
         }
     }
 }
