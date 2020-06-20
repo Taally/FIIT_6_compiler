@@ -5,7 +5,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
     internal class ConstPropagationTest : TACTestsBase
-    {        
+    {
         [Test]
         public void TestNoBlocks()
         {
@@ -20,7 +20,7 @@ var a,b,c;
             Assert.AreEqual(2, InOut.IN.Count);
             Assert.AreEqual(2, InOut.OUT.Count);
         }
-     
+
         [Test]
         public void OneAssign()
         {
@@ -91,12 +91,12 @@ c = b + 2;
             var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
             Assert.AreEqual(LatticeTypeData.CONST, InOut.OUT[blocks[2]]["b"].Type);
             Assert.AreEqual(LatticeTypeData.CONST, InOut.OUT[blocks[2]]["a"].Type);
-            Assert.AreEqual(LatticeTypeData.UNDEF, InOut.OUT[blocks[2]]["c"].Type);
+            Assert.AreEqual(false, InOut.OUT[blocks[2]].ContainsKey("c"));
 
             Assert.AreEqual("3", InOut.OUT[blocks[2]]["b"].ConstValue);
             Assert.AreEqual("7", InOut.OUT[blocks[2]]["a"].ConstValue);
         }
-        
+
         [Test]
         public void ConstAndVariable()
         {
@@ -122,17 +122,18 @@ a = 2 * b;
 var a,b,c;
 a = 2;
 b = 3;
-c = a * b + 2;
+c = a * b - 2;
 ");
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
             Assert.AreEqual(InOut.OUT[blocks[0]]["a"].Type, LatticeTypeData.CONST);
             Assert.AreEqual(InOut.OUT[blocks[0]]["b"].Type, LatticeTypeData.CONST);
-            Assert.AreEqual(InOut.OUT[blocks[0]]["c"].Type, LatticeTypeData.NAC);
+            Assert.AreEqual(InOut.OUT[blocks[0]]["c"].Type, LatticeTypeData.CONST);
 
             Assert.AreEqual("2", InOut.OUT[blocks[0]]["a"].ConstValue);
             Assert.AreEqual("3", InOut.OUT[blocks[0]]["b"].ConstValue);
+            Assert.AreEqual("4", InOut.OUT[blocks[0]]["c"].ConstValue);
         }
 
         [Test]
@@ -189,12 +190,12 @@ if c > 5
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             Assert.AreEqual(7, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg); 
+            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
             Assert.AreEqual(LatticeTypeData.CONST, InOut.OUT[blocks[5]]["a"].Type);
-            Assert.AreEqual("10", InOut.OUT[blocks[5]]["a"].ConstValue);            
+            Assert.AreEqual("10", InOut.OUT[blocks[5]]["a"].ConstValue);
             Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[5]]["c"].Type);
         }
-        
+
         [Test]
         public void TwoConstValues()
         {
@@ -340,7 +341,7 @@ if c > 5
             Assert.AreEqual(LatticeTypeData.CONST, result[blocks[6]].Out["x"].Type);
             Assert.AreEqual("10", result[blocks[6]].Out["x"].ConstValue);
             Assert.AreEqual(LatticeTypeData.CONST, result[blocks[6]].Out["a"].Type);
-            Assert.AreEqual("10", result[blocks[6]].Out["a"].ConstValue);            
+            Assert.AreEqual("10", result[blocks[6]].Out["a"].ConstValue);
             Assert.AreEqual(LatticeTypeData.NAC, result[blocks[6]].Out["c"].Type);
         }
 
