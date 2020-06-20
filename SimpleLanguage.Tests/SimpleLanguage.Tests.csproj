@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\ASTOptimizerTests.cs" />
     <Compile Include="AST\ASTTestsBase.cs" />
     <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprEqualBoolNumTests.cs" />

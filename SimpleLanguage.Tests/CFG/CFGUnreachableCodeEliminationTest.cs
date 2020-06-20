@@ -159,7 +159,7 @@ c = b == 53;
 ");
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
 
-            List<BasicBlock> actual = cfg.GetCurrentBasicBlocks().ToList();
+            var actual = cfg.GetCurrentBasicBlocks().ToList();
 
             var expected = new List<BasicBlock>()
             {
@@ -183,7 +183,7 @@ c = b == 53;
                 var tmpa = actual[i].GetInstructions();
                 Assert.AreEqual(tmpe.Count, tmpa.Count);
 
-                for (int j = 0; j < tmpe.Count; j++)
+                for (var j = 0; j < tmpe.Count; j++)
                 {
                     var a = tmpe[j].ToString();
                     var b = tmpa[j].ToString();
