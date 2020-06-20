@@ -55,6 +55,7 @@
     <Compile Include="ASTOptimizer.cs" />
     <Compile Include="DataFlowAnalysis\AvailableExpressions.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagation.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariableAnalysisOptimization.cs" />
     <Compile Include="LoopsInCFG\BackEdges.cs" />
     <Compile Include="LoopsInCFG\NaturalLoop.cs" />
     <Compile Include="DataFlowAnalysis\BitUtils.cs" />
