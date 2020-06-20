@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
@@ -19,7 +19,7 @@ while true
   c = false;
 d = false;";
 
-            var opt = new OptExprEqualBoolNumId();
+            var opt = new OptExprEqualBoolNum();
             AST.root.Visit(opt);
             var pp = new PrettyPrintVisitor();
             AST.root.Visit(pp);
