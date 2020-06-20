@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using SimpleLang;
 
@@ -107,7 +108,91 @@ print (c);"
 
             AssertSet(expected, actual);
         }
+        [Test]
+        public void AvailableExpressionsTest()
+        {
+            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+2: a = x + y;
+g = c + d;
+3: zz = 1;
+goto 1;
+1: if(a < b) 
+    c = 1; 
+b = c + d;
+goto 3;
+e = zz + i;"
+);
+            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            {
+                (new List<OneExpression>(), new List<OneExpression>()),
+                (new List<OneExpression>(), new List<OneExpression>()
+                { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ),
 
+                (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ,
+                new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
+
+                (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") },
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ),
+                    new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
+
+                (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ) 
+                , new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}
+                ),
+
+                (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ) , new OneExpression("PLUS", "x", "y") }
+                ),
+
+                ( new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
+                  new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}
+                ),
+
+            };
+
+            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var availableExpressions = new AvailableExpressions();
+            var resAvailableExpressions = availableExpressions.Execute(cfg);
+            var In = new List<OneExpression>();
+            var Out = new List<OneExpression>();
+            var actual = new List<(List<OneExpression>, List<OneExpression>)>();
+            foreach (var block in resAvailableExpressions)
+            {
+                foreach (var expr in block.Value.In)
+                {
+                    In.Add(expr);                    
+                }
+                foreach (var expr in block.Value.Out)
+                {
+                    Out.Add(expr);
+                }
+                actual.Add((new List<OneExpression>(In), new List<OneExpression>(Out)));
+                In.Clear();
+                Out.Clear();
+            }
+            AssertSet(expected, actual);
+        }
+        private void AssertSet(
+            List<(List<OneExpression>, List<OneExpression>)> expected,
+            List<(List<OneExpression>, List<OneExpression>)> actual)
+        {
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.True(SetEquals(expected[i].Item1, actual[i].Item1));
+                Assert.True(SetEquals(expected[i].Item2, actual[i].Item2));
+            }
+        }
+        private bool SetEquals(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
+        {
+            for (var i = 0; i < listOfExpr1.Count; i++)
+            {
+                if (listOfExpr1[i].ToString() != listOfExpr2[i].ToString())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         private void AssertSet(
             List<(HashSet<string> IN, HashSet<string> OUT)> expected,
             List<(HashSet<string> IN, HashSet<string> OUT)> actual)

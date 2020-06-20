@@ -27,8 +27,9 @@ goto 55;
             {
                 new List<BasicBlock>()
                 {
+                    new BasicBlock(new List<Instruction>(){ TAC[0] }),
                     new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[4] })
+
                 }
             };
 
@@ -56,14 +57,7 @@ goto 54;
                 new List<BasicBlock>()
                 {
                     new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] })
-                },
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[0] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[4] })
-                },
-
+                }
 
             };
 
@@ -91,14 +85,51 @@ goto 54;
                 {
                     new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2] })
                 },
-
-
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[3] })
-                }
             };
+
+            AssertSet(expected, actual);
+        }
+
+        [Test]
+        public void IrreducibilityGraphTest1()
+        {
+            var TAC = GenTAC(@"
+var a, b, c, d, x, u, e,g, y,zz,i; 
+while (zz == i) 
+{      
+a = b;     
+1: c = d;     
+goto 2;
+} 
+2: x = u; 
+goto 1;
+");
+
+            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
+            var expected = new List<List<BasicBlock>>();
+
+            AssertSet(expected, actual);
+        }
+
+        [Test]
+        public void IrreducibilityGraphTest2()
+        {
+            var TAC = GenTAC(@"
+var a, b, c, d, x, u, e,g, y,zz,i;
+for i = 1, 10
+{
+a = b;
+1: c = d;
+goto 2;
+}
+2: x = u;
+goto 1;
+");
+
+            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
+            var expected = new List<List<BasicBlock>>();
 
             AssertSet(expected, actual);
         }

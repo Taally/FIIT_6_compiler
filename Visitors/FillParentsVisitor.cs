@@ -9,21 +9,10 @@ namespace SimpleLang.Visitors
 
         public override void PreVisit(Node n)
         {
-            n.Parent = st.Peek();
+            n.Parent = st.Count != 0 ? st.Peek() : null;
             st.Push(n);
         }
 
         public override void PostVisit(Node n) => st.Pop();
-
-        public override void VisitStListNode(StListNode bl)
-        {
-            if (st.Count > 0)
-            {
-                bl.Parent = st.Peek();
-            }
-            st.Push(bl);
-            base.VisitStListNode(bl);
-            st.Pop();
-        }
     }
 }
