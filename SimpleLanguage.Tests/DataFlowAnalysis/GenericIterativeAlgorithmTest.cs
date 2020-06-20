@@ -148,11 +148,6 @@ e = zz + i;"
                   new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}
                 ),
 
-                (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "zz", "i") }),
-
-                (new List<OneExpression>() { new OneExpression("PLUS", "zz", "i") } ,
-                new List<OneExpression>() { new OneExpression("PLUS", "zz", "i")})
-
             };
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
