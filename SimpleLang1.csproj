@@ -90,7 +90,7 @@
     <Compile Include="TACOptimizations\ThreeAddressCodeRemoveGotoThroughGoto.cs" />
     <Compile Include="Visitors\AutoVisitor.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprAlgebraic.cs" />
-    <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNumId.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprEqualBoolNum.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprFoldUnary.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultDivByOne.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprMultZero.cs" />

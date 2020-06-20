@@ -14,7 +14,7 @@ namespace SimpleLang
             new OptExprSumZero(),
             new OptStatIfTrue(),
             new OptStatIfFalse(),
-            new OptExprEqualBoolNumId(),
+            new OptExprEqualBoolNum(),
             new OptWhileFalseVisitor(),
             new OptExprSimilarNotEqual(),
             new OptAssignEquality(),
