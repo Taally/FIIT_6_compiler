@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
-using NUnit.Framework;
 
 namespace SimpleLanguage.Tests.AST
 {

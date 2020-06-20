@@ -15,8 +15,8 @@ namespace SimpleLang
         /// </returns>
         public static List<List<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg)
         {
-            
-            
+
+
             var allEdges = new BackEdges(cfg);
             if (allEdges.GraphIsReducible)
             {
