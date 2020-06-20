@@ -62,18 +62,42 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
        }
 ```
 
-#### Пример работы
-Исходный код программы:
-```csharp
-var a;
-a = 14;
-if(true)
-  a = a - 4;
+#### Тесты
+В тестах проверяется, что данная оптимизация на месте условного оператора ```if(true)``` оставляет только true-ветку
+```[Test]
+public void IfTrueComplexTest()
+{
+    var AST = BuildAST(@"
+var a, b;
+if true
+if true {
+a = b;
+b = 1;
+}
 else
-  a = a + 10;
-```
-Результат работы:
-```csharp
-a = 14;
-a = a - 4;
+a = 1;
+
+if a > b{
+a = b;
+if true{
+b = b + 1;
+b = b / 5;
+}
+}
+");
+
+    var expected = new[] {
+        "var a, b;",
+        "a = b;",
+        "b = 1;",
+        "if (a > b) {",
+        "  a = b;",
+        "  b = (b + 1);",
+        "  b = (b / 5);",
+        "}"
+    };
+
+    var result = ApplyOpt(AST, new OptStatIfTrue());
+    CollectionAssert.AreEqual(expected, result);
+}
 ```
