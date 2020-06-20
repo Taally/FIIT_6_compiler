@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -114,7 +114,7 @@ namespace SimpleLang
         {
             var tmpBasicBlock = new List<BasicBlock>(_basicBlocks);
 
-            for (int i = 1; i < _dfn.Count-1; i++)
+            for (int i = 1; i < _dfn.Count - 1; i++)
             {
                 if (_dfn[i] == 0)
                 {
