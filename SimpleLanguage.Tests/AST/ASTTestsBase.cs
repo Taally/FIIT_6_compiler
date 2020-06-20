@@ -10,7 +10,10 @@ namespace SimpleLanguage.Tests.AST
 {
     public class ASTTestsBase
     {
+        private Parser AST;
+
         protected Parser BuildAST(string sourceCode) {
+            AST = null;
             SymbolTable.vars.Clear();
             var scanner = new Scanner();
             scanner.SetSource(sourceCode, 0);
@@ -18,7 +21,15 @@ namespace SimpleLanguage.Tests.AST
             parser.Parse();
             var fillParents = new FillParentsVisitor();
             parser.root.Visit(fillParents);
+            AST = parser;
             return parser;
+        }
+
+        protected string[] ApplyOpt(ChangeVisitor opt) {
+            AST.root.Visit(opt);
+            var pp = new PrettyPrintVisitor();
+            AST.root.Visit(pp);
+            return pp.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

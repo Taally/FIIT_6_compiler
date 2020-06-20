@@ -14,14 +14,13 @@ namespace SimpleLanguage.Tests.AST
 var a, b;
 a = b - b;
 ");
-            var expected = @"var a, b;
-a = 0;";
+            var expected = new[] {
+                "var a, b;",
+                "a = 0;"
+            };
 
-            var opt = new OptExprSubEqualVar();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(new OptExprSubEqualVar());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -31,14 +30,14 @@ a = 0;";
 var a, b;
 print(a - a, b - b, b - a, a - a - b);
 ");
-            var expected = @"var a, b;
-print(0, 0, (b - a), (0 - b));";
 
-            var opt = new OptExprSubEqualVar();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "print(0, 0, (b - a), (0 - b));"
+            };
+
+            var result = ApplyOpt(new OptExprSubEqualVar());
+            CollectionAssert.AreEqual(expected, result);
         }
     }
 }
