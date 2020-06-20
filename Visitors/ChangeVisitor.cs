@@ -9,7 +9,10 @@ namespace SimpleLang.Visitors
 
         public override void VisitStListNode(StListNode bl)
         {
-            Changed = false;
+            if (bl.Parent == null)
+            {
+                Changed = false;
+            }
             base.VisitStListNode(bl);
         }
 
