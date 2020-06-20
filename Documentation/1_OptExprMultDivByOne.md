@@ -79,7 +79,7 @@ a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
 ");
 
     var expected = new[] {
-		"var a, b;",
+	"var a, b;",
         "a = (a + b);"
     };
 
