@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptWhileFalseVisitor : ChangeVisitor
+    public class OptWhileFalseVisitor : ChangeVisitor
     {
         public override void PostVisit(Node nd)
         {
