@@ -64,7 +64,8 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
 
 #### Тесты
 В тестах проверяется, что данная оптимизация на месте условного оператора ```if(true)``` оставляет только true-ветку
-```[Test]
+```csharp
+[Test]
 public void IfTrueComplexTest()
 {
     var AST = BuildAST(@"
