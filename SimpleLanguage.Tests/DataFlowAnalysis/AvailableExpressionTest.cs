@@ -46,7 +46,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             for (var i = 0; i < expected.Count; i++)
             {
                 Assert.AreEqual(expected[i].Item1.Count, actual[i].Item1.Count);
-                Assert.AreEqual(expected[i].Item1.Count, actual[i].Item1.Count);
+                Assert.AreEqual(expected[i].Item2.Count, actual[i].Item2.Count);
                 Assert.True(SetEquals(expected[i].Item1, actual[i].Item1));
                 Assert.True(SetEquals(expected[i].Item2, actual[i].Item2));
             }
