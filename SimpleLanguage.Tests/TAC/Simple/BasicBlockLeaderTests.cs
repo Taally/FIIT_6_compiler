@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    internal class BasicBlockLeaderTest : TACTestsBase
+    internal class BasicBlockLeaderTests : TACTestsBase
     {
         [Test]
         public void LabelAliveTest()
@@ -120,7 +120,7 @@ goto 1;
                 var tmpa = actual[i].GetInstructions();
                 Assert.AreEqual(tmpe.Count, tmpa.Count);
 
-                for (int j = 0; j < tmpe.Count; j++)
+                for (var j = 0; j < tmpe.Count; j++)
                 {
                     var a = tmpe[j].ToString();
                     var b = tmpa[j].ToString();

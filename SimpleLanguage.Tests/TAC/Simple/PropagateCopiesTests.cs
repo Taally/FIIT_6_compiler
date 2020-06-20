@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    internal class PropagateCopiesTest : TACTestsBase
+    internal class PropagateCopiesTests : TACTestsBase
     {
         [Test]
         public void Test1()
