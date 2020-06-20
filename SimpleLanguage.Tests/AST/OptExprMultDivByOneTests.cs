@@ -18,6 +18,7 @@ a = b * 1;
                 "var a, b;",
                 "a = b;"
             };
+            
             var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
