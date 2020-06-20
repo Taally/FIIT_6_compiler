@@ -3,7 +3,7 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprTransformUnaryToValue : ChangeVisitor
+    public class OptExprTransformUnaryToValue : ChangeVisitor
     {
         public override void VisitUnOpNode(UnOpNode unop)
         {
