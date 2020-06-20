@@ -19,9 +19,9 @@ a = 54;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("3", "", "", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("11", "3", "", "assign", "b")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "3", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("3", "assign", "11", "", "b")}),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -40,8 +40,8 @@ a = 54;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("4", "", "", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"), new Instruction("11", "3", "", "assign", "b")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "4", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a"), new Instruction("3", "assign", "11", "", "b")}),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -59,7 +59,7 @@ b = 11;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"), new Instruction("11", "", "", "assign", "b")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a"), new Instruction("", "assign", "11", "", "b")}),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -80,10 +80,10 @@ b = 11;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("3", "", "", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("4", "", "", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"), new Instruction("5", "", "", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("11", "", "", "assign", "b")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "3", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "4", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a"), new Instruction("", "goto", "5", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "11", "", "b")}),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -101,9 +101,9 @@ goto 1;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "1", "goto", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "", "2", "goto", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "1", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("1", "goto", "1", "", "")}),
+                new BasicBlock(new List<Instruction>(){new Instruction("2", "goto", "1", "", "")}),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -111,12 +111,21 @@ goto 1;
         }
 
         private void AssertSet(
-            List<BasicBlock> expected,
-            List<BasicBlock> actual)
+             List<BasicBlock> expected,
+             List<BasicBlock> actual)
         {
             for (var i = 0; i < expected.Count; ++i)
             {
-                Assert.True(expected[i].ToString() == actual[i].ToString());
+                var tmpe = expected[i].GetInstructions();
+                var tmpa = actual[i].GetInstructions();
+                Assert.AreEqual(tmpe.Count, tmpa.Count);
+
+                for (int j = 0; j < tmpe.Count; j++)
+                {
+                    var a = tmpe[j].ToString();
+                    var b = tmpa[j].ToString();
+                    Assert.AreEqual(a, b);
+                }
             }
         }
     }

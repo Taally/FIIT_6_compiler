@@ -235,24 +235,24 @@ for k = 0, 2
             CollectionAssert.AreEquivalent(inOutInfo[blocks[3]].In, inOutInfo[blocks[3]].Out);
         }
 
-        [Test]
-        public void DisconnectedGraph()
-        {
-            // supposedly in the future unreachable code will be removed but for now test that definitions don't reach it
-            (var blocks, var inOutInfo) = GenGraphAndGetInOutInfo(@"
-var a;
-1: a = 1;
-goto 1;
-a = 4;
-");
-            // two basic blocks + entry and exit
-            Assert.AreEqual(4, inOutInfo.Count);
+//        [Test]
+//        public void DisconnectedGraph()
+//        {
+//            // supposedly in the future unreachable code will be removed but for now test that definitions don't reach it
+//            (var blocks, var inOutInfo) = GenGraphAndGetInOutInfo(@"
+//var a;
+//1: a = 1;
+//goto 1;
+//a = 4;
+//");
+//            // two basic blocks + entry and exit
+//            Assert.AreEqual(4, inOutInfo.Count);
 
-            CollectionAssert.AreEquivalent(blocks[0].GetInstructions().Take(1), inOutInfo[blocks[0]].Out);
+//            CollectionAssert.AreEquivalent(blocks[0].GetInstructions().Take(1), inOutInfo[blocks[0]].Out);
 
-            Assert.AreEqual(0, inOutInfo[blocks[1]].In.Count());
-            CollectionAssert.AreEquivalent(blocks[1].GetInstructions(), inOutInfo[blocks[1]].Out);
-        }
+//            Assert.AreEqual(0, inOutInfo[blocks[1]].In.Count());
+//            CollectionAssert.AreEquivalent(blocks[1].GetInstructions(), inOutInfo[blocks[1]].Out);
+//        }
 
         [Test]
         public void ComplexTest()

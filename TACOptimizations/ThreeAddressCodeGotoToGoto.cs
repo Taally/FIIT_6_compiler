@@ -1,117 +1,140 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
 {
     public static class ThreeAddressCodeGotoToGoto
     {
-        public struct GtotScaner
-        {
-            public string Label { get; }
-            public string LabelFrom { get; }
-            public string Operation { get; }
-            public int InstructionNum { get; }
-            public GtotScaner(string label, string labelFrom, string operation, int instructionNum)
-            {
-                Label = label;
-                LabelFrom = labelFrom;
-                Operation = operation;
-                InstructionNum = instructionNum;
-            }
-        }
+        private static bool wasChanged = false;
 
+        /// <summary>
+        /// Устранит переходы к переходам
+        /// </summary>
+        /// <param name="commands">Программа в трехадресном коде</param>
+        /// <returns>
+        /// Вернет программу с устраненными перходами к переходам
+        /// </returns>
         public static (bool wasChanged, List<Instruction> instructions) ReplaceGotoToGoto(List<Instruction> commands)
         {
-            var wasChanged = false;
-            var list = new List<GtotScaner>();
+            wasChanged = false;
             var tmpCommands = new List<Instruction>();
-            for (var i = 0; i < commands.Count; i++)
+            tmpCommands.AddRange(commands.ToArray()); // Перепишем набор наших инструкций в темповый массив
+
+            foreach (var instr in commands)
             {
-                if (commands[i].Operation == "goto")
+                if (instr.Operation == "goto") // Простые goto (случай из задания 1)
                 {
-                    list.Add(new GtotScaner(commands[i].Label, commands[i].Argument1, commands[i].Operation, i));
+                    tmpCommands = StretchTransitions(instr.Argument1, tmpCommands);
                 }
 
-                if (commands[i].Operation == "ifgoto")
+                if (instr.Operation == "ifgoto" && instr.Label == "") // Инструкции вида if(усл) goto (случай из задания 2)
                 {
-                    list.Add(new GtotScaner(commands[i].Label, commands[i].Argument2, commands[i].Operation, i));
+                    tmpCommands = StretchIFWithoutLabel(instr.Argument2, tmpCommands);
                 }
-            }
 
-            var addNewLabels = new Dictionary<int, string>();
-            var shiftNewLabels = 0;
-
-            for (var i = 0; i < commands.Count; i++)
-            {
-                if (commands[i].Operation == "goto")
+                if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (случай из задания 2)
                 {
-                    for (var j = 0; j < list.Count; j++)
-                    {
-                        if (list[j].Label == commands[i].Argument1 && list[j].LabelFrom != commands[i].Argument1 && list[j].Operation == "goto")
-                        {
-                            wasChanged = true;
-                            tmpCommands.Add(new Instruction(commands[i].Label, "goto", list[j].LabelFrom, "", ""));
-                            i++;
-                            break;
-                        }
-                        else if (list[j].Label == commands[i].Argument1 && list[j].LabelFrom != commands[i].Argument1 && list[j].Operation == "ifgoto" && CountGoTo(list, list[j].Label) <= 1)
-                        {
-                            shiftNewLabels++;
-                            wasChanged = true;
-                            tmpCommands.Add(new Instruction("",
-                                commands[list[j].InstructionNum].Operation,
-                                commands[list[j].InstructionNum].Argument1,
-                                commands[list[j].InstructionNum].Argument2,
-                                commands[list[j].InstructionNum].Result));
-                            if (commands[list[j].InstructionNum + 1].Label == "")
-                            {
-                                var tmpName = ThreeAddressCodeTmp.GenTmpLabel();
-                                tmpCommands.Add(new Instruction("", "goto", tmpName, "", ""));
-                                addNewLabels.Add(list[j].InstructionNum + shiftNewLabels, tmpName);
-                                i += 1;
-                                break;
-                            }
-                        }
-                    }
+                    tmpCommands = StretchIFWithLabel(instr, tmpCommands);
                 }
-                else if (commands[i].Operation == "ifgoto" && !addNewLabels.ContainsKey(i))
-                {
-                    for (var j = 0; j < list.Count; j++)
-                    {
-                        if (list[j].Label == commands[i].Argument2)
-                        {
-                            if (list[j].Label == commands[i].Argument2 && list[j].LabelFrom != commands[i].Argument2)
-                            {
-                                wasChanged = true;
-                                tmpCommands.Add(new Instruction(commands[i].Label, "ifgoto", commands[i].Argument1, list[j].LabelFrom, ""));
-                                i++;
-                                break;
-                            }
-                        }
-                    }
-                }
-                tmpCommands.Add(new Instruction(commands[i].Label, commands[i].Operation, commands[i].Argument1, commands[i].Argument2, commands[i].Result));
-            }
-
-            foreach (var x in addNewLabels.Keys)
-            {
-                tmpCommands[x] = new Instruction(addNewLabels[x], "noop", "", "", "");
             }
 
             return (wasChanged, tmpCommands);
         }
 
-        public static int CountGoTo(List<GtotScaner> a, string label)
+        /// <summary>
+        /// Протягивает метки для goto
+        /// </summary>
+        /// <param name="Label">Метка которую мы ищем</param>
+        /// <param name="instructions">Набор наших инструкций</param>
+        /// <returns>
+        /// Вернет измененные инструкции с протянутыми goto
+        /// </returns>
+        private static List<Instruction> StretchTransitions(string Label, List<Instruction> instructions)
         {
-            var tmpCount = 0;
-            foreach (var x in a)
+            for (int i = 0; i < instructions.Count; i++)
             {
-                if (x.LabelFrom == label && (x.Operation == "goto" || x.Operation == "ifgoto"))
+                if (instructions[i].Label == Label && instructions[i].Operation == "goto" && instructions[i].Argument1 != Label)
                 {
-                    tmpCount++;
+                    string tmp = instructions[i].Argument1;
+                    for (int j = 0; j < instructions.Count; j++)
+                    {
+                        if (instructions[j].Operation == "goto" && instructions[j].Argument1 == Label)
+                        {
+                            wasChanged = true;
+                            instructions[j] = new Instruction(instructions[j].Label, "goto", tmp, "", "");
+                        }
+                    }
                 }
             }
-            return tmpCount;
+
+            return instructions;
+        }
+
+        /// <summary>
+        /// Протягивает метки для if(усл) goto
+        /// </summary>
+        /// <param name="Label">Метка которую мы ищем</param>
+        /// <param name="instructions">Набор наших инструкций</param>
+        /// <returns>
+        /// Вернет измененные инструкции с протянутыми goto из if
+        /// </returns>
+        private static List<Instruction> StretchIFWithoutLabel(string Label, List<Instruction> instructions)
+        {
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                if (instructions[i].Label == Label && instructions[i].Operation == "goto" && instructions[i].Argument2 != Label)
+                {
+                    string tmp = instructions[i].Argument1;
+                    for (int j = 0; j < instructions.Count; j++)
+                    {
+                        if (instructions[j].Operation == "ifgoto" && instructions[j].Argument2 == Label)
+                        {
+                            wasChanged = true;
+                            instructions[j] = new Instruction("", "ifgoto", instructions[j].Argument1, tmp, "");
+                        }
+                    }
+                }
+            }
+
+            return instructions;
+        }
+
+        /// <summary>
+        /// Протянуть if с метками
+        /// </summary>
+        /// <param name="findInstruction">Инструкция которую мы ищем</param>
+        /// <param name="instructions">Набор наших инструкций</param>
+        /// <returns>
+        /// Вернет измененные инструкции если меткок if не более двух
+        /// </returns>
+        private static List<Instruction> StretchIFWithLabel(Instruction findInstruction, List<Instruction> instructions)
+        {
+            int findIndexIf = instructions.IndexOf(findInstruction);
+
+            if (findIndexIf == -1
+                || instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto" && x.ToString() != instructions[findIndexIf].ToString()).Count() > 1)
+            {
+                return instructions;
+            }
+
+            int findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0));
+
+            wasChanged = true;
+            if (instructions[findIndexIf + 1].Label == "")
+            {
+                instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
+                var tmp = ThreeAddressCodeTmp.GenTmpLabel();
+                instructions[findIndexIf] = new Instruction(tmp, "noop", "", "", "");
+                instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
+            }
+            else
+            {
+                instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
+                var tmp = instructions[findIndexIf + 1].Label;
+                instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
+                instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
+            }
+            return instructions;
         }
     }
 }

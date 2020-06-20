@@ -3,13 +3,16 @@ using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
-    internal class ChangeVisitor : AutoVisitor
+    public class ChangeVisitor : AutoVisitor
     {
         public bool Changed { get; set; }
 
         public override void VisitStListNode(StListNode bl)
         {
-            Changed = false;
+            if (bl.Parent == null)
+            {
+                Changed = false;
+            }
             base.VisitStListNode(bl);
         }
 
@@ -45,7 +48,10 @@ namespace SimpleLang.Visitors
                 {
                     if (p.StatChildren[i] == from)
                     {
-                        p.StatChildren[i] = to;
+                        p.StatChildren[i] = to is BlockNode block
+                            ? block.List.StatChildren.Count == 1
+                                ? block.List.StatChildren[0] : block.List
+                            : to;
                         Changed = true;
                         break;
                     }
