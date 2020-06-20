@@ -19,8 +19,7 @@ namespace SimpleLanguage.Tests.LoopsInCFG
             var graph = BuildCFG(@"
 var a;
 ");
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(0, backEdges.Count);
+            Assert.AreEqual(0, graph.GetBackEdges().Count);
         }
         [Test]
         public void SimpleTestBackEdges()
@@ -32,8 +31,7 @@ goto 1;
 1: b = 2;
 goto 2;
 ");
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(1, backEdges.Count);
+            Assert.AreEqual(1, graph.GetBackEdges().Count);
         }
         [Test]
         public void SimpleNoBackEdgesWithoutGoTo()
@@ -54,8 +52,7 @@ else
     f = 5;
 }
 a = f + c;");
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(0, backEdges.Count);
+            Assert.AreEqual(0, graph.GetBackEdges().Count);
         }
         [Test]
         public void BackEdgesWithGoTo()
@@ -71,8 +68,7 @@ goto 3;
 goto 4;
 4: f = 6;
 goto 5;");
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(1, backEdges.Count);
+            Assert.AreEqual(1, graph.GetBackEdges().Count);
         }
         [Test]
         public void SimpleNoBackEdgesWithGoTo()
@@ -88,8 +84,7 @@ goto 3;
 goto 4;
 4: f = 6;");
 
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(0, backEdges.Count);
+            Assert.AreEqual(0, graph.GetBackEdges().Count);
         }
         [Test]
         public void TrashProgram()
@@ -108,8 +103,7 @@ goto 4;
 4: if d > c
     goto 6;
 6: e = a + d;");
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(1, backEdges.Count);
+            Assert.AreEqual(1, graph.GetBackEdges().Count);
         }
         [Test]
         public void ProgramWithLoop()
@@ -126,8 +120,7 @@ input(a);
     p = b + a * a;
     x = a + 1;
 }");
-            var backEdges = new BackEdges(graph).BackEdgesFromGraph;
-            Assert.AreEqual(2, backEdges.Count);
+            Assert.AreEqual(2, graph.GetBackEdges().Count);
         }
 
         //Тесты на приводимость / неприводимость графа потока управления (cfg)
@@ -149,8 +142,7 @@ goto 1;
 }
 goto 2;
 ");
-            var backEdges = new BackEdges(graph);
-            Assert.AreEqual(true, backEdges.GraphIsReducible);
+            Assert.AreEqual(true, graph.IsReducibleGraph());
         }
 
         [Test]
@@ -197,8 +189,7 @@ while (a < b)
     b = b + 1;
 }
 }");
-            var backEdges = new BackEdges(graph);
-            Assert.AreEqual(true, backEdges.GraphIsReducible);
+            Assert.AreEqual(true, graph.IsReducibleGraph());
         }
         [Test]
         public void CheckIfGraphIsNotReducible1()
@@ -216,8 +207,7 @@ else
     2: a = d;
     goto 1;
 }");
-            var backEdges = new BackEdges(graph);
-            Assert.AreEqual(false, backEdges.GraphIsReducible);
+            Assert.AreEqual(false, graph.IsReducibleGraph());
         }
 
         [Test]
@@ -232,8 +222,7 @@ for i = 1, 10
 }
 2: x = u;
 goto 1;");
-            var backEdges = new BackEdges(graph);
-            Assert.AreEqual(false, backEdges.GraphIsReducible);
+            Assert.AreEqual(false, graph.IsReducibleGraph());
         }
 
         [Test]
@@ -249,8 +238,7 @@ while (zz == i)
 2: x = u;
 goto 1;
 ");
-            var backEdges = new BackEdges(graph);
-            Assert.AreEqual(false, backEdges.GraphIsReducible);
+            Assert.AreEqual(false, graph.IsReducibleGraph());
         }
     }
 }
