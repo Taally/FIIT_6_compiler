@@ -39,12 +39,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        
     - name: Generate Documentation.md
       run: |
         python Documentation/gen.py
     
     - name: Generate PDF
-      uses: docker://pandoc/core:latest
+      uses: docker://pandoc/latex:latest
       with:
           args: -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
     
