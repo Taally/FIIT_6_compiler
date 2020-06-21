@@ -7,7 +7,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    internal class RemoveNoopTest : TACTestsBase
+    internal class RemoveNoopTests : TACTestsBase
     {
         public (bool wasChanged, List<Instruction> instructions) OptimizeLocal(List<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
 

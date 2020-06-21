@@ -42,7 +42,7 @@ namespace SimpleLang
         public bool ContainsVariable(string variable)
             => Argument1 == variable || Argument2 == variable;
 
-        public int GetHashCode(OneExpression obj) 
+        public int GetHashCode(OneExpression obj)
             => throw new NotImplementedException();
         #endregion
     }
@@ -61,7 +61,7 @@ namespace SimpleLang
         public override List<OneExpression> InitFirst { get => new List<OneExpression>(); protected set { } }
         public override List<OneExpression> Init { get => AvailableExpressionTransferFunc.GetU(CFG); protected set { } }
         public override Func<BasicBlock, List<OneExpression>, List<OneExpression>> TransferFunction { get; protected set; }
-        public override Direction Direction => Direction.Forward; 
+        public override Direction Direction => Direction.Forward;
         public override InOutData<List<OneExpression>> Execute(ControlFlowGraph graph)
         {
             CFG = graph;
@@ -115,7 +115,7 @@ namespace SimpleLang
             Initialization(graph);
         }
         #region
-        public List<OneExpression> Transfer(BasicBlock basicBlock, List<OneExpression> input) 
+        public List<OneExpression> Transfer(BasicBlock basicBlock, List<OneExpression> input)
             => E_gen_join(basicBlock, In_minus_e_kill(basicBlock, input));
         public static List<OneExpression> GetU(ControlFlowGraph graph)
         {
