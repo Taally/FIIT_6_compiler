@@ -161,7 +161,7 @@ a = 1;
         }
 
         [Test]
-        public void InfinityLoopfTest()
+        public void InfiniteLoopTest()
         {
             var TAC = GenTAC(@"
 1: goto 2;
