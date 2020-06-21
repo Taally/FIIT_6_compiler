@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AST\ASTTestsBase.cs" />
+    <Compile Include="AST\OptExprSimilarNotEqualTest.cs" />
     <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprEqualBoolNumTests.cs" />
     <Compile Include="AST\OptExprMultDivByOneTests.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="AST\OptExprSubEqualVarTests.cs" />
     <Compile Include="AST\OptExprSumZeroTests.cs" />
     <Compile Include="AST\OptExprTransformUnaryToValueTests.cs" />
+    <Compile Include="AST\OptStatIfFalseTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
     <Compile Include="CFG\CFGcreateTest.cs" />

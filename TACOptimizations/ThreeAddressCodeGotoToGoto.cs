@@ -117,7 +117,14 @@ namespace SimpleLang
                 return instructions;
             }
 
-            int findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0));
+            var finditem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
+                instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0) :
+                new Instruction("", "", "", "", "");
+            int findIndexGoto = instructions.IndexOf(finditem);
+            if (findIndexGoto == -1)
+            {
+                return instructions;
+            }
 
             wasChanged = true;
             if (instructions[findIndexIf + 1].Label == "")
