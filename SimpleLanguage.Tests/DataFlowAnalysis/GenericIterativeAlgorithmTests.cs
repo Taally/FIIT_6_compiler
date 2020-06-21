@@ -196,16 +196,8 @@ e = zz + i;"
         {
             for (var i = 0; i < expected.Count; ++i)
             {
-                for (var j = 0; j < expected[i].IN.Count; j++)
-                {
-                    Assert.True(actual[i].IN.Contains(expected[i].IN.ElementAt(j)));
-                }
-
-                for (var j = 0; j < expected[i].OUT.Count; j++)
-                {
-                    Assert.True(actual[i].OUT.Contains(expected[i].OUT.ElementAt(j)));
-                }
-
+                CollectionAssert.AreEquivalent(expected[i].IN, actual[i].IN);
+                CollectionAssert.AreEquivalent(expected[i].OUT, actual[i].OUT);
             }
         }
 
