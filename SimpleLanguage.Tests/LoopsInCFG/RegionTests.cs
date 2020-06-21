@@ -37,7 +37,7 @@ a = 8;
 var a, b, x, c;
 for x=1,10
 {
-	a = 2;
+    a = 2;
 }
 c = a + b;
 ");
@@ -58,11 +58,11 @@ c = a + b;
 var a, b, x, c;
 for x=1,10
 {
-	a = 2;
+    a = 2;
 }
 for x=1,10
 {
-	b = 55;
+    b = 55;
 }
 c = a + b;
 ");
@@ -83,7 +83,7 @@ c = a + b;
 var a, b, c, x;
 for x=1,10
 {
-	for a=1,10
+    for a=1,10
     {
         c = 2;
     }
