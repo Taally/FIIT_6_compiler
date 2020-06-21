@@ -29,82 +29,40 @@
 
 
 #### Практическая часть
-Реализовали метод возвращающий все естественные циклы:
+Реализовали метод для поиска естественных циклов, который отрабатывает только в случае, если граф является приводимым. Находим все циклы программы при промощи обратных ребер графа. Проверяем все циклы на условие естественности: цикл должен содержать только одну точку входа.
+Пример реализации метода, возвращающий все естественные циклы:
 ```csharp
 public class NaturalLoop
-    {
-        /// <summary>
-        /// Принимает Граф потока данных и по нему ищет все естественные циклы
-        /// </summary>
-        /// <param name="cfg">Граф потока управления</param>
-        /// <returns>
-        /// Вернет все натуральные циклы
-        /// </returns>
-        public static List<List<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg) // принимаем граф потока данных
-        {
-            var allEdges = new BackEdges(cfg); // получаем обратные ребра графа
-            if (allEdges.GraphIsReducible)  // Проверка графа на приводимость
-            {
-                var natLoops = new List<List<BasicBlock>>(); // список всех циклов
+foreach (var (From, To) in allEdges.BackEdgesFromGraph) // проход по всем обратным ребрам
+{
+	if (cfg.VertexOf(To) > 0) // проверка на наличие цикла
+	{
+		var tmp = new List<BasicBlock>(); // временный список
+		for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
+		{
+			if (!tmp.Contains(ForwardEdges[i])) // содержит ли список данный ББл
+			{
+				tmp.Add(ForwardEdges[i]);
+			}
+		}
 
-                var ForwardEdges = cfg.GetCurrentBasicBlocks(); // получаем вершины графа потока управления
-
-                foreach (var (From, To) in allEdges.BackEdgesFromGraph) // проход по всем обратным ребрам
-                {
-                    if (cfg.VertexOf(To) > 0) // проверка на наличие цикла
-                    {
-                        var tmp = new List<BasicBlock>(); // временный список
-                        for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
-                        {
-                            if (!tmp.Contains(ForwardEdges[i])) // содержит ли список данный ББл
-                            {
-                                tmp.Add(ForwardEdges[i]);
-                            }
-                        }
-
-                        natLoops.Add(tmp); // Добавляем все циклы 
-                    }
-                }
-                // Возвращаем только те циклы, которые являются естественными
-                return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
-              }
-              else
-              {
-                  Console.WriteLine("Граф не приводим");
-                  return new List<List<BasicBlock>>();  // Если он не приводим, алгоритм не может работать
-              }
-        }
+		natLoops.Add(tmp); // Добавляем все циклы 
+	}
+}
 ```
-
+Цикл является естественным если все его ББл не содержат входы извне цикла.
 Вспомогательный метод для проверки циклов на естественность:
 ```csharp
-/// <summary>
-/// Проверка цикла на естественность
-/// </summary>
-/// <param name="loop">Проверяемый цикл</param>
-/// <param name="cfg">Граф потока управления</param>
-/// <returns>
-/// Вернет флаг, естественен ли он
-/// </returns>
-private static bool IsNaturalLoop(List<BasicBlock> loop, ControlFlowGraph cfg) // принимает цикл и граф потока управления
+// если кол-во родителей больше 1, значит есть вероятность, что цикл содержит метку с переходом извне
+if (parents.Count > 1)  
 {
-    for (var i = 1; i < loop.Count; i++)
-    {
-        var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(loop[i]));// получаем i ББл данного цикла
-        // если кол-во родителей больше 1, значит есть вероятность, что цикл содержит метку с переходом извне
-        if (parents.Count > 1)  
-        {
-            foreach (var parent in parents.Select(x => x.block)) // проверяем каждого родителя
-            {   // если родитель не принадлежит текущему циклу, этот цикл не является естественным
-                if (!loop.Contains(parent))
-                {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
+	foreach (var parent in parents.Select(x => x.block)) // проверяем каждого родителя
+	{   // если родитель не принадлежит текущему циклу, этот цикл не является естественным
+		if (!loop.Contains(parent))
+		{
+			return false;
+		}
+	}
 }
 ```
 
@@ -125,14 +83,10 @@ return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
 #### Тесты
 В тестах проверяется определение всех естественных циклов.
 ```csharp
+[Test]
+public void IntersectLoopsTest()
 {
-    [TestFixture]
-    internal class NaturalLoopTest : TACTestsBase
-    {
-        [Test]
-        public void IntersectLoopsTest()
-        {
-            var TAC = GenTAC(@"
+	var TAC = GenTAC(@"
 var a, b;
 
 54: a = 5;
@@ -142,24 +96,24 @@ goto 54;
 goto 55;
 ");
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            var expected = new List<List<BasicBlock>>()
-            {
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[4] })
-                }
-            };
+	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+	var actual = NaturalLoop.GetAllNaturalLoops(cfg);
+	var expected = new List<List<BasicBlock>>()
+	{
+		new List<BasicBlock>()
+		{
+			new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
+			new BasicBlock(new List<Instruction>(){ TAC[4] })
+		}
+	};
 
-            AssertSet(expected, actual);
-        }
+	AssertSet(expected, actual);
+}
 
-        [Test]
-        public void NestedLoopsTest()
-        {
-            var TAC = GenTAC(@"
+[Test]
+public void NestedLoopsTest()
+{
+	var TAC = GenTAC(@"
 var a, b;
 
 54: a = 5;
@@ -170,81 +124,24 @@ goto 54;
 
 ");
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            var expected = new List<List<BasicBlock>>()
-            {
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] })
-                },
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[0] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[4] })
-                },
+	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+	var actual = NaturalLoop.GetAllNaturalLoops(cfg);
+	var expected = new List<List<BasicBlock>>()
+	{
+		new List<BasicBlock>()
+		{
+			new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] })
+		},
+		new List<BasicBlock>()
+		{
+			new BasicBlock(new List<Instruction>(){ TAC[0] }),
+			new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
+			new BasicBlock(new List<Instruction>(){ TAC[4] })
+		},
 
 
-            };
+	};
 
-            AssertSet(expected, actual);
-        }
-
-        [Test]
-        public void OneRootLoopsTest()
-        {
-            var TAC = GenTAC(@"
-var a, b;
-
-54: a = 5;
-b = 6;
-goto 54;
-goto 54;
-
-");
-
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            var expected = new List<List<BasicBlock>>()
-            {
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2] })
-                },
-
-
-                new List<BasicBlock>()
-                {
-                    new BasicBlock(new List<Instruction>(){ TAC[0], TAC[1], TAC[2] }),
-                    new BasicBlock(new List<Instruction>(){ TAC[3] })
-                }
-            };
-
-            AssertSet(expected, actual);
-        }
-
-        private void AssertSet(
-            List<List<BasicBlock>> expected,
-            List<List<BasicBlock>> actual)
-        {
-            Assert.AreEqual(expected.Count, actual.Count);
-            for (var i = 0; i < expected.Count; i++)
-            {
-                for (var j = 0; j < expected[i].Count; j++)
-                {
-                    var e = expected[i][j].GetInstructions();
-                    var a = actual[i][j].GetInstructions();
-
-                    Assert.AreEqual(a.Count, e.Count);
-
-                    foreach (var pair in a.Zip(e, (x, y) => (actual: x, expected: y)))
-                    {
-                        Assert.AreEqual(pair.actual.ToString(), pair.expected.ToString());
-                    }
-                }
-            }
-        }
-    }
+	AssertSet(expected, actual);
 }
 ```

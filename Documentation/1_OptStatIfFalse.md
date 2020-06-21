@@ -25,7 +25,8 @@
   ```
 
 #### Практическая часть
-Примеры реализации метода:
+Если условием выражения "if" является константа "false" необходимо заменить все выражение на его "else ветку", в случае отсутствия ветки "else" производим замену на пустой оператор.
+Пример реализации метода:
 
 ```csharp
     if (n is IfElseNode ifNode)  // Если это корень if
@@ -44,6 +45,7 @@
 ```
 
 #### Место в общем проекте (Интеграция)
+Данная оптимизация выполняется на AST-дереве, построенном для данной программы. Применяется в классе `ASTOptimizer`.
 ```csharp
 public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
        {
@@ -52,32 +54,29 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
              /* ... */
        };
 
-       public static void Optimize(Parser parser)
-       {
-           int optInd = 0;
-           do
-           {
-               parser.root.Visit(Optimizations[optInd]);
-               if (Optimizations[optInd].Changed)
-                   optInd = 0;
-               else
-                   ++optInd;
-           } while (optInd < Optimizations.Count);
-       }
-```
 
-#### Пример работы
-Исходный код программы:
+#### Тесты
+В тестах проверяется работоспособность оптимизации и соответствие результатов:
 ```csharp
+[Test]
+public void IfFalseBlockTest()
+{
+	var AST = BuildAST(@"
 var a, b;
-b = 5
-if(false)
-  a = 3;
+if false {
+a = b;
+b = 1;
+}
 else
-  a = 57;
-```
-Результат работы:
-```csharp
-b = 5;
-a = 57;
+a = 1;
+");
+
+	var expected = new[] {
+		"var a, b;",
+		"a = 1;"
+	};
+
+	var result = ApplyOpt(AST, new OptStatIfFalse());
+	CollectionAssert.AreEqual(expected, result);
+}
 ```

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
@@ -124,7 +124,6 @@ e = zz + i;"
             var expected = new List<(List<OneExpression>, List<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
-
                 (new List<OneExpression>(), new List<OneExpression>()
                 { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ),
 
@@ -135,10 +134,9 @@ e = zz + i;"
                 new List<OneExpression>() { new OneExpression("LESS", "a", "b" ),
                     new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
 
-                (new List<OneExpression>() {  new OneExpression("PLUS", "x", "y"), 
-                    new OneExpression("PLUS", "c", "d"), new OneExpression("LESS", "a", "b" )},
-                new List<OneExpression>() { new OneExpression("PLUS", "x", "y"),
-                    new OneExpression("PLUS", "c", "d"), new OneExpression("LESS", "a", "b" )}
+                (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" )
+                , new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}
                 ),
 
                 (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
@@ -148,7 +146,7 @@ e = zz + i;"
                 ( new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
                   new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}
                 ),
-                (new List<OneExpression>(), new List<OneExpression>())
+
             };
 
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
@@ -173,41 +171,33 @@ e = zz + i;"
             }
             AssertSet(expected, actual);
         }
+
         private void AssertSet(
             List<(List<OneExpression>, List<OneExpression>)> expected,
             List<(List<OneExpression>, List<OneExpression>)> actual)
         {
-            for (var i = 0; i < expected.Count; i++)
+            for (var i = 0; i < expected.Count; ++i)
             {
-                Assert.True(ContainsExpression(expected[i].Item1, actual[i].Item1));
-                Assert.True(ContainsExpression(expected[i].Item2, actual[i].Item2));
-            }
-        }
-        private bool ContainsExpression(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
-        {
-            if (listOfExpr1.Count != listOfExpr2.Count)
-            {
-                return false;
-            }
-            var listOfString1 = listOfExpr1.Select(expression => expression.ToString()).ToList();
-            var listOfString2 = listOfExpr2.Select(expression => expression.ToString()).ToList();
-            foreach (var expr in listOfString1)
-            {
-                if (!listOfString2.Contains(expr))
+                for (var j = 0; j < expected[i].Item1.Count; j++)
                 {
-                    return false;
+                    Assert.True(IsContains(expected[i].Item1[j], actual[i].Item1));
+                }
+
+                for (var j = 0; j < expected[i].Item2.Count; j++)
+                {
+                    Assert.True(IsContains(expected[i].Item2[j], actual[i].Item2));
                 }
             }
-            return true;
         }
+
         private void AssertSet(
             List<(HashSet<string> IN, HashSet<string> OUT)> expected,
             List<(HashSet<string> IN, HashSet<string> OUT)> actual)
         {
             for (var i = 0; i < expected.Count; ++i)
             {
-                Assert.True(expected[i].IN.SetEquals(actual[i].IN));
-                Assert.True(expected[i].OUT.SetEquals(actual[i].OUT));
+                CollectionAssert.AreEquivalent(expected[i].IN, actual[i].IN);
+                CollectionAssert.AreEquivalent(expected[i].OUT, actual[i].OUT);
             }
         }
 
@@ -219,14 +209,20 @@ e = zz + i;"
             {
                 for (var j = 0; j < expected[i].IN.Count; j++)
                 {
-                    Assert.True(expected[i].IN[j].ToString().Equals(actual[i].IN[j].ToString()));
+                    Assert.True(IsContains(expected[i].IN[j], actual[i].IN));
                 }
 
                 for (var j = 0; j < expected[i].OUT.Count; j++)
                 {
-                    Assert.True(expected[i].OUT[j].ToString().Equals(actual[i].OUT[j].ToString()));
+                    Assert.True(IsContains(expected[i].OUT[j], actual[i].OUT));
                 }
             }
         }
+
+        private bool IsContains(Instruction findInstruction, List<Instruction> actualInstruction) 
+            => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
+
+        private bool IsContains(OneExpression findInstruction, List<OneExpression> actualInstruction)
+            => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
     }
 }

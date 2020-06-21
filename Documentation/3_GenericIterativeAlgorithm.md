@@ -43,30 +43,6 @@
 Реализовали класс выходных данных:
 ```csharp
 public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)> // Вид выходных данных вида (Базовый блок, (его входы, его выходы))
-        where T : IEnumerable
-    {
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("++++");
-            foreach (var kv in this)
-            {
-                sb.AppendLine(kv.Key + ":\n" + kv.Value);
-            }
-            sb.AppendLine("++++");
-            return sb.ToString();
-        }
-
-        public InOutData() { }  // конструктор по умолчанию
-
-        public InOutData(Dictionary<BasicBlock, (T, T)> dictionary)  // Конструктор заполнения выходных данных
-        {
-            foreach (var b in dictionary)
-            {
-                this[b.Key] = b.Value;
-            }
-        }
-    }
 ```
 
 Указываем вид прохода алгоритма:
@@ -74,47 +50,11 @@ public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)> // Вид вы
 public enum Direction { Forward, Backward }
 ```
 
-Реализовали алгоритм:
+Реализовали обобщенный итерационный алгоритм для прямого и обратного прохода. Алгоритм реализован в виде абстрактного класса, это предоставит возможность, каждому итерационному алгоритму самостоятельно переопределить входные данные, передаточную функцию, верхний или нижний элемент пула решетки ( относительно прохода алгоритма) и оператор сбора.
+Пример реализации:
 ```csharp
 public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
     {
-        /// <summary>
-        /// Оператор сбора
-        /// </summary>
-        public abstract Func<T, T, T> CollectingOperator { get; }
-
-        /// <summary>
-        /// Сравнение двух последовательностей (условие продолжения цикла)
-        /// </summary>
-        public abstract Func<T, T, bool> Compare { get; }
-
-        /// <summary>
-        /// Начальное значение для всех блоков, кроме первого
-        /// (при движении с конца - кроме последнего)
-        /// </summary>
-        public abstract T Init { get; protected set; }
-
-        /// <summary>
-        /// Начальное значение для первого блока
-        /// (при движении с конца - для последнего)
-        /// </summary>
-        public virtual T InitFirst { get => Init; protected set { } }
-
-        /// <summary>
-        /// Передаточная функция
-        /// </summary>
-        public abstract Func<BasicBlock, T, T> TransferFunction { get; protected set; }
-
-        /// <summary>
-        /// Направление
-        /// </summary>
-        public virtual Direction Direction => Direction.Forward;
-
-        /// <summary>
-        /// Выполнить алгоритм
-        /// </summary>
-        /// <param name="graph"> Граф потока управления </param>
-        /// <returns></returns>
         public virtual InOutData<T> Execute(ControlFlowGraph graph)
         {
             GetInitData(graph, out var blocks, out var data,
@@ -139,48 +79,9 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
             }
             return data;
         }
-
-        private void GetInitData(  // функция инициализации данных относительно вида прохода алгоритма
-            ControlFlowGraph graph,
-            out IEnumerable<BasicBlock> blocks,
-            out InOutData<T> data,
-            out Func<BasicBlock, IEnumerable<BasicBlock>> getPreviousBlocks,
-            out Func<BasicBlock, T> getDataValue,
-            out Func<T, T, (T, T)> combine)
-        {
-            var start = Direction == Direction.Backward  // Если обратный проход то мы берем блоки с конца, в обратном случае с начала
-                ? graph.GetCurrentBasicBlocks().Last()
-                : graph.GetCurrentBasicBlocks().First();
-            blocks = graph.GetCurrentBasicBlocks().Except(new[] { start }); 
-
-            var dataTemp = new InOutData<T>
-            {
-                [start] = (InitFirst, InitFirst)  // инициализация первого элемента полурешетки
-            };
-            foreach (var block in blocks)
-            {
-                dataTemp[block] = (Init, Init); // инициализация остальных элементов полурешетки
-            }
-            data = dataTemp;
-
-            switch (Direction) // инициализация свойств для каждого типа прохода
-            {
-                case Direction.Forward:
-                    getPreviousBlocks = x => graph.GetParentsBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
-                    getDataValue = x => dataTemp[x].Out;
-                    combine = (x, y) => (x, y);
-                    break;
-                case Direction.Backward:
-                    getPreviousBlocks = x => graph.GetChildrenBasicBlocks(graph.VertexOf(x)).Select(z => z.Item2);
-                    getDataValue = x => dataTemp[x].In;
-                    combine = (x, y) => (y, x);
-                    break;
-                default:
-                    throw new NotImplementedException("Undefined direction type");
-            }
-        }
-    }
 ```
+
+Переопределение входных данных, передаточной функции, оператора сбора, и элементов пула решетки, вынесли в вспомогательный алгоритм.
 
 #### Место в общем проекте (Интеграция)
 Используется для вызова итерационных алгоритмов в единой структуре.
@@ -201,51 +102,51 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
 В тестах проверяется использование итерационных алгоритмов в обобщенной структуре, результаты совпадают с ожидаемыми.
 ```csharp
 public void LiveVariableIterativeTest()
-        {
-            var TAC = GenTAC(@"
+{
+	var TAC = GenTAC(@"
 var a,b,c;
 
 input (b);
 a = b + 1;
 if a < c
-	c = b - a;
+c = b - a;
 else
-	c = b + a;
+c = b + a;
 print (c);"
 );
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var activeVariable = new LiveVariableAnalysis();
-            var resActiveVariable = activeVariable.Execute(cfg);
-            HashSet<string> In = new HashSet<string>();
-            HashSet<string> Out = new HashSet<string>();
-            List<(HashSet<string> IN, HashSet<string> OUT)> actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
-            foreach (var x in resActiveVariable)
-            {
-                foreach (var y in x.Value.In)
-                {
-                    In.Add(y);
-                }
+	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+	var activeVariable = new LiveVariableAnalysis();
+	var resActiveVariable = activeVariable.Execute(cfg);
+	HashSet<string> In = new HashSet<string>();
+	HashSet<string> Out = new HashSet<string>();
+	List<(HashSet<string> IN, HashSet<string> OUT)> actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
+	foreach (var x in resActiveVariable)
+	{
+		foreach (var y in x.Value.In)
+		{
+			In.Add(y);
+		}
 
-                foreach (var y in x.Value.Out)
-                {
-                    Out.Add(y);
-                }
-                actual.Add((new HashSet<string>(In), new HashSet<string>(Out)));
-                In.Clear(); Out.Clear();
-            }
+		foreach (var y in x.Value.Out)
+		{
+			Out.Add(y);
+		}
+		actual.Add((new HashSet<string>(In), new HashSet<string>(Out)));
+		In.Clear(); Out.Clear();
+	}
 
-            List<(HashSet<string> IN, HashSet<string> OUT)> expected =
-                new List<(HashSet<string> IN, HashSet<string> OUT)>()
-                {
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
-                    (new HashSet<string>(){ }, new HashSet<string>(){ })
-                };
+	List<(HashSet<string> IN, HashSet<string> OUT)> expected =
+		new List<(HashSet<string> IN, HashSet<string> OUT)>()
+		{
+			(new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
+			(new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
+			(new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
+			(new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
+			(new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+			(new HashSet<string>(){ }, new HashSet<string>(){ })
+		};
 
-            AssertSet(expected, actual);
-        }
+	AssertSet(expected, actual);
+}
 ```

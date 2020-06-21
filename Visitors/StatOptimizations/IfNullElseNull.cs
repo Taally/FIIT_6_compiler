@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class IfNullElseNull : ChangeVisitor
+    public class IfNullElseNull : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {
