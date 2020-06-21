@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
-using NUnit.Framework;
 
 namespace SimpleLanguage.Tests.AST
 {
@@ -14,14 +12,13 @@ namespace SimpleLanguage.Tests.AST
 var a, b;
 a = b * 0;
 ");
-            var expected = @"var a, b;
-a = 0;";
+            var expected = new[] {
+                "var a, b;",
+                "a = 0;"
+            };
 
-            var opt = new OptExprMultZero();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(AST, new OptExprMultZero());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -31,14 +28,13 @@ a = 0;";
 var a, b;
 a = 0 * b;
 ");
-            var expected = @"var a, b;
-a = 0;";
+            var expected = new[] {
+                "var a, b;",
+                "a = 0;"
+            };
 
-            var opt = new OptExprMultZero();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var result = ApplyOpt(AST, new OptExprMultZero());
+            CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -48,14 +44,14 @@ a = 0;";
 var a, b;
 a = 0 * b + b * a * 0 + 5;
 ");
-            var expected = @"var a, b;
-a = ((0 + 0) + 5);";
 
-            var opt = new OptExprMultZero();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
+            var expected = new[] {
+                "var a, b;",
+                "a = ((0 + 0) + 5);"
+            };
+
+            var result = ApplyOpt(AST, new OptExprMultZero());
+            CollectionAssert.AreEqual(expected, result);
         }
     }
 }

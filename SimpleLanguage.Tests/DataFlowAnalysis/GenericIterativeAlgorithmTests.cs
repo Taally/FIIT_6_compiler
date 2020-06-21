@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class GenericIterativeAlgorithmTest : TACTestsBase
+    internal class GenericIterativeAlgorithmTests : TACTestsBase
     {
         [Test]
         public void LiveVariableIterativeTest()
@@ -136,7 +135,7 @@ e = zz + i;"
                     new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
 
                 (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ) 
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" )
                 , new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}
                 ),
 
@@ -160,7 +159,7 @@ e = zz + i;"
             {
                 foreach (var expr in block.Value.In)
                 {
-                    In.Add(expr);                    
+                    In.Add(expr);
                 }
                 foreach (var expr in block.Value.Out)
                 {

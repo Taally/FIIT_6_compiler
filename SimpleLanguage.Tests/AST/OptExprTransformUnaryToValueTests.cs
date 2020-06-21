@@ -1,87 +1,63 @@
 ﻿using NUnit.Framework;
+using ProgramTree;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
-    internal class OptStatIfTrueTests : ASTTestsBase
+    internal class OptExprTransformUnaryToValueTests : ASTTestsBase
     {
         [Test]
-        public void IfTrueTest()
+        public void TransformToIntTest()
         {
             var AST = BuildAST(@"
 var a, b;
-if true
-a = b;
-else
-a = 1;
+a = (-1);
 ");
-
             var expected = new[] {
                 "var a, b;",
-                "a = b;"
+                "a = -1;"
             };
 
-            var result = ApplyOpt(AST, new OptStatIfTrue());
+            var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
+            CollectionAssert.AreEqual(expected, result);
+            Assert.IsNotNull((AST.root.StatChildren[1] as AssignNode).Expr is IntNumNode);
+        }
+
+        [Test]
+        public void TransformToBoolTest()
+        {
+            var AST = BuildAST(@"
+var a, b;
+a = !true;
+b = !false;
+");
+            var expected = new[] {
+                "var a, b;",
+                "a = false;",
+                "b = true;"
+            };
+
+            var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
             CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
-        public void IfTrueBlockTest()
+        public void TransformTwiceUnaryTest()
         {
             var AST = BuildAST(@"
 var a, b;
-if true {
-a = b;
-b = 1;
-}
-else
-a = 1;
+a = !!b;
+b = --a;
+a = --b - ---a;
 ");
-
             var expected = new[] {
                 "var a, b;",
                 "a = b;",
-                "b = 1;"
+                "b = a;",
+                "a = (b - (-a));"
             };
 
-            var result = ApplyOpt(AST, new OptStatIfTrue());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void IfTrueComplexTest()
-        {
-            var AST = BuildAST(@"
-var a, b;
-if true
-if true {
-a = b;
-b = 1;
-}
-else
-a = 1;
-
-if a > b{
-a = b;
-if true{
-b = b + 1;
-b = b / 5;
-}
-}
-");
-
-            var expected = new[] {
-                "var a, b;",
-                "a = b;",
-                "b = 1;",
-                "if (a > b) {",
-                "  a = b;",
-                "  b = (b + 1);",
-                "  b = (b / 5);",
-                "}"
-            };
-
-            var result = ApplyOpt(AST, new OptStatIfTrue());
+            var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
             CollectionAssert.AreEqual(expected, result);
         }
     }

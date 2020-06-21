@@ -117,34 +117,99 @@ public override void VisitUnOpNode(UnOpNode unop)
 #### Место в общем проекте (Интеграция)
 Данные оптимизации выполняются вместе с остальными АСТ оптимизациями после построения абстрактного синтаксического дерева, но до генерации трехадресного кода.
 
-#### Пример работы
+#### Тесты
 1. Свертка двух унарных операций
-- До 
+
 ```csharp
-c = ((-a) != (-a));
-a = (b != (!b));
-d = ((!b) == (!b));
-b = ((!c) == c);
-```
-- После
-```csharp
-c = false;
-a = true;
-d = true;
-b = false;
+[Test]
+public void EqualIDTest() {
+    var AST = BuildAST(@"
+var a, b;
+b = !a == !a;
+b = !a != !a;
+");
+    var expected = new[] {
+        "var a, b;",
+        "b = true;",
+        "b = false;"
+    };
+
+    var result = ApplyOpt(AST, new OptExprFoldUnary());
+    CollectionAssert.AreEqual(expected, result);
+}
+
+[Test]
+public void LeftRightUnaryTest()
+{
+    var AST = BuildAST(@"
+var a, b;
+b = !a == a;
+b = !a != a;
+b = a == !a;
+b = a != !a;
+");
+    var expected = new[] {
+        "var a, b;",
+        "b = false;",
+        "b = true;",
+        "b = false;",
+        "b = true;"
+    };
+
+    var result = ApplyOpt(AST, new OptExprFoldUnary());
+    CollectionAssert.AreEqual(expected, result);
+}
 ```
 2. Устранение унарных операций
-- До
+
 ```csharp
-a = (!true);
-a = (a - (-(-1)));
-d = (!(!(!b)));
-a = (a - (-(-(-b))));
-```
-- После
-```csharp
-a = false;
-a = (a - 1);
-d = (!b);
-a = (a - (-b)); // здесь первый минус - бинарный
+ [Test]
+public void TransformToIntTest() {
+    var AST = BuildAST(@"
+var a, b;
+a = (-1);
+");
+    var expected = new[] {
+        "var a, b;",
+        "a = -1;"
+    };
+
+    var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
+    CollectionAssert.AreEqual(expected, result);
+    Assert.IsNotNull((AST.root.StatChildren[1] as AssignNode).Expr is IntNumNode);
+}
+
+[Test]
+public void TransformToBoolTest()
+{
+    var AST = BuildAST(@"
+var a, b;
+a = !true;
+b = !false;
+");
+    var expected = new[] {
+        "var a, b;",
+        "a = false;",
+        "b = true;"
+    };
+    /*..*/
+}
+
+[Test]
+public void TransformTwiceUnaryTest()
+{
+    var AST = BuildAST(@"
+var a, b;
+a = !!b;
+b = --a;
+a = --b - ---a;
+");
+    var expected = new[] {
+        "var a, b;",
+        "a = b;",
+        "b = a;",
+        "a = (b - (-a));"
+    };
+    /*..*/
+}
 ```

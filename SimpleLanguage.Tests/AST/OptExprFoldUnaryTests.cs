@@ -3,38 +3,45 @@ using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
-    internal class OptExprSubEqualVarTests : ASTTestsBase
+    internal class OptExprFoldUnaryTests : ASTTestsBase
     {
         [Test]
-        public void SubIDTest()
+        public void EqualIDTest()
         {
             var AST = BuildAST(@"
 var a, b;
-a = b - b;
+b = !a == !a;
+b = !a != !a;
 ");
             var expected = new[] {
                 "var a, b;",
-                "a = 0;"
+                "b = true;",
+                "b = false;"
             };
 
-            var result = ApplyOpt(AST, new OptExprSubEqualVar());
+            var result = ApplyOpt(AST, new OptExprFoldUnary());
             CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
-        public void SubIDInPrintTest()
+        public void LeftRightUnaryTest()
         {
             var AST = BuildAST(@"
 var a, b;
-print(a - a, b - b, b - a, a - a - b);
+b = !a == a;
+b = !a != a;
+b = a == !a;
+b = a != !a;
 ");
-
             var expected = new[] {
                 "var a, b;",
-                "print(0, 0, (b - a), (0 - b));"
+                "b = false;",
+                "b = true;",
+                "b = false;",
+                "b = true;"
             };
 
-            var result = ApplyOpt(AST, new OptExprSubEqualVar());
+            var result = ApplyOpt(AST, new OptExprFoldUnary());
             CollectionAssert.AreEqual(expected, result);
         }
     }
