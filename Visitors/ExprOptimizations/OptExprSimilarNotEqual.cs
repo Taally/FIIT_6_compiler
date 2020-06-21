@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprSimilarNotEqual : ChangeVisitor
+    public class OptExprSimilarNotEqual : ChangeVisitor
     {
         public override void VisitBinOpNode(BinOpNode binop)
         {
