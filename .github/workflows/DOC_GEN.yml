@@ -42,6 +42,17 @@ jobs:
     - name: Generate Documentation.md
       run: |
         python Documentation/gen.py
+    
+    - name: Generate PDF
+      uses: docker://pandoc/core:latest
+      with:
+          args: -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@master
+      with:
+          name: output
+          path: output
         
     - name: Commit
       run: |
