@@ -35,6 +35,6 @@ a = a >= a;
                 "a = true;"
             },
             TestName = "EQGREATER")]
-        public string[] Operation(string sourceCode) => ApplyOpt(BuildAST(sourceCode), new OptExprVarEqualToItself());
+        public string[] TestOptimization(string sourceCode) => ApplyOpt(BuildAST(sourceCode), new OptExprVarEqualToItself());
     }
 }
