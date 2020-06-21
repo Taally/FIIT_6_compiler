@@ -159,7 +159,7 @@ e = zz + i;"
             {
                 foreach (var expr in block.Value.In)
                 {
-                    In.Add(expr);                    
+                    In.Add(expr);
                 }
                 foreach (var expr in block.Value.Out)
                 {
