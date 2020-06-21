@@ -39,15 +39,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        wget https://github.com/jgm/pandoc/releases/download/2.9.2.1/pandoc-2.9.2.1-1-amd64.deb
+        dpkg -i pandoc-2.9.2.1-1-amd64.deb
+        sudo apt-get update && sudo apt-get install texlive-lang-cyrillic
         
     - name: Generate Documentation.md
       run: |
         python Documentation/gen.py
     
     - name: Generate PDF
-      uses: docker://pandoc/latex:latest
-      with:
-          args: bash sudo apt-get update && sudo apt-get install texlive-lang-cyrillic && -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
+      run: pandoc Documentation/Documentation.md -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
     
     - name: Upload artifact
       uses: actions/upload-artifact@master
