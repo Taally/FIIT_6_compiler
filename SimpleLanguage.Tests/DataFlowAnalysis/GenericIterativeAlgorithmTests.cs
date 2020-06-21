@@ -171,35 +171,33 @@ e = zz + i;"
             }
             AssertSet(expected, actual);
         }
+
         private void AssertSet(
             List<(List<OneExpression>, List<OneExpression>)> expected,
             List<(List<OneExpression>, List<OneExpression>)> actual)
         {
-            for (var i = 0; i < expected.Count; i++)
+            for (var i = 0; i < expected.Count; ++i)
             {
-                Assert.True(SetEquals(expected[i].Item1, actual[i].Item1));
-                Assert.True(SetEquals(expected[i].Item2, actual[i].Item2));
-            }
-        }
-        private bool SetEquals(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
-        {
-            for (var i = 0; i < listOfExpr1.Count; i++)
-            {
-                if (listOfExpr1[i].ToString() != listOfExpr2[i].ToString())
+                for (var j = 0; j < expected[i].Item1.Count; j++)
                 {
-                    return false;
+                    Assert.True(IsContains(expected[i].Item1[j], actual[i].Item1));
+                }
+
+                for (var j = 0; j < expected[i].Item2.Count; j++)
+                {
+                    Assert.True(IsContains(expected[i].Item2[j], actual[i].Item2));
                 }
             }
-            return true;
         }
+
         private void AssertSet(
             List<(HashSet<string> IN, HashSet<string> OUT)> expected,
             List<(HashSet<string> IN, HashSet<string> OUT)> actual)
         {
             for (var i = 0; i < expected.Count; ++i)
             {
-                Assert.True(expected[i].IN.SetEquals(actual[i].IN));
-                Assert.True(expected[i].OUT.SetEquals(actual[i].OUT));
+                CollectionAssert.AreEquivalent(expected[i].IN, actual[i].IN);
+                CollectionAssert.AreEquivalent(expected[i].OUT, actual[i].OUT);
             }
         }
 
@@ -211,14 +209,20 @@ e = zz + i;"
             {
                 for (var j = 0; j < expected[i].IN.Count; j++)
                 {
-                    Assert.True(expected[i].IN[j].ToString().Equals(actual[i].IN[j].ToString()));
+                    Assert.True(IsContains(expected[i].IN[j], actual[i].IN));
                 }
 
                 for (var j = 0; j < expected[i].OUT.Count; j++)
                 {
-                    Assert.True(expected[i].OUT[j].ToString().Equals(actual[i].OUT[j].ToString()));
+                    Assert.True(IsContains(expected[i].OUT[j], actual[i].OUT));
                 }
             }
         }
+
+        private bool IsContains(Instruction findInstruction, List<Instruction> actualInstruction) 
+            => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
+
+        private bool IsContains(OneExpression findInstruction, List<OneExpression> actualInstruction)
+            => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
     }
 }
