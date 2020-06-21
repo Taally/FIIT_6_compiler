@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprEqualToItself : ChangeVisitor
+    public class OptExprVarEqualToItself : ChangeVisitor
     {
         public override void PostVisit(Node n)
         {

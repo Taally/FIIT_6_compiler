@@ -8,7 +8,7 @@ namespace SimpleLang
     {
         private static List<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
         {
-            new OptExprEqualToItself(),
+            new OptExprVarEqualToItself(),
             new OptExprMultDivByOne(),
             new OptExprMultZero(),
             new OptExprSumZero(),
