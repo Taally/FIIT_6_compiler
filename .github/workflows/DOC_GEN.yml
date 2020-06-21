@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        apt-get update && apt-get install texlive-lang-cyrillic
+        sudo apt-get update && sudo apt-get install texlive-lang-cyrillic
         
     - name: Generate Documentation.md
       run: |
