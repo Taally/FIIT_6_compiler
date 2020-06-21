@@ -58,17 +58,61 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
 };
 ```
 
-#### Пример работы
-До оптимизации:
+#### Тесты
+Абстрактное синтаксическое дерево для данной оптимизации создаётся в тесте.
+Схема тестирования выглядит следующим образом: сначала создаётся AST, затем применяется оптимизация, после проверяется AST. Ниже приведёны несколько тестов.
 ```csharp
-a = true;
-if (a)
-    ;
-else
-    ;
-```
+[Test]
+public void RemoveInnerIf1()
+{
+    // if (a)
+    //   if (b) EmptyNode; else EmptyNode;
+    var ifInner = new IfElseNode(new IdNode("b"), new EmptyNode(), new EmptyNode());
+    var ifOuter = new IfElseNode(new IdNode("a"), ifInner);
+    ifInner.Parent = ifOuter;
 
-После оптимизации:
-```csharp
-a = true;
+    var root = new StListNode(ifOuter);
+    ifOuter.Parent = root;
+
+    var opt = new IfNullElseNull();
+    root.Visit(opt);
+
+    Assert.IsNull(root.Parent);
+    Assert.AreEqual(root.ExprChildren.Count, 0);
+    Assert.AreEqual(root.StatChildren.Count, 1);
+    Assert.IsTrue(root.StatChildren[0].GetType() == typeof(ProgramTree.EmptyNode));
+}
+
+[Test]
+public void RemoveInBlock()
+{
+    // { if (a) EmptyNode; }
+    // { if (a) EmptyNode; else EmptyNode; }
+    var if1 = new IfElseNode(new IdNode("a"), new EmptyNode());
+    var if2 = new IfElseNode(new IdNode("a"), new EmptyNode(), new EmptyNode());
+
+    var block1 = new BlockNode(new StListNode(if1));
+    var block2 = new BlockNode(new StListNode(if2));
+    if1.Parent = block1;
+    if2.Parent = block2;
+
+    var root = new StListNode(block1);
+    root.Add(block2);
+    block1.Parent = block2.Parent = root;
+
+    var opt = new IfNullElseNull();
+    root.Visit(opt);
+
+    Assert.IsNull(root.Parent);
+    Assert.AreEqual(root.ExprChildren.Count, 0);
+    Assert.AreEqual(root.StatChildren.Count, 2);
+
+    foreach (var node in root.StatChildren)
+    {
+        Assert.IsTrue(node.GetType() == typeof(ProgramTree.BlockNode));
+        Assert.AreEqual(node.ExprChildren.Count, 0);
+        Assert.AreEqual(node.StatChildren.Count, 1);
+        Assert.IsTrue(node.StatChildren[0].GetType() == typeof(ProgramTree.EmptyNode));
+    }
+}
 ```
