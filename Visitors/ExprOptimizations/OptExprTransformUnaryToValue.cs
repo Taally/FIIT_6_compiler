@@ -31,9 +31,9 @@ namespace SimpleLang.Visitors
             }
             else if (unop.Expr is IdNode)
             {
-                if (unop.Parent is UnOpNode && (unop.Parent as UnOpNode).Op == unop.Op)
+                if (unop.Parent is UnOpNode parent && parent.Op == unop.Op)
                 {
-                    ReplaceExpr(unop.Parent as UnOpNode, unop.Expr);
+                    ReplaceExpr(parent, unop.Expr);
                 }
             }
             else
