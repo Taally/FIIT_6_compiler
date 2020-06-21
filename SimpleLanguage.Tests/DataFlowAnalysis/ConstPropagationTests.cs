@@ -4,7 +4,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class ConstPropagationTests : TACTestsBase
+    internal class ConstPropagationTest : TACTestsBase
     {
         [Test]
         public void TestNoBlocks()
@@ -188,7 +188,7 @@ if c > 5
     a = x;
 ");
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
-            Assert.AreEqual(7, blocks.Count);
+            Assert.AreEqual(6, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
             Assert.AreEqual(LatticeTypeData.CONST, InOut.OUT[blocks[5]]["a"].Type);
@@ -213,8 +213,8 @@ a = x;
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-            Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[6]]["a"].Type);
-            Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[6]]["x"].Type);
+            Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[5]]["a"].Type);
+            Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[5]]["x"].Type);
         }
 
         [Test]

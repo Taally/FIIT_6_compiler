@@ -109,7 +109,7 @@ namespace SimpleLang
         /// </returns>
         private static List<Instruction> PropagateIfWithLabel(Instruction findInstruction, List<Instruction> instructions)
         {
-            var findIndexIf = instructions.IndexOf(findInstruction);
+            int findIndexIf = instructions.IndexOf(findInstruction);
 
             if (findIndexIf == -1
                 || instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto" && x.ToString() != instructions[findIndexIf].ToString()).Count() > 1)
@@ -117,7 +117,14 @@ namespace SimpleLang
                 return instructions;
             }
 
-            var findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0));
+            var finditem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
+                instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0) :
+                new Instruction("", "", "", "", "");
+            int findIndexGoto = instructions.IndexOf(finditem);
+            if (findIndexGoto == -1)
+            {
+                return instructions;
+            }
 
             wasChanged = true;
             if (instructions[findIndexIf + 1].Label == "")

@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    internal class GotoToGotoTests : TACTestsBase
+    internal class GotoToGotoTest : TACTestsBase
     {
         [Test]
         public void MultiGoToTest()
@@ -56,12 +56,13 @@ if(a > b)
             {
                 "b = 5",
                 "#t1 = a > b",
-                "if #t1 goto 6",
-                "goto L2",
-                "L1: goto 6",
-                "L2: noop",
+                "#t2 = !#t1",
+                "if #t2 goto L1",
+                "goto 6",
+                "L1: noop",
                 "6: a = 4",
             };
+
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
 
@@ -144,14 +145,14 @@ a = 1;
 
             var expected = new List<string>()
             {
-                "if True goto 2",
-                "goto L3",
+                "goto 1",
                 "a = 1",
-                "L3: noop",
-                "goto L2",
-                "L1: goto 2",
-                "L2: noop",
+                "1: #t1 = !True",
+                "if #t1 goto L1",
+                "goto 2",
+                "L1: noop",
                 "2: a = 5",
+
             };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
                 .Select(instruction => instruction.ToString());
@@ -160,7 +161,7 @@ a = 1;
         }
 
         [Test]
-        public void InfiniteLoopfTest()
+        public void InfinityLoopfTest()
         {
             var TAC = GenTAC(@"
 1: goto 2;

@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    internal class GotoThroughGotoTests : TACTestsBase
+    internal class GotoThroughGotoTest : TACTestsBase
     {
         [Test]
         public void Test1()
@@ -26,26 +26,26 @@ var a;
             var expectedTAC = new List<string>()
             {
                 "1: #t1 = 1 < 2",
-                "if #t1 goto L1",
-                "goto L2",
-                "L1: goto 3",
-                "L2: noop",
+                "#t2 = !#t1",
+                "if #t2 goto L1",
+                "goto 3",
+                "L1: noop",
                 "2: goto 4",
                 "3: a = 0",
                 "4: a = 1",
-                "666: a = False"
+                "666: a = False",
             };
             var expectedOptimize = new List<string>()
             {
                 "1: #t1 = 1 < 2",
                 "#t2 = !#t1",
-                "if #t2 goto L2",
+                "if #t2 goto L1",
                 "goto 3",
-                "L2: noop",
+                "L1: noop",
                 "2: goto 4",
                 "3: a = 0",
                 "4: a = 1",
-                "666: a = False"
+                "666: a = False",
             };
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
@@ -159,22 +159,22 @@ var a;
             var expectedTAC = new List<string>()
             {
                 "1: #t1 = 1 < 2",
-                "if #t1 goto L1",
-                "goto L2",
-                "L1: #t2 = 5 * 6",
-                "#t3 = 4 + #t2",
-                "a = #t3",
-                "L2: noop"
+                "#t2 = !#t1",
+                "if #t2 goto L1",
+                "#t3 = 5 * 6",
+                "#t4 = 4 + #t3",
+                "a = #t4",
+                "L1: noop",
             };
             var expectedOptimize = new List<string>()
             {
                 "1: #t1 = 1 < 2",
-                "if #t1 goto L1",
-                "goto L2",
-                "L1: #t2 = 5 * 6",
-                "#t3 = 4 + #t2",
-                "a = #t3",
-                "L2: noop"
+                "#t2 = !#t1",
+                "if #t2 goto L1",
+                "#t3 = 5 * 6",
+                "#t4 = 4 + #t3",
+                "a = #t4",
+                "L1: noop",
             };
 
             CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
