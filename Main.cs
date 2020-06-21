@@ -54,9 +54,7 @@ namespace SimpleCompiler
                     }
 
                     Console.WriteLine("\n\nOptimized three address code");
-                    //var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
-                    var optimizeCFG = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(threeAddressCode));
-                    var optResult = ThreeAddressCodeOptimizer.OptimizeAll(optimizeCFG);
+                    var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
                     foreach (var x in optResult)
                     {
                         Console.WriteLine(x);

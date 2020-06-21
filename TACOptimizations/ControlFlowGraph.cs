@@ -40,6 +40,15 @@ namespace SimpleLang
             DFS();
         }
 
+        public ControlFlowGraph(List<Instruction> instructions)
+        {
+            ConstructedCFG(BasicBlockLeader.DivideLeaderToLeader(instructions));
+            DFS();
+            ConstructedCFG(UnreachableCodeElimination());
+            DFS();
+        }
+
+
         private void ConstructedCFG(List<BasicBlock> basicBlocks)
         {
             _basicBlocks = new List<BasicBlock>(basicBlocks.Count + 2)
