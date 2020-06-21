@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
@@ -8,7 +6,8 @@ namespace SimpleLanguage.Tests.AST
     internal class OptExprMultDivByOneTests : ASTTestsBase
     {
         [Test]
-        public void MultByRightOne() {
+        public void MultByRightOne()
+        {
             var AST = BuildAST(@"
 var a, b;
 a = b * 1;
@@ -18,7 +17,7 @@ a = b * 1;
                 "var a, b;",
                 "a = b;"
             };
-            
+
             var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
