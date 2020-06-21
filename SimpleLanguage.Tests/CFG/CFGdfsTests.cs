@@ -119,18 +119,18 @@ else
                 (3, 4, ControlFlowGraph.EdgeType.Advancing),
                 (4, 3, ControlFlowGraph.EdgeType.Retreating)
                 };
-            
+
             Assert.AreEqual(ce.Count, cfg.ClassifiedEdges.Count);
             Assert.AreEqual(
-                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Cross).Count, 
+                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Cross).Count,
                 1
             );
             Assert.AreEqual(
-                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Retreating).Count, 
+                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Retreating).Count,
                 1
             );
             Assert.AreEqual(
-                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Advancing).Count, 
+                ce.FindAll(c => c.type == ControlFlowGraph.EdgeType.Advancing).Count,
                 9
             );
             Assert.IsTrue(ce.Find(x => x.from == 6 && x.to == 8).type == ControlFlowGraph.EdgeType.Cross);

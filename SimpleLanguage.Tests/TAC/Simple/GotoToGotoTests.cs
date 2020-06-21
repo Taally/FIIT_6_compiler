@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
 
     [TestFixture]
-    internal class GotoToGotoTest : TACTestsBase
+    internal class GotoToGotoTests : TACTestsBase
     {
         [Test]
         public void MultiGoToTest()
@@ -160,7 +160,7 @@ a = 1;
         }
 
         [Test]
-        public void InfinityLoopfTest()
+        public void InfiniteLoopfTest()
         {
             var TAC = GenTAC(@"
 1: goto 2;

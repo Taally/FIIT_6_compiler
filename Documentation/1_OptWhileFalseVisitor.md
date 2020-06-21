@@ -70,60 +70,39 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
        }
 ```
 
-#### Пример работы
-Исходный код программы:
-```csharp
-while (false) 
-    a = true; 
-	while (true) 
-		b = 5
-```
-
-Результат работы:
-```csharp
-null
-```
-
 #### Тесты
 
 ```csharp
-public class OptWhileFalseTests: ASTTestsBase
-    {
-
-        [Test]
-        public void TestShouldCreateNoop()
-        {
-            var AST = BuildAST(@"var a;
+[Test]
+public void TestShouldCreateNoop()
+{
+    var AST = BuildAST(@"var a;
 while false
-   a = true;");
-            var expected = @"var a;
-";
+a = true;");
+    var expected = new[] {
+        "var a;"
+    };
 
-            var opt = new OptWhileFalseVisitor();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
-        }
+    var result = ApplyOpt(AST, new OptWhileFalseVisitor());
+    CollectionAssert.AreEqual(expected, result);
+}
 
-        [Test]
-        public void TestShouldNotCreateNoop()
-        {
-
-            var AST = BuildAST(@"var a;
+[Test]
+public void TestShouldNotCreateNoop()
+{
+    var AST = BuildAST(@"var a;
 a = false;
 while a
-  a = true;");
-            var expected = @"var a;
-a = false;
-while a
-  a = true;";
+a = true;");
 
-            var opt = new OptWhileFalseVisitor();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
-        }
-    }
+    var expected = new[] {
+        "var a;",
+        "a = false;",
+        "while a",
+        "  a = true;"
+    };
+
+    var result = ApplyOpt(AST, new OptWhileFalseVisitor());
+    CollectionAssert.AreEqual(expected, result);
+}
 ```
