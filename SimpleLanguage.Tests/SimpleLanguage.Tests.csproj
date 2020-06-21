@@ -98,6 +98,7 @@
     <Compile Include="TAC\Simple\BasicBlockLeaderTest.cs" />
     <Compile Include="TAC\Simple\DefUseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TAC\Simple\LiveVariableAnalysisOptimizationTests.cs" />
     <Compile Include="TAC\TACTestsBase.cs" />
     <Compile Include="TAC\Simple\DeleteDeadCodeWithDeadVarsTest.cs" />
     <Compile Include="TAC\Simple\FoldConstantsTest.cs" />
