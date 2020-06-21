@@ -28,6 +28,12 @@ namespace SimpleLang
         public static List<Instruction> OptimizeAll(List<Instruction> instructions) =>
             Optimize(instructions, BasicBlockOptimizations, AllCodeOptimizations);
 
+        public static List<Instruction> OptimizeAll(ControlFlowGraph cfg)
+        {
+            cfg.ReBuildCFG(Optimize(cfg.GetInstructionsFromCFG(), BasicBlockOptimizations, AllCodeOptimizations));
+            return cfg.GetInstructionsFromCFG();
+        }
+
         public static List<Instruction> Optimize(
             List<Instruction> instructions,
             List<Optimization> basicBlockOptimizations = null,
