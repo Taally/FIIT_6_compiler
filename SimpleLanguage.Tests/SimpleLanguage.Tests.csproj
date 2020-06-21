@@ -82,6 +82,7 @@
     <Compile Include="AST\OptExprSumZeroTests.cs" />
     <Compile Include="AST\OptExprTransformUnaryToValueTests.cs" />
     <Compile Include="AST\OptExprVarEqualToItselfTests.cs" />
+    <Compile Include="AST\OptExprWithOperationsBetweenConstsTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
     <Compile Include="CFG\CFGcreateTests.cs" />
