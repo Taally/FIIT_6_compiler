@@ -39,7 +39,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        sudo apt-get update && sudo apt-get install texlive-lang-cyrillic
         
     - name: Generate Documentation.md
       run: |
@@ -48,7 +47,7 @@ jobs:
     - name: Generate PDF
       uses: docker://pandoc/latex:latest
       with:
-          args: -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
+          args: bash sudo apt-get update && sudo apt-get install texlive-lang-cyrillic && -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
     
     - name: Upload artifact
       uses: actions/upload-artifact@master
