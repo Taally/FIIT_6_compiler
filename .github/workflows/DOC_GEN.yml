@@ -48,7 +48,9 @@ jobs:
         python Documentation/gen.py
     
     - name: Generate PDF
-      run: pandoc Documentation/Documentation.md -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
+      run: |
+        cd Documentation
+        pandoc Documentation.md -s --output=output/result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
     
     - name: Upload artifact
       uses: actions/upload-artifact@master
