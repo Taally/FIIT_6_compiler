@@ -11,7 +11,7 @@ namespace SimpleLanguage.Tests.CFG
         [Test]
         public void EliminationdOneBlockTest()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c;
 
 goto 1;
@@ -19,8 +19,8 @@ goto 2;
 2: a = 42;
 1: b = 3;
 c = 5;
-");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+            var cfg = GenCFG(program);
 
             var actual = cfg.GetCurrentBasicBlocks().ToList();
 
@@ -30,15 +30,13 @@ c = 5;
                 new BasicBlock(new List<Instruction>(){new Instruction("1", "assign", "3", "", "b"), new Instruction("", "assign", "5", "", "c")}),
             };
 
-
             AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
         }
 
         [Test]
         public void EliminationdMultyBlocksTest1()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c;
 
 goto 1;
@@ -59,8 +57,8 @@ c = -(a+b);
 a = !b; 
 c = !(a == b); 
 1: b = 3;
-");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+            var cfg = GenCFG(program);
 
             var actual = cfg.GetCurrentBasicBlocks().ToList();
 
@@ -70,9 +68,7 @@ c = !(a == b);
                 new BasicBlock(new List<Instruction>(){new Instruction("1", "assign", "3", "", "b")}),
             };
 
-
             AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
         }
 
 
@@ -102,7 +98,7 @@ c = !(a == b);
 1: b = 3;
 goto 2;
 ");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
 
             var actual = cfg.GetCurrentBasicBlocks().ToList();
 
@@ -113,9 +109,7 @@ goto 2;
                 new BasicBlock(new List<Instruction>(){TAC[29], TAC[30]}),
             };
 
-
             AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
         }
 
         [Test]
@@ -129,7 +123,7 @@ goto 3;
 3: a = 5;
 
 ");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
 
             var actual = cfg.GetCurrentBasicBlocks().ToList();
 
@@ -139,15 +133,13 @@ goto 3;
                 new BasicBlock(new List<Instruction>(){TAC[1]}),
             };
 
-
             AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
         }
 
         [Test]
         public void NotEliminationBlocksTest()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c;
 
 goto 1;
@@ -156,8 +148,8 @@ c = 5;
 goto 2;
 2: b = 53;
 c = b == 53;
-");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+            var cfg = GenCFG(program);
 
             var actual = cfg.GetCurrentBasicBlocks().ToList();
 
@@ -168,9 +160,7 @@ c = b == 53;
                 new BasicBlock(new List<Instruction>(){new Instruction("2", "assign", "53", "", "b"), new Instruction("", "EQUAL", "b", "53", "#t1"),new Instruction("", "assign", "#t1", "", "c")}),
             };
 
-
             AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
         }
 
         private void AssertSet(
@@ -191,6 +181,5 @@ c = b == 53;
                 }
             }
         }
-
     }
 }

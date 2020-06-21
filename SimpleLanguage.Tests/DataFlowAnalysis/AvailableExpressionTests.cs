@@ -15,7 +15,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 
         private List<(List<OneExpression>, List<OneExpression>)> GetActualInOutData(List<Instruction> TAC)
         {
-            cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            cfg = GenCFG(TAC);
             availableExpressions = new AvailableExpressions();
             resAvailableExpressions = availableExpressions.Execute(cfg);
             In = new List<OneExpression>();

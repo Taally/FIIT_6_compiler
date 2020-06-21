@@ -21,7 +21,7 @@ goto 54;
 goto 55;
 ");
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
@@ -50,7 +50,7 @@ goto 54;
 
 ");
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
@@ -77,7 +77,7 @@ goto 54;
 
 ");
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
@@ -93,7 +93,7 @@ goto 54;
         [Test]
         public void IrreducibilityGraphTest1()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c, d, x, u, e,g, y,zz,i; 
 while (zz == i) 
 {      
@@ -103,9 +103,9 @@ goto 2;
 } 
 2: x = u; 
 goto 1;
-");
+";
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(program);
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>();
 
@@ -115,7 +115,7 @@ goto 1;
         [Test]
         public void IrreducibilityGraphTest2()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c, d, x, u, e,g, y,zz,i;
 for i = 1, 10
 {
@@ -125,9 +125,9 @@ goto 2;
 }
 2: x = u;
 goto 1;
-");
+";
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(program);
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>();
 
