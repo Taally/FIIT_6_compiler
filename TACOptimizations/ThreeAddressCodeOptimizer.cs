@@ -23,7 +23,7 @@ namespace SimpleLang
             ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
             ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
-            LiveVariableAnalysisOptimization.LiveVariableDeleteDeadCode
+            //LiveVariableAnalysisOptimization.LiveVariableDeleteDeadCode
         };
 
         public static List<Instruction> OptimizeAll(List<Instruction> instructions) =>
