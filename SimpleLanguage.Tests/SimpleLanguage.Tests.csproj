@@ -75,6 +75,7 @@
     <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprEqualBoolNumTests.cs" />
     <Compile Include="AST\OptExprFoldUnaryTests.cs" />
+    <Compile Include="AST\OptExprWithOperationsBetweenConsts.cs" />
     <Compile Include="AST\OptExprMultDivByOneTests.cs" />
     <Compile Include="AST\OptExprMultZeroTests.cs" />
     <Compile Include="AST\OptExprSubEqualVarTests.cs" />
