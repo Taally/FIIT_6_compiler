@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using SimpleLang;
+using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    public class AvailableExpressionTest : TACTestsBase
+    public class AvailableExpressionTests : TACTestsBase
     {
         private ControlFlowGraph cfg;
         private List<OneExpression> In;
@@ -39,6 +38,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             }
             return actual;
         }
+
         private void AssertSet(
             List<(List<OneExpression>, List<OneExpression>)> expected,
             List<(List<OneExpression>, List<OneExpression>)> actual)
@@ -47,25 +47,30 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             {
                 Assert.AreEqual(expected[i].Item1.Count, actual[i].Item1.Count);
                 Assert.AreEqual(expected[i].Item2.Count, actual[i].Item2.Count);
-                Assert.True(SetEquals(expected[i].Item1, actual[i].Item1));
-                Assert.True(SetEquals(expected[i].Item2, actual[i].Item2));
+                Assert.True(ContainsExpression(expected[i].Item1, actual[i].Item1));
+                Assert.True(ContainsExpression(expected[i].Item2, actual[i].Item2));
             }
         }
-        private bool SetEquals(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
+
+
+        private bool ContainsExpression(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
         {
             if (listOfExpr1.Count != listOfExpr2.Count)
             {
                 return false;
             }
-            for (var i = 0; i < listOfExpr1.Count; i++)
+            var listOfString1 = listOfExpr1.Select(expression => expression.ToString()).ToList();
+            var listOfString2 = listOfExpr2.Select(expression => expression.ToString()).ToList();
+            foreach (var expr in listOfString1)
             {
-                if (listOfExpr1[i].ToString() != listOfExpr2[i].ToString())
+                if (!listOfString2.Contains(expr))
                 {
                     return false;
                 }
             }
             return true;
         }
+
         [Test]
         public void EmptyProgram()
         {
@@ -80,6 +85,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
             Assert.AreEqual(2, actual.Count);
             AssertSet(expected, actual);
         }
+
         [Test]
         public void SimpleProgramWithUnreachableCode()
         {
@@ -128,6 +134,7 @@ e = zz + i;"
             Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
         }
+
         [Test]
         public void SimpleTestWithUnreachableCode2()
         {
@@ -169,6 +176,7 @@ for i=2,7
             Assert.AreEqual(expected, actual);
             AssertSet(expected, actual);
         }
+
         [Test]
         public void ProgramWithLoopWhile()
         {
@@ -194,6 +202,7 @@ while (e < g)
             Assert.AreEqual(actual.Count, expected.Count);
             AssertSet(expected, actual);
         }
+
         [Test]
         public void TrashProgramWithGoto()
         {
@@ -220,6 +229,7 @@ goto 1;");
             Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
         }
+
         [Test]
         public void ProgramWithCrossGoTo()
         {
@@ -236,7 +246,7 @@ i = a + b;");
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "b", "c") }),
-                (new List<OneExpression>() { new OneExpression("PLUS", "b", "c")}, 
+                (new List<OneExpression>() { new OneExpression("PLUS", "b", "c")},
                 new List<OneExpression>() { new OneExpression("PLUS", "x", "u"), new OneExpression("PLUS", "b", "c")}),
                 (new List<OneExpression>() { new OneExpression("PLUS", "x", "u"), new OneExpression("PLUS", "b", "c")}
                 , new List<OneExpression>() { new OneExpression("PLUS", "g", "zz"), new OneExpression("PLUS", "x", "u"), new OneExpression("PLUS", "b", "c") }),
