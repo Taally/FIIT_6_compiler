@@ -99,7 +99,7 @@
     <Compile Include="Visitors\ExprOptimizations\OptExprTransformUnaryToValue.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
-    <Compile Include="Visitors\ExprOptimizations\OptExprEqualToItself.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprVarEqualToItself.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprSimilarNotEqual.cs" />
     <Compile Include="Visitors\StatOptimizations\IfNullElseNull.cs" />
     <Compile Include="Visitors\StatOptimizations\OptAssignEquality.cs" />
