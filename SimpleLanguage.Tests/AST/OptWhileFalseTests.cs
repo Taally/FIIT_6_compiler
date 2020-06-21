@@ -3,7 +3,7 @@ using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
-    public class OptWhileFalseTests: ASTTestsBase
+    public class OptWhileFalseTests : ASTTestsBase
     {
 
         [Test]
@@ -23,7 +23,7 @@ while false
         [Test]
         public void TestShouldNotCreateNoop()
         {
-            
+
             var AST = BuildAST(@"var a;
 a = false;
 while a
@@ -40,5 +40,5 @@ while a
             CollectionAssert.AreEqual(expected, result);
         }
     }
-    
+
 }

@@ -1,11 +1,9 @@
 ﻿using NUnit.Framework;
 using SimpleLang.Visitors;
-using System;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.AST
 {
-    public class OptExprEqualBoolNumTests: ASTTestsBase
+    public class OptExprEqualBoolNumTests : ASTTestsBase
     {
         [Test]
         public void SumNumTest()

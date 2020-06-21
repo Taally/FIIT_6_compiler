@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using SimpleLang.Visitors;
 using SimpleParser;
 using SimpleScanner;
-using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
     public class ASTTestsBase
     {
-        protected Parser BuildAST(string sourceCode) {
+        protected Parser BuildAST(string sourceCode)
+        {
             SymbolTable.vars.Clear();
             var scanner = new Scanner();
             scanner.SetSource(sourceCode, 0);
@@ -21,7 +19,8 @@ namespace SimpleLanguage.Tests.AST
             return parser;
         }
 
-        protected string[] ApplyOpt(Parser AST, ChangeVisitor opt) {
+        protected string[] ApplyOpt(Parser AST, ChangeVisitor opt)
+        {
             AST.root.Visit(opt);
             var pp = new PrettyPrintVisitor();
             AST.root.Visit(pp);

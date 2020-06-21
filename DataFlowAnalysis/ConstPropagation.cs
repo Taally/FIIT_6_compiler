@@ -14,7 +14,10 @@ namespace SimpleLang
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
+            {
                 return false;
+            }
+
             var temp = (LatticeValue)obj;
             return Type == temp.Type && ConstValue == temp.ConstValue;
         }
@@ -40,18 +43,16 @@ namespace SimpleLang
         public override int GetHashCode()
             => (Type.ToString() + ConstValue).GetHashCode();
 
-        public LatticeValue collecting(LatticeValue second)
-        {
-            if (Type == LatticeTypeData.NAC || second.Type == LatticeTypeData.NAC)
-                return new LatticeValue(LatticeTypeData.NAC);
-            if (Type == LatticeTypeData.UNDEF)
-                return second;
-            if (second.Type == LatticeTypeData.UNDEF)
-                return this;
-            if (ConstValue == second.ConstValue)
-                return second;
-            return new LatticeValue(LatticeTypeData.NAC);
-        }
+        public LatticeValue collecting(LatticeValue second) =>
+            Type == LatticeTypeData.NAC || second.Type == LatticeTypeData.NAC
+            ? new LatticeValue(LatticeTypeData.NAC)
+            : Type == LatticeTypeData.UNDEF
+            ? second
+            : second.Type == LatticeTypeData.UNDEF
+            ? this
+            : ConstValue == second.ConstValue
+            ? second
+            : new LatticeValue(LatticeTypeData.NAC);
 
         public override string ToString()
             => Type.ToString() + " " + ConstValue;
@@ -117,34 +118,39 @@ namespace SimpleLang
                     operation = instrs[i].Operation;
 
                     if (first == "True" || second == "True" || second == "False" || second == "False" || untreatedTypes.Contains(operation))
-                        OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
-                    else if (Int32.TryParse(first, out int v2) && OUT[second].Type == LatticeTypeData.CONST)
                     {
-                        Int32.TryParse(OUT[second].ConstValue, out int val2);
+                        OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
+                    }
+                    else if (int.TryParse(first, out var v2) && OUT[second].Type == LatticeTypeData.CONST)
+                    {
+                        int.TryParse(OUT[second].ConstValue, out var val2);
                         OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, FindOperations(val2, v2, operation).ToString());
                     }
-                    else if (OUT[first].Type == LatticeTypeData.CONST && Int32.TryParse(second, out int v1))
+                    else if (OUT[first].Type == LatticeTypeData.CONST && int.TryParse(second, out var v1))
                     {
-                        Int32.TryParse(OUT[first].ConstValue, out int val1);
+                        int.TryParse(OUT[first].ConstValue, out var val1);
                         OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, FindOperations(val1, v1, operation).ToString());
                     }
                     else if (OUT[first].Type == LatticeTypeData.CONST && OUT[second].Type == LatticeTypeData.CONST)
                     {
-                        Int32.TryParse(OUT[first].ConstValue, out int val1);
-                        Int32.TryParse(OUT[second].ConstValue, out int val2);
+                        int.TryParse(OUT[first].ConstValue, out var val1);
+                        int.TryParse(OUT[second].ConstValue, out var val2);
                         OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, FindOperations(val1, val2, operation).ToString());
                     }
-                    else if (OUT[first].Type == LatticeTypeData.UNDEF)
-                        OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.UNDEF);
-                    else if (OUT[first].Type == LatticeTypeData.NAC || OUT[second].Type == LatticeTypeData.NAC)
-                        OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
                     else
-                        OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.UNDEF);
+                    {
+                        OUT[instrs[i].Result] =
+                            OUT[first].Type == LatticeTypeData.UNDEF
+                            ? new LatticeValue(LatticeTypeData.UNDEF)
+                            : OUT[first].Type == LatticeTypeData.NAC || OUT[second].Type == LatticeTypeData.NAC
+                            ? new LatticeValue(LatticeTypeData.NAC)
+                            : new LatticeValue(LatticeTypeData.UNDEF);
+                    }
                 }
 
                 if (instrs[i].Operation == "assign")
                 {
-                    if (int.TryParse(instrs[i].Argument1, out int s))
+                    if (int.TryParse(instrs[i].Argument1, out var s))
                     {
                         OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, s);
                     }
@@ -152,19 +158,17 @@ namespace SimpleLang
                     {
                         var operation = instrs[i].Operation;
                         var first = instrs[i].Argument1;
-                        //if (instrs[i].Result.StartsWith("#"))
-                        //    throw new Exception();
 
-                        if (untreatedTypes.Contains(operation))
-                            OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
-                        else if (first == "True" || first == "False")
-                            OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
-                        else if (OUT[first].Type == LatticeTypeData.CONST)
-                            OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, OUT[first].ConstValue);
-                        else if (OUT[first].Type == LatticeTypeData.NAC)
-                            OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
-                        else
-                            OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.UNDEF);
+                        OUT[instrs[i].Result] =
+                            untreatedTypes.Contains(operation)
+                            ? new LatticeValue(LatticeTypeData.NAC)
+                            : first == "True" || first == "False"
+                            ? new LatticeValue(LatticeTypeData.NAC)
+                            : OUT[first].Type == LatticeTypeData.CONST
+                            ? new LatticeValue(LatticeTypeData.CONST, OUT[first].ConstValue)
+                            : OUT[first].Type == LatticeTypeData.NAC
+                            ? new LatticeValue(LatticeTypeData.NAC)
+                            : new LatticeValue(LatticeTypeData.UNDEF);
                     }
                 }
 
@@ -175,7 +179,10 @@ namespace SimpleLang
             }
             var temp_keys = OUT.Keys.Where(x => x.StartsWith("#")).ToList();
             foreach (var k in temp_keys)
+            {
                 OUT.Remove(k);
+            }
+
             return OUT;
         }
 
@@ -192,18 +199,28 @@ namespace SimpleLang
                 foreach (var instr in block.GetInstructions())
                 {
                     if (instr.Result != "" && !instr.Result.StartsWith("#") && !instr.Result.StartsWith("L") && !variables.Contains(instr.Result))
+                    {
                         variables.Add(instr.Result);
+                    }
+
                     if (instr.Argument1 != "" && !instr.Argument1.StartsWith("#") && !instr.Argument1.StartsWith("L") && instr.Argument1 != "True"
-                        && instr.Argument1 != "False" && !Int32.TryParse(instr.Argument1, out int temp1) && !variables.Contains(instr.Argument1))
+                        && instr.Argument1 != "False" && !int.TryParse(instr.Argument1, out var temp1) && !variables.Contains(instr.Argument1))
+                    {
                         variables.Add(instr.Argument1);
+                    }
+
                     if (instr.Argument2 != "" && !instr.Argument2.StartsWith("#") && !instr.Argument2.StartsWith("L") && instr.Argument2 != "True" && instr.Argument2 != "False"
-                        && !Int32.TryParse(instr.Argument2, out int temp2) && !variables.Contains(instr.Argument2))
+                        && !int.TryParse(instr.Argument2, out var temp2) && !variables.Contains(instr.Argument2))
+                    {
                         variables.Add(instr.Argument2);
+                    }
                 }
             }
             var temp = new Dictionary<string, LatticeValue>();
             foreach (var elem in variables)
+            {
                 temp.Add(elem, new LatticeValue(LatticeTypeData.UNDEF));
+            }
 
             foreach (var block in blocks)
             {
@@ -217,7 +234,7 @@ namespace SimpleLang
                 Changed = false;
                 foreach (var block in blocks)
                 {
-                    var parents = g.GetParentsBasicBlocks(g.VertexOf(block)).Select(x => x.Item2);
+                    var parents = g.GetParentsBasicBlocks(g.VertexOf(block)).Select(x => x.block);
                     INs[block] = parents.Select(x => OUTs[x])
                         .Aggregate(temp.ToDictionary(entry => entry.Key, entry => entry.Value), (x, y) => Collect(x, y));
                     var newOut = Transfer(block, INs[block]);
@@ -241,7 +258,10 @@ namespace SimpleLang
         {
             var result = new Dictionary<string, LatticeValue>(first.Count, first.Comparer);
             foreach (var elem in second)
+            {
                 result[elem.Key] = first[elem.Key].collecting(elem.Value);
+            }
+
             return result;
         }
 
@@ -264,22 +284,32 @@ namespace SimpleLang
                 foreach (var instr in block.GetInstructions())
                 {
                     if (instr.Result != "" && !instr.Result.StartsWith("#") && !instr.Result.StartsWith("L") && !variables.Contains(instr.Result))
+                    {
                         variables.Add(instr.Result);
+                    }
+
                     if (instr.Argument1 != "" && !instr.Argument1.StartsWith("#") && !instr.Argument1.StartsWith("L") && instr.Argument1 != "True"
-                        && instr.Argument1 != "False" && !Int32.TryParse(instr.Argument1, out int temp1) && !variables.Contains(instr.Argument1))
+                        && instr.Argument1 != "False" && !int.TryParse(instr.Argument1, out var temp1) && !variables.Contains(instr.Argument1))
+                    {
                         variables.Add(instr.Argument1);
+                    }
+
                     if (instr.Argument2 != "" && !instr.Argument2.StartsWith("#") && !instr.Argument2.StartsWith("L") && instr.Argument2 != "True" && instr.Argument2 != "False"
-                        && !Int32.TryParse(instr.Argument2, out int temp2) && !variables.Contains(instr.Argument2))
+                        && !int.TryParse(instr.Argument2, out var temp2) && !variables.Contains(instr.Argument2))
+                    {
                         variables.Add(instr.Argument2);
+                    }
                 }
             }
             var temp = new Dictionary<string, LatticeValue>();
             foreach (var elem in variables)
+            {
                 temp.Add(elem, new LatticeValue(LatticeTypeData.UNDEF));
+            }
+
             Init = temp;
             TransferFunction = Transfer;
             return base.Execute(graph);
         }
     }
-
 }

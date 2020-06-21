@@ -2,14 +2,15 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprFoldUnary : ChangeVisitor
+    public class OptExprFoldUnary : ChangeVisitor
     {
         public override void VisitBinOpNode(BinOpNode binop)
         {
             var left = binop.Left as UnOpNode;
             var right = binop.Right as UnOpNode;
 
-            if (left != null && right != null && left.Op == right.Op && left.Expr is IdNode idl)
+            if (left != null && right != null && left.Op == right.Op
+                && left.Op == OpType.NOT && left.Expr is IdNode idl)
             {
                 if (right.Expr is IdNode idr && idl.Name == idr.Name)
                 {
