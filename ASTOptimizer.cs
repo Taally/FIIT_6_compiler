@@ -12,6 +12,7 @@ namespace SimpleLang
             new OptExprMultDivByOne(),
             new OptExprMultZero(),
             new OptExprSumZero(),
+            new OptExprWithOperationsBetweenConsts(),
             new OptStatIfTrue(),
             new OptStatIfFalse(),
             new OptExprEqualBoolNum(),
