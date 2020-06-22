@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace SimpleLang
 {
@@ -10,7 +9,7 @@ namespace SimpleLang
         private List<BasicBlock> _basicBlocks;
         private List<List<(int vertex, BasicBlock block)>> _children;
         private List<List<(int vertex, BasicBlock block)>> _parents;
-        private Dictionary<BasicBlock, int> _blockToVertex;
+        private IReadOnlyDictionary<BasicBlock, int> _blockToVertex;
 
         private List<int> _nlr;
         public IReadOnlyList<int> PreOrderNumeration => _nlr;
@@ -33,7 +32,7 @@ namespace SimpleLang
             _dfst = new List<(int, int)>();
         }
 
-        public ControlFlowGraph(List<BasicBlock> basicBlocks)
+        public ControlFlowGraph(IReadOnlyCollection<BasicBlock> basicBlocks)
         {
             ConstructedCFG(basicBlocks);
             DFS();
@@ -41,7 +40,15 @@ namespace SimpleLang
             DFS();
         }
 
-        private void ConstructedCFG(List<BasicBlock> basicBlocks)
+        public ControlFlowGraph(IReadOnlyList<Instruction> instructions)
+        {
+            ConstructedCFG(BasicBlockLeader.DivideLeaderToLeader(instructions));
+            DFS();
+            ConstructedCFG(UnreachableCodeElimination());
+            DFS();
+        }
+
+        private void ConstructedCFG(IReadOnlyCollection<BasicBlock> basicBlocks)
         {
             _basicBlocks = new List<BasicBlock>(basicBlocks.Count + 2)
             {
@@ -110,11 +117,11 @@ namespace SimpleLang
             }
         }
 
-        private List<BasicBlock> UnreachableCodeElimination()
+        private IReadOnlyCollection<BasicBlock> UnreachableCodeElimination()
         {
             var tmpBasicBlock = new List<BasicBlock>(_basicBlocks);
 
-            for (int i = 1; i < _dfn.Count-1; i++)
+            for (var i = 1; i < _dfn.Count - 1; i++)
             {
                 if (_dfn[i] == 0)
                 {
@@ -123,6 +130,16 @@ namespace SimpleLang
             }
             tmpBasicBlock.RemoveAll(x => x == null);
             return tmpBasicBlock.Skip(1).Take(tmpBasicBlock.Count - 2).ToList();
+        }
+
+        public IReadOnlyList<Instruction> GetInstructions() => _basicBlocks.Skip(1).Take(_basicBlocks.Count - 2).SelectMany(x => x.GetInstructions()).ToList();
+
+        public void ReBuildCFG(IReadOnlyList<Instruction> instructions)
+        {
+            ConstructedCFG(BasicBlockLeader.DivideLeaderToLeader(instructions));
+            DFS();
+            ConstructedCFG(UnreachableCodeElimination());
+            DFS();
         }
 
         public enum EdgeType

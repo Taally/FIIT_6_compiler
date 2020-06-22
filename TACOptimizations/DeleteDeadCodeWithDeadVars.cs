@@ -5,7 +5,7 @@ namespace SimpleLang
 {
     public class DeleteDeadCodeWithDeadVars
     {
-        public static (bool wasChanged, List<Instruction> instructions) DeleteDeadCode(List<Instruction> instructions)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) DeleteDeadCode(IReadOnlyList<Instruction> instructions)
         {
             var wasChanged = false;
             var newInstructions = new List<Instruction>();

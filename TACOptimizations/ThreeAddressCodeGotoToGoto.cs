@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
@@ -12,29 +12,29 @@ namespace SimpleLang
         /// </summary>
         /// <param name="commands">Программа в трехадресном коде</param>
         /// <returns>
-        /// Вернет программу с устраненными перходами к переходам
+        /// Вернет программу с устраненными переходами к переходам
         /// </returns>
-        public static (bool wasChanged, List<Instruction> instructions) ReplaceGotoToGoto(List<Instruction> commands)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) ReplaceGotoToGoto(IReadOnlyCollection<Instruction> commands)
         {
             wasChanged = false;
             var tmpCommands = new List<Instruction>();
-            tmpCommands.AddRange(commands.ToArray()); // Перепишем набор наших инструкций в темповый массив
+            tmpCommands.AddRange(commands.ToArray()); // Перепишем набор наших инструкций во временный массив
 
             foreach (var instr in commands)
             {
                 if (instr.Operation == "goto") // Простые goto (случай из задания 1)
                 {
-                    tmpCommands = StretchTransitions(instr.Argument1, tmpCommands);
+                    tmpCommands = PropagateTransitions(instr.Argument1, tmpCommands);
                 }
 
                 if (instr.Operation == "ifgoto" && instr.Label == "") // Инструкции вида if(усл) goto (случай из задания 2)
                 {
-                    tmpCommands = StretchIFWithoutLabel(instr.Argument2, tmpCommands);
+                    tmpCommands = PropagateIfWithoutLabel(instr.Argument2, tmpCommands);
                 }
 
                 if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (случай из задания 2)
                 {
-                    tmpCommands = StretchIFWithLabel(instr, tmpCommands);
+                    tmpCommands = PropagateIfWithLabel(instr, tmpCommands);
                 }
             }
 
@@ -44,21 +44,21 @@ namespace SimpleLang
         /// <summary>
         /// Протягивает метки для goto
         /// </summary>
-        /// <param name="Label">Метка которую мы ищем</param>
+        /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
         /// Вернет измененные инструкции с протянутыми goto
         /// </returns>
-        private static List<Instruction> StretchTransitions(string Label, List<Instruction> instructions)
+        private static List<Instruction> PropagateTransitions(string label, List<Instruction> instructions)
         {
-            for (int i = 0; i < instructions.Count; i++)
+            for (var i = 0; i < instructions.Count; i++)
             {
-                if (instructions[i].Label == Label && instructions[i].Operation == "goto" && instructions[i].Argument1 != Label)
+                if (instructions[i].Label == label && instructions[i].Operation == "goto" && instructions[i].Argument1 != label)
                 {
-                    string tmp = instructions[i].Argument1;
-                    for (int j = 0; j < instructions.Count; j++)
+                    var tmp = instructions[i].Argument1;
+                    for (var j = 0; j < instructions.Count; j++)
                     {
-                        if (instructions[j].Operation == "goto" && instructions[j].Argument1 == Label)
+                        if (instructions[j].Operation == "goto" && instructions[j].Argument1 == label)
                         {
                             wasChanged = true;
                             instructions[j] = new Instruction(instructions[j].Label, "goto", tmp, "", "");
@@ -73,21 +73,21 @@ namespace SimpleLang
         /// <summary>
         /// Протягивает метки для if(усл) goto
         /// </summary>
-        /// <param name="Label">Метка которую мы ищем</param>
+        /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
         /// Вернет измененные инструкции с протянутыми goto из if
         /// </returns>
-        private static List<Instruction> StretchIFWithoutLabel(string Label, List<Instruction> instructions)
+        private static List<Instruction> PropagateIfWithoutLabel(string label, List<Instruction> instructions)
         {
-            for (int i = 0; i < instructions.Count; i++)
+            for (var i = 0; i < instructions.Count; i++)
             {
-                if (instructions[i].Label == Label && instructions[i].Operation == "goto" && instructions[i].Argument2 != Label)
+                if (instructions[i].Label == label && instructions[i].Operation == "goto" && instructions[i].Argument2 != label)
                 {
-                    string tmp = instructions[i].Argument1;
-                    for (int j = 0; j < instructions.Count; j++)
+                    var tmp = instructions[i].Argument1;
+                    for (var j = 0; j < instructions.Count; j++)
                     {
-                        if (instructions[j].Operation == "ifgoto" && instructions[j].Argument2 == Label)
+                        if (instructions[j].Operation == "ifgoto" && instructions[j].Argument2 == label)
                         {
                             wasChanged = true;
                             instructions[j] = new Instruction("", "ifgoto", instructions[j].Argument1, tmp, "");
@@ -102,14 +102,14 @@ namespace SimpleLang
         /// <summary>
         /// Протянуть if с метками
         /// </summary>
-        /// <param name="findInstruction">Инструкция которую мы ищем</param>
+        /// <param name="findInstruction">Инструкция, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции если меткок if не более двух
+        /// Вернет измененные инструкции, если меток if не более двух
         /// </returns>
-        private static List<Instruction> StretchIFWithLabel(Instruction findInstruction, List<Instruction> instructions)
+        private static List<Instruction> PropagateIfWithLabel(Instruction findInstruction, List<Instruction> instructions)
         {
-            int findIndexIf = instructions.IndexOf(findInstruction);
+            var findIndexIf = instructions.IndexOf(findInstruction);
 
             if (findIndexIf == -1
                 || instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto" && x.ToString() != instructions[findIndexIf].ToString()).Count() > 1)
@@ -117,7 +117,14 @@ namespace SimpleLang
                 return instructions;
             }
 
-            int findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0));
+            var finditem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
+                instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0) :
+                new Instruction("", "", "", "", "");
+            var findIndexGoto = instructions.IndexOf(finditem);
+            if (findIndexGoto == -1)
+            {
+                return instructions;
+            }
 
             wasChanged = true;
             if (instructions[findIndexIf + 1].Label == "")

@@ -2,14 +2,15 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprFoldUnary : ChangeVisitor
+    public class OptExprFoldUnary : ChangeVisitor
     {
         public override void VisitBinOpNode(BinOpNode binop)
         {
             var left = binop.Left as UnOpNode;
             var right = binop.Right as UnOpNode;
 
-            if (left != null && right != null && left.Op == right.Op && left.Expr is IdNode idl)
+            if (left != null && right != null && left.Op == right.Op
+                && left.Op == OpType.NOT && left.Expr is IdNode idl)
             {
                 if (right.Expr is IdNode idr && idl.Name == idr.Name)
                 {
@@ -24,8 +25,8 @@ namespace SimpleLang.Visitors
                 }
             }
             else
-            if (left != null && left.Op == OpType.NOT && left.Expr is IdNode
-                && binop.Right is IdNode && (left.Expr as IdNode).Name == (binop.Right as IdNode).Name)
+            if (left != null && left.Op == OpType.NOT && left.Expr is IdNode idl2
+                && binop.Right is IdNode idr2 && idl2.Name == idr2.Name)
             {
                 if (binop.Op == OpType.EQUAL)
                 {
@@ -37,8 +38,8 @@ namespace SimpleLang.Visitors
                 }
             }
             else
-                if (right != null && right.Op == OpType.NOT && right.Expr is IdNode
-                    && binop.Left is IdNode && (right.Expr as IdNode).Name == (binop.Left as IdNode).Name)
+                if (right != null && right.Op == OpType.NOT && right.Expr is IdNode idr3
+                    && binop.Left is IdNode idl3 && idr3.Name == idl3.Name)
             {
                 if (binop.Op == OpType.EQUAL)
                 {

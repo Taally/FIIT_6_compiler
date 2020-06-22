@@ -1,16 +1,16 @@
-### AST-оптимизация замены if(true) на его true ветку
+## AST-оптимизация замены if(true) на его true ветку
 
-#### Постановка задачи
+### Постановка задачи
 Реализовать оптимизацию по AST дереву вида if(true) st1 else st2 => st1
 
-#### Команда
+### Команда
 А. Татарова, Т. Шкуро, Д. Володин, Н. Моздоров
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 Предшествующие задачи:
 * AST дерево
 
-#### Теоретическая часть
+### Теоретическая часть
 Реализовать оптимизацию по AST дереву вида if(true) st1 else st2 => st1
   * До
   ```csharp
@@ -24,7 +24,7 @@
   st1;
   ```
 
-#### Практическая часть
+### Практическая часть
 Примеры реализации метода:
 
 ```csharp
@@ -39,7 +39,7 @@
         }
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 ```csharp
 public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
        {
@@ -62,18 +62,43 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
        }
 ```
 
-#### Пример работы
-Исходный код программы:
+### Тесты
+В тестах проверяется, что данная оптимизация на месте условного оператора ```if(true)``` оставляет только true-ветку
 ```csharp
-var a;
-a = 14;
-if(true)
-  a = a - 4;
+[Test]
+public void IfTrueComplexTest()
+{
+    var AST = BuildAST(@"
+var a, b;
+if true
+if true {
+a = b;
+b = 1;
+}
 else
-  a = a + 10;
-```
-Результат работы:
-```csharp
-a = 14;
-a = a - 4;
+a = 1;
+
+if a > b{
+a = b;
+if true{
+b = b + 1;
+b = b / 5;
+}
+}
+");
+
+    var expected = new[] {
+        "var a, b;",
+        "a = b;",
+        "b = 1;",
+        "if (a > b) {",
+        "  a = b;",
+        "  b = (b + 1);",
+        "  b = (b / 5);",
+        "}"
+    };
+
+    var result = ApplyOpt(AST, new OptStatIfTrue());
+    CollectionAssert.AreEqual(expected, result);
+}
 ```

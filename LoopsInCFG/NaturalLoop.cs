@@ -13,17 +13,14 @@ namespace SimpleLang
         /// <returns>
         /// Вернет все натуральные циклы
         /// </returns>
-        public static List<List<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg)
+        public static IReadOnlyList<IReadOnlyList<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg)
         {
-            
-            
-            var allEdges = new BackEdges(cfg);
-            if (allEdges.GraphIsReducible)
+            if (cfg.IsReducibleGraph())
             {
                 var natLoops = new List<List<BasicBlock>>();
                 var ForwardEdges = cfg.GetCurrentBasicBlocks();
 
-                foreach (var (From, To) in allEdges.BackEdgesFromGraph)
+                foreach (var (From, To) in cfg.GetBackEdges())
                 {
                     if (cfg.VertexOf(To) > 0)
                     {
@@ -58,11 +55,11 @@ namespace SimpleLang
         /// <returns>
         /// Вернет флаг, естественнен ли он
         /// </returns>
-        private static bool IsNaturalLoop(List<BasicBlock> loop, ControlFlowGraph cfg)
+        private static bool IsNaturalLoop(IReadOnlyCollection<BasicBlock> loop, ControlFlowGraph cfg)
         {
-            for (var i = 1; i < loop.Count; i++)
+            foreach (var bblock in loop.Skip(1))
             {
-                var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(loop[i]));
+                var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(bblock));
                 if (parents.Count > 1)
                 {
                     foreach (var parent in parents.Select(x => x.block))

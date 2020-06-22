@@ -30,7 +30,7 @@ namespace SimpleLang
             { "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "NOTEQUAL", "LESS", "EQLESS", "GREATER", "EQGREATER", "AND", "OR",
             "UNMINUS", "NOT", "assign", "input"};
 
-        private static void FillLists(List<Instruction> commands)
+        private static void FillLists(IReadOnlyList<Instruction> commands)
         {
             DefList = new List<Def>();
             for (var i = 0; i < commands.Count; ++i)
@@ -58,7 +58,7 @@ namespace SimpleLang
             d.Uses.RemoveAt(d.Uses.FindLastIndex(x => x.OrderNum == i));
         }
 
-        public static (bool wasChanged, List<Instruction> instructions) DeleteDeadCode(List<Instruction> commands)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) DeleteDeadCode(IReadOnlyList<Instruction> commands)
         {
             var result = new List<Instruction>();
             FillLists(commands);

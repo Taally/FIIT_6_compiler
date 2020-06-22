@@ -1,16 +1,16 @@
-### AST-оптимизация замены оператора сравнения двух значений на его булево значение
+## AST-оптимизация замены оператора сравнения двух значений на его булево значение
 
-#### Постановка задачи
+### Постановка задачи
 Реализовать оптимизацию по AST дереву вида false == false -> true, 5 == 6 -> false
 
-#### Команда
+### Команда
 А. Пацеев, И. Ушаков
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 Предшествующие задачи:
-* AST дерево
+* Построение AST дерева
 
-#### Теоретическая часть
+### Теоретическая часть
 Реализовать оптимизацию по AST дереву вида false == false -> true, 5 == 6 -> false
   * До
   ```csharp
@@ -27,7 +27,7 @@
   false
   ```
 
-#### Практическая часть
+### Практическая часть
 Эта оптимизация представляет собой визитор, унаследованный от ChangeVisitor. Пример реализации метода:
 
 ```csharp
@@ -56,7 +56,7 @@ internal class OptExprEqualBoolNum : ChangeVisitor
     }
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 ```csharp
 public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
        {
@@ -79,42 +79,26 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
        }
 ```
 
-#### Пример работы
-Исходный код программы:
+### Тесты
 ```csharp
-while (true == true) 
-    a = 5; 
-```
-
-Результат работы:
-```csharp
-while (true) 
-    a = 5; 
-```
-
-#### Тесты
-```csharp
-public class OptExprEqualBoolNumTests: ASTTestsBase
-    {
-        [Test]
-        public void SumNumTest()
-        {
-            var AST = BuildAST(@"var b, c, d;
+[Test]
+public void SumNumTest()
+{
+    var AST = BuildAST(@"
+var b, c, d;
 b = true == true;
 while (5 == 5)
   c = true == false;
 d = 7 == 8;");
-            var expected = @"var b, c, d;
-b = true;
-while true
-  c = false;
-d = false;";
+    var expected = new[] {
+        "var b, c, d;",
+        "b = true;",
+        "while true",
+        "  c = false;",
+        "d = false;"
+    };
 
-            var opt = new OptExprEqualBoolNum();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
-        }
-    }
+    var result = ApplyOpt(AST, new OptExprEqualBoolNum());
+    CollectionAssert.AreEqual(expected, result);
+}
 ```

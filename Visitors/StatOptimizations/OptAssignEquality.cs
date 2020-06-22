@@ -2,7 +2,7 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptAssignEquality : ChangeVisitor
+    public class OptAssignEquality : ChangeVisitor
     {
         public override void VisitAssignNode(AssignNode n)
         {

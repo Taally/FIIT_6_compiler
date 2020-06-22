@@ -4,14 +4,15 @@ using SimpleParser;
 
 namespace SimpleLang
 {
-    internal static class ASTOptimizer
+    public static class ASTOptimizer
     {
-        public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
+        private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
         {
-            new OptExprEqualToItself(),
+            new OptExprVarEqualToItself(),
             new OptExprMultDivByOne(),
             new OptExprMultZero(),
             new OptExprSumZero(),
+            new OptExprWithOperationsBetweenConsts(),
             new OptStatIfTrue(),
             new OptStatIfFalse(),
             new OptExprEqualBoolNum(),
@@ -25,8 +26,9 @@ namespace SimpleLang
             new OptExprSubEqualVar()
         };
 
-        public static void Optimize(Parser parser)
+        public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimizations = null)
         {
+            Optimizations = Optimizations ?? ASTOptimizations;
             var optInd = 0;
             do
             {
