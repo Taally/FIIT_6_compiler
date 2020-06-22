@@ -28,38 +28,48 @@
 Примеры реализации метода:
 
 ```csharp
-    if (n is IfElseNode ifNode)  // Если это корень if
-        if (ifNode.Expr is BoolValNode boolNode && boolNode.Val) // Если выражение == true
+public class OptStatIfTrue : ChangeVisitor
+{
+    public override void PostVisit(Node n)
+    {
+        // if (true) st1; else st2
+        if (n is IfElseNode ifNode && ifNode.Expr is BoolValNode boolNode && boolNode.Val)
         {
-            if (ifNode.TrueStat != null)
-            {
-                ifNode.TrueStat.Visit(this);
-            }
             ReplaceStat(ifNode, ifNode.TrueStat);
         }
+    }
+}
 ```
 
 ### Место в общем проекте (Интеграция)
 ```csharp
-public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
-       {
-             /* ... */
-           new OptStatIftrue(),
-             /* ... */
-       };
+public static class ASTOptimizer
+{
+    private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+    {
+        /* ... */
+        new OptStatIfTrue(),
+        /* ... */
+    };
 
-       public static void Optimize(Parser parser)
-       {
-           int optInd = 0;
-           do
-           {
-               parser.root.Visit(Optimizations[optInd]);
-               if (Optimizations[optInd].Changed)
-                   optInd = 0;
-               else
-                   ++optInd;
-           } while (optInd < Optimizations.Count);
-       }
+    public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimizations = null)
+    {
+        Optimizations = Optimizations ?? ASTOptimizations;
+        var optInd = 0;
+        do
+        {
+            parser.root.Visit(Optimizations[optInd]);
+            if (Optimizations[optInd].Changed)
+            {
+                optInd = 0;
+            }
+            else
+            {
+                ++optInd;
+            }
+        } while (optInd < Optimizations.Count);
+    }
+}
 ```
 
 ### Тесты

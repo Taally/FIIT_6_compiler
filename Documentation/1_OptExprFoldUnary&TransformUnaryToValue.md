@@ -36,40 +36,39 @@
 1. Свертка двух унарных операций
 Данная оптимизация заходит только в узлы бинарных операций. Прежде всего проверяются необходимые условия: левый и правый операнды представляют собой узлы унарных операций и тип бинарной операции "равно" или "неравно". После разбирается, что в этих операндах только одна и так же переменная/константа, что тип унарных операций одинаков и т.д. Если условия выполняются, в родительском узле происходит замена бинарной операции на значение Boolean. В противном случае узел обрабатывается по умолчанию.
 ```csharp
-public override void VisitBinOpNode(BinOpNode binop)
+public override void PostVisit(Node n)
 {
-    var left = binop.Left as UnOpNode;
-    var right = binop.Right as UnOpNode;
-    
-    if (left != null && right != null && left.Op == right.Op && left.Expr is IdNode idl)
+    if (n is BinOpNode binOpNode)
     {
-        if (right.Expr is IdNode idr && idl.Name == idr.Name)
+        var left = binOpNode.Left as UnOpNode;
+        var right = binOpNode.Right as UnOpNode;
+
+        if (left != null && right != null && left.Op == right.Op
+            && left.Op == OpType.NOT && left.Expr is IdNode idl)
         {
-            if (binop.Op == OpType.EQUAL)
+            if (right.Expr is IdNode idr && idl.Name == idr.Name)
             {
-                ReplaceExpr(binop, new BoolValNode(true));
-            }
-            if (binop.Op == OpType.NOTEQUAL)
-            {
-                ReplaceExpr(binop, new BoolValNode(false));
+                if (binOpNode.Op == OpType.EQUAL)
+                {
+                    ReplaceExpr(binOpNode, new BoolValNode(true));
+                }
+                else if (binOpNode.Op == OpType.NOTEQUAL)
+                {
+                    ReplaceExpr(binOpNode, new BoolValNode(false));
+                }
             }
         }
-    }
-    else
-    if (left != null && left.Op == OpType.NOT && left.Expr is IdNode
-        && binop.Right is IdNode && (left.Expr as IdNode).Name == (binop.Right as IdNode).Name)
-    {
-        /*...*/
-    }
-    else
-    if (right != null && right.Op == OpType.NOT && right.Expr is IdNode
-        && binop.Left is IdNode && (right.Expr as IdNode).Name == (binop.Left as IdNode).Name)
-    {
-        /*...*/
-    }
-    else
-    {
-        base.VisitBinOpNode(binop);
+        else
+        if (left != null && left.Op == OpType.NOT && left.Expr is IdNode idl2
+            && binOpNode.Right is IdNode idr2 && idl2.Name == idr2.Name)
+        {
+            /*...*/
+                else
+        if (right != null && right.Op == OpType.NOT && right.Expr is IdNode idr3
+                && binOpNode.Left is IdNode idl3 && idr3.Name == idl3.Name)
+        {
+            /*...*/
+        }
     }
 }
 ```
@@ -82,34 +81,32 @@ public override void VisitBinOpNode(BinOpNode binop)
 - если выражение было переменной, то дополнительно проверяется, является ли родительский узел так же унарной операцией с тем же типом операции. Если является, то в родительском узле второго порядка происходит замена выражения на переменную. 
 
 ```csharp
-public override void VisitUnOpNode(UnOpNode unop)
+public override void PostVisit(Node n)
 {
-    if (unop.Expr is IntNumNode num)
+    if (n is UnOpNode unOpNode)
     {
-        if (unop.Op == OpType.UNMINUS)
+        if (unOpNode.Expr is IntNumNode num)
         {
-            ReplaceExpr(unop, new IntNumNode(-1 * num.Num));
+            var vForNum = unOpNode.Op == OpType.UNMINUS ? -1 * num.Num
+                : throw new ArgumentException("IntNumNode linked with UNMINUS");
+            ReplaceExpr(unOpNode, new IntNumNode(vForNum));
         }
-        //...
-    }
-    else if (unop.Expr is BoolValNode b)
-    {
-        if (unop.Op == OpType.NOT)
+        else
+        if (unOpNode.Expr is BoolValNode b)
         {
-            ReplaceExpr(unop, new BoolValNode(!b.Val));
+            var vForBool = unOpNode.Op == OpType.NOT ? !b.Val
+                : throw new ArgumentException("BoolValNode linked with NOT");
+            ReplaceExpr(unOpNode, new BoolValNode(vForBool));
         }
-        //...
-    }
-    else if (unop.Expr is IdNode)
-    {
-        if (unop.Parent is UnOpNode && (unop.Parent as UnOpNode).Op == unop.Op)
+        else
+        if (unOpNode.Expr is IdNode
+                && unOpNode.Parent is UnOpNode && (unOpNode.Parent as UnOpNode).Op == unOpNode.Op)
         {
-            ReplaceExpr(unop.Parent as UnOpNode, unop.Expr);
+            if (unOpNode.Parent is UnOpNode parent && parent.Op == unOpNode.Op)
+            {
+                ReplaceExpr(parent, unOpNode.Expr);
+            }
         }
-    }
-    else
-    {
-        base.VisitUnOpNode(unop);
     }
 }
 ```
@@ -122,7 +119,8 @@ public override void VisitUnOpNode(UnOpNode unop)
 
 ```csharp
 [Test]
-public void EqualIDTest() {
+public void EqualIDTest()
+{
     var AST = BuildAST(@"
 var a, b;
 b = !a == !a;
@@ -163,8 +161,9 @@ b = a != !a;
 2. Устранение унарных операций
 
 ```csharp
- [Test]
-public void TransformToIntTest() {
+[Test]
+public void TransformToIntTest()
+{
     var AST = BuildAST(@"
 var a, b;
 a = (-1);
@@ -192,7 +191,9 @@ b = !false;
         "a = false;",
         "b = true;"
     };
-    /*..*/
+
+    var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
+    CollectionAssert.AreEqual(expected, result);
 }
 
 [Test]
@@ -210,6 +211,8 @@ a = --b - ---a;
         "b = a;",
         "a = (b - (-a));"
     };
-    /*..*/
+
+    var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
+    CollectionAssert.AreEqual(expected, result);
 }
 ```
