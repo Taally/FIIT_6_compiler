@@ -54,7 +54,7 @@ namespace SimpleLang
         public override Func<List<OneExpression>, List<OneExpression>, bool> Compare
             => (a, b) => IsEqual(a, b);
         public override List<OneExpression> InitFirst { get => new List<OneExpression>(); protected set { } }
-        public override List<OneExpression> Init 
+        public override List<OneExpression> Init
         {
             get => AvailableExpressionTransferFunc.UniversalSequence;
             protected set { }
@@ -139,7 +139,7 @@ namespace SimpleLang
                         }
                     }
                 }
-            }            
+            }
             return UniversalSequence;
         }
         private void Initialization(ControlFlowGraph graph)
