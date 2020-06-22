@@ -47,7 +47,7 @@ jobs:
       run: |
         cd Documentation
         pandoc $(cat order.txt) -s --output=Documentation.md --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm -V --toc -V toc-title:"Содержание"
-        pandoc $(cat order.txt) --listings -H listings-setup.tex -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm+hard_line_breaks -V geometry:margin=1in --toc -V toc-title:"Содержание"
+        pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm+hard_line_breaks -V geometry:margin=1in --toc -V toc-title:"Содержание"
         
     - name: Commit
       run: |
