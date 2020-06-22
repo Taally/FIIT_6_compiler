@@ -18,24 +18,20 @@
 Нужная оптимизация производится с применением паттерна Visitor, для этого созданный класс наследует `ChangeVisitor` и переопределяет метод `PostVisit`.
 ```csharp
 public class OptExprSubEqualVar : ChangeVisitor
-{
-    public override void PostVisit(Node n)
     {
-        // a - a => 0
-        if (n is BinOpNode binop && binop.Op == OpType.MINUS
-            && binop.Left is IdNode id1 && binop.Right is IdNode id2 && id1.Name == id2.Name)
+        public override void PostVisit(Node n)
         {
-            if (id1.Name == id2.Name)
+            // a - a => 0
+            if (n is BinOpNode binop && binop.Op == OpType.MINUS
+                && binop.Left is IdNode id1 && binop.Right is IdNode id2 && id1.Name == id2.Name)
             {
-                ReplaceExpr(binop, new IntNumNode(0));
-            }
-            else
-            {
-                base.VisitBinOpNode(binop);
+                if (id1.Name == id2.Name)
+                {
+                    ReplaceExpr(binop, new IntNumNode(0));
+                }
             }
         }
     }
-}
 ```
 
 #### Место в общем проекте (Интеграция)
