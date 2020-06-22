@@ -42,15 +42,12 @@ jobs:
         wget https://github.com/jgm/pandoc/releases/download/2.9.2.1/pandoc-2.9.2.1-1-amd64.deb
         sudo dpkg -i pandoc-2.9.2.1-1-amd64.deb
         sudo apt-get update && sudo apt-get install texlive-xetex texlive-lang-cyrillic librsvg2-bin
-        
-    - name: Generate Documentation.md
-      run: |
-        python Documentation/gen.py
     
-    - name: Generate PDF
+    - name: Generate docs
       run: |
         cd Documentation
-        pandoc Documentation.md metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm -V geometry:margin=1in --toc -V toc-title:"Содержание"
+        pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.md --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm -V geometry:margin=1in --toc -V toc-title:"Содержание"
+        pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm -V geometry:margin=1in --toc -V toc-title:"Содержание"
         
     - name: Commit
       run: |
