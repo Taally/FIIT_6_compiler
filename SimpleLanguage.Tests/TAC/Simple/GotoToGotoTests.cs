@@ -29,12 +29,10 @@ var a, b;
             {
                 "1: goto 6",
                 "2: goto 6",
-                "3: goto 6",
-                "4: a = 1",
                 "5: goto 6",
                 "6: a = b",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -117,13 +115,11 @@ else
                 "#t1 = a > b",
                 "if #t1 goto 6",
                 "goto 4",
-                "goto L2",
                 "L1: goto 6",
-                "L2: noop",
                 "6: a = 4",
                 "4: a = 6",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -146,14 +142,13 @@ a = 1;
             {
                 "if True goto 2",
                 "goto L3",
-                "a = 1",
                 "L3: noop",
                 "goto L2",
                 "L1: goto 2",
                 "L2: noop",
                 "2: a = 5",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
@@ -190,7 +185,7 @@ var a, b;
 goto 1;
 a = 1;
 1: if (true) 
-    goto 2;
+    goto 4;
 else 
 3: a=5;
 4: b = 2;
@@ -200,17 +195,16 @@ else
 
             var expected = new List<string>()
             {
-                "if True goto 2",
+                "if True goto 4",
                 "goto 3",
-                "a = 1",
                 "noop",
                 "3: a = 5",
                 "goto L2",
-                "L1: goto 2",
+                "L1: goto 4",
                 "L2: noop",
                 "4: b = 2",
             };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
                 .Select(instruction => instruction.ToString());
 
 

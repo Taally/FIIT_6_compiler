@@ -25,18 +25,30 @@ namespace SimpleLang
             ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
         };
 
-        public static List<Instruction> OptimizeAll(List<Instruction> instructions) =>
-            Optimize(instructions, BasicBlockOptimizations, AllCodeOptimizations);
+        //public static List<Instruction> OptimizeAll(List<Instruction> instructions) =>
+        //    Optimize(instructions, BasicBlockOptimizations, AllCodeOptimizations);
+
+        public static List<Instruction> OptimizeAll(List<Instruction> instructions)
+        {
+            var cfg = new ControlFlowGraph(instructions);
+            cfg.ReBuildCFG(Optimize(cfg.GetInstructionsFromCFG(), BasicBlockOptimizations, AllCodeOptimizations));
+            return cfg.GetInstructionsFromCFG();
+        }
 
         public static List<Instruction> Optimize(
-            List<Instruction> instructions,
-            List<Optimization> basicBlockOptimizations = null,
-            List<Optimization> allCodeOptimizations = null)
+           List<Instruction> instructions,
+           List<Optimization> basicBlockOptimizations = null,
+           List<Optimization> allCodeOptimizations = null,
+           bool UnreachableCodeElimination = false)
         {
             basicBlockOptimizations = basicBlockOptimizations ?? new List<Optimization>();
             allCodeOptimizations = allCodeOptimizations ?? new List<Optimization>();
 
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
+            
+            var blocks = UnreachableCodeElimination ?
+                BasicBlockLeader.DivideLeaderToLeader(new ControlFlowGraph(instructions).GetInstructionsFromCFG()) :
+                BasicBlockLeader.DivideLeaderToLeader(instructions);
+
             for (var i = 0; i < blocks.Count; ++i)
             {
                 blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,6 +39,15 @@ namespace SimpleLang
             ConstructedCFG(UnreachableCodeElimination());
             DFS();
         }
+
+        public ControlFlowGraph(List<Instruction> instructions)
+        {
+            ConstructedCFG(BasicBlockLeader.DivideLeaderToLeader(instructions));
+            DFS();
+            ConstructedCFG(UnreachableCodeElimination());
+            DFS();
+        }
+
 
         private void ConstructedCFG(List<BasicBlock> basicBlocks)
         {
@@ -122,6 +131,22 @@ namespace SimpleLang
             }
             tmpBasicBlock.RemoveAll(x => x == null);
             return tmpBasicBlock.Skip(1).Take(tmpBasicBlock.Count - 2).ToList();
+        }
+
+        public List<Instruction> GetInstructionsFromCFG()
+        {
+            var tmpListInstructions = new List<Instruction>();
+            _basicBlocks.Skip(1).Take(_basicBlocks.Count - 2).ToList().ForEach(x => tmpListInstructions.AddRange(x.GetInstructions()));
+            return tmpListInstructions;
+        }
+
+        public void ReBuildCFG(List<Instruction> instructions)
+        {
+            
+            ConstructedCFG(BasicBlockLeader.DivideLeaderToLeader(instructions));
+            DFS();
+            ConstructedCFG(UnreachableCodeElimination());
+            DFS();
         }
 
         public enum EdgeType
