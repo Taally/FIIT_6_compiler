@@ -4,55 +4,54 @@ namespace SimpleLang.Visitors
 {
     public class OptExprFoldUnary : ChangeVisitor
     {
-        public override void VisitBinOpNode(BinOpNode binop)
+        public override void PostVisit(Node n)
         {
-            var left = binop.Left as UnOpNode;
-            var right = binop.Right as UnOpNode;
+            if (n is BinOpNode binOpNode)
+            {
+                var left = binOpNode.Left as UnOpNode;
+                var right = binOpNode.Right as UnOpNode;
 
-            if (left != null && right != null && left.Op == right.Op
-                && left.Op == OpType.NOT && left.Expr is IdNode idl)
-            {
-                if (right.Expr is IdNode idr && idl.Name == idr.Name)
+                if (left != null && right != null && left.Op == right.Op
+                    && left.Op == OpType.NOT && left.Expr is IdNode idl)
                 {
-                    if (binop.Op == OpType.EQUAL)
+                    if (right.Expr is IdNode idr && idl.Name == idr.Name)
                     {
-                        ReplaceExpr(binop, new BoolValNode(true));
+                        if (binOpNode.Op == OpType.EQUAL)
+                        {
+                            ReplaceExpr(binOpNode, new BoolValNode(true));
+                        }
+                        else if (binOpNode.Op == OpType.NOTEQUAL)
+                        {
+                            ReplaceExpr(binOpNode, new BoolValNode(false));
+                        }
                     }
-                    if (binop.Op == OpType.NOTEQUAL)
+                }
+                else
+                if (left != null && left.Op == OpType.NOT && left.Expr is IdNode idl2
+                    && binOpNode.Right is IdNode idr2 && idl2.Name == idr2.Name)
+                {
+                    if (binOpNode.Op == OpType.EQUAL)
                     {
-                        ReplaceExpr(binop, new BoolValNode(false));
+                        ReplaceExpr(binOpNode, new BoolValNode(false));
+                    }
+                    else if (binOpNode.Op == OpType.NOTEQUAL)
+                    {
+                        ReplaceExpr(binOpNode, new BoolValNode(true));
                     }
                 }
-            }
-            else
-            if (left != null && left.Op == OpType.NOT && left.Expr is IdNode idl2
-                && binop.Right is IdNode idr2 && idl2.Name == idr2.Name)
-            {
-                if (binop.Op == OpType.EQUAL)
-                {
-                    ReplaceExpr(binop, new BoolValNode(false));
-                }
-                if (binop.Op == OpType.NOTEQUAL)
-                {
-                    ReplaceExpr(binop, new BoolValNode(true));
-                }
-            }
-            else
+                else
                 if (right != null && right.Op == OpType.NOT && right.Expr is IdNode idr3
-                    && binop.Left is IdNode idl3 && idr3.Name == idl3.Name)
-            {
-                if (binop.Op == OpType.EQUAL)
+                        && binOpNode.Left is IdNode idl3 && idr3.Name == idl3.Name)
                 {
-                    ReplaceExpr(binop, new BoolValNode(false));
+                    if (binOpNode.Op == OpType.EQUAL)
+                    {
+                        ReplaceExpr(binOpNode, new BoolValNode(false));
+                    }
+                    else if (binOpNode.Op == OpType.NOTEQUAL)
+                    {
+                        ReplaceExpr(binOpNode, new BoolValNode(true));
+                    }
                 }
-                if (binop.Op == OpType.NOTEQUAL)
-                {
-                    ReplaceExpr(binop, new BoolValNode(true));
-                }
-            }
-            else
-            {
-                base.VisitBinOpNode(binop);
             }
         }
     }

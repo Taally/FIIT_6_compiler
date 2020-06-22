@@ -4,42 +4,20 @@ namespace SimpleLang.Visitors
 {
     public class OptExprMultDivByOne : ChangeVisitor
     {
-        public override void VisitBinOpNode(BinOpNode binop)
+        public override void PostVisit(Node n)
         {
-            switch (binop.Op)
+            if (n is BinOpNode binOpNode && (binOpNode.Op == OpType.MULT || binOpNode.Op == OpType.DIV))
             {
-                case OpType.MULT:
-                    if (binop.Left is IntNumNode intNumMultLeft && intNumMultLeft.Num == 1)
-                    {
-                        binop.Right.Visit(this);
-                        ReplaceExpr(binop, binop.Right);
-                    }
-                    else if (binop.Right is IntNumNode intNumMultRight && intNumMultRight.Num == 1)
-                    {
-                        binop.Left.Visit(this);
-                        ReplaceExpr(binop, binop.Left);
-                    }
-                    else
-                    {
-                        base.VisitBinOpNode(binop);
-                    }
-                    break;
-
-                case OpType.DIV:
-                    if (binop.Right is IntNumNode intNumDivRight && intNumDivRight.Num == 1)
-                    {
-                        binop.Left.Visit(this);
-                        ReplaceExpr(binop, binop.Left);
-                    }
-                    else
-                    {
-                        base.VisitBinOpNode(binop);
-                    }
-                    break;
-
-                default:
-                    base.VisitBinOpNode(binop);
-                    break;
+                if (binOpNode.Left is IntNumNode intNumNodeLeft && intNumNodeLeft.Num == 1 &&
+                    binOpNode.Op != OpType.DIV) // Do not replace "1 / a"
+                {
+                    ReplaceExpr(binOpNode, binOpNode.Right);
+                }
+                else
+                if (binOpNode.Right is IntNumNode intNumNodeRight && intNumNodeRight.Num == 1)
+                {
+                    ReplaceExpr(binOpNode, binOpNode.Left);
+                }
             }
         }
     }

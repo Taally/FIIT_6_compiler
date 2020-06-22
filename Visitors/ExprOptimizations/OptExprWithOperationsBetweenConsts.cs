@@ -32,12 +32,11 @@ namespace SimpleLang.Visitors
                             break;
                     }
                 }
+                else
                 if (binop.Left is BoolValNode left && binop.Right is BoolValNode right
                     && binop.Op == OpType.NOTEQUAL)
                 {
                     ReplaceExpr(binop, new BoolValNode(left.Val != right.Val));
-                    return;
-
                 }
             }
         }
