@@ -52,6 +52,11 @@ namespace SimpleLang
 
             for (var i = 0; i < instructions.Count; ++i)
             {
+                if (instructions[i].Operation == "noop")
+                {
+                    continue;
+                }
+
                 var expr = uniqueExpr(instructions[i]);
                 if (instructions[i].Operation != "assign" && exprToResults.TryGetValue(expr, out var results) && results.Count != 0)
                 {
