@@ -72,6 +72,7 @@ namespace IDEForSimpleLang1
             ThreeAddressCodeDefUse.DeleteDeadCode,
             DeleteDeadCodeWithDeadVars.DeleteDeadCode,
             ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
+            ThreeAddressCodeCommonExprElimination.CommonExprElimination,
             ThreeAddressCodeCopyPropagation.PropagateCopies,
             ThreeAddressCodeConstantPropagation.PropagateConstants,
             ThreeAddressCodeFoldConstants.FoldConstants

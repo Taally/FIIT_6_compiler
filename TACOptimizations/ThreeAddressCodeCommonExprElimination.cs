@@ -22,13 +22,13 @@ namespace SimpleLang
             }
             return false;
         }
-        public static Tuple<bool, List<Instruction>> CommonExprElimination(List<Instruction> instructions)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instruction) CommonExprElimination(IReadOnlyList<Instruction> instructions)
         {
             var exprToResults = new StringToStrings();
             var argToExprs = new StringToStrings();
             var resultToExpr = new Dictionary<string, string>();
 
-            var changed = false;
+            var wasChanged = false;
             var newInstructions = new List<Instruction>(instructions.Count);
 
             string uniqueExpr(Instruction instr) =>
@@ -55,7 +55,7 @@ namespace SimpleLang
                 var expr = uniqueExpr(instructions[i]);
                 if (instructions[i].Operation != "assign" && exprToResults.TryGetValue(expr, out var results) && results.Count != 0)
                 {
-                    changed = true;
+                    wasChanged = true;
 
                     newInstructions.Add(new Instruction(instructions[i].Label, "assign", results.First(), "", instructions[i].Result));
                 }
@@ -92,7 +92,7 @@ namespace SimpleLang
                     }
                 }
             }
-            return Tuple.Create(changed, newInstructions);
+            return (wasChanged, newInstructions);
         }
     }
 }
