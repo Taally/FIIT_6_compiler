@@ -4,21 +4,19 @@ namespace SimpleLang.Visitors
 {
     public class OptExprSumZero : ChangeVisitor
     {
-        public override void VisitBinOpNode(BinOpNode binOpNode)
+        public override void PostVisit(Node n)
         {
-            base.VisitBinOpNode(binOpNode);
-            var operationIsPlus = binOpNode.Op == OpType.PLUS;
-            var leftIsZero = binOpNode.Left is IntNumNode intNodeLeft && intNodeLeft.Num == 0;
-            var rightIsZero = binOpNode.Right is IntNumNode intNodeRight && intNodeRight.Num == 0;
-            if (operationIsPlus && leftIsZero)
+            if (n is BinOpNode binOpNode && binOpNode.Op == OpType.PLUS)
             {
-                ReplaceExpr(binOpNode, binOpNode.Right);
-            }
-            if (operationIsPlus && rightIsZero)
-            {
-                ReplaceExpr(binOpNode, binOpNode.Left);
+                if (binOpNode.Left is IntNumNode intNodeLeft && intNodeLeft.Num == 0)
+                {
+                    ReplaceExpr(binOpNode, binOpNode.Right);
+                }
+                else if (binOpNode.Right is IntNumNode intNodeRight && intNodeRight.Num == 0)
+                {
+                    ReplaceExpr(binOpNode, binOpNode.Left);
+                }
             }
         }
     }
-
 }
