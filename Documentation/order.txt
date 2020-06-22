@@ -11,6 +11,7 @@ Introduction
 1_OptExprMultZero.md
 1_OptExprSumZero.md
 1_OptIfNullElseNull.md
+1_OptExprWithOperationsBetweenConsts.md
 1_OptStatIfTrue.md
 1_OptStatIfFalse.md
 1_OptWhileFalseVisitor.md
@@ -19,6 +20,7 @@ Introduction
 2_BasicBlockLeader.md
 2_DefUse.md
 2_DeleteDeadCodeWithDeadVars.md
+2_CommonExprElimination.md 
 2_GotoThroughGoto.md
 2_GotoToGoto.md
 2_RemoveAlgebraicIdentities.md
@@ -26,9 +28,12 @@ Introduction
 2_CFGUnreachableCodeElimination.md
 2_ThreeAddressCodeOptimizer.md
 3_BinaryRepresentationOfInOut.md
+3_CreateCFG.md
 3_LiveVariableAnalysis.md
+3_TransferFunctionForConstPropagation.md 
 3_ReachingDefinitions.md
 3_GenericIterativeAlgorithm.md
 4_CFGEdgesСlassification.md
+4_DFSforCFG.md
 4_DominatorTree.md
 4_NaturalLoop.md

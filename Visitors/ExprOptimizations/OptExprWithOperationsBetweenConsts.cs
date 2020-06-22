@@ -8,7 +8,7 @@ namespace SimpleLang.Visitors
         {
             if (n is BinOpNode binop)
             {
-                if(binop.Left is IntNumNode lbn && binop.Right is IntNumNode rbn)
+                if (binop.Left is IntNumNode lbn && binop.Right is IntNumNode rbn)
                 {
                     switch (binop.Op)
                     {
@@ -19,7 +19,7 @@ namespace SimpleLang.Visitors
                         case OpType.GREATER:
                             ReplaceExpr(binop, new BoolValNode(lbn.Num > rbn.Num));
                             break;
-                        
+
                         case OpType.EQGREATER:
                             ReplaceExpr(binop, new BoolValNode(lbn.Num >= rbn.Num));
                             break;

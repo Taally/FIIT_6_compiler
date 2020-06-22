@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
