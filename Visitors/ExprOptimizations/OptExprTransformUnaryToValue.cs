@@ -19,7 +19,7 @@ namespace SimpleLang.Visitors
                     : throw new ArgumentException("BoolValNode linked with NOT");
                 ReplaceExpr(unop, new BoolValNode(vForBool));
             }
-            else if (unop.Expr is IdNode 
+            else if (unop.Expr is IdNode
                  && unop.Parent is UnOpNode && (unop.Parent as UnOpNode).Op == unop.Op)
             {
                 ReplaceExpr(unop.Parent as UnOpNode, unop.Expr);
