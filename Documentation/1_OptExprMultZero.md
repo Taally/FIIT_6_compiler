@@ -18,6 +18,7 @@
 
 #### Практическая часть
 Оптимизация реализуется с применением паттерна Visitor, для этого созданный класс (реализующий оптимизацию) наследует `ChangeVisitor` и переопредеяет метод  `PostVisit`. 
+
 ```csharp
 public class OptExprMultZero : ChangeVisitor
 {
@@ -39,6 +40,7 @@ public class OptExprMultZero : ChangeVisitor
 Данная оптимизация применяется в классе `ASTOptimizer` наряду со всеми остальными оптимизациями по AST-дереву.
 
 #### Тесты
+
 ```csharp
 [Test]
 public void MultWithRightZero()

@@ -20,6 +20,7 @@ Introduction.md
 2_BasicBlockLeader.md
 2_DefUse.md
 2_DeleteDeadCodeWithDeadVars.md
+2_CFGUnreachableCodeElimination.md
 2_CommonExprElimination.md 
 2_GotoThroughGoto.md
 2_GotoToGoto.md
@@ -27,13 +28,14 @@ Introduction.md
 2_RemoveNoopInTac.md
 2_CFGUnreachableCodeElimination.md
 2_ThreeAddressCodeOptimizer.md
-3_BinaryRepresentationOfInOut.md
 3_CreateCFG.md
 3_LiveVariableAnalysis.md
 3_TransferFunctionForConstPropagation.md 
 3_ReachingDefinitions.md
 3_GenericIterativeAlgorithm.md
+3_BinaryRepresentationOfInOut.md
 4_CFGEdgesСlassification.md
 4_DFSforCFG.md
 4_DominatorTree.md
 4_NaturalLoop.md
+4_BackEdges.md
