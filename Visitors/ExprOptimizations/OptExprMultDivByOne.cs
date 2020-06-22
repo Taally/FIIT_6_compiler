@@ -9,16 +9,15 @@ namespace SimpleLang.Visitors
             switch (binop.Op)
             {
                 case OpType.MULT:
-                    if (binop.Left is IntNumNode && (binop.Left as IntNumNode).Num == 1)
+                    if (binop.Left is IntNumNode left && left.Num == 1)
                     {
                         binop.Right.Visit(this);
                         ReplaceExpr(binop, binop.Right);
                     }
-                    else if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1)
+                    else if (binop.Right is IntNumNode right && right.Num == 1)
                     {
                         binop.Left.Visit(this);
                         ReplaceExpr(binop, binop.Left);
-
                     }
                     else
                     {
@@ -27,10 +26,14 @@ namespace SimpleLang.Visitors
                     break;
 
                 case OpType.DIV:
-                    if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1)
+                    if (binop.Right is IntNumNode dright && dright.Num == 1)
                     {
                         binop.Left.Visit(this);
                         ReplaceExpr(binop, binop.Left);
+                    }
+                    else
+                    {
+                        base.VisitBinOpNode(binop);
                     }
                     break;
 
