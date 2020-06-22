@@ -153,6 +153,7 @@ e = zz + i;");
             Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
         }
+        [Test]
         public void ProgramWithLoopFor()
         {
             var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
@@ -173,7 +174,7 @@ for i=2,7
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>())
             };
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
         }
 
