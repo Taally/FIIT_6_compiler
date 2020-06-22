@@ -34,14 +34,15 @@
             this.AST = new System.Windows.Forms.TabPage();
             this.textAST = new System.Windows.Forms.TextBox();
             this.TAC = new System.Windows.Forms.TabPage();
+            this.textTAC = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.clearOpt = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.ASToptList = new System.Windows.Forms.CheckedListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.TACoptLocalList = new System.Windows.Forms.CheckedListBox();
             this.Compile = new System.Windows.Forms.Button();
-            this.clearOpt = new System.Windows.Forms.Button();
-            this.textTAC = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.sourceCode.SuspendLayout();
             this.AST.SuspendLayout();
@@ -49,6 +50,7 @@
             this.panel1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -118,6 +120,17 @@
             this.TAC.Text = "TAC";
             this.TAC.UseVisualStyleBackColor = true;
             // 
+            // textTAC
+            // 
+            this.textTAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textTAC.Location = new System.Drawing.Point(3, 4);
+            this.textTAC.Multiline = true;
+            this.textTAC.Name = "textTAC";
+            this.textTAC.ReadOnly = true;
+            this.textTAC.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textTAC.Size = new System.Drawing.Size(662, 588);
+            this.textTAC.TabIndex = 1;
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.clearOpt);
@@ -126,6 +139,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(464, 587);
             this.panel1.TabIndex = 1;
+            // 
+            // clearOpt
+            // 
+            this.clearOpt.Enabled = false;
+            this.clearOpt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.clearOpt.Location = new System.Drawing.Point(13, 522);
+            this.clearOpt.Name = "clearOpt";
+            this.clearOpt.Size = new System.Drawing.Size(252, 40);
+            this.clearOpt.TabIndex = 1;
+            this.clearOpt.Text = "Очистить список оптимизаций";
+            this.clearOpt.UseVisualStyleBackColor = true;
+            this.clearOpt.Visible = false;
+            this.clearOpt.Click += new System.EventHandler(this.clearOpt_Click);
             // 
             // tabControl2
             // 
@@ -179,13 +205,34 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.TACoptLocalList);
             this.tabPage2.Location = new System.Drawing.Point(4, 29);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(436, 445);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Локальные оптимизации по TAC";
+            this.tabPage2.Text = "Оптимизации по TAC";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // TACoptLocalList
+            // 
+            this.TACoptLocalList.CheckOnClick = true;
+            this.TACoptLocalList.FormattingEnabled = true;
+            this.TACoptLocalList.Items.AddRange(new object[] {
+            "Def-Use: удаление мертвого кода",
+            "Активные переменные: удаление мертвого кода",
+            "Удаление алгебраических тождеств",
+            "Распространение копий",
+            "Распространение констант",
+            "Свертка констант",
+            "Устранение переходов к переходам",
+            "Устранение переходов через переходы",
+            "Удаление пустых операторов",
+            "Удаление недостижимого кода"});
+            this.TACoptLocalList.Location = new System.Drawing.Point(6, 6);
+            this.TACoptLocalList.Name = "TACoptLocalList";
+            this.TACoptLocalList.Size = new System.Drawing.Size(424, 361);
+            this.TACoptLocalList.TabIndex = 0;
             // 
             // Compile
             // 
@@ -197,28 +244,6 @@
             this.Compile.Text = "Компиляция";
             this.Compile.UseVisualStyleBackColor = true;
             this.Compile.Click += new System.EventHandler(this.Compile_Click);
-            // 
-            // clearOpt
-            // 
-            this.clearOpt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.clearOpt.Location = new System.Drawing.Point(13, 522);
-            this.clearOpt.Name = "clearOpt";
-            this.clearOpt.Size = new System.Drawing.Size(252, 40);
-            this.clearOpt.TabIndex = 1;
-            this.clearOpt.Text = "Очистить список оптимизаций";
-            this.clearOpt.UseVisualStyleBackColor = true;
-            this.clearOpt.Click += new System.EventHandler(this.clearOpt_Click);
-            // 
-            // textTAC
-            // 
-            this.textTAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textTAC.Location = new System.Drawing.Point(3, 4);
-            this.textTAC.Multiline = true;
-            this.textTAC.Name = "textTAC";
-            this.textTAC.ReadOnly = true;
-            this.textTAC.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textTAC.Size = new System.Drawing.Size(662, 588);
-            this.textTAC.TabIndex = 1;
             // 
             // Form1
             // 
@@ -240,6 +265,7 @@
             this.panel1.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -260,6 +286,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button clearOpt;
         private System.Windows.Forms.TextBox textTAC;
+        private System.Windows.Forms.CheckedListBox TACoptLocalList;
     }
 }
 

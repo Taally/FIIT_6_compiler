@@ -15,9 +15,6 @@ namespace IDEForSimpleLang1
 {
     public partial class Form1 : Form
     {
-
-        Dictionary<ChangeVisitor, bool> ASTopt = new Dictionary<ChangeVisitor, bool>();
-
         public Form1()
         {
             InitializeComponent();
@@ -29,15 +26,19 @@ namespace IDEForSimpleLang1
             var parser = Controller.GetParser(sourceCode);
             //AST
             textAST.Text = "";
-            List<int> indices = new List<int>();
+            var indicesForAST = new List<int>();
             foreach (var x in ASToptList.CheckedIndices)
             {
-                indices.Add(Int32.Parse(x.ToString()));
+                indicesForAST.Add(Int32.Parse(x.ToString()));
             }
-            textAST.Text = Controller.GetASTWithOpt(parser, indices);
+            textAST.Text = Controller.GetASTWithOpt(parser, indicesForAST);
             //TAC
-
-            textTAC.Text = Controller.GetTACWithOpt(parser);
+            var indicesForTAC = new List<int>();
+            foreach (var x in TACoptLocalList.CheckedIndices)
+            {
+                indicesForTAC.Add(Int32.Parse(x.ToString()));
+            }
+            textTAC.Text = Controller.GetTACWithOpt(parser, indicesForTAC);
         }
 
         private void clearOpt_Click(object sender, EventArgs e)

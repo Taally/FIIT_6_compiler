@@ -10,7 +10,9 @@ using SimpleScanner;
 
 namespace IDEForSimpleLang1
 {
-    class Controller
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
+
+    internal class Controller
     {
         internal static Parser GetParser(string sourceCode)
         {
@@ -22,7 +24,7 @@ namespace IDEForSimpleLang1
             return parser; 
         }
 
-        private static List<ChangeVisitor> ASTOptimizations = new List<ChangeVisitor>{
+        private static readonly List<ChangeVisitor> ASTOptimizations = new List<ChangeVisitor>{
             new OptExprAlgebraic(),
             new OptExprEqualBoolNum(),
             new OptExprFoldUnary(),
@@ -65,15 +67,55 @@ namespace IDEForSimpleLang1
             return pp.Text;
         }
 
-        internal static string GetTACWithOpt(Parser parser)
+        private static readonly List<Optimization> BasicBlockOptimizations = new List<Optimization>()
         {
-            //Где-то здесь список оптимизаций
+            ThreeAddressCodeDefUse.DeleteDeadCode,
+            DeleteDeadCodeWithDeadVars.DeleteDeadCode,
+            ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities,
+            ThreeAddressCodeCopyPropagation.PropagateCopies,
+            ThreeAddressCodeConstantPropagation.PropagateConstants,
+            ThreeAddressCodeFoldConstants.FoldConstants
+        };
+
+        private static readonly List<Optimization> AllCodeOptimizations = new List<Optimization>
+        {
+            ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+            ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
+            ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
+        };
+
+        internal static string GetTACWithOpt(Parser parser, List<int> lstCheck)
+        {
             ThreeAddressCodeTmp.ResetTmpLabel();
             ThreeAddressCodeTmp.ResetTmpName();
             var threeAddrCodeVisitor = new ThreeAddrGenVisitor();
             parser.root.Visit(threeAddrCodeVisitor);
             var threeAddressCode = threeAddrCodeVisitor.Instructions;
-            StringBuilder str = new StringBuilder();
+
+            if (lstCheck.Count > 0)
+            {
+                List<Optimization> bBlOpt = new List<Optimization>(), 
+                    allCodeOpt = new List<Optimization>();
+                var numPos = BasicBlockOptimizations.Count;
+                var numPosFalse = BasicBlockOptimizations.Count + AllCodeOptimizations.Count;
+
+                foreach (var n in lstCheck.TakeWhile(x=>x < numPos))
+                {
+                    bBlOpt.Add(BasicBlockOptimizations[n]);
+                }
+
+                foreach (var n in lstCheck.SkipWhile(x => x < numPos).TakeWhile(x => x < numPosFalse))
+                {
+                    allCodeOpt.Add(AllCodeOptimizations[n - numPos]);
+                }
+
+                var UCE = lstCheck[lstCheck.Count - 1] == numPosFalse;
+
+                threeAddressCode = ThreeAddressCodeOptimizer.Optimize(threeAddressCode,
+                    bBlOpt, allCodeOpt, UCE).ToList();
+            }
+
+            var str = new StringBuilder();
             foreach (var x in threeAddressCode)
             {
                 str.Append(x);
