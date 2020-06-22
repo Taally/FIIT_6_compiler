@@ -205,8 +205,8 @@ namespace SimpleLang
     {
         public bool Equals(OneExpression expr1, OneExpression expr2)
             => expr1.Operation == expr2.Operation
-                    && (expr1.Argument1 == expr2.Argument1 && expr1.Argument2 == expr2.Argument2
-                    || expr1.Argument1 == expr2.Argument2 && expr1.Argument2 == expr2.Argument1);
+            && (expr1.Argument1 == expr2.Argument1 && expr1.Argument2 == expr2.Argument2
+            || expr1.Argument1 == expr2.Argument2 && expr1.Argument2 == expr2.Argument1);
 
         public int GetHashCode(OneExpression obj) => obj.Operation.GetHashCode() + obj.Argument1.GetHashCode() + obj.Argument2.GetHashCode();
     }
