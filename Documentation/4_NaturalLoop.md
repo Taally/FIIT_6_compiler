@@ -16,7 +16,7 @@
 
 ### Теоретическая часть
 В рамках этой задачи необходимо было реализовать определение всех естественных циклов.
-Циклы в исходной программе могут определятся различными способами: как циклы for, while или же они могут быть определены с использованием меток и инструкций goto. С точки зрения анализа программ, не имеет значения, как именно выглядят циклы в исходном тексте программы. Важно только то, что они обладают свойствами, допускающими простую их оптимизацию. В данном случае, нас интересует, имеется ли у цикла одна точка входа, если это так, то компилятор в ходе анализа может предпологать выполнение некоторых начальных условий, в начале каждой итерации цикла. Эта возможность служит причиной определения "естественного цикла".
+Циклы в исходной программе могут определятся различными способами: как циклы `for`, `while` или же они могут быть определены с использованием меток и инструкций `goto`. С точки зрения анализа программ, не имеет значения, как именно выглядят циклы в исходном тексте программы. Важно только то, что они обладают свойствами, допускающими простую их оптимизацию. В данном случае, нас интересует, имеется ли у цикла одна точка входа, если это так, то компилятор в ходе анализа может предпологать выполнение некоторых начальных условий, в начале каждой итерации цикла. Эта возможность служит причиной определения "естественного цикла".
 
 такие циклы обладают двумя важными свойствами:
 * Цикл должен иметь единственный входной узел, называемый заголовком.
@@ -33,36 +33,36 @@
 Пример реализации метода, возвращающий все естественные циклы:
 ```csharp
 public class NaturalLoop
-foreach (var (From, To) in allEdges.BackEdgesFromGraph) // проход по всем обратным ребрам
+foreach (var (From, To) in cfg.GetBackEdges()) // проход по всем обратным ребрам
 {
-	if (cfg.VertexOf(To) > 0) // проверка на наличие цикла
-	{
-		var tmp = new List<BasicBlock>(); // временный список
-		for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
-		{
-			if (!tmp.Contains(ForwardEdges[i])) // содержит ли список данный ББл
-			{
-				tmp.Add(ForwardEdges[i]);
-			}
-		}
+    if (cfg.VertexOf(To) > 0) // проверка на наличие цикла
+    {
+        var tmp = new List<BasicBlock>(); // временный список
+        for (var i = cfg.VertexOf(To); i < cfg.VertexOf(From) + 1; i++)
+        {
+            if (!tmp.Contains(ForwardEdges[i])) // содержит ли список данный ББл
+            {
+                tmp.Add(ForwardEdges[i]);
+            }
+        }
 
-		natLoops.Add(tmp); // Добавляем все циклы 
-	}
+        natLoops.Add(tmp);
+    }
 }
 ```
 Цикл является естественным если все его ББл не содержат входы извне цикла.
 Вспомогательный метод для проверки циклов на естественность:
 ```csharp
 // если кол-во родителей больше 1, значит есть вероятность, что цикл содержит метку с переходом извне
-if (parents.Count > 1)  
+if (parents.Count > 1)
 {
-	foreach (var parent in parents.Select(x => x.block)) // проверяем каждого родителя
-	{   // если родитель не принадлежит текущему циклу, этот цикл не является естественным
-		if (!loop.Contains(parent))
-		{
-			return false;
-		}
-	}
+    foreach (var parent in parents.Select(x => x.block)) // проверяем каждого родителя
+    { // если родитель не принадлежит текущему циклу, этот цикл не является естественным
+        if (!loop.Contains(parent))
+        {
+            return false;
+        }
+    }
 }
 ```
 
@@ -75,9 +75,9 @@ return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
 ### Место в общем проекте (Интеграция)
 Используется для вызова итерационных алгоритмов в единой структуре.
 ```csharp
-            /* ... */
-            var natcyc = NaturalLoop.GetAllNaturalLoops(cfg);
-           /* ... */
+/* ... */
+var natLoops = NaturalLoop.GetAllNaturalLoops(cfg);
+/* ... */
 ```
 
 ### Тесты
@@ -86,7 +86,7 @@ return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
 [Test]
 public void IntersectLoopsTest()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
 var a, b;
 
 54: a = 5;
@@ -96,24 +96,25 @@ goto 54;
 goto 55;
 ");
 
-	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-	var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-	var expected = new List<List<BasicBlock>>()
-	{
-		new List<BasicBlock>()
-		{
-			new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
-			new BasicBlock(new List<Instruction>(){ TAC[4] })
-		}
-	};
+    var cfg = GenCFG(TAC);
+    var actual = NaturalLoop.GetAllNaturalLoops(cfg);
+    var expected = new List<List<BasicBlock>>()
+    {
+        new List<BasicBlock>()
+        {
+            new BasicBlock(new List<Instruction>(){ TAC[0] }),
+            new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
 
-	AssertSet(expected, actual);
+        }
+    };
+
+    AssertSet(expected, actual);
 }
 
 [Test]
 public void NestedLoopsTest()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
 var a, b;
 
 54: a = 5;
@@ -124,24 +125,17 @@ goto 54;
 
 ");
 
-	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-	var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-	var expected = new List<List<BasicBlock>>()
-	{
-		new List<BasicBlock>()
-		{
-			new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] })
-		},
-		new List<BasicBlock>()
-		{
-			new BasicBlock(new List<Instruction>(){ TAC[0] }),
-			new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] }),
-			new BasicBlock(new List<Instruction>(){ TAC[4] })
-		},
+    var cfg = GenCFG(TAC);
+    var actual = NaturalLoop.GetAllNaturalLoops(cfg);
+    var expected = new List<List<BasicBlock>>()
+    {
+        new List<BasicBlock>()
+        {
+            new BasicBlock(new List<Instruction>(){ TAC[1], TAC[2], TAC[3] })
+        }
 
+    };
 
-	};
-
-	AssertSet(expected, actual);
+    AssertSet(expected, actual);
 }
 ```
