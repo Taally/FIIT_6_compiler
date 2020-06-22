@@ -26,8 +26,9 @@ def main():
     res.write("\n")
     for name in order:
         file = codecs.open(path+name+".md", "r", "utf_8_sig")
-        content = "\n{#"+name[2:]+"}\n\n"
-        content += file.read()
+        header = file.readline()
+        content = header + " {#" + name[2:] + "}\n\n"
+        content += file.readlines()[1:]
         file.close()
         res.write(content)
     res.close()
