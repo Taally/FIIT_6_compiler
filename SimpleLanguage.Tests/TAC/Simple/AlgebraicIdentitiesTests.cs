@@ -6,6 +6,7 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     [TestFixture]
     internal class AlebraicIdentitiesTests : TACTestsBase
     {
@@ -226,7 +227,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                             "#t11 = 1",
                             "b = #t11"
                         };
-            var optimizations = new List<Func<List<Instruction>, (bool, List<Instruction>)>>
+            var optimizations = new List<Optimization>
             {
                 ThreeAddressCodeRemoveAlgebraicIdentities.RemoveAlgebraicIdentities
             };

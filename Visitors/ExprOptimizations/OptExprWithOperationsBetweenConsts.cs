@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ProgramTree;
+﻿using ProgramTree;
 
 namespace SimpleLang.Visitors
 {
@@ -41,6 +37,7 @@ namespace SimpleLang.Visitors
                 {
                     ReplaceExpr(binop, new BoolValNode(left.Val != right.Val));
                     return;
+
                 }
             }
         }
