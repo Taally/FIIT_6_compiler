@@ -8,7 +8,7 @@ namespace SimpleLang
 {
     public class LiveVariableAnalysisOptimization
     {
-        public static (bool wasChanged, List<Instruction> instructions) LiveVariableDeleteDeadCode(List<Instruction> instructions)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) LiveVariableDeleteDeadCode(IReadOnlyList<Instruction> instructions)
         {
             var wasChanged = false;
             var newInstructions = new List<Instruction>();
