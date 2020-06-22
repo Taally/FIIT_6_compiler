@@ -29,24 +29,29 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.Compile = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.ASToptList = new System.Windows.Forms.CheckedListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.TACoptLocalList = new System.Windows.Forms.CheckedListBox();
-            this.Compile = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.GraphText = new System.Windows.Forms.TextBox();
             this.tabControl3 = new System.Windows.Forms.TabControl();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.InformText = new System.Windows.Forms.TextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.GraphText = new System.Windows.Forms.TextBox();
             this.AST = new System.Windows.Forms.TabPage();
-            this.textAST = new System.Windows.Forms.TextBox();
             this.textTAC = new System.Windows.Forms.TextBox();
+            this.textAST = new System.Windows.Forms.TextBox();
             this.sourceCode = new System.Windows.Forms.TabPage();
             this.textSourceCode = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.ItOptList = new System.Windows.Forms.CheckedListBox();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.TACBeforeIt = new System.Windows.Forms.TextBox();
+            this.TACAfterIt = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -57,6 +62,8 @@
             this.AST.SuspendLayout();
             this.sourceCode.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage6.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -68,15 +75,27 @@
             this.panel1.Size = new System.Drawing.Size(464, 624);
             this.panel1.TabIndex = 1;
             // 
+            // Compile
+            // 
+            this.Compile.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Compile.Location = new System.Drawing.Point(36, 549);
+            this.Compile.Name = "Compile";
+            this.Compile.Size = new System.Drawing.Size(115, 39);
+            this.Compile.TabIndex = 2;
+            this.Compile.Text = "Компиляция";
+            this.Compile.UseVisualStyleBackColor = true;
+            this.Compile.Click += new System.EventHandler(this.Compile_Click);
+            // 
             // tabControl2
             // 
             this.tabControl2.Controls.Add(this.tabPage1);
             this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Controls.Add(this.tabPage6);
             this.tabControl2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabControl2.Location = new System.Drawing.Point(3, 18);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(444, 467);
+            this.tabControl2.Size = new System.Drawing.Size(444, 407);
             this.tabControl2.TabIndex = 0;
             // 
             // tabPage1
@@ -86,7 +105,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(436, 434);
+            this.tabPage1.Size = new System.Drawing.Size(436, 374);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Оптимизации по AST";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -115,7 +134,7 @@
             "while(false) => empty"});
             this.ASToptList.Location = new System.Drawing.Point(6, 6);
             this.ASToptList.Name = "ASToptList";
-            this.ASToptList.Size = new System.Drawing.Size(424, 424);
+            this.ASToptList.Size = new System.Drawing.Size(424, 361);
             this.ASToptList.TabIndex = 0;
             // 
             // tabPage2
@@ -124,7 +143,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 29);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(436, 434);
+            this.tabPage2.Size = new System.Drawing.Size(436, 374);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Оптимизации по TAC";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -147,19 +166,8 @@
             "Удаление недостижимого кода"});
             this.TACoptLocalList.Location = new System.Drawing.Point(6, 6);
             this.TACoptLocalList.Name = "TACoptLocalList";
-            this.TACoptLocalList.Size = new System.Drawing.Size(424, 424);
+            this.TACoptLocalList.Size = new System.Drawing.Size(424, 361);
             this.TACoptLocalList.TabIndex = 0;
-            // 
-            // Compile
-            // 
-            this.Compile.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Compile.Location = new System.Drawing.Point(36, 549);
-            this.Compile.Name = "Compile";
-            this.Compile.Size = new System.Drawing.Size(115, 39);
-            this.Compile.TabIndex = 2;
-            this.Compile.Text = "Компиляция";
-            this.Compile.UseVisualStyleBackColor = true;
-            this.Compile.Click += new System.EventHandler(this.Compile_Click);
             // 
             // tabPage3
             // 
@@ -172,16 +180,6 @@
             this.tabPage3.Text = "Graph";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // GraphText
-            // 
-            this.GraphText.Location = new System.Drawing.Point(0, 0);
-            this.GraphText.Multiline = true;
-            this.GraphText.Name = "GraphText";
-            this.GraphText.ReadOnly = true;
-            this.GraphText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.GraphText.Size = new System.Drawing.Size(228, 592);
-            this.GraphText.TabIndex = 0;
-            // 
             // tabControl3
             // 
             this.tabControl3.Controls.Add(this.tabPage4);
@@ -192,16 +190,6 @@
             this.tabControl3.Size = new System.Drawing.Size(500, 587);
             this.tabControl3.TabIndex = 2;
             // 
-            // tabPage5
-            // 
-            this.tabPage5.Location = new System.Drawing.Point(4, 29);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(492, 554);
-            this.tabPage5.TabIndex = 1;
-            this.tabPage5.Text = "tabPage5";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.InformText);
@@ -210,7 +198,7 @@
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage4.Size = new System.Drawing.Size(492, 554);
             this.tabPage4.TabIndex = 0;
-            this.tabPage4.Text = "Дерево доминаторов";
+            this.tabPage4.Text = "Информация о графе";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // InformText
@@ -222,6 +210,26 @@
             this.InformText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.InformText.Size = new System.Drawing.Size(483, 542);
             this.InformText.TabIndex = 1;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Location = new System.Drawing.Point(4, 29);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(492, 554);
+            this.tabPage5.TabIndex = 1;
+            this.tabPage5.Text = "Построение областей";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // GraphText
+            // 
+            this.GraphText.Location = new System.Drawing.Point(0, 0);
+            this.GraphText.Multiline = true;
+            this.GraphText.Name = "GraphText";
+            this.GraphText.ReadOnly = true;
+            this.GraphText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.GraphText.Size = new System.Drawing.Size(228, 592);
+            this.GraphText.TabIndex = 0;
             // 
             // AST
             // 
@@ -235,17 +243,6 @@
             this.AST.TabIndex = 1;
             this.AST.Text = "AST&TAC";
             // 
-            // textAST
-            // 
-            this.textAST.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textAST.Location = new System.Drawing.Point(0, 3);
-            this.textAST.Multiline = true;
-            this.textAST.Name = "textAST";
-            this.textAST.ReadOnly = true;
-            this.textAST.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textAST.Size = new System.Drawing.Size(356, 592);
-            this.textAST.TabIndex = 0;
-            // 
             // textTAC
             // 
             this.textTAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -256,6 +253,17 @@
             this.textTAC.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textTAC.Size = new System.Drawing.Size(382, 592);
             this.textTAC.TabIndex = 1;
+            // 
+            // textAST
+            // 
+            this.textAST.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textAST.Location = new System.Drawing.Point(0, 3);
+            this.textAST.Multiline = true;
+            this.textAST.Name = "textAST";
+            this.textAST.ReadOnly = true;
+            this.textAST.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textAST.Size = new System.Drawing.Size(356, 592);
+            this.textAST.TabIndex = 0;
             // 
             // sourceCode
             // 
@@ -285,12 +293,69 @@
             this.tabControl1.Controls.Add(this.sourceCode);
             this.tabControl1.Controls.Add(this.AST);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabControl1.Location = new System.Drawing.Point(497, 23);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(755, 628);
             this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.Controls.Add(this.ItOptList);
+            this.tabPage6.Location = new System.Drawing.Point(4, 29);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Size = new System.Drawing.Size(436, 374);
+            this.tabPage6.TabIndex = 2;
+            this.tabPage6.Text = "Итерационные алгоритмы";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // ItOptList
+            // 
+            this.ItOptList.FormattingEnabled = true;
+            this.ItOptList.Items.AddRange(new object[] {
+            "Доступные выражения",
+            "Активные переменные",
+            "Def-Use",
+            "Распространение констант"});
+            this.ItOptList.Location = new System.Drawing.Point(12, 12);
+            this.ItOptList.Name = "ItOptList";
+            this.ItOptList.Size = new System.Drawing.Size(413, 361);
+            this.ItOptList.TabIndex = 0;
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.Controls.Add(this.TACAfterIt);
+            this.tabPage7.Controls.Add(this.TACBeforeIt);
+            this.tabPage7.Location = new System.Drawing.Point(4, 29);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Size = new System.Drawing.Size(747, 595);
+            this.tabPage7.TabIndex = 4;
+            this.tabPage7.Text = "TAC после итерационных алгоритмов";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // TACBeforeIt
+            // 
+            this.TACBeforeIt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.TACBeforeIt.Location = new System.Drawing.Point(3, 3);
+            this.TACBeforeIt.Multiline = true;
+            this.TACBeforeIt.Name = "TACBeforeIt";
+            this.TACBeforeIt.ReadOnly = true;
+            this.TACBeforeIt.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.TACBeforeIt.Size = new System.Drawing.Size(368, 592);
+            this.TACBeforeIt.TabIndex = 2;
+            // 
+            // TACAfterIt
+            // 
+            this.TACAfterIt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.TACAfterIt.Location = new System.Drawing.Point(377, 3);
+            this.TACAfterIt.Multiline = true;
+            this.TACAfterIt.Name = "TACAfterIt";
+            this.TACAfterIt.ReadOnly = true;
+            this.TACAfterIt.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.TACAfterIt.Size = new System.Drawing.Size(356, 592);
+            this.TACAfterIt.TabIndex = 3;
             // 
             // Form1
             // 
@@ -315,6 +380,9 @@
             this.sourceCode.ResumeLayout(false);
             this.sourceCode.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
+            this.tabPage7.ResumeLayout(false);
+            this.tabPage7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -339,6 +407,11 @@
         private System.Windows.Forms.TabPage sourceCode;
         private System.Windows.Forms.TextBox textSourceCode;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.CheckedListBox ItOptList;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.TextBox TACAfterIt;
+        private System.Windows.Forms.TextBox TACBeforeIt;
     }
 }
 

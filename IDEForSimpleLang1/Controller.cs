@@ -11,6 +11,7 @@ using SimpleScanner;
 //using GraphVizWrapper.Queries;
 using System.IO;
 using System.Drawing;
+using SimpleLang.DataFlowAnalysis;
 
 namespace IDEForSimpleLang1
 {
@@ -221,10 +222,45 @@ namespace IDEForSimpleLang1
                 str.AppendLine($"\r\nНевозможно определить естественные циклы, т.к. граф неприводим");
             }
 
-
-
-
             return str.ToString();
+        }
+
+        internal static (string, string) ApplyIterativeAlgorithm(ControlFlowGraph cfg, List<string> opts) {
+            var strReturn = new StringBuilder();
+            var strBefore = new StringBuilder();
+            foreach (var b in cfg.GetCurrentBasicBlocks())
+            {
+                foreach (var inst in b.GetInstructions())
+                {
+                    strBefore.AppendLine(inst.ToString());
+                }
+                strBefore.AppendLine("----------");
+            }
+
+            foreach (var opt in opts)
+            {
+                switch (opt)
+                {
+                    case "Доступные выражения":
+                        var inout = new AvailableExpressions().Execute(cfg);
+                        AvailableExpressionsApplication.Execute(cfg, inout);
+                        break;
+                    default:
+                        return (strBefore.ToString(),"Not realized yet");
+                }
+            }
+
+            
+            foreach (var b in cfg.GetCurrentBasicBlocks())
+            {
+                foreach (var inst in b.GetInstructions())
+                {
+                    strReturn.AppendLine(inst.ToString());
+                }
+                strReturn.AppendLine("----------");
+            }
+
+            return (strBefore.ToString(),strReturn.ToString());
         }
     }
 }

@@ -24,6 +24,7 @@ namespace IDEForSimpleLang1
         {
             var sourceCode = textSourceCode.Text;
             var parser = Controller.GetParser(sourceCode);
+
             //AST
             textAST.Text = "";
             var indicesForAST = new List<int>();
@@ -32,6 +33,7 @@ namespace IDEForSimpleLang1
                 indicesForAST.Add(Int32.Parse(x.ToString()));
             }
             textAST.Text = Controller.GetASTWithOpt(parser, indicesForAST);
+
             //TAC
             var indicesForTAC = new List<int>();
             foreach (var x in TACoptLocalList.CheckedIndices)
@@ -40,17 +42,23 @@ namespace IDEForSimpleLang1
             }
             var resultTAC = Controller.GetTACWithOpt(parser, indicesForTAC);
             textTAC.Text = resultTAC.str;
+
             //Graph
             var graph = Controller.BuildCFG(resultTAC.instructions);
             GraphText.Text = graph.str;
 
             InformText.Text = Controller.GetGraphInformation(graph.cfg);
-        }
 
-        private void clearOpt_Click(object sender, EventArgs e)
-        {
-            //не работает пока
-            //ASToptList.ClearSelected();
+            //Iterative
+            var strings = new List<string>();
+            foreach (var x in ItOptList.CheckedItems)
+            {
+                strings.Add(x.ToString());
+            }
+
+            var resultForIt = Controller.ApplyIterativeAlgorithm(graph.cfg, strings);
+            TACBeforeIt.Text = resultForIt.Item1;
+            TACAfterIt.Text = resultForIt.Item2;
         }
     }
 }
