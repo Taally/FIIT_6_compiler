@@ -9,27 +9,18 @@ namespace SimpleLang.Visitors
         {
             if (unop.Expr is IntNumNode num)
             {
-                if (unop.Op == OpType.UNMINUS)
-                {
-                    ReplaceExpr(unop, new IntNumNode(-1 * num.Num));
-                }
-                else
-                {
-                    throw new ArgumentException("IntNumNode linked with UNMINUS");
-                }
+                var vForNum = unop.Op == OpType.UNMINUS ? -1 * num.Num
+                    : throw new ArgumentException("IntNumNode linked with UNMINUS");
+                ReplaceExpr(unop, new IntNumNode(vForNum));
             }
             else if (unop.Expr is BoolValNode b)
             {
-                if (unop.Op == OpType.NOT)
-                {
-                    ReplaceExpr(unop, new BoolValNode(!b.Val));
-                }
-                else
-                {
-                    throw new ArgumentException("BoolValNode linked with NOT");
-                }
+                var vForBool = unop.Op == OpType.NOT ? !b.Val
+                    : throw new ArgumentException("BoolValNode linked with NOT");
+                ReplaceExpr(unop, new BoolValNode(vForBool));
             }
-            else if (unop.Expr is IdNode)
+            else if (unop.Expr is IdNode
+                 && unop.Parent is UnOpNode && (unop.Parent as UnOpNode).Op == unop.Op)
             {
                 if (unop.Parent is UnOpNode parent && parent.Op == unop.Op)
                 {

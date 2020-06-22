@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    using Optimization = Func<List<Instruction>, (bool wasChanged, List<Instruction> instructions)>;
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
     public static class ThreeAddressCodeOptimizer
     {
@@ -25,18 +25,27 @@ namespace SimpleLang
             ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
         };
 
-        public static List<Instruction> OptimizeAll(List<Instruction> instructions) =>
-            Optimize(instructions, BasicBlockOptimizations, AllCodeOptimizations);
+        public static IReadOnlyList<Instruction> OptimizeAll(List<Instruction> instructions)
+        {
+            var cfg = new ControlFlowGraph(instructions);
+            cfg.ReBuildCFG(Optimize(cfg.GetInstructions(), BasicBlockOptimizations, AllCodeOptimizations));
+            return cfg.GetInstructions();
+        }
 
-        public static List<Instruction> Optimize(
-            List<Instruction> instructions,
-            List<Optimization> basicBlockOptimizations = null,
-            List<Optimization> allCodeOptimizations = null)
+        public static IReadOnlyList<Instruction> Optimize(
+           IReadOnlyList<Instruction> instructions,
+           List<Optimization> basicBlockOptimizations = null,
+           List<Optimization> allCodeOptimizations = null,
+           bool UnreachableCodeElimination = false)
         {
             basicBlockOptimizations = basicBlockOptimizations ?? new List<Optimization>();
             allCodeOptimizations = allCodeOptimizations ?? new List<Optimization>();
 
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
+
+            var blocks = UnreachableCodeElimination ?
+                BasicBlockLeader.DivideLeaderToLeader(new ControlFlowGraph(instructions).GetInstructions()) :
+                BasicBlockLeader.DivideLeaderToLeader(instructions);
+
             for (var i = 0; i < blocks.Count; ++i)
             {
                 blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
@@ -63,7 +72,7 @@ namespace SimpleLang
             return new BasicBlock(result);
         }
 
-        private static List<Instruction> OptimizeAllCode(List<Instruction> instructions, List<Optimization> opts)
+        private static IReadOnlyList<Instruction> OptimizeAllCode(IReadOnlyList<Instruction> instructions, List<Optimization> opts)
         {
             var result = instructions;
             var currentOpt = 0;

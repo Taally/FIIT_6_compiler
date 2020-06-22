@@ -14,7 +14,7 @@ namespace SimpleLang
         /// <returns>
         /// Вернет программу с устраненными переходами к переходам
         /// </returns>
-        public static (bool wasChanged, List<Instruction> instructions) ReplaceGotoToGoto(List<Instruction> commands)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) ReplaceGotoToGoto(IReadOnlyCollection<Instruction> commands)
         {
             wasChanged = false;
             var tmpCommands = new List<Instruction>();
@@ -117,7 +117,14 @@ namespace SimpleLang
                 return instructions;
             }
 
-            var findIndexGoto = instructions.IndexOf(instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0));
+            var finditem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
+                instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0) :
+                new Instruction("", "", "", "", "");
+            var findIndexGoto = instructions.IndexOf(finditem);
+            if (findIndexGoto == -1)
+            {
+                return instructions;
+            }
 
             wasChanged = true;
             if (instructions[findIndexIf + 1].Label == "")

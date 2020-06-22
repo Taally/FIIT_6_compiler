@@ -18,7 +18,6 @@ namespace SimpleLang.Visitors
                     {
                         binop.Left.Visit(this);
                         ReplaceExpr(binop, binop.Left);
-
                     }
                     else
                     {
@@ -31,6 +30,10 @@ namespace SimpleLang.Visitors
                     {
                         binop.Left.Visit(this);
                         ReplaceExpr(binop, binop.Left);
+                    }
+                    else
+                    {
+                        base.VisitBinOpNode(binop);
                     }
                     break;
 

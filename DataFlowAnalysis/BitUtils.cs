@@ -21,9 +21,9 @@ namespace SimpleLang
             return result;
         }
 
-        public static IEnumerable<Instruction> TurnIntoInstructions(
+        public static IReadOnlyCollection<Instruction> TurnIntoInstructions(
             BitArray bits,
-            List<Instruction> allInstructions
+            IReadOnlyList<Instruction> allInstructions
         )
         {
             var result = new List<Instruction>();

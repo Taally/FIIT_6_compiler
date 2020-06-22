@@ -136,7 +136,7 @@ goto 1;
 
         private void AssertSet(
             List<List<BasicBlock>> expected,
-            List<List<BasicBlock>> actual)
+            IReadOnlyList<IReadOnlyList<BasicBlock>> actual)
         {
             Assert.AreEqual(expected.Count, actual.Count);
             for (var i = 0; i < expected.Count; i++)
