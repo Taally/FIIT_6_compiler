@@ -45,13 +45,14 @@ jobs:
         pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks \
         -V geometry:margin=1in --toc -V toc-title:"Содержание"
         
-    - name: Commit
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "Github Action"
-        git commit -m "Generate documentation" -a
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Documentation.md
+        path: Documentation/Documentation.md
     
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with: 
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Documentation.pdf
+        path: Documentation/Documentation.pdf
