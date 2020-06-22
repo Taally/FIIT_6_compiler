@@ -6,7 +6,7 @@ namespace SimpleLang
     public static class ThreeAddressCodeRemoveGotoThroughGoto
     {
         // устранение переходов через переходы (пример из презентации Opt5.pdf слайд 32)
-        public static (bool wasChanged, List<Instruction> instructions) RemoveGotoThroughGoto(List<Instruction> instructions)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) RemoveGotoThroughGoto(IReadOnlyList<Instruction> instructions)
         {
             if (instructions is null)
             {

@@ -88,13 +88,13 @@ namespace SimpleCompiler
 
                     foreach (var block in cfg.GetCurrentBasicBlocks())
                     {
-                        Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions()[0]}");
+                        Console.WriteLine($"{cfg.VertexOf(block)}  {block.GetInstructions().First()}");
                         var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
-                        var childrenStr = string.Join(" | ", children.Select(v => v.block.GetInstructions()[0].ToString()));
+                        var childrenStr = string.Join(" | ", children.Select(v => v.block.GetInstructions().First().ToString()));
                         Console.WriteLine($" children: {childrenStr}");
 
                         var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
-                        var parentsStr = string.Join(" | ", parents.Select(v => v.block.GetInstructions()[0].ToString()));
+                        var parentsStr = string.Join(" | ", parents.Select(v => v.block.GetInstructions().First().ToString()));
                         Console.WriteLine($" parents: {parentsStr}");
                     }
 

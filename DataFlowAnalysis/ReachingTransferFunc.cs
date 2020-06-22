@@ -63,7 +63,7 @@ namespace SimpleLang
             GetGenKill(basicBlocks);
         }
 
-        public ReachingTransferFunc(List<BasicBlock> g)
+        public ReachingTransferFunc(IReadOnlyCollection<BasicBlock> g)
         {
             GetDefs(g);
             GetGenKill(g);
