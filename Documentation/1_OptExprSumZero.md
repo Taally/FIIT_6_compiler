@@ -17,23 +17,22 @@
 Данная оптимизация выполняется на AST - дереве, построенном для программы. Необходимо найти выражения, одним аргументом которого является 0, которые содержат бинарную оперцию "+", и заменить выражение типа a = b + 0 на a = b.
 
 #### Практическая часть
-Оптимизация реализуется с применением паттерна Visitor, для этого созданный класс (реализующий оптимизацию) наследует `ChangeVisitor` и переопредеяет метод  `VisitBinOpNode`. 
+Оптимизация реализуется с применением паттерна Visitor, для этого созданный класс (реализующий оптимизацию) наследует `ChangeVisitor` и переопредеяет метод  `PostVisit`. 
 ```csharp
-internal class OptExprSumZero : ChangeVisitor
+public class OptExprSumZero : ChangeVisitor
 {
-    public override void VisitBinOpNode(BinOpNode binOpNode)
+    public override void PostVisit(Node n)
     {
-        base.VisitBinOpNode(binOpNode);
-        var operationIsPlus = binOpNode.Op == OpType.PLUS;
-        var leftIsZero = binOpNode.Left is IntNumNode && (binOpNode.Left as IntNumNode).Num == 0;
-        var rightIsZero = binOpNode.Right is IntNumNode && (binOpNode.Right as IntNumNode).Num == 0;
-        if (operationIsPlus && leftIsZero)
+        if (n is BinOpNode binOpNode && binOpNode.Op == OpType.PLUS)
         {
-            ReplaceExpr(binOpNode, binOpNode.Right);
-        }
-        if (operationIsPlus && rightIsZero)
-        {
-            ReplaceExpr(binOpNode, binOpNode.Left);
+            if (binOpNode.Left is IntNumNode intNodeLeft && intNodeLeft.Num == 0)
+            {
+                ReplaceExpr(binOpNode, binOpNode.Right);
+            }
+            else if (binOpNode.Right is IntNumNode intNodeRight && intNodeRight.Num == 0)
+            {
+                ReplaceExpr(binOpNode, binOpNode.Left);
+            }
         }
     }
 }
@@ -54,11 +53,9 @@ a = b + 0;
     var expected = new[] {
         "var a, b;",
         "a = b;"
-        };
+    };
+
     var result = ApplyOpt(AST, new OptExprSumZero());
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-
-
-

@@ -29,18 +29,22 @@
 Пример реализации метода:
 
 ```csharp
-if (n is IfElseNode ifNode) // Если это корень if
+public class OptStatIfFalse : ChangeVisitor
 {
-    if (ifNode.Expr is BoolValNode boolNode && boolNode.Val == false) // Если выражение == false
+    public override void PostVisit(Node n)
     {
-        if (ifNode.FalseStat != null) // Если ветка false не null
+        // if (false) st1; else st2; => st2;
+        if (n is IfElseNode ifNode &&
+            ifNode.Expr is BoolValNode boolNode && boolNode.Val == false) // Если выражение == false
         {
-            ifNode.FalseStat.Visit(this);
-            ReplaceStat(ifNode, ifNode.FalseStat); // Меняем наш корень на ветку else
-        }
-        else
-        {
-            ReplaceStat(ifNode, new EmptyNode());
+            if (ifNode.FalseStat != null) // Если ветка false не null
+            {
+                ReplaceStat(ifNode, ifNode.FalseStat); // Меняем наш корень на ветку else
+            }
+            else
+            {
+                ReplaceStat(ifNode, new EmptyNode());
+            }
         }
     }
 }
@@ -56,7 +60,6 @@ private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List
     /* ... */
 };
 ```
-
 
 ### Тесты
 В тестах проверяется работоспособность оптимизации и соответствие результатов:

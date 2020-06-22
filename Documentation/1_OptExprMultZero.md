@@ -17,19 +17,19 @@
 Данная оптимизация выполняется на AST - дереве, построенном для программы. Необходимо найти выражения, в которых происходит умножение на ноль и заменить, например, выражение типа a = b * 0 на a = 0.
 
 #### Практическая часть
-Оптимизация реализуется с применением паттерна Visitor, для этого созданный класс (реализующий оптимизацию) наследует `ChangeVisitor` и переопредеяет метод  `VisitBinOpNode`. 
+Оптимизация реализуется с применением паттерна Visitor, для этого созданный класс (реализующий оптимизацию) наследует `ChangeVisitor` и переопредеяет метод  `PostVisit`. 
 ```csharp
-internal class OptExprMultZero : ChangeVisitor
+public class OptExprMultZero : ChangeVisitor
 {
-    public override void VisitBinOpNode(BinOpNode binOpNode)
+    public override void PostVisit(Node n)
     {
-        base.VisitBinOpNode(binOpNode);
-        var operationIsMult = binOpNode.Op == OpType.MULT;
-        var leftIsZero = binOpNode.Left is IntNumNode && (binOpNode.Left as IntNumNode).Num == 0;
-        var rightIsZero = binOpNode.Right is IntNumNode && (binOpNode.Right as IntNumNode).Num == 0;
-        if (operationIsMult && (leftIsZero || rightIsZero))
+        if (n is BinOpNode binOpNode && binOpNode.Op == OpType.MULT &&
+            (binOpNode.Left is IntNumNode intNumLeft && intNumLeft.Num == 0 ||
+            binOpNode.Right is IntNumNode intNumRight && intNumRight.Num == 0))
         {
-            ReplaceExpr(binOpNode, new IntNumNode(0));
+            {
+                ReplaceExpr(binOpNode, new IntNumNode(0));
+            }
         }
     }
 }
@@ -47,15 +47,12 @@ public void MultWithRightZero()
 var a, b;
 a = b * 0;
 ");
-    var expected = new[] { 
+    var expected = new[] {
         "var a, b;",
         "a = 0;"
     };
+
     var result = ApplyOpt(AST, new OptExprMultZero());
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-
-
-
-
