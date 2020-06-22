@@ -5,7 +5,6 @@ namespace SimpleLanguage.Tests.AST
 {
     public class OptWhileFalseTests : ASTTestsBase
     {
-
         [Test]
         public void TestShouldCreateNoop()
         {
@@ -40,5 +39,4 @@ while a
             CollectionAssert.AreEqual(expected, result);
         }
     }
-
 }

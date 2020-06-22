@@ -10,7 +10,7 @@
 Предшествующие:
 - Построение AST-дерева
 - Базовые визиторы
-- ChangeVisitor (?)
+- ChangeVisitor
 
 ### Теоретическая часть
 Эта оптимизация представляет собой визитор, унаследованный от ChangeVisitor и меняющий ссылки между узлами ACT.
@@ -24,45 +24,27 @@
 ![Узлы AСT после оптимизации](1_OptExprMultDivByOne/pic2.png)
 
 ### Практическая часть
-Алгоритм заходит только в узлы бинарных операций. Прежде всего проверяются необходимые условия: тип операции либо умножение, либо деление и что один из операндов это единица. Если условия выполняются, в родительском узле происходит замена бинарной операции на переменную. В противном случае узел обрабатывается по умолчанию.
+Алгоритм заходит только в узлы бинарных операций. Прежде всего проверяются необходимые условия: тип операции либо умножение, либо деление и что один из операндов это единица. Если условия выполняются, в родительском узле происходит замена бинарной операции на переменную.
 ```csharp
-internal class OptExprMultDivByOne : ChangeVisitor
+public class OptExprMultDivByOne : ChangeVisitor
 {
-    public override void VisitBinOpNode(BinOpNode binop)
+    public override void PostVisit(Node n)
     {
-		switch (binop.Op)
+        if (n is BinOpNode binOpNode && (binOpNode.Op == OpType.MULT || binOpNode.Op == OpType.DIV))
         {
-            case OpType.MULT:
-                if (binop.Left is IntNumNode && (binop.Left as IntNumNode).Num == 1)
-                {
-                    binop.Right.Visit(this);
-                    ReplaceExpr(binop, binop.Right);
-                }
-                else if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1)
-                {
-                    binop.Left.Visit(this);
-                    ReplaceExpr(binop, binop.Left);
-                }
-                else
-                {
-				    base.VisitBinOpNode(binop);
-                }
-                break;
-
-            case OpType.DIV:
-                if (binop.Right is IntNumNode && (binop.Right as IntNumNode).Num == 1)
-                {
-                    binop.Left.Visit(this);
-                    ReplaceExpr(binop, binop.Left);
-                }
-                break;
-
-            default:
-                base.VisitBinOpNode(binop);
-                break;
+            if (binOpNode.Left is IntNumNode intNumNodeLeft && intNumNodeLeft.Num == 1 &&
+                binOpNode.Op != OpType.DIV) // Do not replace "1 / a"
+            {
+                ReplaceExpr(binOpNode, binOpNode.Right);
+            }
+            else
+            if (binOpNode.Right is IntNumNode intNumNodeRight && intNumNodeRight.Num == 1)
+            {
+                ReplaceExpr(binOpNode, binOpNode.Left);
             }
         }
     }
+}
 ```
 
 ### Место в общем проекте (Интеграция)
@@ -79,7 +61,7 @@ a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
 ");
 
     var expected = new[] {
-	"var a, b;",
+        "var a, b;",
         "a = (a + b);"
     };
 

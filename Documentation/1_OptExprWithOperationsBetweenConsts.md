@@ -38,43 +38,38 @@ public class OptExprWithOperationsBetweenConsts : ChangeVisitor
 {
     public override void PostVisit(Node n)
     {
-        if (n is BinOpNode binop) //если узел является бинарной операцией
+        if (n is BinOpNode binop)
         {
-            switch (binop.Op) //смотрим операцию в этом узле
+            if (binop.Left is IntNumNode lbn && binop.Right is IntNumNode rbn)
             {
-                case OpType.LESS: //если операция - меньше
-                    if (binop.Left is IntNumNode lbn && binop.Right is IntNumNode rbn) //проверка констант
-                    {
+                switch (binop.Op)
+                {
+                    case OpType.LESS:
                         ReplaceExpr(binop, new BoolValNode(lbn.Num < rbn.Num));
                         break;
-                    }
-                    break;
 
-                case OpType.GREATER: //если операция - больше
-                    if (binop.Left is IntNumNode lbn1 && binop.Right is IntNumNode rbn1)
-                    {
-                        ReplaceExpr(binop, new BoolValNode(lbn1.Num > rbn1.Num));
+                    case OpType.GREATER:
+                        ReplaceExpr(binop, new BoolValNode(lbn.Num > rbn.Num));
                         break;
-                    }
-                    break;
 
-                case OpType.EQGREATER: //если операция - больше или равно
-                    if (binop.Left is IntNumNode lbn2 && binop.Right is IntNumNode rbn2)
-                    {
-                        ReplaceExpr(binop, new BoolValNode(lbn2.Num >= rbn2.Num));
+                    case OpType.EQGREATER:
+                        ReplaceExpr(binop, new BoolValNode(lbn.Num >= rbn.Num));
                         break;
-                    }
-                    break;
-                    /* ... */ 
-                    //остальные операции
-                    /* ... */ 
-                case OpType.NOTEQUAL: //если операция - неравно
-                    if (binop.Left is IntNumNode lbn4 && binop.Right is IntNumNode rbn4)
-                    {
-                        ReplaceExpr(binop, new BoolValNode(lbn4.Num != rbn4.Num));
+
+                    case OpType.EQLESS:
+                        ReplaceExpr(binop, new BoolValNode(lbn.Num <= rbn.Num));
                         break;
-                    }
-                    break;
+                    case OpType.NOTEQUAL:
+                        ReplaceExpr(binop, new BoolValNode(lbn.Num != rbn.Num));
+                        break;
+                }
+            }
+            else
+            if (binop.Left is BoolValNode left && binop.Right is BoolValNode right
+                && binop.Op == OpType.NOTEQUAL)
+            {
+                ReplaceExpr(binop, new BoolValNode(left.Val != right.Val));
+            }
         }
     }
 }
@@ -85,14 +80,14 @@ public class OptExprWithOperationsBetweenConsts : ChangeVisitor
 ```csharp
 public static class ASTOptimizer
 {
-    private static List<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+    private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
     {
         /* ... */
         new OptExprWithOperationsBetweenConsts(),
         /* ... */
     };
 
-    public static void Optimize(Parser parser, List<ChangeVisitor> Optimizations = null)
+    public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimizations = null)
     {
         Optimizations = Optimizations ?? ASTOptimizations;
         var optInd = 0;
@@ -167,4 +162,3 @@ c = 3 >= 2;
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-
