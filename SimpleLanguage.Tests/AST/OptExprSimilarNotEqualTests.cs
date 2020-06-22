@@ -3,7 +3,7 @@ using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
-    internal class OptExprSimilarNotEqualTest : ASTTestsBase
+    internal class OptExprSimilarNotEqualTests : ASTTestsBase
     {
         [Test]
         public void SimilarNotEqualTest()
