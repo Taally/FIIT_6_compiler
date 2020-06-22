@@ -24,19 +24,19 @@
 ![Узлы AСT после оптимизации](1_OptAssignEquality/img2.png)
 
 ### Практическая часть
-Данная оптимизация реализована в виде визитора, унаследованного от класса ```ChangeVisitor```.
-В визиторе переопределяется метод ```VisitAssignNode```, таким образом, чтобы при присваивании вида ```x = x``` данный узел абстрактного синтаксического дерева заменялся на ```EmptyNode``` с помощью метода ```ReplaceStat``` унаследованного от класса ```ChangeVisitor```.
+Данная оптимизация реализована в виде визитора, унаследованного от класса `ChangeVisitor`.
+В визиторе переопределяется метод `PostVisit`, таким образом, чтобы при присваивании вида `x = x` данный узел абстрактного синтаксического дерева заменялся на `EmptyNode` с помощью метода `ReplaceStat` унаследованного от класса `ChangeVisitor`.
 
 Реализация оптимизации:
 ```csharp
 /* OptAssignEquality.cs */
 public class OptAssignEquality : ChangeVisitor
 {
-    public override void VisitAssignNode(AssignNode n)
+    public override void PostVisit(Node n)
     {
-        if (n.Expr is IdNode idn && n.Id.Name == idn.Name)
+        if (n is AssignNode assignNode && assignNode.Expr is IdNode idn && assignNode.Id.Name == idn.Name)
         {
-            ReplaceStat(n, new EmptyNode());
+            ReplaceStat(assignNode, new EmptyNode());
         }
     }
 }
@@ -46,7 +46,7 @@ public class OptAssignEquality : ChangeVisitor
 Данная оптимизация выполняется вместе с остальными оптимизациями по абстрактному синтаксическому дереву.
 ```csharp
 /* ASTOptimizer.cs */
-public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
+private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
 {
     /* ... */
     new OptAssignEquality(),
@@ -58,7 +58,8 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
 Метод ```BuildAST``` используется для создания абстрактного синтаксического дерева по переданной ему строке кода. Схема тестирования выглядит следующим образом: сначала по заданному тексту программы генерируется AST, затем применяется оптимизация, после сравниваются строка ожидаемого результата и строка полученная с помощью визитора ```PrettyPrintVisitor``` по оптимизированному абстрактному дереву. Пустая строчка соответствуют пустому оператору. Ниже приведён один из тестов.
 ```csharp
 [Test]
-public void RemoveNode() {
+public void RemoveNode()
+{
     var AST = BuildAST(@"
 var a, b;
 a = a;
