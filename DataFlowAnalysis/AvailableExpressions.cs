@@ -43,7 +43,7 @@ namespace SimpleLang
     {
         #region
         public override Func<List<OneExpression>, List<OneExpression>, List<OneExpression>> CollectingOperator
-            => (a, b) => a.Where(oneExpression => b.Contains(oneExpression, new ExpressionEqualityComparer())).ToList(); // Intersection
+            => (a, b) => a.Intersect(b, new ExpressionEqualityComparer()).ToList();
 
         public override Func<List<OneExpression>, List<OneExpression>, bool> Compare
             => (a, b) => !a.Except(b, new ExpressionEqualityComparer()).Any() && a.Count == b.Count;
