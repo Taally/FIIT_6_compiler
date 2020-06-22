@@ -1,5 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
