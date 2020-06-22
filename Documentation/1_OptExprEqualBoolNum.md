@@ -37,13 +37,13 @@ public class OptExprEqualBoolNum : ChangeVisitor
     {
         if (n is BinOpNode binop && binop.Op == OpType.EQUAL)
         {
-            if (binop.Left is IntNumNode leftNode2 && binop.Right is IntNumNode rightNode2)
+            if (binop.Left is IntNumNode intValLeft && binop.Right is IntNumNode intValRight)
             {
-                ReplaceExpr(binop, new BoolValNode(leftNode2.Num == rightNode2.Num));
+                ReplaceExpr(binop, new BoolValNode(intValLeft.Num == intValRight.Num));
             }
-            else if (binop.Left is BoolValNode leftNode3 && binop.Right is BoolValNode rightNode3)
+            else if (binop.Left is BoolValNode boolValLeft && binop.Right is BoolValNode boolValRight)
             {
-                ReplaceExpr(binop, new BoolValNode(leftNode3.Val == rightNode3.Val));
+                ReplaceExpr(binop, new BoolValNode(boolValLeft.Val == boolValRight.Val));
             }
         }
     }
