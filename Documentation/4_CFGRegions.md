@@ -1,7 +1,7 @@
 ### Построение областей
 
 #### Постановка задачи
-В данной задаче необходимо построить иерархию областей графа потока управления 
+В данной задаче необходимо построить иерархию областей графа потока управления.
 
 #### Команда
 Карякин В.В., Карякин Д.В.
@@ -22,22 +22,22 @@
 #### Практическая часть
 Для представления региона использовался класс Region, где поле Initial используется для хранения блока графа, соответствующего областям-листьям.
 ```cs
-    public class Region
-    {
-        public List<Region> includedRegions;
-        public List<(Region, Region)> edges;
-        public BasicBlock Initial;
+public class Region
+{
+    public IReadOnlyCollection<Region> includedRegions;
+    public IReadOnlyCollection<(Region, Region)> edges;
+    public BasicBlock Initial;
 
-        public Region(List<Region> _regs = null, List<(Region, Region)> _edges = null, BasicBlock _initial = null)
-        {
-            includedRegions = _regs;
-            edges = _edges;
-            Initial = _initial;
-        }
+    public Region(IReadOnlyCollection<Region> _regs = null, IReadOnlyCollection<(Region, Region)> _edges = null, BasicBlock _initial = null)
+    {
+        includedRegions = _regs;
+        edges = _edges;
+        Initial = _initial;
     }
+}
 ```
 
-При построении иерархии областей применяются два метода. FindRegions  добавляетя в список регионов области-листья, затем отсортированные по вложенности циклы поочередно сводятся к отдельном узлам. После обхода всех естественных циклов добавляем в конец списка область, состоящую из всего графа потока целиком.   
+При построении иерархии областей применяются два метода. `FindRegions`  добавляет в список регионов области-листья, затем отсортированные по вложенности циклы поочередно сводятся к отдельном узлам. После обхода всех естественных циклов добавляем в конец списка область, состоящую из всего графа потока целиком.   
 
 ```cs
 private void FindRegions()
@@ -48,12 +48,12 @@ private void FindRegions()
         Block_to_region.Add(item, _regions.Count - 1);
         curID++;
     }
-    for (var i = 0; i < cycles.Count; i++)
+    for (var i = 0; i < cycles.Count; ++i)
     {
         CollapseCycle(cycles[i]);
     }
     var temp_edges = new List<(Region, Region)>();
-    foreach (var entry in childrens)
+    foreach (var entry in children)
     {
         foreach (var second in entry.Value)
         {
@@ -62,49 +62,44 @@ private void FindRegions()
     }
     _regions.Add(new Region(blocks.Select(x => _regions[Block_to_region[x]]).ToList(), temp_edges));
 }
-
 ```
 
-Метод CollapseCycle замещает новым узлом переданный естественный цикл на графе потока управления. Добавляя новый узел, мы перенаправляем ребра на заголовок цикла, из цикла во внешнюю область. Узлы и ребра цикла будут соответствовать новому региону. 
+Метод `CollapseCycle` замещает новым узлом переданный естественный цикл на графе потока управления. Добавляя новый узел, мы перенаправляем ребра на заголовок цикла, из цикла во внешнюю область. Узлы и ребра цикла будут соответствовать новому региону. 
 
 ```cs
-private void CollapseCycle(List<BasicBlock> cycle)
+private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
 {
     /* ... */
     foreach (var cur_vertex in blocks)
+    {
+        if (!cycle.Contains(cur_vertex))
+        {
+            var temp = children[cur_vertex].ToList();
+            foreach (var child in temp)
             {
-                if (!cycle.Contains(cur_vertex))
+                if (child == cycle.First())
                 {
-                    var temp = childrens[cur_vertex].ToList();
-                    foreach (var child in temp)
-                    {
-                        if (child == cycle[0])
-                        {
-                            childrens[cur_vertex].Remove(child);
-                            childrens[cur_vertex].Add(new_block);
-                        }
-                    }
+                    children[cur_vertex].Remove(child);
+                    children[cur_vertex].Add(new_block);
                 }
+            }
     /* ... */
-
     var innerRegions = cycle.Select(x => _regions[Block_to_region[x]]).ToList();
     var innerEdged = cycle_edges.Select(x => (_regions[Block_to_region[x.Item1]], _regions[Block_to_region[x.Item2]])).ToList();
 
     _regions.Add(new Region(innerRegions, innerEdged));
     Block_to_region.Add(new_block, _regions.Count - 1);
-
-    /* ... */    
+    /* ... */
 }
-
 ```
 
 #### Место в общем проекте (Интеграция)
-Данный метод был успешно интегрирован в проект оптимизирующего компилятора. Использовать предлагаемое решение можно, создав объект класса CFGRegions используя в качестве параметра граф потока управления.
+Данный метод был успешно интегрирован в проект оптимизирующего компилятора. Использовать предлагаемое решение можно, создав объект класса CFGRegions, используя в качестве параметра граф потока управления.
 
 ```cs
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
-    var cfg = new ControlFlowGraph(blocks);
-    var regions = new CFGregions(cfg);
+var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+var cfg = new ControlFlowGraph(blocks);
+var regions = new CFGregions(cfg);
 ```
 
 #### Тесты
@@ -123,7 +118,6 @@ if b != 2
 }
 a = 8;
 ");
-
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
     var actual = NaturalLoop.GetAllNaturalLoops(cfg);
@@ -133,13 +127,11 @@ a = 8;
     Assert.AreEqual(6, result.Regions.Last().edges.Count);
     Assert.AreEqual(6, result.Regions.Last().includedRegions.Count);
 }
-
 ```
 
 - Разбиение на регионы графа потока управления с одним естественным циклом
 
 ```cs
-
 [Test]
 public void OneCycle()
 {
@@ -160,7 +152,6 @@ c = a + b;
     Assert.AreEqual(4, result.Regions[result.Regions.Count - 1].edges.Count);
     Assert.AreEqual(5, result.Regions[result.Regions.Count - 1].includedRegions.Count);
 }
-
 ```
 
 - Разбиение на регионы графа потока управления с двумя естественными циклами
