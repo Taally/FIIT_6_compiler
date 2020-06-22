@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +42,7 @@ namespace SimpleLang
             return new InOutData<IEnumerable<Instruction>>(modifiedBackData);
         }
 
-        private (IEnumerable<Instruction>, IEnumerable<Instruction>) ModifyInOutBack((BitArray, BitArray) inOut, List<Instruction> instructions)
+        private (IEnumerable<Instruction>, IEnumerable<Instruction>) ModifyInOutBack((BitArray, BitArray) inOut, IReadOnlyList<Instruction> instructions)
         {
             var (In, Out) = inOut;
             return (BitUtils.TurnIntoInstructions(In, instructions), BitUtils.TurnIntoInstructions(Out, instructions));
@@ -52,8 +52,8 @@ namespace SimpleLang
         {
             private readonly Dictionary<Instruction, int> _ids_by_instruction;
             private ILookup<string, Instruction> defs_groups;
-            private IDictionary<BasicBlock, BitArray> gen_block;
-            private IDictionary<BasicBlock, BitArray> kill_block;
+            private IReadOnlyDictionary<BasicBlock, BitArray> gen_block;
+            private IReadOnlyDictionary<BasicBlock, BitArray> kill_block;
 
             private void GetDefs(IReadOnlyCollection<BasicBlock> blocks)
             {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,9 +41,6 @@ namespace SimpleLang
 
         public bool ContainsVariable(string variable)
             => Argument1 == variable || Argument2 == variable;
-
-        public int GetHashCode(OneExpression obj)
-            => throw new NotImplementedException();
         #endregion
     }
     /// <summary>
