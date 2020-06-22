@@ -46,7 +46,7 @@ jobs:
     - name: Generate docs
       run: |
         cd Documentation
-        pandoc $(cat order.txt) -s --output=Documentation.md --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm -V --toc -V toc-title:"Содержание"
+        pandoc $(cat order.txt) -s --output=Documentation.md --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm --toc -V toc-title:"Содержание"
         pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks \
         -V geometry:margin=1in --toc -V toc-title:"Содержание"
         
