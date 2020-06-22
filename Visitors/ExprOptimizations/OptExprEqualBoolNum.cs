@@ -6,7 +6,6 @@ namespace SimpleLang.Visitors
     {
         public override void PostVisit(Node n)
         {
-            // a == a -> true
             // 5 == 5 -> true
             // 5 == 6 -> false
             // false == false -> true
