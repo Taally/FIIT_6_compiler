@@ -5,31 +5,32 @@ namespace SimpleLang.Visitors
 {
     public class OptExprTransformUnaryToValue : ChangeVisitor
     {
-        public override void VisitUnOpNode(UnOpNode unop)
+        public override void PostVisit(Node n)
         {
-            if (unop.Expr is IntNumNode num)
+            if (n is UnOpNode unOpNode)
             {
-                var vForNum = unop.Op == OpType.UNMINUS ? -1 * num.Num
-                    : throw new ArgumentException("IntNumNode linked with UNMINUS");
-                ReplaceExpr(unop, new IntNumNode(vForNum));
-            }
-            else if (unop.Expr is BoolValNode b)
-            {
-                var vForBool = unop.Op == OpType.NOT ? !b.Val
-                    : throw new ArgumentException("BoolValNode linked with NOT");
-                ReplaceExpr(unop, new BoolValNode(vForBool));
-            }
-            else if (unop.Expr is IdNode
-                 && unop.Parent is UnOpNode && (unop.Parent as UnOpNode).Op == unop.Op)
-            {
-                if (unop.Parent is UnOpNode parent && parent.Op == unop.Op)
+                if (unOpNode.Expr is IntNumNode num)
                 {
-                    ReplaceExpr(parent, unop.Expr);
+                    var vForNum = unOpNode.Op == OpType.UNMINUS ? -1 * num.Num
+                        : throw new ArgumentException("IntNumNode linked with UNMINUS");
+                    ReplaceExpr(unOpNode, new IntNumNode(vForNum));
                 }
-            }
-            else
-            {
-                base.VisitUnOpNode(unop);
+                else
+                if (unOpNode.Expr is BoolValNode b)
+                {
+                    var vForBool = unOpNode.Op == OpType.NOT ? !b.Val
+                        : throw new ArgumentException("BoolValNode linked with NOT");
+                    ReplaceExpr(unOpNode, new BoolValNode(vForBool));
+                }
+                else
+                if (unOpNode.Expr is IdNode
+                     && unOpNode.Parent is UnOpNode && (unOpNode.Parent as UnOpNode).Op == unOpNode.Op)
+                {
+                    if (unOpNode.Parent is UnOpNode parent && parent.Op == unOpNode.Op)
+                    {
+                        ReplaceExpr(parent, unOpNode.Expr);
+                    }
+                }
             }
         }
     }

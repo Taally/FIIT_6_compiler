@@ -4,24 +4,19 @@ namespace SimpleLang.Visitors
 {
     public class OptExprSimilarNotEqual : ChangeVisitor
     {
-        public override void VisitBinOpNode(BinOpNode binop)
+        public override void PostVisit(Node n)
         {
-            if (
-                (binop.Op == OpType.GREATER || binop.Op == OpType.LESS || binop.Op == OpType.NOTEQUAL)
+            if (n is BinOpNode binOpNode &&
+                (binOpNode.Op == OpType.GREATER || binOpNode.Op == OpType.LESS || binOpNode.Op == OpType.NOTEQUAL)
                 &&
                 // Для цифр и значений bool:
-                (binop.Left is IntNumNode inl && binop.Right is IntNumNode inr && inl.Num == inr.Num
-                || binop.Left is BoolValNode bvl && binop.Right is BoolValNode bvr && bvl.Val == bvr.Val
+                (binOpNode.Left is IntNumNode inl && binOpNode.Right is IntNumNode inr && inl.Num == inr.Num
+                || binOpNode.Left is BoolValNode bvl && binOpNode.Right is BoolValNode bvr && bvl.Val == bvr.Val
                 // Для переменных:
-                || binop.Left is IdNode idl && binop.Right is IdNode idr && idl.Name == idr.Name))
+                || binOpNode.Left is IdNode idl && binOpNode.Right is IdNode idr && idl.Name == idr.Name))
             {
-                ReplaceExpr(binop, new BoolValNode(false));
+                ReplaceExpr(binOpNode, new BoolValNode(false));
             }
-            else
-            {
-                base.VisitBinOpNode(binop);
-            }
-
         }
     }
 }

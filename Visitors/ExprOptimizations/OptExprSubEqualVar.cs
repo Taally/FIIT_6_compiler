@@ -14,10 +14,6 @@ namespace SimpleLang.Visitors
                 {
                     ReplaceExpr(binop, new IntNumNode(0));
                 }
-                else
-                {
-                    base.VisitBinOpNode(binop);
-                }
             }
         }
     }
