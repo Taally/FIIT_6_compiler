@@ -49,10 +49,10 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Documentation.md
-        path: Documentation.md
+        path: Documentation/Documentation.md
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: Documentation.pdf
-        path: Documentation.pdf
+        path: Documentation/Documentation.pdf
