@@ -141,7 +141,8 @@ statement: assign SEMICOLON { $$ = $1; }
 В АСТ включаются узлы, соответствующие всем конструкциям языка. В узел записываются его существенные атрибуты. Например, для узла унарной операции `UnOpNode` такими атрибутами являются `Expr` и `Op` - соответственно выражение и операция, применяющаяся к этому выражению.  
 
 ```csharp
-public class UnOpNode : ExprNode{
+public class UnOpNode : ExprNode
+    {
         public ExprNode Expr
         {
             get { return ExprChildren[0]; }
