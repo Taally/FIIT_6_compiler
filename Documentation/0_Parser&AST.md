@@ -73,7 +73,7 @@ if a < 1
 ```
 
 ```csharp
-//цикл while
+// цикл while
 while x < 25 { 
 	x = x + 1; 
 	x = x * 2; 
