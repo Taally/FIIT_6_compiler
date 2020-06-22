@@ -27,7 +27,7 @@ def main():
     for name in order:
         file = codecs.open(path+name+".md", "r", "utf_8_sig")
         content = "\n<a name=\""+name[2:]+"\"/>\n\n"
-        content += "".join(file.readlines()[1:])
+        content += "".join(file.readlines())
         file.close()
         res.write(content)
     res.close()
