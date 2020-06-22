@@ -124,8 +124,7 @@ namespace IDEForSimpleLang1
             var str = new StringBuilder();
             foreach (var x in threeAddressCode)
             {
-                str.Append(x);
-                str.Append(Environment.NewLine);
+                str.AppendLine(x.ToString());
             }
 
             return (str.ToString(), threeAddressCode);
@@ -140,22 +139,21 @@ namespace IDEForSimpleLang1
 
             foreach (var block in cfg.GetCurrentBasicBlocks())
             {
-                str.Append($"{cfg.VertexOf(block)} --------\r\n");
+                str.AppendLine($"{cfg.VertexOf(block)} --------");
                 foreach (var inst in block.GetInstructions())
                 {
-                    str.Append(inst.ToString());
-                    str.Append("\r\n");
+                    str.AppendLine(inst.ToString());
                 }
-                str.Append($"----------\r\n");
+                str.AppendLine($"----------");
 
                 var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
 
                 var childrenStr = string.Join(" | ", children.Select(v => v.vertex));
-                str.Append($" children: {childrenStr}\r\n");
+                str.AppendLine($" children: {childrenStr}");
 
                 var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
                 var parentsStr = string.Join(" | ", parents.Select(v => v.vertex));
-                str.Append($" parents: {parentsStr}\r\n\r\n");
+                str.AppendLine($" parents: {parentsStr}\r\n");
             }
 
             return (str.ToString(), cfg);
@@ -164,10 +162,63 @@ namespace IDEForSimpleLang1
 
         internal static string GetGraphInformation(ControlFlowGraph cfg) {
             var str = new StringBuilder();
-            str.Append("Классификация ребер:\r\n");
+            str.AppendLine("Классификация ребер:");
             foreach (var pair in cfg.ClassifiedEdges)
             {
-                str.Append($"{ pair }\r\n");
+                str.AppendLine($"{ pair }");
+            }
+
+            
+            var backEdges = cfg.GetBackEdges();
+            if (backEdges.Count > 0)
+            {
+                str.AppendLine("\r\nОбратные ребра:");
+                foreach (var x in backEdges)
+                {
+                    str.AppendLine($"({cfg.VertexOf(x.Item1)}, {cfg.VertexOf(x.Item2)})");
+                }
+            }
+            else
+            {
+                str.AppendLine("\r\nОбратных ребер нет");
+            }
+
+
+            var answ = cfg.IsReducibleGraph() ? "Граф приводим" : "Граф неприводим";
+            str.AppendLine($"\r\n{answ}");
+
+            if (cfg.IsReducibleGraph())
+            {
+                var natLoops = NaturalLoop.GetAllNaturalLoops(cfg);
+                if (natLoops.Count > 0)
+                {
+                    str.AppendLine($"\r\nЕстественные циклы:");
+                    foreach (var x in natLoops)
+                    {
+                        if (x.Count == 0)
+                        {
+                            continue;
+                        }
+                        for (var i = 0; i < x.Count; i++)
+                        {
+                            str.AppendLine($"Номер блока: {i}");
+                            foreach (var xfrom in x[i].GetInstructions())
+                            {
+                                str.AppendLine(xfrom.ToString());
+                            }
+                        }
+                        str.AppendLine();
+                        str.AppendLine("-------------");
+                    }
+                }
+                else
+                {
+                    str.AppendLine($"\r\nЕстественных циклов нет");
+                }
+            }
+            else
+            {
+                str.AppendLine($"\r\nНевозможно определить естественные циклы, т.к. граф неприводим");
             }
 
 
