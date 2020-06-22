@@ -63,17 +63,17 @@ var instrs = basicBlock.GetInstructions();
 ```
 Далее в цикле обходятся все инструкции ББл.
 ```csharp
-for (var i = 0; i < instrs.Count; i++)
+foreach (var instruction in basicBlock.GetInstructions())
 {
-	if (instrs[i].Result.StartsWith("#"))
+	if (instruction.Result.StartsWith("#"))
 	{
-		OUT.Add(instrs[i].Result, new LatticeValue(LatticeTypeData.UNDEF));
+		OUT.Add(instruction.Result, new LatticeValue(LatticeTypeData.UNDEF));
 
 		string first, second, operation;
 
-		first = instrs[i].Argument1;
-		second = instrs[i].Argument2;
-		operation = instrs[i].Operation;
+		first = instruction.Argument1;
+		second = instruction.Argument2;
+		operation = instruction.Operation;
         /*...*/
 	}
 }
@@ -113,7 +113,7 @@ public HashSet<string> untreatedTypes = new HashSet<string>() {
 if (first == "True" || second == "True" || first == "False" 
 	|| second == "False" || untreatedTypes.Contains(operation)) //проверка на bool и недопустимые операции
 {
-	OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
+	OUT[instruction.Result] = new LatticeValue(LatticeTypeData.NAC);
 }
 ```
 Далее проверяется, является ли выражение во временной переменной выражением вида `2 + b` и `b + 2`, где `b`-константа. Здесь под `+` понимается любая базовая бинарная операция между константами. Для уточнения операции была написана вспомогательная функция `FindOperations`:
@@ -139,13 +139,13 @@ public int FindOperations(int v1, int v2, string op)
 else if (int.TryParse(first, out var v2) && OUT[second].Type == LatticeTypeData.CONST)
 {
 	int.TryParse(OUT[second].ConstValue, out var val2);
-	OUT[instrs[i].Result] = new LatticeValue
+	OUT[instruction.Result] = new LatticeValue
     						(LatticeTypeData.CONST, FindOperations(val2, v2, operation).ToString());
 }
 else if (OUT[first].Type == LatticeTypeData.CONST && int.TryParse(second, out var v1))
 {
 	int.TryParse(OUT[first].ConstValue, out var val1);
-	OUT[instrs[i].Result] = new LatticeValue
+	OUT[instruction.Result] = new LatticeValue
     						(LatticeTypeData.CONST, FindOperations(val1, v1, operation).ToString());
 }
 ```
@@ -155,7 +155,7 @@ else if (OUT[first].Type == LatticeTypeData.CONST && OUT[second].Type == Lattice
 {
 	int.TryParse(OUT[first].ConstValue, out var val1);
 	int.TryParse(OUT[second].ConstValue, out var val2);
-	OUT[instrs[i].Result] = new LatticeValue
+	OUT[instruction.Result] = new LatticeValue
     						(LatticeTypeData.CONST, FindOperations(val1, val2, operation).ToString());
 }
 ```
@@ -163,7 +163,7 @@ else if (OUT[first].Type == LatticeTypeData.CONST && OUT[second].Type == Lattice
 ```csharp
 else
 {
-	OUT[instrs[i].Result] =
+	OUT[instruction.Result] =
 	OUT[first].Type == LatticeTypeData.UNDEF
 	? new LatticeValue(LatticeTypeData.UNDEF)
 	: OUT[first].Type == LatticeTypeData.NAC || OUT[second].Type == LatticeTypeData.NAC
@@ -180,18 +180,18 @@ c = #t1
 
 вида `a = true` и т.п. Поэтому производится повторная проверка, согласно правилам построения передаточной функции из теоретической части. 
 ```csharp
-if (instrs[i].Operation == "assign")
+if (instruction.Operation == "assign")
 {
-	if (int.TryParse(instrs[i].Argument1, out var s))
+	if (int.TryParse(instruction.Argument1, out var s))
 	{
-		OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, s);
+		OUT[instruction.Result] = new LatticeValue(LatticeTypeData.CONST, s);
 	}
 	else
 	{
-	var operation = instrs[i].Operation;
-	var first = instrs[i].Argument1;
+	var operation = instruction.Operation;
+	var first = instruction.Argument1;
 
-	OUT[instrs[i].Result] =
+	OUT[instruction.Result] =
 		untreatedTypes.Contains(operation)
 		? new LatticeValue(LatticeTypeData.NAC)
 		:first == "True" || first == "False"
