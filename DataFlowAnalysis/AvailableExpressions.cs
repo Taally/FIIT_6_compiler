@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -136,7 +136,7 @@ namespace SimpleLang
                     if (operationTypes.Contains(instruction.Operation))
                     {
                         var newExpr = new OneExpression(instruction);
-                        if (!ContainsExpression(UniversalSequence, newExpr))
+                        if (!ContainsExpression(UniversalSequence, newExpr)) //вот здесь использован ContainsExpression
                         {
                             UniversalSequence.Add(newExpr);
                         }
@@ -157,9 +157,9 @@ namespace SimpleLang
             var result = new List<OneExpression>(input);
             foreach (var expression in e_kill[basicBlock])
             {
-                if (ContainsExpression(result, expression))
+                if (result.Contains(expression))
                 {
-                    RemoveExpression(result, expression);
+                    result.Remove(expression);
                 }
             }
             return result;
@@ -169,7 +169,7 @@ namespace SimpleLang
             var result = new List<OneExpression>(e_gen[basicBlock]);
             foreach (var expression in list)
             {
-                if (!ContainsExpression(result, expression))
+                if (!result.Contains(expression))
                 {
                     result.Add(expression);
                 }
@@ -186,7 +186,7 @@ namespace SimpleLang
                     if (operationTypes.Contains(instruction.Operation))
                     {
                         var newExpr = new OneExpression(instruction);
-                        if (!ContainsExpression(s, newExpr))
+                        if (!s.Contains(newExpr))
                         {
                             s.Add(newExpr);
                         }
@@ -211,7 +211,7 @@ namespace SimpleLang
                     {
                         foreach (var expression in UniversalSequence.Where(x => x.ContainsVariable(instruction.Result)).ToList())
                         {
-                            if (!ContainsExpression(K, expression))
+                            if (!K.Contains(expression))
                             {
                                 K.Add(expression);
                             }
@@ -220,22 +220,12 @@ namespace SimpleLang
                 }
                 foreach (var genExpression in e_gen[block])
                 {
-                    RemoveExpression(K, genExpression);
+                    K.Remove(genExpression);
                 }
                 e_kill.Add(block, K);
             }
         }
-        private void RemoveExpression(List<OneExpression> K, OneExpression expression)
-        {
-            for (var i = 0; i < K.Count; i++)
-            {
-                if (K[i].Equals(expression))
-                {
-                    K.RemoveAt(i);
-                }
-            }
-        }
-        private bool ContainsExpression(List<OneExpression> list, OneExpression expr)
+        private bool ContainsExpression(List<OneExpression> list, OneExpression expr) // Используется один раз
         {
             if (list == null)
             {
@@ -250,6 +240,7 @@ namespace SimpleLang
             }
             return false;
         }
+        //Здесь был RemoveExpressions => Заменен на стандартный
         #endregion
     }
 }
