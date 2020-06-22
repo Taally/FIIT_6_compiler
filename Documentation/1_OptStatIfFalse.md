@@ -8,18 +8,23 @@
 
 ### Зависимые и предшествующие задачи
 Предшествующие задачи:
-* AST дерево
+
+- AST дерево
 
 ### Теоретическая часть
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
+
   * До
+
   ```csharp
   if(false)
     st1;
   else
     st2;
   ```
+
   * После
+
   ```csharp
   st2;
   ```
@@ -63,6 +68,7 @@ private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List
 
 ### Тесты
 В тестах проверяется работоспособность оптимизации и соответствие результатов:
+
 ```csharp
 [Test]
 public void IfFalseBlockTest()
