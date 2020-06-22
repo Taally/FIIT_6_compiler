@@ -60,7 +60,8 @@
 
 
 
-{Parser&AST}
+{#Parser&AST}
+
 ## Парсер языка и построение АСТ
 
 ### Постановка задачи  
@@ -98,7 +99,7 @@ var a, b, c, d; // определение переменных
 ```
 ```csharp
 // присваивание
-a = 11; 
+a = 10; 
 d = true;
 ```
 ```csharp
@@ -240,7 +241,8 @@ else {
 ```
 ![Условный оператор](0_Parser%26AST/pic2.png)
 
-{PrettyPrinter}
+{#PrettyPrinter}
+
 ## Pretty printer
 
 ### Постановка задачи
@@ -349,7 +351,8 @@ d = (d or (a < 10));
 }
 ```
 
-{ChangeVisitor}
+{#ChangeVisitor}
+
 ## Создание базового визитора для оптимизаций абстрактного синтаксического дерева
 
 ### Постановка задачи
@@ -413,7 +416,8 @@ p.StatChildren[i] = to is BlockNode block
 ### Тесты
 Тестированию подвергаются наследники данного класса, которые реализуют конкретные оптимизации на AST.
 
-{OptAssignEquality}
+{#OptAssignEquality}
+
 ## AST-оптимизация заменой оператора присваивания вида x = x на пустой узел
 
 ### Постановка задачи
@@ -492,7 +496,8 @@ a = a;
     Assert.AreEqual(expected, pp.Text);
 }
 ```
-{OptExprEqualBoolNum}
+{#OptExprEqualBoolNum}
+
 ## AST-оптимизация замены оператора сравнения двух значений на его булево значение
 
 ### Постановка задачи
@@ -597,7 +602,8 @@ d = 7 == 8;");
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-{OptExprFoldUnary&TransformUnaryToValue}
+{#OptExprFoldUnary&TransformUnaryToValue}
+
 ## AST-оптимизации свертки и устранения унарных операций
 ### Постановка задачи
 Реализовать оптимизации по AST дереву:
@@ -813,7 +819,8 @@ a = --b - ---a;
     /*..*/
 }
 ```
-{OptExprVarEqualToItself}
+{#OptExprVarEqualToItself}
+
 ## AST-оптимизация замены сравнения переменной с собой на true
 
 ### Постановка задачи
@@ -892,7 +899,8 @@ a = a >= a;
 public string[] TestOptimization(string sourceCode) => ApplyOpt(BuildAST(sourceCode), new OptExprVarEqualToItself());
 ```
 
-{OptExprSimilarNotEqual}
+{#OptExprSimilarNotEqual}
+
 ## AST-оптимизация замены сравнения переменной с собой на булевскую константу false
 
 ### Постановка задачи
@@ -985,7 +993,8 @@ d = 1 > 1;
 }
 ```
 
-{OptExprMultDivByOne}
+{#OptExprMultDivByOne}
+
 ## AST-оптимизация умножения на единицу слева и справа, деления на единицу справа
 
 ### Постановка задачи
@@ -1076,7 +1085,8 @@ a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
 }
 ```
 
-{OptIfNullElseNull}
+{#OptIfNullElseNull}
+
 ## AST-оптимизация заменой условного оператора на пустой оператор
 
 ### Постановка задачи
@@ -1195,7 +1205,8 @@ public void RemoveInBlock()
     }
 }
 ```
-{OptStatIfTrue}
+{#OptStatIfTrue}
+
 ## AST-оптимизация замены if(true) на его true ветку
 
 ### Постановка задачи
@@ -1301,7 +1312,8 @@ b = b / 5;
 }
 ```
 
-{OptStatIfFalse}
+{#OptStatIfFalse}
+
 ## AST-оптимизация замены if(false) на его else ветку
 
 ### Постановка задачи
@@ -1385,7 +1397,8 @@ a = 1;
 }
 ```
 
-{OptWhileFalseVisitor}
+{#OptWhileFalseVisitor}
+
 ## AST-оптимизация замены while(false) st ветки на null
 
 ### Постановка задачи
@@ -1495,7 +1508,8 @@ a = true;");
 }
 ```
 
-{GenerationTAC}
+{#GenerationTAC}
+
 ## Генерация трехадресного кода
 
 ### Постановка задачи
@@ -1769,7 +1783,8 @@ a = 1
 L7: noop
 ```
 
-{DefUse}
+{#DefUse}
+
 ## Def-Use информация и удаление мертвого кода на ее основе 
 
 ### Постановка задачи
@@ -1955,7 +1970,8 @@ public void DeadInput()
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-{DeleteDeadCodeWithDeadVars}
+{#DeleteDeadCodeWithDeadVars}
+
 
 ## Живые и мёртвые переменные и удаление мёртвого кода (замена на пустой оператор)
 ### Постановка задачи
@@ -2058,7 +2074,8 @@ a = -b;
 ```
 Для последнего теста также проверяется совместная работа данной оптимизации и удаления пустых операторов.
 
-{GotoThroughGoto}
+{#GotoThroughGoto}
+
 ## Устранение переходов через переходы
 
 ### Постановка задачи
@@ -2173,7 +2190,8 @@ public void ChangeInstructions1()
     CollectionAssert.AreEqual(expectedOptimize, actual);
 }
 ```
-{GotoToGoto}
+{#GotoToGoto}
+
 ## Устранение переходов к переходам
 
 ### Постановка задачи
@@ -2362,7 +2380,8 @@ public void TestGotoIfElseTACGen1()
 }
 ```
 
-{RemoveNoopInTac}
+{#RemoveNoopInTac}
+
 
 ## Удаление пустых операторов в трехадресном коде  
   
@@ -2490,7 +2509,8 @@ goto old_label
 ```
 
 Выполняется проверка на не удаление L2: noop, который является последней операцией в программе.
-{BasicBlockStructure}
+{#BasicBlockStructure}
+
 ## Создание структуры ББл
 
 ### Постановка задачи
@@ -2543,7 +2563,8 @@ public class BasicBlock
 ### Место в общем проекте (Интеграция)
 Данная структура была задействована во всех задачах, в которых использовались ББл, например в задаче разбиения на ББл (от лидера до лидера) 
 
-{BasicBlockLeader}
+{#BasicBlockLeader}
+
 ## Разбиение на ББл (от лидера до лидера)
 
 ### Постановка задачи
@@ -2691,7 +2712,8 @@ AssertSet(expected, actual);
 }
 ```
 
-{CFGUnreachableCodeElimination}
+{#CFGUnreachableCodeElimination}
+
 ## Удаление нидостижимого кода
 
 ### Постановка задачи
@@ -2818,7 +2840,8 @@ c = !(a == b);
 }
 ```
 
-{ThreeAddressCodeOptimizer}
+{#ThreeAddressCodeOptimizer}
+
 ## Интеграция оптимизаций трёхадресного кода между собой
 ### Постановка задачи
 Необходимо скомбинировать созданные ранее оптимизации трёхадресного кода так, чтобы они могли выполняться все вместе, друг за другом.
@@ -2889,7 +2912,8 @@ x = b;
 }
 ```
 
-{BinaryRepresentationOfInOut}
+{#BinaryRepresentationOfInOut}
+
 ## Альтернативная реализация хранения IN OUT в виде битовых векторов. Интеграция данного представления в существующий итерационный алгоритм.  
   
 ### Постановка задачи  
@@ -3011,7 +3035,8 @@ for k = 0, 1 {
 }
 ```
 
-{LiveVariableAnalysis}
+{#LiveVariableAnalysis}
+
 ## Анализ активных переменных
 
 ### Постановка задачи
@@ -3203,7 +3228,8 @@ print (c+a+b);"
     AssertSet(expected, actual);
 }
 ```
-{ReachingDefinitions}
+{#ReachingDefinitions}
+
 ## Анализ достигающих определений
 ### Постановка задачи
 Необходимо накопить IN-OUT информацию по достигающим определениям в базовых блоках для дальнейшей оптимизации.
@@ -3293,7 +3319,8 @@ for k = 0, 1
 }
 ```
 
-{GenericIterativeAlgorithm}
+{#GenericIterativeAlgorithm}
+
 ## Итерационный алгоритм в обобщённой структуре
 
 ### Постановка задачи
@@ -3447,7 +3474,8 @@ print (c);"
 }
 ```
 
-{CFGEdgesСlassification}
+{#CFGEdgesСlassification}
+
 ## Классификация рёбер графа: наступающие, отступающие, поперечные (по построенному остовному дереву)
 
 ### Постановка задачи
@@ -3612,7 +3640,8 @@ else
     }
 }
 ```
-{DominatorTree}
+{#DominatorTree}
+
 ## Построение дерева доминаторов
 ### Постановка задачи
 Необходимо по ранее созданному графу потока управления программы определить множество доминаторов для каждого базового блока, и на основе этой информации построить дерево доминаторов.
@@ -3741,7 +3770,8 @@ for i = 1, 10
     a = a + 1;
 }
 ```
-{NaturalLoop}
+{#NaturalLoop}
+
 ## Определение всех естественных циклов
 
 ### Постановка задачи
