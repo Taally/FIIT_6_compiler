@@ -8,18 +8,24 @@
 
 ### Зависимые и предшествующие задачи
 Предшествующие задачи:
-* Построение AST дерева
+
+- Построение AST дерева
+- Базовые визиторы по AST дереву
 
 ### Теоретическая часть
 Реализовать оптимизацию по AST дереву вида false == false -> true, 5 == 6 -> false
+
   * До
+  
   ```csharp
   5 == 5
   5 == 6
   false == false
   true == false
   ```
+
   * После
+  
   ```csharp
   true
   false
@@ -51,6 +57,8 @@ public class OptExprEqualBoolNum : ChangeVisitor
 ```
 
 ### Место в общем проекте (Интеграция)
+Данная оптимизация выполняется вместе с остальными оптимизациями по абстрактному синтаксическому дереву.
+
 ```csharp
 private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
 {

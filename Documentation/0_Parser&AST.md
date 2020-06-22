@@ -142,19 +142,23 @@ statement: assign SEMICOLON { $$ = $1; }
 
 ```csharp
 public class UnOpNode : ExprNode
-    {
-        public ExprNode Expr
-        {
-            get { return ExprChildren[0]; }
-            set { ExprChildren[0] = value; }
-        }
-        public OpType Op { get; set; }
-        public UnOpNode(ExprNode expr, OpType op)
-        {
-            Op = op;
-            ExprChildren.Add(expr);
-        }
-    }
+{
+	public ExprNode Expr
+	{
+		get => ExprChildren[0];
+		set => ExprChildren[0] = value;
+	}
+
+	public OpType Op { get; set; }
+
+	public UnOpNode(ExprNode expr, OpType op)
+	{
+		Op = op;
+		ExprChildren.Add(expr);
+	}
+
+	public override void Visit(Visitor v) => v.VisitUnOpNode(this);
+}
 ```
 
 ### Место в общем проекте (Интеграция)
@@ -165,7 +169,9 @@ public class UnOpNode : ExprNode
 ```charp
 a = 5;
 ```
+
 ![Присваивание](0_Parser%26AST/pic1.png)
+
 2.
 ```charp
 if a > 10
@@ -175,4 +181,5 @@ else {
     a = b;
 }
 ```
+
 ![Условный оператор](0_Parser%26AST/pic2.png)
