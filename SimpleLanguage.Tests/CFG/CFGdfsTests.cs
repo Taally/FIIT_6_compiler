@@ -12,7 +12,7 @@ namespace SimpleLanguage.Tests.CFG
         [Test]
         public void Test1()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c, d, x, u, e,g, y,zz,i;
 goto 200;
 200: a = 10 + 5;
@@ -26,11 +26,9 @@ else
 {
     b = 1;
 }
-");
+";
 
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
-            var cfg = new ControlFlowGraph(blocks);
-
+            var cfg = GenCFG(program);
 
             foreach (var block in cfg.GetCurrentBasicBlocks())
             {
