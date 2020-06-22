@@ -60,5 +60,37 @@ namespace IDEForSimpleLang1
             TACBeforeIt.Text = resultForIt.Item1;
             TACAfterIt.Text = resultForIt.Item2;
         }
+
+        private void SwitchOnAST_Click(object sender, EventArgs e)
+        {
+            for (var i = 0; i < ASToptList.Items.Count; ++i)
+            {
+                ASToptList.SetItemChecked(i, true);
+            }
+        }
+
+        private void SwitchOffAST_Click(object sender, EventArgs e)
+        {
+            for (var i = 0; i < ASToptList.Items.Count; ++i)
+            {
+                ASToptList.SetItemChecked(i, false);
+            }
+        }
+
+        private void SwitchOn_TAC_Click(object sender, EventArgs e)
+        {
+            for (var i = 0; i < TACoptLocalList.Items.Count; ++i)
+            {
+                TACoptLocalList.SetItemChecked(i, true);
+            }
+        }
+
+        private void SwitchOff_TAC_Click(object sender, EventArgs e)
+        {
+            for (var i = 0; i < TACoptLocalList.Items.Count; ++i)
+            {
+                TACoptLocalList.SetItemChecked(i, false);
+            }
+        }
     }
 }
