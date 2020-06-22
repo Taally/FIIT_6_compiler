@@ -139,59 +139,5 @@ e = zz + i;"
                 CollectionAssert.AreEquivalent(expected[i].OUT, actual[i].OUT);
             }
         }
-
-        /*private void AssertSet(
-            List<(List<OneExpression>, List<OneExpression>)> expected,
-            List<(List<OneExpression>, List<OneExpression>)> actual)
-        {
-            for (var i = 0; i < expected.Count; ++i)
-            {
-                for (var j = 0; j < expected[i].Item1.Count; j++)
-                {
-                    Assert.True(IsContains(expected[i].Item1[j], actual[i].Item1));
-                }
-
-                for (var j = 0; j < expected[i].Item2.Count; j++)
-                {
-                    Assert.True(IsContains(expected[i].Item2[j], actual[i].Item2));
-                }
-            }
-        }
-
-        private void AssertSet(
-            List<(HashSet<string> IN, HashSet<string> OUT)> expected,
-            List<(HashSet<string> IN, HashSet<string> OUT)> actual)
-        {
-            for (var i = 0; i < expected.Count; ++i)
-            {
-                CollectionAssert.AreEquivalent(expected[i].IN, actual[i].IN);
-                CollectionAssert.AreEquivalent(expected[i].OUT, actual[i].OUT);
-            }
-        }
-
-        private void AssertSet(
-            List<(List<Instruction> IN, List<Instruction> OUT)> expected,
-            List<(List<Instruction> IN, List<Instruction> OUT)> actual)
-        {
-            for (var i = 0; i < expected.Count; ++i)
-            {
-                for (var j = 0; j < expected[i].IN.Count; j++)
-                {
-                    Assert.True(IsContains(expected[i].IN[j], actual[i].IN));
-                }
-
-                for (var j = 0; j < expected[i].OUT.Count; j++)
-                {
-                    Assert.True(IsContains(expected[i].OUT[j], actual[i].OUT));
-                }
-            }
-        }
-
-        private bool IsContains(Instruction findInstruction, List<Instruction> actualInstruction)
-            => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
-
-        private bool IsContains(OneExpression findInstruction, List<OneExpression> actualInstruction)
-            => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
-            */
     }
 }
