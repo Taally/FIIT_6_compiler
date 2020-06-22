@@ -96,11 +96,11 @@ goto 55;
 10: goto 111; 
 if a>a goto 10; 
 else goto 111; 
- 
+
 c = c; 
 if a==b 
 b = b; 
- 
+
 a = -1; 
 b = -a; 
 c = -(a+b); 
