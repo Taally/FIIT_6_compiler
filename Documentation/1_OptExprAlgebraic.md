@@ -18,45 +18,34 @@
 Нужная оптимизация производится с применением паттерна Visitor, для этого созданный класс наследует `ChangeVisitor` и переопределяет метод `PostVisit`.
 ```csharp
 public class OptExprAlgebraic : ChangeVisitor
-{
-    public override void PostVisit(Node n)
     {
-        if (n is BinOpNode binop && binop.Left is IntNumNode 
-        && binop.Right is IntNumNode)
+        public override void PostVisit(Node n)
         {
-            if (binop.Left is IntNumNode && binop.Right is IntNumNode)
+            // Algebraic expressions of the form: 2 * 3 => 6
+            if (n is BinOpNode binop && binop.Left is IntNumNode intNumLeft && binop.Right is IntNumNode intNumRight)
             {
                 var result = new IntNumNode(0);
                 switch (binop.Op)
                 {
                     case OpType.PLUS:
-                        result.Num = (binop.Left as IntNumNode).Num 
-                        + (binop.Right as IntNumNode).Num;
+                        result.Num = intNumLeft.Num + intNumRight.Num;
                         break;
                     case OpType.MINUS:
-                        result.Num = (binop.Left as IntNumNode).Num 
-                        - (binop.Right as IntNumNode).Num;
+                        result.Num = intNumLeft.Num - intNumRight.Num;
                         break;
                     case OpType.DIV:
-                        result.Num = (binop.Left as IntNumNode).Num 
-                        / (binop.Right as IntNumNode).Num;
+                        result.Num = intNumLeft.Num / intNumRight.Num;
                         break;
                     case OpType.MULT:
-                        result.Num = (binop.Left as IntNumNode).Num 
-                        *(binop.Right as IntNumNode).Num;
+                        result.Num = intNumLeft.Num * intNumRight.Num;
                         break;
                     default:
                         return;
                 }
                 ReplaceExpr(binop, result);
             }
-            else
-            {
-                base.VisitBinOpNode(binop);
-            }
         }
     }
-}
 ```
 
 #### Место в общем проекте (Интеграция)
