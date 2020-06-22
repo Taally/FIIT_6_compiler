@@ -50,19 +50,13 @@ jobs:
     - name: Generate PDF
       run: |
         cd Documentation
-        pandoc Documentation.md -s --output=result.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato'
-    
-    - name: Upload artifact
-      uses: actions/upload-artifact@master
-      with:
-          name: output
-          path: Documentation/result.pdf
+        pandoc Documentation.md -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks
         
     - name: Commit
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "Github Action"
-        git commit -m "Generate Documentation.md" -a
+        git commit -m "Generate documentation" -a
     
     - name: Push changes
       uses: ad-m/github-push-action@master
