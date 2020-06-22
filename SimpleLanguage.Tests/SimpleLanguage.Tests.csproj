@@ -72,7 +72,7 @@
   <ItemGroup>
     <Compile Include="AST\ASTOptimizerTests.cs" />
     <Compile Include="AST\ASTTestsBase.cs" />
-    <Compile Include="AST\OptExprSimilarNotEqualTest.cs" />
+    <Compile Include="AST\OptExprSimilarNotEqualTests.cs" />
     <Compile Include="AST\OptAssignEqualityTests.cs" />
     <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprEqualBoolNumTests.cs" />
