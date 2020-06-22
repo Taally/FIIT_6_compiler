@@ -44,7 +44,7 @@
 
 [23. Интеграция оптимизаций трёхадресного кода между собой](#ThreeAddressCodeOptimizer)
 
-[24. ](#BinaryRepresentationOfInOut)
+[24. Альтернативная реализация хранения IN OUT в виде битовых векторов. Интеграция данного представления в существующий итерационный алгоритм.](#BinaryRepresentationOfInOut)
 
 [25. Анализ активных переменных](#LiveVariableAnalysis)
 
@@ -137,7 +137,7 @@ if a < 1
 ```
 
 ```csharp
-//цикл while
+// цикл while
 while x < 25 { 
 	x = x + 1; 
 	x = x * 2; 
@@ -205,7 +205,8 @@ statement: assign SEMICOLON { $$ = $1; }
 В АСТ включаются узлы, соответствующие всем конструкциям языка. В узел записываются его существенные атрибуты. Например, для узла унарной операции `UnOpNode` такими атрибутами являются `Expr` и `Op` - соответственно выражение и операция, применяющаяся к этому выражению.  
 
 ```csharp
-public class UnOpNode : ExprNode{
+public class UnOpNode : ExprNode
+    {
         public ExprNode Expr
         {
             get { return ExprChildren[0]; }
@@ -2912,8 +2913,6 @@ x = b;
 ```
 
 <a name="BinaryRepresentationOfInOut"/>
-
-
 
 ## Альтернативная реализация хранения IN OUT в виде битовых векторов. Интеграция данного представления в существующий итерационный алгоритм.  
   
