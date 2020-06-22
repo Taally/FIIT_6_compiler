@@ -45,13 +45,13 @@ jobs:
         pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks \
         -V geometry:margin=1in --toc -V toc-title:"Содержание"
         
-    - name: Upload artifacts
+    - name: Upload Documentation.md
       uses: actions/upload-artifact@v2
       with:
         name: Documentation.md
         path: Documentation/Documentation.md
     
-    - name: Upload artifacts
+    - name: Upload Documentation.pdf
       uses: actions/upload-artifact@v2
       with:
         name: Documentation.pdf
