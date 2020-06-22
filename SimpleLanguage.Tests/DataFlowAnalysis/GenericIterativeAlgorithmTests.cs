@@ -24,28 +24,14 @@ print (c);"
 ;
 
             var cfg = GenCFG(program);
-            var activeVariable = new LiveVariableAnalysis();
-            var resActiveVariable = activeVariable.Execute(cfg);
-            var In = new HashSet<string>();
-            var Out = new HashSet<string>();
-            var actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
-            foreach (var x in cfg.GetCurrentBasicBlocks().Select(z => resActiveVariable[z]))
-            {
-                foreach (var y in x.In)
-                {
-                    In.Add(y);
-                }
-
-                foreach (var y in x.Out)
-                {
-                    Out.Add(y);
-                }
-                actual.Add((new HashSet<string>(In), new HashSet<string>(Out)));
-                In.Clear(); Out.Clear();
-            }
+            var resActiveVariable = new LiveVariableAnalysis().Execute(cfg);
+            var actual = cfg.GetCurrentBasicBlocks()
+                .Select(z => resActiveVariable[z])
+                .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))
+                .ToList();
 
             var expected =
-                new List<(HashSet<string> IN, HashSet<string> OUT)>()
+                new List<(IEnumerable<string>, IEnumerable<string>)>()
                 {
                     (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
                     (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
@@ -74,28 +60,14 @@ print (c);"
 );
 
             var cfg = GenCFG(TAC);
-            var reachingDefinitions = new ReachingDefinitions();
-            var resReachingDefinitions = reachingDefinitions.Execute(cfg);
-            var In = new List<Instruction>();
-            var Out = new List<Instruction>();
-            var actual = new List<(List<Instruction> IN, List<Instruction> OUT)>();
-            foreach (var x in resReachingDefinitions)
-            {
-                foreach (var y in x.Value.In)
-                {
-                    In.Add(y);
-                }
-
-                foreach (var y in x.Value.Out)
-                {
-                    Out.Add(y);
-                }
-                actual.Add((new List<Instruction>(In), new List<Instruction>(Out)));
-                In.Clear(); Out.Clear();
-            }
+            var resReachingDefinitions = new ReachingDefinitions().Execute(cfg);
+            var actual = cfg.GetCurrentBasicBlocks()
+                .Select(z => resReachingDefinitions[z])
+                .Select(p => ((IEnumerable<Instruction>)p.In, (IEnumerable<Instruction>)p.Out))
+                .ToList();
 
             var expected =
-                new List<(List<Instruction> IN, List<Instruction> OUT)>()
+                new List<(IEnumerable<Instruction>, IEnumerable<Instruction>)>()
                 {
                     (new List<Instruction>(){}, new List<Instruction>(){}),
                     (new List<Instruction>(){}, new List<Instruction>(){TAC[2], TAC[0]}),
@@ -121,58 +93,54 @@ b = c + d;
 goto 3;
 e = zz + i;"
 );
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+
+            var cfg = GenCFG(TAC);
+            var resAvailableExpressions = new AvailableExpressions().Execute(cfg);
+            var actual = cfg.GetCurrentBasicBlocks()
+                .Select(z => resAvailableExpressions[z])
+                .Select(p => ((IEnumerable<OneExpression>)p.In, (IEnumerable<OneExpression>)p.Out))
+                .ToList();
+
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
-                (new List<OneExpression>(), new List<OneExpression>()),
-                (new List<OneExpression>(), new List<OneExpression>()
-                { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ),
+                (new List<OneExpression>(), 
+                new List<OneExpression>()),
+
+                (new List<OneExpression>(), 
+                new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ),
 
                 (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ,
                 new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
 
                 (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") },
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ),
-                    new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
 
                 (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" )
-                , new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}
-                ),
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
 
                 (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ) , new OneExpression("PLUS", "x", "y") }
-                ),
+                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ) , new OneExpression("PLUS", "x", "y") }),
 
-                ( new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
-                  new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}
-                ),
+                (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
+                new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}),
 
             };
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var availableExpressions = new AvailableExpressions();
-            var resAvailableExpressions = availableExpressions.Execute(cfg);
-            var In = new List<OneExpression>();
-            var Out = new List<OneExpression>();
-            var actual = new List<(List<OneExpression>, List<OneExpression>)>();
-            foreach (var block in resAvailableExpressions)
-            {
-                foreach (var expr in block.Value.In)
-                {
-                    In.Add(expr);
-                }
-                foreach (var expr in block.Value.Out)
-                {
-                    Out.Add(expr);
-                }
-                actual.Add((new List<OneExpression>(In), new List<OneExpression>(Out)));
-                In.Clear();
-                Out.Clear();
-            }
             AssertSet(expected, actual);
         }
 
-        private void AssertSet(
+        private void AssertSet<T>(
+            List<(IEnumerable<T> IN, IEnumerable<T> OUT)> expected,
+            List<(IEnumerable<T> IN, IEnumerable<T> OUT)> actual)
+        {
+            for (var i = 0; i < expected.Count; ++i)
+            {
+                CollectionAssert.AreEquivalent(expected[i].IN, actual[i].IN);
+                CollectionAssert.AreEquivalent(expected[i].OUT, actual[i].OUT);
+            }
+        }
+
+        /*private void AssertSet(
             List<(List<OneExpression>, List<OneExpression>)> expected,
             List<(List<OneExpression>, List<OneExpression>)> actual)
         {
@@ -224,5 +192,6 @@ e = zz + i;"
 
         private bool IsContains(OneExpression findInstruction, List<OneExpression> actualInstruction)
             => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
+            */
     }
 }
