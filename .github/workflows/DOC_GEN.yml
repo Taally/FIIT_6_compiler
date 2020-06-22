@@ -50,7 +50,7 @@ jobs:
     - name: Generate PDF
       run: |
         cd Documentation
-        pandoc Documentation.md -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks
+        pandoc Documentation.md -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks --listings -H listings-setup.tex
         
     - name: Commit
       run: |
