@@ -6,18 +6,19 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     [TestFixture]
     internal class RemoveNoopTests : TACTestsBase
     {
-        public (bool wasChanged, List<Instruction> instructions) OptimizeLocal(List<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
+        public (bool wasChanged, IReadOnlyCollection<Instruction> instructions) OptimizeLocal(IReadOnlyList<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
 
-        public void AssertChanged((bool wasChanged, List<Instruction> instructions) result, List<string> expected)
+        public void AssertChanged((bool wasChanged, IReadOnlyCollection<Instruction> instructions) result, List<string> expected)
         {
             Assert.IsTrue(result.wasChanged);
             CollectionAssert.AreEqual(result.instructions.Select(x => x.ToString()), expected);
         }
 
-        public void AssertNotChanged((bool wasChanged, List<Instruction> instructions) result, List<string> expected)
+        public void AssertNotChanged((bool wasChanged, IReadOnlyCollection<Instruction> instructions) result, List<string> expected)
         {
             Assert.IsFalse(result.wasChanged);
             CollectionAssert.AreEqual(result.instructions.Select(x => x.ToString()), expected);
@@ -142,7 +143,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 new Instruction("7", "noop", null, null, null),
                 new Instruction("8", "noop", null, null, null),
             };
-            var optimizations = new List<Func<List<Instruction>, (bool, List<Instruction>)>>
+            var optimizations = new List<Optimization>
             {
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
             };

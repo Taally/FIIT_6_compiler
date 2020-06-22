@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
@@ -9,7 +8,7 @@ namespace SimpleLanguage.Tests.CFG
     internal class CFGUnreachableCodeEliminationTests : TACTestsBase
     {
         [Test]
-        public void EliminationdOneBlockTest()
+        public void OneBlockTest()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -22,21 +21,26 @@ c = 5;
 ");
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
 
-            var actual = cfg.GetCurrentBasicBlocks().ToList();
+            var actual = cfg.GetCurrentBasicBlocks();
 
-            var expected = new List<BasicBlock>()
+            var expected = new[]
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "1", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "assign", "3", "", "b"), new Instruction("", "assign", "5", "", "c")}),
+                new BasicBlock(new[]
+                {
+                    new Instruction("", "goto", "1", "", "")
+                }),
+                new BasicBlock(new[]
+                {
+                    new Instruction("1", "assign", "3", "", "b"),
+                    new Instruction("", "assign", "5", "", "c")
+                }),
             };
 
-
-            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
+            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToArray());
         }
 
         [Test]
-        public void EliminationdMultyBlocksTest1()
+        public void MultipleBlocksTest1()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -62,22 +66,25 @@ c = !(a == b);
 ");
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
 
-            var actual = cfg.GetCurrentBasicBlocks().ToList();
+            var actual = cfg.GetCurrentBasicBlocks();
 
-            var expected = new List<BasicBlock>()
+            var expected = new[]
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "1", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "assign", "3", "", "b")}),
+                new BasicBlock(new[]
+                {
+                    new Instruction("", "goto", "1", "", "")
+                }),
+                new BasicBlock(new[]
+                {
+                    new Instruction("1", "assign", "3", "", "b")
+                }),
             };
 
-
-            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
+            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToArray());
         }
 
-
         [Test]
-        public void EliminationdMultyBlocksTest2()
+        public void MultipleBlocksTest2()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -104,22 +111,20 @@ goto 2;
 ");
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
 
-            var actual = cfg.GetCurrentBasicBlocks().ToList();
+            var actual = cfg.GetCurrentBasicBlocks();
 
-            var expected = new List<BasicBlock>()
+            var expected = new[]
             {
-                new BasicBlock(new List<Instruction>(){TAC[0]}),
-                new BasicBlock(new List<Instruction>(){TAC[17],TAC[18],TAC[19],TAC[20],TAC[21],TAC[22],TAC[23],TAC[24],TAC[25],TAC[26],TAC[27],TAC[28] }),
-                new BasicBlock(new List<Instruction>(){TAC[29], TAC[30]}),
+                new BasicBlock(new[]{ TAC[0] }),
+                new BasicBlock(new[]{ TAC[17], TAC[18], TAC[19], TAC[20], TAC[21], TAC[22], TAC[23], TAC[24], TAC[25], TAC[26], TAC[27], TAC[28] }),
+                new BasicBlock(new[]{ TAC[29], TAC[30] }),
             };
 
-
-            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
+            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToArray());
         }
 
         [Test]
-        public void EliminationdMultyBlocksTest3()
+        public void MultipleBlocksTest3()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -131,21 +136,19 @@ goto 3;
 ");
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
 
-            var actual = cfg.GetCurrentBasicBlocks().ToList();
+            var actual = cfg.GetCurrentBasicBlocks();
 
-            var expected = new List<BasicBlock>()
+            var expected = new[]
             {
-                new BasicBlock(new List<Instruction>(){TAC[0]}),
-                new BasicBlock(new List<Instruction>(){TAC[1]}),
+                new BasicBlock(new[]{ TAC[0] }),
+                new BasicBlock(new[]{ TAC[1] }),
             };
 
-
-            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
+            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToArray());
         }
 
         [Test]
-        public void NotEliminationBlocksTest()
+        public void NoEliminationTest()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -159,25 +162,36 @@ c = b == 53;
 ");
             var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
 
-            var actual = cfg.GetCurrentBasicBlocks().ToList();
+            var actual = cfg.GetCurrentBasicBlocks();
 
-            var expected = new List<BasicBlock>()
+            var expected = new[]
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "1", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "assign", "3", "", "b"), new Instruction("", "assign", "5", "", "c"),new Instruction("", "goto", "2", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("2", "assign", "53", "", "b"), new Instruction("", "EQUAL", "b", "53", "#t1"),new Instruction("", "assign", "#t1", "", "c")}),
+                new BasicBlock(new[]
+                {
+                    new Instruction("", "goto", "1", "", "")
+                }),
+                new BasicBlock(new[]
+                {
+                    new Instruction("1", "assign", "3", "", "b"),
+                    new Instruction("", "assign", "5", "", "c"),
+                    new Instruction("", "goto", "2", "", "")
+                }),
+                new BasicBlock(new[]
+                {
+                    new Instruction("2", "assign", "53", "", "b"),
+                    new Instruction("", "EQUAL", "b", "53", "#t1"),
+                    new Instruction("", "assign", "#t1", "", "c")
+                }),
             };
 
-
-            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToList());
-
+            AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToArray());
         }
 
         private void AssertSet(
-            List<BasicBlock> expected,
-            List<BasicBlock> actual)
+            BasicBlock[] expected,
+            BasicBlock[] actual)
         {
-            for (var i = 0; i < expected.Count; ++i)
+            for (var i = 0; i < expected.Length; ++i)
             {
                 var tmpe = expected[i].GetInstructions();
                 var tmpa = actual[i].GetInstructions();
@@ -191,6 +205,5 @@ c = b == 53;
                 }
             }
         }
-
     }
 }

@@ -6,10 +6,11 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Combined
 {
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     [TestFixture]
     public class InteractionWithNoopRemovalTests : TACTestsBase
     {
-        public void AssertEquality(List<Instruction> result, List<string> expected)
+        public void AssertEquality(IReadOnlyCollection<Instruction> result, List<string> expected)
         {
             var resultStr = result.Select(x => x.ToString());
             CollectionAssert.AreEqual(expected, resultStr);
@@ -34,7 +35,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 b = a - c;
                 a = -b;
                 ");
-            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
+            var opts = new List<Optimization>()
             {
                 DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
@@ -66,7 +67,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 for i = 1,5
                     a = 10;
                 ");
-            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
+            var opts = new List<Optimization>()
             {
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
             };
@@ -86,7 +87,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
                 new Instruction("5", "assign", "b", null, "a"),
             };
 
-            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
+            var opts = new List<Optimization>()
             {
                 ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
@@ -114,7 +115,7 @@ var a;
     else
         goto 4;");
 
-            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
+            var opts = new List<Optimization>()
             {
                 ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
@@ -149,7 +150,7 @@ input(a);
 3: a = 3;
 ");
 
-            var opts = new List<Func<List<Instruction>, (bool, List<Instruction>)>>()
+            var opts = new List<Optimization>()
             {
                 ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto,
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes

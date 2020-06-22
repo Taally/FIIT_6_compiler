@@ -11,7 +11,7 @@ namespace SimpleLang
         /// <returns>
         /// Вернет список базовых блоков
         /// </returns>
-        public static List<BasicBlock> DivideLeaderToLeader(List<Instruction> instructions)
+        public static List<BasicBlock> DivideLeaderToLeader(IReadOnlyList<Instruction> instructions)
         {
             var basicBlockList = new List<BasicBlock>();
             var temp = new List<Instruction>();
@@ -70,20 +70,20 @@ namespace SimpleLang
         /// <returns>
         /// Возвращает true, если есть переход на эту метку
         /// </returns>
-        public static bool IsLabelAlive(List<Instruction> instructions, string checkLabel) // Есть ли переход на метку ? 
+        public static bool IsLabelAlive(IReadOnlyCollection<Instruction> instructions, string checkLabel) // Есть ли переход на метку ? 
         {
-            for (var i = 0; i < instructions.Count; i++)
+            foreach (var instruction in instructions)
             {
-                if (instructions[i].Operation == "goto")
+                if (instruction.Operation == "goto")
                 {
-                    if (instructions[i].Argument1 == checkLabel)
+                    if (instruction.Argument1 == checkLabel)
                     {
                         return true;
                     }
                 }
-                else if (instructions[i].Operation == "ifgoto")
+                else if (instruction.Operation == "ifgoto")
                 {
-                    if (instructions[i].Argument2 == checkLabel)
+                    if (instruction.Argument2 == checkLabel)
                     {
                         return true;
                     }

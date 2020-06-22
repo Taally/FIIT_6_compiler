@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
@@ -8,7 +6,8 @@ namespace SimpleLanguage.Tests.AST
     internal class OptAssignEqualityTests : ASTTestsBase
     {
         [Test]
-        public void RemoveNode() {
+        public void RemoveNode()
+        {
             var AST = BuildAST(@"
 var a, b;
 a = a;
