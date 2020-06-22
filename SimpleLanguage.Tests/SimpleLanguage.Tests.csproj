@@ -101,6 +101,7 @@
     <Compile Include="DataFlowAnalysis\AvailableExpressionTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
+    <Compile Include="LoopsInCFG\RegionTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTests.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />
