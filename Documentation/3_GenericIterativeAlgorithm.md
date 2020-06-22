@@ -115,7 +115,8 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
 
 ### Тесты
 
-В тестах проверяется использование итерационных алгоритмов в обобщенной структуре, результаты совпадают с ожидаемыми.
+В тестах проверяется использование итерационных алгоритмов в обобщенной структуре, результаты совпадают с ожидаемыми. Ниже приведён тест проверки работы алгоритма живых переменных.
+
 ```csharp
 public void LiveVariableIterativeTest()
 {
@@ -131,37 +132,23 @@ c = b + a;
 print (c);"
 );
 
-	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-	var activeVariable = new LiveVariableAnalysis();
-	var resActiveVariable = activeVariable.Execute(cfg);
-	HashSet<string> In = new HashSet<string>();
-	HashSet<string> Out = new HashSet<string>();
-	List<(HashSet<string> IN, HashSet<string> OUT)> actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
-	foreach (var x in resActiveVariable)
-	{
-		foreach (var y in x.Value.In)
-		{
-			In.Add(y);
-		}
+	var cfg = GenCFG(program);
+            var resActiveVariable = new LiveVariableAnalysis().Execute(cfg);
+            var actual = cfg.GetCurrentBasicBlocks()
+                .Select(z => resActiveVariable[z])
+                .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))
+                .ToList();
 
-		foreach (var y in x.Value.Out)
-		{
-			Out.Add(y);
-		}
-		actual.Add((new HashSet<string>(In), new HashSet<string>(Out)));
-		In.Clear(); Out.Clear();
-	}
-
-	List<(HashSet<string> IN, HashSet<string> OUT)> expected =
-		new List<(HashSet<string> IN, HashSet<string> OUT)>()
-		{
-			(new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
-			(new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-			(new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
-			(new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
-			(new HashSet<string>(){"c"}, new HashSet<string>(){ }),
-			(new HashSet<string>(){ }, new HashSet<string>(){ })
-		};
+	var expected =
+                new List<(IEnumerable<string>, IEnumerable<string>)>()
+                {
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
+                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+                    (new HashSet<string>(){ }, new HashSet<string>(){ })
+                };
 
 	AssertSet(expected, actual);
 }
