@@ -219,7 +219,7 @@ e = zz + i;"
             }
         }
 
-        private bool IsContains(Instruction findInstruction, List<Instruction> actualInstruction) 
+        private bool IsContains(Instruction findInstruction, List<Instruction> actualInstruction)
             => actualInstruction.Where(x => x.ToString() == findInstruction.ToString()).Any();
 
         private bool IsContains(OneExpression findInstruction, List<OneExpression> actualInstruction)
