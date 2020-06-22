@@ -7,7 +7,7 @@ def gen_toc(path,order):
         title = file.readline()
         if (len(title) < 3):
             title = file.readline()
-        title = title.replace('### ','')
+        title = title.replace('# ','')
         title = title.strip()
         file.close()
         toc += "[" + str(i+1) + ". " + title + "]" + "(#" + name[2:] + ")\n\n"
