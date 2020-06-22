@@ -58,7 +58,10 @@
 
 [30. Определение всех естественных циклов](#NaturalLoop)
 
-<h2 id="Parser&AST">Парсер языка и построение АСТ</h2>
+
+
+<a name="Parser&AST"/>
+
 
 ### Постановка задачи  
 Написать лексер и парсер языка, используя GPLex и Yacc.
@@ -95,7 +98,7 @@ var a, b, c, d; // определение переменных
 ```
 ```csharp
 // присваивание
-a = 10;
+a = 11;
 d = true;
 ```
 ```csharp
@@ -236,8 +239,9 @@ else {
 }
 ```
 ![Условный оператор](0_Parser%26AST/pic2.png)
-## Pretty printer
- {#PrettyPrinter}
+
+<a name="PrettyPrinter"/>
+
 
 ### Постановка задачи
 Создать визитор, которой по AST-дереву восстанавливает исходный код программы в отформатированном виде.
@@ -344,7 +348,9 @@ d = (d or (a < 10));
   b = (b * 2);
 }
 ```
-## Создание базового визитора для оптимизаций абстрактного синтаксического дерева {#ChangeVisitor}
+
+<a name="ChangeVisitor"/>
+
 
 ### Постановка задачи
 Написать базовый визитор, на основе которого будут создаваться визиторы оптимизаций по абстрактному синтаксическому дереву.
@@ -406,7 +412,9 @@ p.StatChildren[i] = to is BlockNode block
 
 ### Тесты
 Тестированию подвергаются наследники данного класса, которые реализуют конкретные оптимизации на AST.
-## AST-оптимизация заменой оператора присваивания вида x = x на пустой узел {#OptAssignEquality}
+
+<a name="OptAssignEquality"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида x = x => null
@@ -483,7 +491,9 @@ a = a;
     AST.root.Visit(pp);
     Assert.AreEqual(expected, pp.Text);
 }
-```## AST-оптимизация замены оператора сравнения двух значений на его булево значение {#OptExprEqualBoolNum}
+```
+<a name="OptExprEqualBoolNum"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида false == false -> true, 5 == 6 -> false
@@ -586,8 +596,10 @@ d = 7 == 8;");
     var result = ApplyOpt(AST, new OptExprEqualBoolNum());
     CollectionAssert.AreEqual(expected, result);
 }
-```## AST-оптимизации свертки и устранения унарных операций {#OptExprFoldUnary&TransformUnaryToValue}
+```
+<a name="OptExprFoldUnary&TransformUnaryToValue"/>
 
+### Постановка задачи
 Реализовать оптимизации по AST дереву:
 1. Свертка двух унарных операций
 - op a == op a => True
@@ -800,7 +812,9 @@ a = --b - ---a;
     };
     /*..*/
 }
-```## AST-оптимизация замены сравнения переменной с собой на true {#OptExprVarEqualToItself}
+```
+<a name="OptExprVarEqualToItself"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по абстрактному синтаксическому дереву — замена сравнения переменной с собой на true:
@@ -877,8 +891,9 @@ a = a >= a;
     TestName = "EQGREATER")]
 public string[] TestOptimization(string sourceCode) => ApplyOpt(BuildAST(sourceCode), new OptExprVarEqualToItself());
 ```
-## AST-оптимизация замены сравнения переменной с собой на булевскую константу false
- {#OptExprSimilarNotEqual}
+
+<a name="OptExprSimilarNotEqual"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида (a > a, a != a ) = False
@@ -969,7 +984,9 @@ d = 1 > 1;
 	CollectionAssert.AreEqual(expected, result);
 }
 ```
-## AST-оптимизация умножения на единицу слева и справа, деления на единицу справа {#OptExprMultDivByOne}
+
+<a name="OptExprMultDivByOne"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида a\*1 = a, 1\*a = a, a/1 = a
@@ -1058,7 +1075,9 @@ a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-## AST-оптимизация заменой условного оператора на пустой оператор {#OptIfNullElseNull}
+
+<a name="OptIfNullElseNull"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида if (ex) null; else null; => null
@@ -1175,8 +1194,9 @@ public void RemoveInBlock()
         Assert.IsTrue(node.StatChildren[0].GetType() == typeof(ProgramTree.EmptyNode));
     }
 }
-```## AST-оптимизация замены if(true) на его true ветку
- {#OptStatIfTrue}
+```
+<a name="OptStatIfTrue"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида if(true) st1 else st2 => st1
@@ -1280,8 +1300,9 @@ b = b / 5;
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-## AST-оптимизация замены if(false) на его else ветку
- {#OptStatIfFalse}
+
+<a name="OptStatIfFalse"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
@@ -1363,7 +1384,9 @@ a = 1;
 	CollectionAssert.AreEqual(expected, result);
 }
 ```
-## AST-оптимизация замены while(false) st ветки на null {#OptWhileFalseVisitor}
+
+<a name="OptWhileFalseVisitor"/>
+
 
 ### Постановка задачи
 Реализовать оптимизацию по AST дереву вида while (false) st на null
@@ -1471,7 +1494,9 @@ a = true;");
     CollectionAssert.AreEqual(expected, result);
 }
 ```
-## Генерация трехадресного кода {#GenerationTAC}
+
+<a name="GenerationTAC"/>
+
 
 ### Постановка задачи
 
@@ -1743,8 +1768,9 @@ L6: a = c
 a = 1
 L7: noop
 ```
-## Def-Use информация и удаление мертвого кода на ее основе 
- {#DefUse}
+
+<a name="DefUse"/>
+
 
 ### Постановка задачи
 Накопление Def-Use информации в пределах ББл и удаление мертвого кода на основе этой информации.
@@ -1929,8 +1955,9 @@ public void DeadInput()
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
- {#DeleteDeadCodeWithDeadVars}
+<a name="DeleteDeadCodeWithDeadVars"/>
 
+## Живые и мёртвые переменные и удаление мёртвого кода (замена на пустой оператор)
 ### Постановка задачи
 Необходимо в пределах одного базового блока определить живые и мёртвые переменные, а также заменить на пустой оператор присваивания мёртвым переменным.
 ### Команда
@@ -2030,7 +2057,9 @@ b = a - c;
 a = -b;
 ```
 Для последнего теста также проверяется совместная работа данной оптимизации и удаления пустых операторов.
-## Устранение переходов через переходы {#GotoThroughGoto}
+
+<a name="GotoThroughGoto"/>
+
 
 ### Постановка задачи
 Произвести оптимизацию в трёхадресном коде программы для устранения переходов через переходы.
@@ -2143,8 +2172,9 @@ public void ChangeInstructions1()
 
     CollectionAssert.AreEqual(expectedOptimize, actual);
 }
-```## Устранение переходов к переходам
- {#GotoToGoto}
+```
+<a name="GotoToGoto"/>
+
 
 ### Постановка задачи
 Создать оптимизирующий модуль программы устраняющий переходы к переходам.
@@ -2331,8 +2361,10 @@ public void TestGotoIfElseTACGen1()
 	CollectionAssert.AreEqual(expected, actual);
 }
 ```
- {#RemoveNoopInTac}
 
+<a name="RemoveNoopInTac"/>
+
+## Удаление пустых операторов в трехадресном коде  
   
 ### Постановка задачи  
 
@@ -2457,7 +2489,9 @@ goto old_label
 					     L2: noop
 ```
 
-Выполняется проверка на не удаление L2: noop, который является последней операцией в программе.## Создание структуры ББл {#BasicBlockStructure}
+Выполняется проверка на не удаление L2: noop, который является последней операцией в программе.
+<a name="BasicBlockStructure"/>
+
 
 ### Постановка задачи
 Реализовать структуру базового блока
@@ -2508,8 +2542,9 @@ public class BasicBlock
 
 ### Место в общем проекте (Интеграция)
 Данная структура была задействована во всех задачах, в которых использовались ББл, например в задаче разбиения на ББл (от лидера до лидера) 
-## Разбиение на ББл (от лидера до лидера)
- {#BasicBlockLeader}
+
+<a name="BasicBlockLeader"/>
+
 
 ### Постановка задачи
 Реализовать разбиение на базовые блоки от лидера до лидера.
@@ -2655,8 +2690,9 @@ var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 AssertSet(expected, actual);
 }
 ```
-## Удаление нидостижимого кода
- {#CFGUnreachableCodeElimination}
+
+<a name="CFGUnreachableCodeElimination"/>
+
 
 ### Постановка задачи
 Необходимо было реализовать оптимизацию удалющую недостижимый код
@@ -2781,9 +2817,10 @@ c = !(a == b);
 
 }
 ```
-## Интеграция оптимизаций трёхадресного кода между собой
- {#ThreeAddressCodeOptimizer}
 
+<a name="ThreeAddressCodeOptimizer"/>
+
+### Постановка задачи
 Необходимо скомбинировать созданные ранее оптимизации трёхадресного кода так, чтобы они могли выполняться все вместе, друг за другом.
 ### Команда
 Д. Володин, Н. Моздоров
@@ -2851,8 +2888,10 @@ x = b;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-## Альтернативная реализация хранения IN OUT в виде битовых векторов. Интеграция данного представления в существующий итерационный алгоритм.   {#BinaryRepresentationOfInOut}
 
+<a name="BinaryRepresentationOfInOut"/>
+
+  
 ### Постановка задачи  
 
 Необходимо реализовать альтернативный способ представления IN/OUT данных для итерационных алгоритмов, а затем интегрировать данный способ представления данных в какой-нибудь алгоритм.
@@ -2971,7 +3010,9 @@ for k = 0, 1 {
  if i < j a = u2; i = u3;
 }
 ```
-## Анализ активных переменных {#LiveVariableAnalysis}
+
+<a name="LiveVariableAnalysis"/>
+
 
 ### Постановка задачи
 Необходимо накопить IN-OUT информацию для дальнейшей оптимизации «Живые и мертвые переменные» между базовыми блоками.
@@ -3161,9 +3202,10 @@ print (c+a+b);"
     var actual = Execute(TAC);
     AssertSet(expected, actual);
 }
-```## Анализ достигающих определений
- {#ReachingDefinitions}
+```
+<a name="ReachingDefinitions"/>
 
+### Постановка задачи
 Необходимо накопить IN-OUT информацию по достигающим определениям в базовых блоках для дальнейшей оптимизации.
 ### Команда
 Д. Володин, Н. Моздоров
@@ -3250,8 +3292,9 @@ for k = 0, 1
     i = u3;
 }
 ```
-## Итерационный алгоритм в обобщённой структуре
- {#GenericIterativeAlgorithm}
+
+<a name="GenericIterativeAlgorithm"/>
+
 
 ### Постановка задачи
 Реализовать итеративный алгоритм в обобщенной структуре.
@@ -3403,7 +3446,9 @@ print (c);"
 	AssertSet(expected, actual);
 }
 ```
-## Классификация рёбер графа: наступающие, отступающие, поперечные (по построенному остовному дереву) {#CFGEdgesСlassification}
+
+<a name="CFGEdgesСlassification"/>
+
 
 ### Постановка задачи
 В данной задаче необходимо классифицировать ребра графа по остновму дереву на три группы: наступающие, отступающие и поперечные.
@@ -3566,9 +3611,10 @@ else
         }
     }
 }
-```## Построение дерева доминаторов
- {#DominatorTree}
+```
+<a name="DominatorTree"/>
 
+### Постановка задачи
 Необходимо по ранее созданному графу потока управления программы определить множество доминаторов для каждого базового блока, и на основе этой информации построить дерево доминаторов.
 ### Команда
 Д. Володин, Н. Моздоров
@@ -3694,8 +3740,9 @@ for i = 1, 10
     b = b + a * a;
     a = a + 1;
 }
-```## Определение всех естественных циклов
- {#NaturalLoop}
+```
+<a name="NaturalLoop"/>
+
 
 ### Постановка задачи
 Необходимо реализовать определение всех естественных циклов программы с использованием обратных ребр.
