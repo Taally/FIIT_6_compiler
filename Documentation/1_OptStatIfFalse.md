@@ -29,30 +29,33 @@
 Пример реализации метода:
 
 ```csharp
-    if (n is IfElseNode ifNode)  // Если это корень if
-        if (ifNode.Expr is BoolValNode boolNode && boolNode.Val == false) // Если выражение == false
+if (n is IfElseNode ifNode) // Если это корень if
+{
+    if (ifNode.Expr is BoolValNode boolNode && boolNode.Val == false) // Если выражение == false
+    {
+        if (ifNode.FalseStat != null) // Если ветка false не null
         {
-            if (ifNode.FalseStat != null)  // Если ветка fasle не NULL
-            {
-                ifNode.FalseStat.Visit(this);
-                ReplaceStat(ifNode, ifNode.FalseStat);  //  Меняем наш корень на ветку else
-            }
-            else 
-            {
-                ReplaceStat(ifNode, new EmptyNode());
-            }
+            ifNode.FalseStat.Visit(this);
+            ReplaceStat(ifNode, ifNode.FalseStat); // Меняем наш корень на ветку else
         }
+        else
+        {
+            ReplaceStat(ifNode, new EmptyNode());
+        }
+    }
+}
 ```
 
 ### Место в общем проекте (Интеграция)
 Данная оптимизация выполняется на AST-дереве, построенном для данной программы. Применяется в классе `ASTOptimizer`.
 ```csharp
-public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
-       {
-             /* ... */
-           new OptStatIfFalse(),
-             /* ... */
-       };
+private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+{
+    /* ... */
+    new OptStatIfFalse(),
+    /* ... */
+};
+```
 
 
 ### Тесты
@@ -61,7 +64,7 @@ public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisito
 [Test]
 public void IfFalseBlockTest()
 {
-	var AST = BuildAST(@"
+    var AST = BuildAST(@"
 var a, b;
 if false {
 a = b;
@@ -71,12 +74,12 @@ else
 a = 1;
 ");
 
-	var expected = new[] {
-		"var a, b;",
-		"a = 1;"
-	};
+    var expected = new[] {
+        "var a, b;",
+        "a = 1;"
+    };
 
-	var result = ApplyOpt(AST, new OptStatIfFalse());
-	CollectionAssert.AreEqual(expected, result);
+    var result = ApplyOpt(AST, new OptStatIfFalse());
+    CollectionAssert.AreEqual(expected, result);
 }
 ```
