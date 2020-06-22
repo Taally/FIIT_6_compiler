@@ -10,7 +10,7 @@ namespace SimpleLanguage.Tests.CFG
         [Test]
         public void OneBlockTest()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c;
 
 goto 1;
@@ -18,8 +18,8 @@ goto 2;
 2: a = 42;
 1: b = 3;
 c = 5;
-");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+            var cfg = GenCFG(program);
 
             var actual = cfg.GetCurrentBasicBlocks();
 
@@ -42,7 +42,7 @@ c = 5;
         [Test]
         public void MultipleBlocksTest1()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c;
 
 goto 1;
@@ -63,8 +63,8 @@ c = -(a+b);
 a = !b; 
 c = !(a == b); 
 1: b = 3;
-");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+            var cfg = GenCFG(program);
 
             var actual = cfg.GetCurrentBasicBlocks();
 
@@ -109,7 +109,7 @@ c = !(a == b);
 1: b = 3;
 goto 2;
 ");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
 
             var actual = cfg.GetCurrentBasicBlocks();
 
@@ -134,7 +134,7 @@ goto 3;
 3: a = 5;
 
 ");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
 
             var actual = cfg.GetCurrentBasicBlocks();
 
@@ -150,7 +150,7 @@ goto 3;
         [Test]
         public void NoEliminationTest()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a, b, c;
 
 goto 1;
@@ -159,8 +159,8 @@ c = 5;
 goto 2;
 2: b = 53;
 c = b == 53;
-");
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+            var cfg = GenCFG(program);
 
             var actual = cfg.GetCurrentBasicBlocks();
 

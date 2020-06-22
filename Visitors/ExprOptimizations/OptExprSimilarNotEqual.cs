@@ -7,11 +7,13 @@ namespace SimpleLang.Visitors
         public override void VisitBinOpNode(BinOpNode binop)
         {
             if (
-                binop.Left is IntNumNode iLeft && binop.Right is IntNumNode iRight && iLeft.Num == iRight.Num
-                && (binop.Op == OpType.GREATER || binop.Op == OpType.LESS || binop.Op == OpType.NOTEQUAL)
-                || binop.Left is IdNode idLeft && binop.Right is IdNode idRight && idLeft.Name == idRight.Name
-                && (binop.Op == OpType.GREATER || binop.Op == OpType.LESS || binop.Op == OpType.NOTEQUAL)
-                )
+                (binop.Op == OpType.GREATER || binop.Op == OpType.LESS || binop.Op == OpType.NOTEQUAL)
+                &&
+                // Для цифр и значений bool:
+                (binop.Left is IntNumNode inl && binop.Right is IntNumNode inr && inl.Num == inr.Num
+                || binop.Left is BoolValNode bvl && binop.Right is BoolValNode bvr && bvl.Val == bvr.Val
+                // Для переменных:
+                || binop.Left is IdNode idl && binop.Right is IdNode idr && idl.Name == idr.Name))
             {
                 ReplaceExpr(binop, new BoolValNode(false));
             }

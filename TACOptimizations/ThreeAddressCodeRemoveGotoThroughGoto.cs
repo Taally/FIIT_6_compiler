@@ -31,15 +31,17 @@ namespace SimpleLang
                         var tmpName = ThreeAddressCodeTmp.GenTmpName();
                         newInstructions.Add(new Instruction(com0.Label, "NOT", com0.Argument1, "", tmpName));
                         newInstructions.Add(new Instruction("", "ifgoto", tmpName, com3.Label, ""));
-                        newInstructions.Add(new Instruction(com2.Label.StartsWith("L") && uint.TryParse(com2.Label.Substring(1), out _) ? "" : com2.Label, com2.Operation, com2.Argument1, com2.Argument2, com2.Result));
-                        newInstructions.Add(new Instruction(com3.Label, com3.Operation, com3.Argument1, com3.Argument2, com3.Result));
+
+                        var label = com2.Label.StartsWith("L") && uint.TryParse(com2.Label.Substring(1), out _) ? "" : com2.Label;
+                        newInstructions.Add(new Instruction(label, com2.Operation, com2.Argument1, com2.Argument2, com2.Result));
+                        newInstructions.Add(com3.Copy());
 
                         wasChanged = true;
                         i += 3;
                         continue;
                     }
                 }
-                newInstructions.Add(new Instruction(instructions[i].Label, instructions[i].Operation, instructions[i].Argument1, instructions[i].Argument2, instructions[i].Result));
+                newInstructions.Add(instructions[i].Copy());
             }
             return (wasChanged, newInstructions);
         }

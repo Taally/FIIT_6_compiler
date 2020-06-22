@@ -6,18 +6,10 @@ namespace SimpleLanguage.Tests.LoopsInCFG
     [TestFixture]
     internal class BackEdgesTests : TACTestsBase
     {
-        private ControlFlowGraph BuildCFG(string program)
-        {
-            var TAC = GenTAC(program);
-            var optResult = ThreeAddressCodeOptimizer.OptimizeAll(TAC);
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(optResult);
-            return new ControlFlowGraph(blocks);
-        }
-
         [Test]
         public void EmptyGraph()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a;
 ");
             Assert.AreEqual(0, graph.GetBackEdges().Count);
@@ -26,7 +18,7 @@ var a;
         [Test]
         public void SimpleTestBackEdges()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a, b;
 2: a = 1;
 goto 1;
@@ -39,7 +31,7 @@ goto 2;
         [Test]
         public void SimpleNoBackEdgesWithoutGoTo()
         {
-            var graph = BuildCFG(@"var a, b, c, d, f;
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, f;
 a = 1;
 b = 5;
 c = a + b;
@@ -61,7 +53,7 @@ a = f + c;");
         [Test]
         public void BackEdgesWithGoTo()
         {
-            var graph = BuildCFG(@"var a, b, c, d, e, f;
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, e, f;
 1: a = 1;
 5: b = 2;
 goto 2;
@@ -78,7 +70,7 @@ goto 5;");
         [Test]
         public void SimpleNoBackEdgesWithGoTo()
         {
-            var graph = BuildCFG(@"var a, b, c, d, e, f;
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, e, f;
 1: a = 1;
 b = 2;
 goto 2;
@@ -95,7 +87,7 @@ goto 4;
         [Test]
         public void TrashProgram()
         {
-            var graph = BuildCFG(@"var a, b, c, d, e, y;
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, e, y;
 input(a);
 b = 5 + a;
 c = 6 + a;
@@ -115,7 +107,7 @@ goto 4;
         [Test]
         public void ProgramWithLoop()
         {
-            var graph = BuildCFG(@"var a, b, i, j, p, x;
+            var graph = BuildTACOptimizeCFG(@"var a, b, i, j, p, x;
 input(a);
 1: for i = 1, 5
 {
@@ -134,7 +126,7 @@ input(a);
         [Test]
         public void CheckIfGraphIsReducible1()
         {
-            var graph = BuildCFG(@"var a, b, i, j, p, x;
+            var graph = BuildTACOptimizeCFG(@"var a, b, i, j, p, x;
 input(a);
 1: for i = 1, 5
 {
@@ -155,7 +147,7 @@ goto 2;
         [Test]
         public void CheckIfGraphIsReducible2()
         {
-            var graph = BuildCFG(@"var a, b, c, d, i, j, p, x;
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, i, j, p, x;
 a = b + 2;
 if a < b
 {
@@ -202,7 +194,7 @@ while (a < b)
         [Test]
         public void CheckIfGraphIsNotReducible1()
         {
-            var graph = BuildCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
 if a > b
 {
     c = d;
@@ -221,7 +213,7 @@ else
         [Test]
         public void CheckIfGraphIsNotReducible2()
         {
-            var graph = BuildCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
 for i = 1, 10
 {
     a = b;
@@ -236,7 +228,7 @@ goto 1;");
         [Test]
         public void CheckIfGraphIsNotReducible3()
         {
-            var graph = BuildCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
 while (zz == i) 
 {    
     a = b;

@@ -11,7 +11,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void LiveVariableIterativeTest()
         {
-            var TAC = GenTAC(@"
+            var program = @"
 var a,b,c;
 
 input (b);
@@ -21,9 +21,9 @@ if a < c
 else
 	c = b + a;
 print (c);"
-);
+;
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(program);
             var activeVariable = new LiveVariableAnalysis();
             var resActiveVariable = activeVariable.Execute(cfg);
             var In = new HashSet<string>();
@@ -73,7 +73,7 @@ else
 print (c);"
 );
 
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+            var cfg = GenCFG(TAC);
             var reachingDefinitions = new ReachingDefinitions();
             var resReachingDefinitions = reachingDefinitions.Execute(cfg);
             var In = new List<Instruction>();

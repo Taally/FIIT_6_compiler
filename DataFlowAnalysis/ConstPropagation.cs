@@ -199,18 +199,18 @@ namespace SimpleLang
             {
                 foreach (var instr in block.GetInstructions())
                 {
-                    if (instr.Result != "" && !instr.Result.StartsWith("#") && !instr.Result.StartsWith("L") && !variables.Contains(instr.Result))
+                    if (checkStr(instr.Result) && !variables.Contains(instr.Result))
                     {
                         variables.Add(instr.Result);
                     }
 
-                    if (instr.Argument1 != "" && !instr.Argument1.StartsWith("#") && !instr.Argument1.StartsWith("L") && instr.Argument1 != "True"
+                    if (checkStr(instr.Argument1) && instr.Argument1 != "True"
                         && instr.Argument1 != "False" && !int.TryParse(instr.Argument1, out var temp1) && !variables.Contains(instr.Argument1))
                     {
                         variables.Add(instr.Argument1);
                     }
 
-                    if (instr.Argument2 != "" && !instr.Argument2.StartsWith("#") && !instr.Argument2.StartsWith("L") && instr.Argument2 != "True" && instr.Argument2 != "False"
+                    if (checkStr(instr.Argument2) && instr.Argument2 != "True" && instr.Argument2 != "False"
                         && !int.TryParse(instr.Argument2, out var temp2) && !variables.Contains(instr.Argument2))
                     {
                         variables.Add(instr.Argument2);
@@ -284,18 +284,18 @@ namespace SimpleLang
             {
                 foreach (var instr in block.GetInstructions())
                 {
-                    if (instr.Result != "" && !instr.Result.StartsWith("#") && !instr.Result.StartsWith("L") && !variables.Contains(instr.Result))
+                    if (checkStr(instr.Result) && !variables.Contains(instr.Result))
                     {
                         variables.Add(instr.Result);
                     }
 
-                    if (instr.Argument1 != "" && !instr.Argument1.StartsWith("#") && !instr.Argument1.StartsWith("L") && instr.Argument1 != "True"
+                    if (checkStr(instr.Argument1) && instr.Argument1 != "True"
                         && instr.Argument1 != "False" && !int.TryParse(instr.Argument1, out var temp1) && !variables.Contains(instr.Argument1))
                     {
                         variables.Add(instr.Argument1);
                     }
 
-                    if (instr.Argument2 != "" && !instr.Argument2.StartsWith("#") && !instr.Argument2.StartsWith("L") && instr.Argument2 != "True" && instr.Argument2 != "False"
+                    if (checkStr(instr.Argument2) && instr.Argument2 != "True" && instr.Argument2 != "False"
                         && !int.TryParse(instr.Argument2, out var temp2) && !variables.Contains(instr.Argument2))
                     {
                         variables.Add(instr.Argument2);
@@ -312,5 +312,7 @@ namespace SimpleLang
             TransferFunction = Transfer;
             return base.Execute(graph);
         }
+
+        private bool checkStr(string str) => str != "" && !str.StartsWith("#") && !str.StartsWith("L");
     }
 }
