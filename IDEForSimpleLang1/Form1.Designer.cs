@@ -35,6 +35,7 @@
             this.textAST = new System.Windows.Forms.TextBox();
             this.TAC = new System.Windows.Forms.TabPage();
             this.textTAC = new System.Windows.Forms.TextBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.clearOpt = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
@@ -43,10 +44,13 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.TACoptLocalList = new System.Windows.Forms.CheckedListBox();
             this.Compile = new System.Windows.Forms.Button();
+            this.GraphText = new System.Windows.Forms.TextBox();
+            this.InformText = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.sourceCode.SuspendLayout();
             this.AST.SuspendLayout();
             this.TAC.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -58,11 +62,12 @@
             this.tabControl1.Controls.Add(this.sourceCode);
             this.tabControl1.Controls.Add(this.AST);
             this.tabControl1.Controls.Add(this.TAC);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tabControl1.Location = new System.Drawing.Point(576, 23);
+            this.tabControl1.Location = new System.Drawing.Point(497, 23);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(676, 628);
+            this.tabControl1.Size = new System.Drawing.Size(755, 628);
             this.tabControl1.TabIndex = 0;
             // 
             // sourceCode
@@ -71,7 +76,7 @@
             this.sourceCode.Location = new System.Drawing.Point(4, 29);
             this.sourceCode.Name = "sourceCode";
             this.sourceCode.Padding = new System.Windows.Forms.Padding(3);
-            this.sourceCode.Size = new System.Drawing.Size(668, 595);
+            this.sourceCode.Size = new System.Drawing.Size(747, 595);
             this.sourceCode.TabIndex = 0;
             this.sourceCode.Text = "Исходный код";
             this.sourceCode.UseVisualStyleBackColor = true;
@@ -95,7 +100,7 @@
             this.AST.Location = new System.Drawing.Point(4, 29);
             this.AST.Name = "AST";
             this.AST.Padding = new System.Windows.Forms.Padding(3);
-            this.AST.Size = new System.Drawing.Size(668, 595);
+            this.AST.Size = new System.Drawing.Size(747, 595);
             this.AST.TabIndex = 1;
             this.AST.Text = "AST";
             // 
@@ -115,7 +120,7 @@
             this.TAC.Controls.Add(this.textTAC);
             this.TAC.Location = new System.Drawing.Point(4, 29);
             this.TAC.Name = "TAC";
-            this.TAC.Size = new System.Drawing.Size(668, 595);
+            this.TAC.Size = new System.Drawing.Size(747, 595);
             this.TAC.TabIndex = 2;
             this.TAC.Text = "TAC";
             this.TAC.UseVisualStyleBackColor = true;
@@ -130,6 +135,17 @@
             this.textTAC.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textTAC.Size = new System.Drawing.Size(662, 588);
             this.textTAC.TabIndex = 1;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.InformText);
+            this.tabPage3.Controls.Add(this.GraphText);
+            this.tabPage3.Location = new System.Drawing.Point(4, 29);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(747, 595);
+            this.tabPage3.TabIndex = 3;
+            this.tabPage3.Text = "Graph";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
@@ -246,6 +262,26 @@
             this.Compile.UseVisualStyleBackColor = true;
             this.Compile.Click += new System.EventHandler(this.Compile_Click);
             // 
+            // GraphText
+            // 
+            this.GraphText.Location = new System.Drawing.Point(0, 0);
+            this.GraphText.Multiline = true;
+            this.GraphText.Name = "GraphText";
+            this.GraphText.ReadOnly = true;
+            this.GraphText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.GraphText.Size = new System.Drawing.Size(381, 592);
+            this.GraphText.TabIndex = 0;
+            // 
+            // InformText
+            // 
+            this.InformText.Location = new System.Drawing.Point(387, 0);
+            this.InformText.Multiline = true;
+            this.InformText.Name = "InformText";
+            this.InformText.ReadOnly = true;
+            this.InformText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.InformText.Size = new System.Drawing.Size(357, 592);
+            this.InformText.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -263,6 +299,8 @@
             this.AST.PerformLayout();
             this.TAC.ResumeLayout(false);
             this.TAC.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -288,6 +326,9 @@
         private System.Windows.Forms.Button clearOpt;
         private System.Windows.Forms.TextBox textTAC;
         private System.Windows.Forms.CheckedListBox TACoptLocalList;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TextBox GraphText;
+        private System.Windows.Forms.TextBox InformText;
     }
 }
 

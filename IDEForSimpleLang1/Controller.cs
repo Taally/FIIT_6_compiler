@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SimpleLang;
 using SimpleLang.Visitors;
 using SimpleParser;
 using SimpleScanner;
+//using GraphVizWrapper;
+//using GraphVizWrapper.Commands;
+//using GraphVizWrapper.Queries;
+using System.IO;
+using System.Drawing;
 
 namespace IDEForSimpleLang1
 {
@@ -85,7 +89,8 @@ namespace IDEForSimpleLang1
             ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
         };
 
-        internal static string GetTACWithOpt(Parser parser, List<int> lstCheck)
+        internal static (string str, IReadOnlyList<Instruction> instructions) GetTACWithOpt(
+            Parser parser, List<int> lstCheck)
         {
             ThreeAddressCodeTmp.ResetTmpLabel();
             ThreeAddressCodeTmp.ResetTmpName();
@@ -122,6 +127,51 @@ namespace IDEForSimpleLang1
                 str.Append(x);
                 str.Append(Environment.NewLine);
             }
+
+            return (str.ToString(), threeAddressCode);
+        }
+
+
+        internal static (string str, ControlFlowGraph cfg) BuildCFG(IReadOnlyList<Instruction> instructions) {
+            var divResult = BasicBlockLeader.DivideLeaderToLeader(instructions);
+            var cfg = new ControlFlowGraph(divResult);
+
+            var str = new StringBuilder();
+
+            foreach (var block in cfg.GetCurrentBasicBlocks())
+            {
+                str.Append($"{cfg.VertexOf(block)} --------\r\n");
+                foreach (var inst in block.GetInstructions())
+                {
+                    str.Append(inst.ToString());
+                    str.Append("\r\n");
+                }
+                str.Append($"----------\r\n");
+
+                var children = cfg.GetChildrenBasicBlocks(cfg.VertexOf(block));
+
+                var childrenStr = string.Join(" | ", children.Select(v => v.vertex));
+                str.Append($" children: {childrenStr}\r\n");
+
+                var parents = cfg.GetParentsBasicBlocks(cfg.VertexOf(block));
+                var parentsStr = string.Join(" | ", parents.Select(v => v.vertex));
+                str.Append($" parents: {parentsStr}\r\n\r\n");
+            }
+
+            return (str.ToString(), cfg);
+        }
+
+
+        internal static string GetGraphInformation(ControlFlowGraph cfg) {
+            var str = new StringBuilder();
+            str.Append("Классификация ребер:\r\n");
+            foreach (var pair in cfg.ClassifiedEdges)
+            {
+                str.Append($"{ pair }\r\n");
+            }
+
+
+
 
             return str.ToString();
         }

@@ -38,7 +38,13 @@ namespace IDEForSimpleLang1
             {
                 indicesForTAC.Add(Int32.Parse(x.ToString()));
             }
-            textTAC.Text = Controller.GetTACWithOpt(parser, indicesForTAC);
+            var resultTAC = Controller.GetTACWithOpt(parser, indicesForTAC);
+            textTAC.Text = resultTAC.str;
+            //Graph
+            var graph = Controller.BuildCFG(resultTAC.instructions);
+            GraphText.Text = graph.str;
+
+            InformText.Text = Controller.GetGraphInformation(graph.cfg);
         }
 
         private void clearOpt_Click(object sender, EventArgs e)
