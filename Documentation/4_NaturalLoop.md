@@ -73,7 +73,7 @@ return natLoops.Where(loop => IsNaturalLoop(loop, cfg)).ToList();
 ```
 
 ### Место в общем проекте (Интеграция)
-Используется для вызова итерационных алгоритмов в единой структуре.
+Используется для определения всех естественных циклов программы:
 ```csharp
 /* ... */
 var natLoops = NaturalLoop.GetAllNaturalLoops(cfg);
