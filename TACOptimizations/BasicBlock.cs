@@ -10,8 +10,9 @@ namespace SimpleLang
         public BasicBlock() => _instructions = new List<Instruction>();
 
         public BasicBlock(List<Instruction> instructions) => _instructions = instructions;
+        public BasicBlock(IEnumerable<Instruction> instructions) => _instructions = instructions.ToList();
 
-        public List<Instruction> GetInstructions() => _instructions.ToList();
+        public IReadOnlyList<Instruction> GetInstructions() => _instructions;
 
         public void InsertInstruction(int index, Instruction instruction) => _instructions.Insert(index, instruction);
 

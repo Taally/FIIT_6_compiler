@@ -6,7 +6,7 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
     [TestFixture]
     internal class GotoToGotoTests : TACTestsBase
@@ -176,7 +176,6 @@ a = 1;
             CollectionAssert.AreEqual(expected, actual);
         }
 
-
         [Test]
         public void Task3Test()
         {
@@ -192,7 +191,6 @@ else
 ");
             var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
-
             var expected = new List<string>()
             {
                 "if True goto 4",
@@ -206,7 +204,6 @@ else
             };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
                 .Select(instruction => instruction.ToString());
-
 
             CollectionAssert.AreEqual(expected, actual);
         }

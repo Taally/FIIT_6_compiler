@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using ProgramTree;
 using SimpleLang.Visitors;
 
@@ -26,7 +24,7 @@ namespace SimpleLanguage.Tests.AST
             Assert.IsNull(root.Parent);
             Assert.AreEqual(root.ExprChildren.Count, 0);
             Assert.AreEqual(root.StatChildren.Count, 2);
-            
+
             Assert.IsTrue(root.StatChildren[0].GetType() == typeof(ProgramTree.EmptyNode));
             Assert.IsTrue(root.StatChildren[1].GetType() == typeof(ProgramTree.EmptyNode));
         }

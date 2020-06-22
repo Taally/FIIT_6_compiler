@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang.Visitors;
 
 namespace SimpleLanguage.Tests.AST
 {
-    internal class OptExprSimilarNotEqualTest: ASTTestsBase
+    internal class OptExprSimilarNotEqualTest : ASTTestsBase
     {
         [Test]
         public void SimilarNotEqualTest()
