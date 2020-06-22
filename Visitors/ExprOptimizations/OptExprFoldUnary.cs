@@ -6,48 +6,23 @@ namespace SimpleLang.Visitors
     {
         public override void VisitBinOpNode(BinOpNode binop)
         {
-            var left = binop.Left as UnOpNode;
-            var right = binop.Right as UnOpNode;
-
-            if (left != null && right != null && left.Op == right.Op
-                && left.Op == OpType.NOT && left.Expr is IdNode idl)
+            if (binop.Op == OpType.EQUAL || binop.Op == OpType.NOTEQUAL)
             {
-                if (right.Expr is IdNode idr && idl.Name == idr.Name)
+                if (binop.Left is UnOpNode left && binop.Right is UnOpNode right
+                    && left.Op == right.Op && left.Op == OpType.NOT
+                    && left.Expr is IdNode idl && right.Expr is IdNode idr && idl.Name == idr.Name)
                 {
-                    if (binop.Op == OpType.EQUAL)
-                    {
-                        ReplaceExpr(binop, new BoolValNode(true));
-                    }
-                    if (binop.Op == OpType.NOTEQUAL)
-                    {
-                        ReplaceExpr(binop, new BoolValNode(false));
-                    }
+                    ReplaceExpr(binop, new BoolValNode(binop.Op == OpType.EQUAL));
                 }
-            }
-            else
-            if (left != null && left.Op == OpType.NOT && left.Expr is IdNode
-                && binop.Right is IdNode && (left.Expr as IdNode).Name == (binop.Right as IdNode).Name)
-            {
-                if (binop.Op == OpType.EQUAL)
+                else if (binop.Left is UnOpNode lleft && lleft.Expr is IdNode luexpr
+                    && binop.Right is IdNode rexpr && luexpr.Name == rexpr.Name)
                 {
-                    ReplaceExpr(binop, new BoolValNode(false));
+                    ReplaceExpr(binop, new BoolValNode(binop.Op == OpType.NOTEQUAL));
                 }
-                if (binop.Op == OpType.NOTEQUAL)
+                else if (binop.Right is UnOpNode rright && rright.Expr is IdNode ruexpr
+                    && binop.Left is IdNode lexpr && ruexpr.Name == lexpr.Name)
                 {
-                    ReplaceExpr(binop, new BoolValNode(true));
-                }
-            }
-            else
-                if (right != null && right.Op == OpType.NOT && right.Expr is IdNode
-                    && binop.Left is IdNode && (right.Expr as IdNode).Name == (binop.Left as IdNode).Name)
-            {
-                if (binop.Op == OpType.EQUAL)
-                {
-                    ReplaceExpr(binop, new BoolValNode(false));
-                }
-                if (binop.Op == OpType.NOTEQUAL)
-                {
-                    ReplaceExpr(binop, new BoolValNode(true));
+                    ReplaceExpr(binop, new BoolValNode(binop.Op == OpType.NOTEQUAL));
                 }
             }
             else
