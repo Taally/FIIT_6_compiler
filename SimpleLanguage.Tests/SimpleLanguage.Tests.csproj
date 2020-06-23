@@ -88,7 +88,7 @@
     <Compile Include="AST\OptStatIfFalseTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
-    <Compile Include="CFG\AvailableExpressionsApplicationTests.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionsApplicationTests.cs" />
     <Compile Include="CFG\CFGcreateTests.cs" />
     <Compile Include="CFG\CFGdfsTests.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
