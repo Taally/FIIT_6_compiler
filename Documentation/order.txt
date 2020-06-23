@@ -1,5 +1,4 @@
-﻿Introduction.md
-0_Parser&AST.md
+﻿0_Parser&AST.md
 1_PrettyPrinter.md
 1_ChangeVisitor.md
 1_OptAssignEquality.md
@@ -35,6 +34,8 @@
 3_ConstPropagation.md
 3_TransferFunctionForConstPropagation.md 
 3_ReachingDefinitions.md
+3_AvailableExpressions.md
+3_AvailableEpressionsApplication.md
 3_GenericIterativeAlgorithm.md
 3_BinaryRepresentationOfInOut.md
 4_CFGEdgesСlassification.md
@@ -44,4 +45,3 @@
 4_CFGRegions.md
 4_BackEdges.md
 4_OptimalSpeedIterativeAlgorithm.md
-5_AvailableExpressionsApplication.md
