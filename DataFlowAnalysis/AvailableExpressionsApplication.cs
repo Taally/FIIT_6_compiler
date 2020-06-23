@@ -104,9 +104,14 @@ namespace SimpleLang.DataFlowAnalysis
                     new Instruction(targetTemp.Label, "assign", tmpVariable, "", targetTemp.Result));
             }
             private bool InstructionContainsExpression(Instruction instruction, OneExpression expression)
-               => instruction.Operation == expression.Operation
-               && (instruction.Argument1 == expression.Argument1 && instruction.Argument2 == expression.Argument2
-               || instruction.Argument1 == expression.Argument2 && instruction.Argument2 == expression.Argument1);
+               =>
+                instruction.Operation == expression.Operation && (instruction.Operation == "MINUS" || instruction.Operation == "DIV")
+                && instruction.Argument1 == expression.Argument1 && instruction.Argument2 == expression.Argument2
+                ||
+                instruction.Operation == expression.Operation && (instruction.Operation != "MINUS" || instruction.Operation != "DIV")
+                && (instruction.Argument1 == expression.Argument1 && instruction.Argument2 == expression.Argument2
+                || instruction.Argument1 == expression.Argument2 && instruction.Argument2 == expression.Argument1);
+
             private bool ContainsExpressionInInstructions(List<Instruction> instructions, OneExpression expression)
             {
                 for (var i = 0; i < instructions.Count; i++)
