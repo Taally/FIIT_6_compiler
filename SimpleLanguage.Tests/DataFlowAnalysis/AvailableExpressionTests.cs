@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    public class AvailableExpressionTests : TACTestsBase
+    public class AvailableExpressionTests : OptimizationsTestBase
     {
         private List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)> GetActualInOutData(string program)
         {

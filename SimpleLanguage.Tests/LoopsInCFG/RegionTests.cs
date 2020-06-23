@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
-    internal class RegionTests : TACTestsBase
+    internal class RegionTests : OptimizationsTestBase
     {
         [Test]
         public void WithoutCycles()

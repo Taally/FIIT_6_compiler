@@ -7,7 +7,7 @@ using SimpleLang.DataFlowAnalysis;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class AvailableExpressionsApplicationTests : TACTestsBase
+    internal class AvailableExpressionsApplicationTests : OptimizationsTestBase
     {
         private IReadOnlyList<BasicBlock> GeneratorBasicBlockAfterOptimization(List<Instruction> TAC)
         {
