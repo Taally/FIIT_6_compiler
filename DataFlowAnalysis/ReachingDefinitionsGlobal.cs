@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleLang
 {
@@ -28,63 +25,16 @@ namespace SimpleLang
                         .First(t => t.Instruction.Operation == "assign" && t.Instruction.Result == variable)
                         .Index;
 
-                    // if current block uses oldDef before newDef, we can't delete oldDef
-                    var isUsed = false;
-                    for (var i = 0; i <= newDefIndex; ++i)
-                    {
-                        if (block.GetInstructions()[i].Argument1 == variable 
-                            || block.GetInstructions()[i].Argument2 == variable)
-                        {
-                            isUsed = true;
-                            break;
-                        }
-                    }
-                    if (isUsed)
-                    {
-                        continue;
-                    }
-
-                    // similarly check block with oldDef
                     var blockWithOldDef = graph.GetCurrentBasicBlocks()
                         .Single(z => !info[z].In.Contains(oldDef) && info[z].Out.Contains(oldDef));
                     var oldDefIndex = block.GetInstructions().IndexOf(oldDef);
 
-                    isUsed = false;
-                    for (var i = oldDefIndex + 1; i < block.GetInstructions().Count(); ++i)
-                    {
-                        if (block.GetInstructions()[i].Argument1 == variable
-                            || block.GetInstructions()[i].Argument2 == variable)
-                        {
-                            isUsed = true;
-                            break;
-                        }
-                    }
-                    if (isUsed)
-                    {
-                        continue;
-                    }
-
-                    // check that oldDef isn't used in other blocks
-                    // that may be on paths between blocks with oldDef and newDef
                     var oldBlockIndex = graph.VertexOf(blockWithOldDef);
                     var newBlockIndex = graph.VertexOf(block);
 
-                    isUsed = false;
-                    for (var i = 0; i < graph.GetCurrentBasicBlocks().Count(); ++i)
-                    {
-                        if (i == oldBlockIndex || i == newBlockIndex)
-                        {
-                            continue;
-                        }
-                        if (reachabilityMatrix[oldBlockIndex, i] 
-                            && reachabilityMatrix[i, newBlockIndex] 
-                            && usedVars[i].Contains(variable))
-                        {
-                            isUsed = true;
-                            break;
-                        }
-                    }
-                    if (isUsed)
+                    if (IsUsedInCurrentBlock(block, variable, newDefIndex)
+                        || IsUsedInOriginalBlock(blockWithOldDef, variable, oldDefIndex)
+                        || IsUsedInOtherBlocks(graph, oldBlockIndex, newBlockIndex, variable, usedVars, reachabilityMatrix))
                     {
                         continue;
                     }
@@ -97,6 +47,56 @@ namespace SimpleLang
                               z.Value.Out.Where(t => t != oldDef)));
                 }
             }
+        }
+
+        private bool IsUsedInCurrentBlock(BasicBlock block, string variable, int newDefIndex)
+        {
+            for (var i = 0; i <= newDefIndex; ++i)
+            {
+                if (block.GetInstructions()[i].Argument1 == variable
+                    || block.GetInstructions()[i].Argument2 == variable)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool IsUsedInOriginalBlock(BasicBlock block, string variable, int oldDefIndex)
+        {
+            for (var i = oldDefIndex + 1; i < block.GetInstructions().Count(); ++i)
+            {
+                if (block.GetInstructions()[i].Argument1 == variable
+                    || block.GetInstructions()[i].Argument2 == variable)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool IsUsedInOtherBlocks(
+            ControlFlowGraph graph, 
+            int oldBlockIndex, 
+            int newBlockIndex,
+            string variable,
+            Dictionary<int, HashSet<string>> usedVars,
+            bool[,] reachabilityMatrix)
+        {
+            for (var i = 0; i < graph.GetCurrentBasicBlocks().Count(); ++i)
+            {
+                if (i == oldBlockIndex || i == newBlockIndex)
+                {
+                    continue;
+                }
+                if (reachabilityMatrix[oldBlockIndex, i]
+                    && reachabilityMatrix[i, newBlockIndex]
+                    && usedVars[i].Contains(variable))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private Dictionary<int, HashSet<string>> CreateUsedVarsSets(ControlFlowGraph graph)
