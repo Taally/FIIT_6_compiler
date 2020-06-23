@@ -1,4 +1,4 @@
-﻿Introduction.md
+Introduction.md
 0_Parser&AST.md
 1_PrettyPrinter.md
 1_ChangeVisitor.md
@@ -15,6 +15,7 @@
 1_OptStatIfTrue.md
 1_OptStatIfFalse.md
 1_OptWhileFalseVisitor.md
+1_ASTOptimizer.md
 2_GenerationTAC.md
 2_BasicBlockStructure.md
 2_BasicBlockLeader.md
@@ -26,7 +27,6 @@
 2_GotoToGoto.md
 2_RemoveAlgebraicIdentities.md
 2_RemoveNoopInTac.md
-2_CFGUnreachableCodeElimination.md
 2_ThreeAddressCodeOptimizer.md
 3_CreateCFG.md
 3_LiveVariableAnalysis.md
@@ -34,6 +34,8 @@
 3_ConstPropagation.md
 3_TransferFunctionForConstPropagation.md 
 3_ReachingDefinitions.md
+3_AvailableExpressions.md
+3_AvailableExpressionsApplication.md
 3_GenericIterativeAlgorithm.md
 3_BinaryRepresentationOfInOut.md
 4_CFGEdgesСlassification.md
@@ -42,3 +44,4 @@
 4_NaturalLoop.md
 4_CFGRegions.md
 4_BackEdges.md
+4_OptimalSpeedIterativeAlgorithm.md
