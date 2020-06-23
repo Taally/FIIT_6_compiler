@@ -8,7 +8,8 @@
 
 ### Зависимые и предшествующие задачи
 Предшествующие задачи:
-* Генерация трехадресного кода
+
+- Генерация трехадресного кода
 
 ### Теоретическая часть
 В рамках данной задачи необходимо реализовать оптимизацию трёхадресного кода, которая устраняет безусловный оператор перехода. На изображении ниже показана работа данной оптимизации.
@@ -16,8 +17,6 @@
 ![Узлы AСT после оптимизации](2_GotoThroughGoto/img1.png)
 
 ### Практическая часть
-Напишите о выбранном алгоритме решения задачи, приведите код с объяснением.
-
 В алгоритме оптимизации происходит последовательный проход по трёхадресному коду программы. Если последовательность трёхадресных комманд удовлетворяет условию, которое позволяет провести оптимизацию, то она проводится, иначе команды остаются в неизменном виде.
 
 Код оптимизации:
@@ -34,18 +33,20 @@ for (var i = 0; i < instructions.Count; ++i)
 
         if (com1.Operation == "goto" && com1.Label == "" && com2.Operation != "noop" && com0.Argument2 == com2.Label && com1.Argument1 == com3.Label)
         {
-            var tmpName = ThreeAddressCodeTmp.GenTmpName();
+             var tmpName = ThreeAddressCodeTmp.GenTmpName();
             newInstructions.Add(new Instruction(com0.Label, "NOT", com0.Argument1, "", tmpName));
             newInstructions.Add(new Instruction("", "ifgoto", tmpName, com3.Label, ""));
-            newInstructions.Add(new Instruction(com2.Label.StartsWith("L") && uint.TryParse(com2.Label.Substring(1), out _) ? "" : com2.Label, com2.Operation, com2.Argument1, com2.Argument2, com2.Result));
-            newInstructions.Add(new Instruction(com3.Label, com3.Operation, com3.Argument1, com3.Argument2, com3.Result));
+
+            var label = com2.Label.StartsWith("L") && uint.TryParse(com2.Label.Substring(1), out _) ? "" : com2.Label;
+            newInstructions.Add(new Instruction(label, com2.Operation, com2.Argument1, com2.Argument2, com2.Result));
+            newInstructions.Add(com3.Copy());
 
             wasChanged = true;
             i += 3;
             continue;
         }
     }
-    newInstructions.Add(new Instruction(instructions[i].Label, instructions[i].Operation, instructions[i].Argument1, instructions[i].Argument2, instructions[i].Result));
+    newInstructions.Add(instructions[i].Copy());
             
 ```
 

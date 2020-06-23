@@ -1,28 +1,39 @@
 ## AST-оптимизация замены while(false) st ветки на null
 
 ### Постановка задачи
+
 Реализовать оптимизацию по AST дереву вида while (false) st на null
 
 ### Команда
 А. Пацеев, И. Ушаков
 
 ### Зависимые и предшествующие задачи
-Предшествующие задачи:
-* AST дерево
+
+Предшествующие:
+
+- Построение AST-дерева
+- Базовые визиторы
+- ChangeVisitor
 
 ### Теоретическая часть
+
 Реализовать оптимизацию по AST дереву вида while(false) st -> null
+
   * До
+
   ```csharp
 	while (false) 
     	a = 5; 
   ```
+
   * После
+
   ```csharp
 	null
   ```
 
 ### Практическая часть
+
 Эта оптимизация представляет собой визитор, унаследованный от `ChangeVisitor`. Пример реализации метода:
 
 ```csharp
@@ -44,6 +55,7 @@ public class OptWhileFalseVisitor : ChangeVisitor
 ```
 
 ### Место в общем проекте (Интеграция)
+
 ```csharp
 private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
 {

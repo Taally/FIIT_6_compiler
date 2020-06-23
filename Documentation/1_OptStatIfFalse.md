@@ -1,30 +1,42 @@
 ## AST-оптимизация замены if(false) на его else ветку
 
 ### Постановка задачи
+
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
 
 ### Команда
+
 К. Галицкий, А. Черкашин
 
 ### Зависимые и предшествующие задачи
-Предшествующие задачи:
-* AST дерево
+
+Предшествующие:
+
+- Построение AST-дерева
+- Базовые визиторы
+- ChangeVisitor
 
 ### Теоретическая часть
+
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
+
   * До
+
   ```csharp
   if(false)
     st1;
   else
     st2;
   ```
+
   * После
+
   ```csharp
   st2;
   ```
 
 ### Практическая часть
+
 Если условием выражения "if" является константа "false" необходимо заменить все выражение на его "else ветку", в случае отсутствия ветки "else" производим замену на пустой оператор.
 Пример реализации метода:
 
@@ -51,6 +63,7 @@ public class OptStatIfFalse : ChangeVisitor
 ```
 
 ### Место в общем проекте (Интеграция)
+
 Данная оптимизация выполняется на AST-дереве, построенном для данной программы. Применяется в классе `ASTOptimizer`.
 ```csharp
 private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
@@ -62,7 +75,9 @@ private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List
 ```
 
 ### Тесты
+
 В тестах проверяется работоспособность оптимизации и соответствие результатов:
+
 ```csharp
 [Test]
 public void IfFalseBlockTest()

@@ -4,7 +4,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class ConstPropagationTests : TACTestsBase
+    internal class ConstPropagationTests : OptimizationsTestBase
     {
         [Test]
         public void TestNoBlocks()
