@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.CFG
 {
     [TestFixture]
-    internal class CFGUnreachableCodeEliminationTests : TACTestsBase
+    internal class CFGUnreachableCodeEliminationTests : OptimizationsTestBase
     {
         [Test]
         public void OneBlockTest()

@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class GenericIterativeAlgorithmTests : TACTestsBase
+    internal class GenericIterativeAlgorithmTests : OptimizationsTestBase
     {
         [Test]
         public void LiveVariableIterativeTest()
