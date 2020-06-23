@@ -15,6 +15,8 @@ Introduction.md
 1_OptStatIfTrue.md
 1_OptStatIfFalse.md
 1_OptWhileFalseVisitor.md
+1_OptExprAlgebraic.md
+1_OptExprSubEqualVar.md
 1_ASTOptimizer.md
 2_GenerationTAC.md
 2_BasicBlockStructure.md
@@ -27,6 +29,8 @@ Introduction.md
 2_GotoToGoto.md
 2_RemoveAlgebraicIdentities.md
 2_RemoveNoopInTac.md
+2_ConstantPropagation.md
+2_CopyPropagation.md
 2_ThreeAddressCodeOptimizer.md
 3_CreateCFG.md
 3_LiveVariableAnalysis.md

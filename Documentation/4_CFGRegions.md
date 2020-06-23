@@ -21,7 +21,7 @@
 
 ### Практическая часть
 Для представления региона использовался класс Region, где поле Initial используется для хранения блока графа, соответствующего областям-листьям.
-```cs
+```csharp
 public class Region
 {
     public IReadOnlyCollection<Region> includedRegions;
@@ -39,7 +39,7 @@ public class Region
 
 При построении иерархии областей применяются два метода. `FindRegions`  добавляет в список регионов области-листья, затем отсортированные по вложенности циклы поочередно сводятся к отдельным узлам. После обхода всех естественных циклов добавляем в конец списка область, состоящую из всего графа потока целиком.   
 
-```cs
+```csharp
 private void FindRegions()
 {
     foreach (var item in blocks)
@@ -66,7 +66,7 @@ private void FindRegions()
 
 Метод `CollapseCycle` замещает новым узлом переданный естественный цикл на графе потока управления. Добавляя новый узел, мы перенаправляем ребра на заголовок цикла, из цикла во внешнюю область. Узлы и ребра внутри цикла будут соответствовать новому региону. 
 
-```cs
+```csharp
 private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
 {
     /* ... */
@@ -96,7 +96,7 @@ private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
 ### Место в общем проекте (Интеграция)
 Данный метод был успешно интегрирован в проект оптимизирующего компилятора. Использовать предлагаемое решение можно, создав объект класса CFGRegions, используя в качестве параметра граф потока управления.
 
-```cs
+```csharp
 var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
 var cfg = new ControlFlowGraph(blocks);
 var regions = new CFGregions(cfg);
@@ -105,7 +105,7 @@ var regions = new CFGregions(cfg);
 #### Тесты
 - Разбиение на регионы графа потока управления без цикла
 
-```cs
+```csharp
 [Test]
 public void WithoutCycles()
 {
@@ -138,7 +138,7 @@ a = 8;
 
 - Разбиение на регионы графа потока управления с одним естественным циклом
 
-```cs
+```csharp
 [Test]
 public void OneCycle()
 {
@@ -172,7 +172,7 @@ c = a + b;
 
 - Разбиение на регионы графа потока управления с двумя естественными циклами
 
-```cs
+```csharp
 [Test]
 public void TwoCycles()
 {
@@ -216,7 +216,7 @@ c = a + b;
 
 - Разбиение на регионы графа потока управления с двумя вложенными циклами
 
-```cs
+```csharp
 [Test]
 public void TwoNestedCycles()
 {
