@@ -8,9 +8,11 @@
 
 ### Зависимые и предшествующие задачи
 Предшествующие:
+
 - Построение графа потока управления
 
 Зависимые:
+
 - Использование информации IN-OUT в удалении мертвого кода (Живые и мертвые переменные)
 
 ### Теоретическая часть
@@ -43,22 +45,22 @@ private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> 
     Func<string, bool> IsId = ThreeAddressCodeDefUse.IsId;
     var def = new HashSet<string>();
     var use = new HashSet<string>();
-    for (var i = 0; i < block.Count; ++i)
+    foreach (var instruction in block)
     {
-        var inst = block[i];
-        if (IsId(inst.Argument1) && !def.Contains(inst.Argument1))
+        if (IsId(instruction.Argument1) && !def.Contains(instruction.Argument1))
         {
-            use.Add(inst.Argument1);
+            use.Add(instruction.Argument1);
         }
-        if (IsId(inst.Argument2) && !def.Contains(inst.Argument2))
+        if (IsId(instruction.Argument2) && !def.Contains(instruction.Argument2))
         {
-            use.Add(inst.Argument2);
+            use.Add(instruction.Argument2);
         }
-        if (IsId(inst.Result) && !use.Contains(inst.Result))
+        if (IsId(instruction.Result) && !use.Contains(instruction.Result))
         {
-            def.Add(inst.Result);
+            def.Add(instruction.Result);
         }
     }
+    
     return (def, use);
 }
 ```

@@ -1,13 +1,12 @@
+## Передаточная функция в структуре распространения констант
 
-### Передаточная функция в структуре распространения констант
-
-#### Постановка задачи
+### Постановка задачи
 Построить передаточную функцию для задачи распространения констант. На вход функции подаётся базовый блок и таблица значений потока данных, которая представлена словарём. На выходе получается модифицированная таблица значений.
 
-#### Команда
+### Команда
 Д. Лутченко, М. Письменский
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 Предшествующие задачи:
 * Разбиение на Базовые Блоки (от лидера до лидера)
 * Построение Control Flow Graph
@@ -16,18 +15,20 @@
 * Итерационный алгоритм в структуре распространения констант
 
 
-#### Теоретическая часть
+### Теоретическая часть
 Задача распространения констант основывается на полурешётках. 
 
 Полурешётка – это пара `(V, ∧)`, где `V` −
 множество, на котором определён оператор `∧: V → V` и
 ∀ x, y, z ∈ V выполняются следующие условия:
+
 * `x ∧ x` = x (идемпотентность)
 * `x ∧ y` = `y ∧ x` (коммутативность)
 * `x ∧ y ∧ z` = `x ∧ y ∧ z` (ассоциативность)
 
 Далее вводится понятие частичного порядка: отношение ≤ представляет собой частичный порядок на
 множестве `V` если `∀ x, y, z ∈ V` выполняется:
+
 * x ≤ x (рефлексивность)
 * Если x ≤ y и y ≤ x, то x = y (антисимметричность)
 * Если x ≤ y и y ≤ z, то x ≤ z (транзитивность)
@@ -50,8 +51,7 @@
 
 В рамках задачи построения передаточной функции рассматривается не одна команда, а все из Базового Блока, поступающего на вход функции. Для всех операций присваивания проверяется возможность протянуть константы. Эта проверка основывается на значениях потока данных, представленных таблицей и подаваемых на вход передаточной функции.
 
-
-#### Практическая часть
+### Практическая часть
 На вход передаточной функции передаётся Базовый Блок и словарь(таблица потока данных) значений переменных:
 ```csharp
 public Dictionary<string, LatticeValue> Transfer(BasicBlock basicBlock, Dictionary<string, LatticeValue> IN)
@@ -63,17 +63,17 @@ var instrs = basicBlock.GetInstructions();
 ```
 Далее в цикле обходятся все инструкции ББл.
 ```csharp
-for (var i = 0; i < instrs.Count; i++)
+foreach (var instruction in basicBlock.GetInstructions())
 {
-	if (instrs[i].Result.StartsWith("#"))
+	if (instruction.Result.StartsWith("#"))
 	{
-		OUT.Add(instrs[i].Result, new LatticeValue(LatticeTypeData.UNDEF));
+		OUT.Add(instruction.Result, new LatticeValue(LatticeTypeData.UNDEF));
 
 		string first, second, operation;
 
-		first = instrs[i].Argument1;
-		second = instrs[i].Argument2;
-		operation = instrs[i].Operation;
+		first = instruction.Argument1;
+		second = instruction.Argument2;
+		operation = instruction.Operation;
         /*...*/
 	}
 }
@@ -113,7 +113,7 @@ public HashSet<string> untreatedTypes = new HashSet<string>() {
 if (first == "True" || second == "True" || first == "False" 
 	|| second == "False" || untreatedTypes.Contains(operation)) //проверка на bool и недопустимые операции
 {
-	OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.NAC);
+	OUT[instruction.Result] = new LatticeValue(LatticeTypeData.NAC);
 }
 ```
 Далее проверяется, является ли выражение во временной переменной выражением вида `2 + b` и `b + 2`, где `b`-константа. Здесь под `+` понимается любая базовая бинарная операция между константами. Для уточнения операции была написана вспомогательная функция `FindOperations`:
@@ -139,13 +139,13 @@ public int FindOperations(int v1, int v2, string op)
 else if (int.TryParse(first, out var v2) && OUT[second].Type == LatticeTypeData.CONST)
 {
 	int.TryParse(OUT[second].ConstValue, out var val2);
-	OUT[instrs[i].Result] = new LatticeValue
+	OUT[instruction.Result] = new LatticeValue
     						(LatticeTypeData.CONST, FindOperations(val2, v2, operation).ToString());
 }
 else if (OUT[first].Type == LatticeTypeData.CONST && int.TryParse(second, out var v1))
 {
 	int.TryParse(OUT[first].ConstValue, out var val1);
-	OUT[instrs[i].Result] = new LatticeValue
+	OUT[instruction.Result] = new LatticeValue
     						(LatticeTypeData.CONST, FindOperations(val1, v1, operation).ToString());
 }
 ```
@@ -155,7 +155,7 @@ else if (OUT[first].Type == LatticeTypeData.CONST && OUT[second].Type == Lattice
 {
 	int.TryParse(OUT[first].ConstValue, out var val1);
 	int.TryParse(OUT[second].ConstValue, out var val2);
-	OUT[instrs[i].Result] = new LatticeValue
+	OUT[instruction.Result] = new LatticeValue
     						(LatticeTypeData.CONST, FindOperations(val1, val2, operation).ToString());
 }
 ```
@@ -163,7 +163,7 @@ else if (OUT[first].Type == LatticeTypeData.CONST && OUT[second].Type == Lattice
 ```csharp
 else
 {
-	OUT[instrs[i].Result] =
+	OUT[instruction.Result] =
 	OUT[first].Type == LatticeTypeData.UNDEF
 	? new LatticeValue(LatticeTypeData.UNDEF)
 	: OUT[first].Type == LatticeTypeData.NAC || OUT[second].Type == LatticeTypeData.NAC
@@ -180,18 +180,18 @@ c = #t1
 
 вида `a = true` и т.п. Поэтому производится повторная проверка, согласно правилам построения передаточной функции из теоретической части. 
 ```csharp
-if (instrs[i].Operation == "assign")
+if (instruction.Operation == "assign")
 {
-	if (int.TryParse(instrs[i].Argument1, out var s))
+	if (int.TryParse(instruction.Argument1, out var s))
 	{
-		OUT[instrs[i].Result] = new LatticeValue(LatticeTypeData.CONST, s);
+		OUT[instruction.Result] = new LatticeValue(LatticeTypeData.CONST, s);
 	}
 	else
 	{
-	var operation = instrs[i].Operation;
-	var first = instrs[i].Argument1;
+	var operation = instruction.Operation;
+	var first = instruction.Argument1;
 
-	OUT[instrs[i].Result] =
+	OUT[instruction.Result] =
 		untreatedTypes.Contains(operation)
 		? new LatticeValue(LatticeTypeData.NAC)
 		:first == "True" || first == "False"
@@ -215,11 +215,10 @@ foreach (var k in temp_keys)
 return OUT;
 ```
 
-
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 Данная функция входит в состав алгоритма распространения констант и является оператором сбора в этом алгоритме.
 
-#### Тесты
+### Тесты
 Тест, проверяющий, что значение переменной `a` в выражении `a = 2 * b`, где `b = 3`, станет равным 6:
 ```csharp
 [Test]
@@ -280,4 +279,3 @@ p = u + 2;
 	Assert.AreEqual("5", InOut.OUT[blocks[0]]["p"].ConstValue);
 }
 ```
-

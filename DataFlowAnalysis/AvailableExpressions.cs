@@ -33,6 +33,18 @@ namespace SimpleLang
 
         public bool ContainsVariable(string variable)
             => Argument1 == variable || Argument2 == variable;
+
+        public override bool Equals(object obj) =>
+            obj != null
+            && obj is OneExpression expr
+            && Operation == expr.Operation
+            && Argument1 == expr.Argument1
+            && Argument2 == expr.Argument2;
+
+        public override int GetHashCode() =>
+            Operation.GetHashCode()
+            ^ Argument1.GetHashCode()
+            ^ Argument2.GetHashCode();
         #endregion
     }
 
@@ -60,7 +72,7 @@ namespace SimpleLang
 
         public override Direction Direction => Direction.Forward;
 
-        public override InOutData<List<OneExpression>> Execute(ControlFlowGraph graph)
+        public override InOutData<List<OneExpression>> Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             TransferFunction = new AvailableExpressionTransferFunc(graph).Transfer;
             var inOutData = base.Execute(graph);

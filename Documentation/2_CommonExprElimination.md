@@ -1,21 +1,20 @@
-### Оптимизация общих подвыражений
-#### Постановка задачи
+## Оптимизация общих подвыражений
+
+### Постановка задачи
 Реализовать оптимизацию по трёхадресному коду вида:
 
 | До оптимизации | Общие подвыражения | Результат оптимизации |
 |-|-|-|
 | a = b + c  <br>b = a – d <br>c = b + c  <br>d = a - d   | a = *b + c* <br>***b =*** `a – d`<br>c = *b + c*<br>d = `a – d` | a = b + c  <br>`b` = a – d  <br>c = b + c  <br>d = `b` |
 
-#### Команда
+### Команда
 Д. Лутченко, М. Письменский
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 Предшествующие задачи:
 * AST дерево
 
-
-
-#### Теоретическая часть
+### Теоретическая часть
 a = `b + c`  
 `b =` a – d  
 c = `b + c`  
@@ -43,8 +42,7 @@ a = b + c
 c = b + c  
 d = `b`
 
-#### Практическая часть
-
+### Практическая часть
 
 Метод поддерживает проверку коммутативности, что позволяет выполнять оптимизации вида
 ```csharp
@@ -63,7 +61,8 @@ public static bool IsCommutative(Instruction instr)
     return false;
 }
 ```
-Что позволяетв выполять оптимизации вида:  
+
+Что позволяет выполнять оптимизации вида:  
 | До оптимизации | Общие подвыражения | Результат оптимизации |
 |-|-|-|
 | a = b + c  <br>c = c + b   | a = `b + c`<br>c = `c + b` | `a` = b + c<br>c = `a` |
@@ -75,6 +74,7 @@ var argToExprs = new StringToStrings();
 var resultToExpr = new Dictionary<string, string>();
 ```
 Где:  
+
 - `exprToResults` связи выражений к результатам (один ко многим)
 - `argToExprs` связи операнд к выражениям (один ко многим)
 - `resultToExpr` связь результата с выражением (один к одному)
@@ -87,12 +87,14 @@ string uniqueExpr(Instruction instr) =>
 ```
 Основной алгоритм представляет из себя цикл по входным инструкциям,  
 на каждой итерации которого, происходят следующие действия для каждой инструкции:
+
 - создание ключа по выражению
 - если для выражения есть связь с результатом
 	- то - выполняем оптимизацию
 	- иначе - добавляем связи операнд к выражению
 - обновлям связи результата и выражения
 - если результат имеет связь с выражениями как операнд - удаляем все зависимые связи
+
 ```csharp
 for (var i = 0; i < instructions.Count; ++i)
 {
@@ -142,7 +144,7 @@ for (var i = 0; i < instructions.Count; ++i)
 }
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 Используется после создания трехадресного кода:
 ```csharp
 /* ThreeAddressCodeOptimizer.cs */
@@ -166,7 +168,7 @@ var threeAddressCode = threeAddrCodeVisitor.Instructions;
 var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 ```
 
-#### Примеры работы
+### Примеры работы
 | До оптимизации | Общие подвыражения | Результат оптимизации |
 |-|-|-|
 | a = b + c  <br>c = c + b<br>с = c + b | a = `b + c`<br>***c =*** `c + b`<br>с = `c + b` | `a` = b + c  <br>c = `a`<br>с = c + b |
@@ -174,8 +176,9 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 | a = -x<br>b = -x | a = `-x`<br>b = `-x` | `a` = -x<br>b = `a`|
 | a = x<br>b = x | a = x<br>b = x | a = x<br>b = x |
 
-#### Тесты
-###### Проверка несрабатывания оптимизации:
+### Тесты
+##### Проверка несрабатывания оптимизации:
+
 ```csharp
 [Test]
 public void Test1()
@@ -203,7 +206,9 @@ k = b + c;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-###### Проверка срабатывания оптимизации:
+
+##### Проверка срабатывания оптимизации:
+
 ```csharp
 [Test]
 public void Test2()
@@ -228,7 +233,9 @@ k = b + c;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-###### Корректность проверки коммутативности:
+
+##### Корректность проверки коммутативности:
+
 ```csharp
 [Test]
 public void CommutativeOpTest()
@@ -253,7 +260,9 @@ k = c + b;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-###### Корректность проверки некоммутативности:
+
+##### Корректность проверки некоммутативности:
+
 ```csharp
 [Test]
 public void NotCommutativeOpTest()
@@ -278,7 +287,9 @@ k = c - b;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-###### Проверка сброса связи:
+
+##### Проверка сброса связи:
+
 ```csharp
 [Test]
 public void Test5()
@@ -306,7 +317,9 @@ k = b * c;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-###### С унарными операциями:
+
+##### С унарными операциями:
+
 ```csharp
 [Test]
 public void UnarOp()
@@ -331,7 +344,9 @@ k = -b;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```
-###### Без унарных операций:
+
+##### Без унарных операций:
+
 ```csharp
 [Test]
 public void NotUnarOp()
@@ -354,7 +369,9 @@ k = b;
     CollectionAssert.AreEqual(expected, actual);
 }
 ```  
-###### Константы:
+
+##### Константы:
+
 ```csharp
 [Test]
 public void Constants()

@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
-    internal class NaturalLoopTests : TACTestsBase
+    internal class NaturalLoopTests : OptimizationsTestBase
     {
         [Test]
         public void IntersectLoopsTest()

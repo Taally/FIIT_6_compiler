@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class ReachingDefinitionsBinaryTests : TACTestsBase
+    internal class ReachingDefinitionsBinaryTests : OptimizationsTestBase
     {
         private (List<BasicBlock> basicBlocks, InOutData<IEnumerable<Instruction>> inOutInfo) GenGraphAndGetInOutInfo(string program)
         {

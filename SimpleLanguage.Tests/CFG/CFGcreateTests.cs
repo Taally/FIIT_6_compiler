@@ -4,7 +4,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.CFG
 {
     [TestFixture]
-    internal class CFGcreate : TACTestsBase
+    internal class CFGcreate : OptimizationsTestBase
     {
         [Test]
         public void Test1()
