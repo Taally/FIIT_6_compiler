@@ -3,74 +3,63 @@ using System.Linq;
 
 namespace SimpleLang
 {
+    using InOutInfo = InOutData<IEnumerable<Instruction>>;
+
     public class ReachingDefinitionsGlobal
     {
         public void DeleteDeadCode(ControlFlowGraph graph)
         {
             var usedVars = CreateUsedVarsSets(graph);
-            var reachabilityMatrix = CreateReachabilityMatrix(graph);
             var info = new ReachingDefinitions().Execute(graph);
 
             var usedDefinitions = new HashSet<Instruction>(
                 info[graph.GetCurrentBasicBlocks().Last()].In, 
                 new InstructionComparer());
-            var toDelete = new List<(BasicBlock Block, int Index)>();
 
             var possibleOperationTypes = new[] { "assign", "input", "PLUS" };
 
-            foreach (var block in graph.GetCurrentBasicBlocks().Reverse())
+            var wasChanged = true;
+            while (wasChanged)
             {
-                var deadDefinitions = info[block].In.Except(info[block].Out);
-                foreach (var oldDef in deadDefinitions)
+                wasChanged = false;
+
+                foreach (var block in graph.GetCurrentBasicBlocks())
                 {
-                    var variable = oldDef.Result;
-
-                    // find first assign in current block that rewrites variable
-                    var newDefIndex = block.GetInstructions()
-                        .Select((t, i) => new { Instruction = t, Index = i })
-                        .First(t => possibleOperationTypes.Contains(t.Instruction.Operation) && t.Instruction.Result == variable) 
-                        .Index;
-
-                    var blockWithOldDef = graph.GetCurrentBasicBlocks()
-                        .SingleOrDefault(z => !info[z].In.Contains(oldDef) && info[z].Out.Contains(oldDef));
-                    // if we can't find the block with old definition, that means these definition used in a loop
-                    // so it can't be removed
-                    if (blockWithOldDef == null)
+                    var deadDefinitions = info[block].In.Except(info[block].Out);
+                    foreach (var oldDef in deadDefinitions)
                     {
-                        usedDefinitions.Add(oldDef);
-                        continue;
-                    }
+                        var variable = oldDef.Result;
 
-                    var oldDefIndex = blockWithOldDef.GetInstructions()
-                        .Select((t, i) => new { Instruction = t, Index = i })
-                        .Single(t => t.Instruction == oldDef)
-                        .Index;
+                        // find first assign in current block that rewrites variable
+                        var newDefIndex = block.GetInstructions()
+                            .Select((t, i) => new { Instruction = t, Index = i })
+                            .First(t => possibleOperationTypes.Contains(t.Instruction.Operation) && t.Instruction.Result == variable)
+                            .Index;
 
-                    var oldBlockIndex = graph.VertexOf(blockWithOldDef);
-                    var newBlockIndex = graph.VertexOf(block);
+                        var blockWithOldDef = graph.GetCurrentBasicBlocks()
+                            .Single(z => z.GetInstructions().Any(t => t == oldDef));
+                        var oldDefIndex = blockWithOldDef.GetInstructions()
+                            .Select((t, i) => new { Instruction = t, Index = i })
+                            .Single(t => t.Instruction == oldDef)
+                            .Index;
 
-                    if (usedDefinitions.Contains(oldDef)
-                        || IsUsedInCurrentBlock(block, variable, newDefIndex)
-                        || IsUsedInOriginalBlock(blockWithOldDef, variable, oldDefIndex)
-                        || IsUsedInOtherBlocks(graph, oldBlockIndex, newBlockIndex, variable, usedVars, reachabilityMatrix))
-                    {
-                        usedDefinitions.Add(oldDef);
-                        continue;
-                    }
+                        if (usedDefinitions.Contains(oldDef)
+                            || IsUsedInCurrentBlock(block, variable, newDefIndex)
+                            || IsUsedInOriginalBlock(blockWithOldDef, variable, oldDefIndex)
+                            || IsUsedInOtherBlocks(graph, blockWithOldDef, oldDef, usedVars, info))
+                        {
+                            usedDefinitions.Add(oldDef);
+                            continue;
+                        }
 
-                    toDelete.Add((blockWithOldDef, oldDefIndex));
-                }
-            }
-
-            foreach (var block in toDelete.ToLookup(z => z.Block, z => z.Index))
-            {
-                foreach (var index in block.Distinct().OrderByDescending(z => z))
-                {
-                    var label = block.Key.GetInstructions()[index].Label;
-                    block.Key.RemoveInstructionByIndex(index);
-                    if (!string.IsNullOrEmpty(label))
-                    {
-                        block.Key.InsertInstruction(index, new Instruction(label, "noop", null, null, null));
+                        // remove useless definition
+                        blockWithOldDef.RemoveInstructionByIndex(oldDefIndex);
+                        if (!string.IsNullOrEmpty(oldDef.Label))
+                        {
+                            blockWithOldDef.InsertInstruction(oldDefIndex, new Instruction(oldDef.Label, "noop", null, null, null));
+                        }
+                        info = new ReachingDefinitions().Execute(graph);
+                        wasChanged = true;
                     }
                 }
             }
@@ -104,77 +93,79 @@ namespace SimpleLang
 
         private bool IsUsedInOtherBlocks(
             ControlFlowGraph graph, 
-            int oldBlockIndex, 
-            int newBlockIndex,
-            string variable,
-            Dictionary<int, HashSet<string>> usedVars,
-            bool[,] reachabilityMatrix)
+            BasicBlock blockWithDefinition,
+            Instruction definitionToCheck,
+            Dictionary<BasicBlock, HashSet<string>> usedVars,
+            InOutInfo info)
         {
-            for (var i = 0; i < graph.GetCurrentBasicBlocks().Count(); ++i)
+            var queue = new Queue<BasicBlock>();
+            queue.Enqueue(blockWithDefinition);
+
+            while (queue.Count != 0)
             {
-                if (i == oldBlockIndex || i == newBlockIndex)
+                var block = queue.Dequeue();
+                foreach (var child in graph.GetChildrenBasicBlocks(graph.VertexOf(block)).Select(z => z.block))
                 {
-                    continue;
-                }
-                if (reachabilityMatrix[oldBlockIndex, i]
-                    && reachabilityMatrix[i, newBlockIndex]
-                    && usedVars[i].Contains(variable))
-                {
-                    return true;
+                    var isRewritten = !info[child].Out.Contains(definitionToCheck);
+                    var isUsed = usedVars[block].Contains(definitionToCheck.Result);
+
+                    if (!isRewritten)
+                    {
+                        if (isUsed)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            queue.Enqueue(child);
+                        }
+                    }
+                    else
+                    {
+                        if (!isUsed)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            // we need to check instructions before definitionToCheck is rewritten
+                            foreach (var instruction in child.GetInstructions())
+                            {
+                                if (instruction.Argument1 == definitionToCheck.Result
+                                    || instruction.Argument2 == definitionToCheck.Result)
+                                {
+                                    return true;
+                                }
+
+                                if (instruction.Result == definitionToCheck.Result)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
             return false;
         }
 
-        private Dictionary<int, HashSet<string>> CreateUsedVarsSets(ControlFlowGraph graph)
+        private Dictionary<BasicBlock, HashSet<string>> CreateUsedVarsSets(ControlFlowGraph graph)
         {
-            var result = new Dictionary<int, HashSet<string>>();
+            var result = new Dictionary<BasicBlock, HashSet<string>>();
 
-            for (var i = 0; i < graph.GetCurrentBasicBlocks().Count(); ++i)
+            foreach (var block in graph.GetCurrentBasicBlocks())
             {
-                result[i] = new HashSet<string>();
-                var block = graph.GetCurrentBasicBlocks()[i];
+                result[block] = new HashSet<string>();
                 foreach (var instruction in block.GetInstructions())
                 {
                     if (IsVariable(instruction.Argument1))
                     {
-                        result[i].Add(instruction.Argument1);
+                        result[block].Add(instruction.Argument1);
                     }
                     if (IsVariable(instruction.Argument2))
                     {
-                        result[i].Add(instruction.Argument2);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private bool[,] CreateReachabilityMatrix(ControlFlowGraph graph)
-        {
-            var blocksCount = graph.GetCurrentBasicBlocks().Count;
-            var result = new bool[blocksCount, blocksCount];
-
-            // fill adjacency matrix
-            foreach (var block1 in graph.GetCurrentBasicBlocks())
-            {
-                var index1 = graph.VertexOf(block1);
-                foreach (var block2 in graph.GetCurrentBasicBlocks())
-                {
-                    var index2 = graph.VertexOf(block2);
-                    result[index1, index2] =
-                        graph.GetChildrenBasicBlocks(index1).Select(x => x.vertex).Contains(index2);
-                }
-            }
-
-            // find reachability matrix
-            for (var k = 0; k < blocksCount; ++k)
-            {
-                for (var i = 0; i < blocksCount; ++i)
-                {
-                    for (var j = 0; j < blocksCount; ++j)
-                    {
-                        result[i, j] = result[i, j] || result[i, k] && result[k, j];
+                        result[block].Add(instruction.Argument2);
                     }
                 }
             }
