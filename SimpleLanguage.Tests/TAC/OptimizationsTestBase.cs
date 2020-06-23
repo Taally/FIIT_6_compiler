@@ -6,7 +6,7 @@ using SimpleScanner;
 
 namespace SimpleLanguage.Tests
 {
-    public class TACTestsBase
+    public class OptimizationsTestBase
     {
         protected List<Instruction> GenTAC(string sourceCode)
         {

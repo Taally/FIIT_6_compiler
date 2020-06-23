@@ -4,7 +4,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
-    internal class BackEdgesTests : TACTestsBase
+    internal class BackEdgesTests : OptimizationsTestBase
     {
         [Test]
         public void EmptyGraph()

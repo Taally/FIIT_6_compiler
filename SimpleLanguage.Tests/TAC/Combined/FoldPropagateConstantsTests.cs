@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
     [TestFixture]
-    internal class FoldPropagateConstantsTests : TACTestsBase
+    internal class FoldPropagateConstantsTests : OptimizationsTestBase
     {
         [Test]
         public void Test1()

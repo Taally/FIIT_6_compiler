@@ -6,90 +6,48 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    public class AvailableExpressionTests : TACTestsBase
+    public class AvailableExpressionTests : OptimizationsTestBase
     {
-        private ControlFlowGraph cfg;
-        private List<OneExpression> In;
-        private List<OneExpression> Out;
-        private InOutData<List<OneExpression>> resAvailableExpressions;
-        private AvailableExpressions availableExpressions;
-
-        private List<(List<OneExpression>, List<OneExpression>)> GetActualInOutData(List<Instruction> TAC)
+        private List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)> GetActualInOutData(string program)
         {
-            cfg = GenCFG(TAC);
-            availableExpressions = new AvailableExpressions();
-            resAvailableExpressions = availableExpressions.Execute(cfg);
-            In = new List<OneExpression>();
-            Out = new List<OneExpression>();
-            var actual = new List<(List<OneExpression>, List<OneExpression>)>();
-            foreach (var block in resAvailableExpressions)
-            {
-                foreach (var expr in block.Value.In)
-                {
-                    In.Add(expr);
-                }
-                foreach (var expr in block.Value.Out)
-                {
-                    Out.Add(expr);
-                }
-                actual.Add((new List<OneExpression>(In), new List<OneExpression>(Out)));
-                In.Clear();
-                Out.Clear();
-            }
+            var cfg = GenCFG(program);
+            var resActiveVariable = new AvailableExpressions().Execute(cfg);
+            var actual = cfg.GetCurrentBasicBlocks()
+                .Select(z => resActiveVariable[z])
+                .Select(p => ((IEnumerable<OneExpression>)p.In, (IEnumerable<OneExpression>)p.Out))
+                .ToList();
             return actual;
         }
 
         private void AssertSet(
-            List<(List<OneExpression>, List<OneExpression>)> expected,
-            List<(List<OneExpression>, List<OneExpression>)> actual)
+            List<(IEnumerable<OneExpression> In, IEnumerable<OneExpression> Out)> expected,
+            List<(IEnumerable<OneExpression> In, IEnumerable<OneExpression> Out)> actual)
         {
+            Assert.AreEqual(expected.Count, actual.Count);
             for (var i = 0; i < expected.Count; i++)
             {
-                Assert.AreEqual(expected[i].Item1.Count, actual[i].Item1.Count);
-                Assert.AreEqual(expected[i].Item2.Count, actual[i].Item2.Count);
-                Assert.True(ContainsExpression(expected[i].Item1, actual[i].Item1));
-                Assert.True(ContainsExpression(expected[i].Item2, actual[i].Item2));
+                CollectionAssert.AreEquivalent(expected[i].In, actual[i].In);
+                CollectionAssert.AreEquivalent(expected[i].Out, actual[i].Out);
             }
-        }
-
-
-        private bool ContainsExpression(List<OneExpression> listOfExpr1, List<OneExpression> listOfExpr2)
-        {
-            if (listOfExpr1.Count != listOfExpr2.Count)
-            {
-                return false;
-            }
-            var listOfString1 = listOfExpr1.Select(expression => expression.ToString()).ToList();
-            var listOfString2 = listOfExpr2.Select(expression => expression.ToString()).ToList();
-            foreach (var expr in listOfString1)
-            {
-                if (!listOfString2.Contains(expr))
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         [Test]
         public void EmptyProgram()
         {
-            var TAC = GenTAC(@"var a;");
-            var actual = GetActualInOutData(TAC);
-
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            var actual = GetActualInOutData(@"var a;");
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>())
             };
-            Assert.AreEqual(2, actual.Count);
             AssertSet(expected, actual);
         }
 
         [Test]
         public void SimpleProgramWithUnreachableCode()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var actual = GetActualInOutData(@"
+var a, b, c, d, x, u, e,g, y,zz,i; 
 2: a = x + y;
 g = c + d;
 3: zz = 1;
@@ -98,10 +56,8 @@ goto 1;
     c = 1; 
 b = c + d;
 goto 3;
-e = zz + i;"
-);
-            var actual = GetActualInOutData(TAC);
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+e = zz + i;");
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>()
@@ -131,20 +87,19 @@ e = zz + i;"
                 (new List<OneExpression>(), new List<OneExpression>())
 
             };
-            Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
         }
 
         [Test]
         public void SimpleTestWithUnreachableCode2()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e, g, y, zz, i;
+            var actual = GetActualInOutData(@"
+var a, b, c, d, x, u, e, g, y, zz, i;
 1: g = c + d;
 b = c + x;
 goto 1;
 e = zz + i;");
-            var actual = GetActualInOutData(TAC);
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "c", "x")} ),
@@ -156,15 +111,15 @@ e = zz + i;");
         [Test]
         public void ProgramWithLoopFor()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var actual = GetActualInOutData(@"
+var a, b, c, d, x, u, e,g, y,zz,i; 
 zz = i + x;
 for i=2,7 
 {
 	x = x + d; 
 	a = a + b;
 }");
-            var actual = GetActualInOutData(TAC);
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "i", "x")}),
@@ -181,15 +136,15 @@ for i=2,7
         [Test]
         public void ProgramWithLoopWhile()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var actual = GetActualInOutData(@"
+var a, b, c, d, x, u, e,g, y,zz,i; 
 zz = i + x;
 while (e < g) 
 {
 	x = x + d; 
 	a = a + b;
 }");
-            var actual = GetActualInOutData(TAC);
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "i", "x") }),
@@ -207,7 +162,8 @@ while (e < g)
         [Test]
         public void TrashProgramWithGoto()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var actual = GetActualInOutData(@"
+var a, b, c, d, x, u, e,g, y,zz,i; 
 zz = i + x;
 for i=2,7 
 {
@@ -216,8 +172,7 @@ for i=2,7
 }
 a = c + d;
 goto 1;");
-            var actual = GetActualInOutData(TAC);
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "i", "x") }),
@@ -234,7 +189,8 @@ goto 1;");
         [Test]
         public void ProgramWithCrossGoTo()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var actual = GetActualInOutData(@"
+var a, b, c, d, x, u, e,g, y,zz,i; 
 a = b + c;
 1: d = x + u;
 goto 2;
@@ -242,8 +198,7 @@ x = x + x;
 2: e = g + zz;
 goto 1;
 i = a + b;");
-            var actual = GetActualInOutData(TAC);
-            var expected = new List<(List<OneExpression>, List<OneExpression>)>()
+            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
                 (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "b", "c") }),

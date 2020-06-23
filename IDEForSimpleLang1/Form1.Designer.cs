@@ -32,9 +32,14 @@
             this.Compile = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+
+            this.SwitchOffAST = new System.Windows.Forms.Button();
             this.SwitchOnAST = new System.Windows.Forms.Button();
             this.ASToptList = new System.Windows.Forms.CheckedListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.SwitchOff_TAC = new System.Windows.Forms.Button();
+            this.SwitchOn_TAC = new System.Windows.Forms.Button();
+
             this.TACoptLocalList = new System.Windows.Forms.CheckedListBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.ItOptList = new System.Windows.Forms.CheckedListBox();
@@ -52,9 +57,7 @@
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.TACAfterIt = new System.Windows.Forms.TextBox();
             this.TACBeforeIt = new System.Windows.Forms.TextBox();
-            this.SwitchOffAST = new System.Windows.Forms.Button();
-            this.SwitchOn_TAC = new System.Windows.Forms.Button();
-            this.SwitchOff_TAC = new System.Windows.Forms.Button();
+
             this.panel1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -115,6 +118,17 @@
             this.tabPage1.Text = "Оптимизации по AST";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // SwitchOffAST
+            // 
+            this.SwitchOffAST.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SwitchOffAST.Location = new System.Drawing.Point(260, 373);
+            this.SwitchOffAST.Name = "SwitchOffAST";
+            this.SwitchOffAST.Size = new System.Drawing.Size(138, 77);
+            this.SwitchOffAST.TabIndex = 2;
+            this.SwitchOffAST.Text = "Отключить все AST оптимизации";
+            this.SwitchOffAST.UseVisualStyleBackColor = true;
+            this.SwitchOffAST.Click += new System.EventHandler(this.SwitchOffAST_Click);
+            // 
             // SwitchOnAST
             // 
             this.SwitchOnAST.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -165,6 +179,28 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Оптимизации по TAC";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // SwitchOff_TAC
+            // 
+            this.SwitchOff_TAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SwitchOff_TAC.Location = new System.Drawing.Point(268, 373);
+            this.SwitchOff_TAC.Name = "SwitchOff_TAC";
+            this.SwitchOff_TAC.Size = new System.Drawing.Size(138, 77);
+            this.SwitchOff_TAC.TabIndex = 4;
+            this.SwitchOff_TAC.Text = "Отключить все TAC оптимизации";
+            this.SwitchOff_TAC.UseVisualStyleBackColor = true;
+            this.SwitchOff_TAC.Click += new System.EventHandler(this.SwitchOff_TAC_Click);
+            // 
+            // SwitchOn_TAC
+            // 
+            this.SwitchOn_TAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SwitchOn_TAC.Location = new System.Drawing.Point(29, 373);
+            this.SwitchOn_TAC.Name = "SwitchOn_TAC";
+            this.SwitchOn_TAC.Size = new System.Drawing.Size(138, 77);
+            this.SwitchOn_TAC.TabIndex = 3;
+            this.SwitchOn_TAC.Text = "Включить все TAC оптимизации";
+            this.SwitchOn_TAC.UseVisualStyleBackColor = true;
+            this.SwitchOn_TAC.Click += new System.EventHandler(this.SwitchOn_TAC_Click);
             // 
             // TACoptLocalList
             // 
@@ -224,10 +260,10 @@
             // tabControl3
             // 
             this.tabControl3.Controls.Add(this.tabPage4);
-            this.tabControl3.Location = new System.Drawing.Point(244, 5);
+            this.tabControl3.Location = new System.Drawing.Point(296, 5);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(500, 587);
+            this.tabControl3.Size = new System.Drawing.Size(448, 587);
             this.tabControl3.TabIndex = 2;
             // 
             // tabPage4
@@ -236,19 +272,20 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 29);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(492, 554);
+            this.tabPage4.Size = new System.Drawing.Size(440, 554);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Информация о графе";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // InformText
             // 
-            this.InformText.Location = new System.Drawing.Point(3, 6);
+
+            this.InformText.Location = new System.Drawing.Point(6, 6);
             this.InformText.Multiline = true;
             this.InformText.Name = "InformText";
             this.InformText.ReadOnly = true;
             this.InformText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.InformText.Size = new System.Drawing.Size(483, 542);
+            this.InformText.Size = new System.Drawing.Size(428, 542);
             this.InformText.TabIndex = 1;
             // 
             // GraphText
@@ -258,7 +295,7 @@
             this.GraphText.Name = "GraphText";
             this.GraphText.ReadOnly = true;
             this.GraphText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.GraphText.Size = new System.Drawing.Size(228, 592);
+            this.GraphText.Size = new System.Drawing.Size(290, 592);
             this.GraphText.TabIndex = 0;
             // 
             // AST
@@ -363,39 +400,6 @@
             this.TACBeforeIt.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.TACBeforeIt.Size = new System.Drawing.Size(368, 592);
             this.TACBeforeIt.TabIndex = 2;
-            // 
-            // SwitchOffAST
-            // 
-            this.SwitchOffAST.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.SwitchOffAST.Location = new System.Drawing.Point(260, 373);
-            this.SwitchOffAST.Name = "SwitchOffAST";
-            this.SwitchOffAST.Size = new System.Drawing.Size(138, 77);
-            this.SwitchOffAST.TabIndex = 2;
-            this.SwitchOffAST.Text = "Отключить все AST оптимизации";
-            this.SwitchOffAST.UseVisualStyleBackColor = true;
-            this.SwitchOffAST.Click += new System.EventHandler(this.SwitchOffAST_Click);
-            // 
-            // SwitchOn_TAC
-            // 
-            this.SwitchOn_TAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.SwitchOn_TAC.Location = new System.Drawing.Point(29, 373);
-            this.SwitchOn_TAC.Name = "SwitchOn_TAC";
-            this.SwitchOn_TAC.Size = new System.Drawing.Size(138, 77);
-            this.SwitchOn_TAC.TabIndex = 3;
-            this.SwitchOn_TAC.Text = "Включить все TAC оптимизации";
-            this.SwitchOn_TAC.UseVisualStyleBackColor = true;
-            this.SwitchOn_TAC.Click += new System.EventHandler(this.SwitchOn_TAC_Click);
-            // 
-            // SwitchOff_TAC
-            // 
-            this.SwitchOff_TAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.SwitchOff_TAC.Location = new System.Drawing.Point(268, 373);
-            this.SwitchOff_TAC.Name = "SwitchOff_TAC";
-            this.SwitchOff_TAC.Size = new System.Drawing.Size(138, 77);
-            this.SwitchOff_TAC.TabIndex = 4;
-            this.SwitchOff_TAC.Text = "Отключить все TAC оптимизации";
-            this.SwitchOff_TAC.UseVisualStyleBackColor = true;
-            this.SwitchOff_TAC.Click += new System.EventHandler(this.SwitchOff_TAC_Click);
             // 
             // Form1
             // 

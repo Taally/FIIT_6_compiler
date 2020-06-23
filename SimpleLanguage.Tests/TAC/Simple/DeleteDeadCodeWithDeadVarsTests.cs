@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
     [TestFixture]
-    internal class DeleteDeadCodeWithDeadVarsTests : TACTestsBase
+    internal class DeleteDeadCodeWithDeadVarsTests : OptimizationsTestBase
     {
         [Test]
         public void Test()
