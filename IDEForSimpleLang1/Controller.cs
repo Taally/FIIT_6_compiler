@@ -99,27 +99,37 @@ namespace IDEForSimpleLang1
             parser.root.Visit(threeAddrCodeVisitor);
             var threeAddressCode = threeAddrCodeVisitor.Instructions;
 
+
             if (lstCheck.Count > 0)
             {
                 List<Optimization> bBlOpt = new List<Optimization>(), 
-                    allCodeOpt = new List<Optimization>();
+                    allCodeOpt = new List<Optimization>(), allAllOpt = new List<Optimization>();
                 var numPos = BasicBlockOptimizations.Count;
                 var numPosFalse = BasicBlockOptimizations.Count + AllCodeOptimizations.Count;
 
                 foreach (var n in lstCheck.TakeWhile(x=>x < numPos))
                 {
                     bBlOpt.Add(BasicBlockOptimizations[n]);
+                    allAllOpt.Add(BasicBlockOptimizations[n]);
                 }
 
                 foreach (var n in lstCheck.SkipWhile(x => x < numPos).TakeWhile(x => x < numPosFalse))
                 {
                     allCodeOpt.Add(AllCodeOptimizations[n - numPos]);
+                    allAllOpt.Add(AllCodeOptimizations[n - numPos]);
                 }
 
                 var UCE = lstCheck[lstCheck.Count - 1] == numPosFalse;
 
-                threeAddressCode = ThreeAddressCodeOptimizer.Optimize(threeAddressCode,
-                    bBlOpt, allCodeOpt, UCE).ToList();
+                var result = ThreeAddressCodeOptimizer.OptimizeForIDE(threeAddressCode,
+                        bBlOpt, allCodeOpt, UCE).ToList();
+
+                var strR = new StringBuilder();
+                foreach (var x in result)
+                {
+                    strR.AppendLine(x.ToString());
+                }
+                return (strR.ToString(), threeAddressCode);
             }
 
             var str = new StringBuilder();
