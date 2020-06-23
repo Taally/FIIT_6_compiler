@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    public class ReachingDefinitionsGlobalTests : TACTestsBase
+    public class ReachingDefinitionsGlobalTests : OptimizationsTestBase
     {
         [Test]
         public void SimpleTest()
