@@ -272,8 +272,12 @@ namespace IDEForSimpleLang1
                         var inout = new AvailableExpressions().Execute(cfg);
                         AvailableExpressionsApplication.Execute(cfg, inout);
                         break;
-                    default:
-                        return (strBefore.ToString(),"Not realized yet");
+                    case "Активные переменные":
+                        break;
+                    case "Достигающие определения":
+                        var reachDef = new ReachingDefinitionsGlobal();
+                        reachDef.DeleteDeadCode(cfg);
+                        break;
                 }
             }
 
