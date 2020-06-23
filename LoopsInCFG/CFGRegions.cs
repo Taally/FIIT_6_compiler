@@ -16,6 +16,25 @@ namespace SimpleLang
             edges = _edges;
             Initial = _initial;
         }
+
+        public void Print(int indent = 0)
+        {
+            if (includedRegions == null)
+            {
+                foreach (var item in Initial.GetInstructions())
+                {
+                    Console.WriteLine(new string(' ', indent) + item.ToString());
+                }
+                Console.WriteLine();
+            }
+            else
+            {
+                foreach (var item in includedRegions)
+                {
+                    item.Print(indent + 4);
+                }
+            }
+        }
     }
 
     public class CFGregions
