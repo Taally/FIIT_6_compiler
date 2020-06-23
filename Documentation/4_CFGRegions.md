@@ -37,7 +37,7 @@ public class Region
 }
 ```
 
-При построении иерархии областей применяются два метода. `FindRegions`  добавляет в список регионов области-листья, затем отсортированные по вложенности циклы поочередно сводятся к отдельном узлам. После обхода всех естественных циклов добавляем в конец списка область, состоящую из всего графа потока целиком.   
+При построении иерархии областей применяются два метода. `FindRegions`  добавляет в список регионов области-листья, затем отсортированные по вложенности циклы поочередно сводятся к отдельным узлам. После обхода всех естественных циклов добавляем в конец списка область, состоящую из всего графа потока целиком.   
 
 ```cs
 private void FindRegions()
@@ -64,7 +64,7 @@ private void FindRegions()
 }
 ```
 
-Метод `CollapseCycle` замещает новым узлом переданный естественный цикл на графе потока управления. Добавляя новый узел, мы перенаправляем ребра на заголовок цикла, из цикла во внешнюю область. Узлы и ребра цикла будут соответствовать новому региону. 
+Метод `CollapseCycle` замещает новым узлом переданный естественный цикл на графе потока управления. Добавляя новый узел, мы перенаправляем ребра на заголовок цикла, из цикла во внешнюю область. Узлы и ребра внутри цикла будут соответствовать новому региону. 
 
 ```cs
 private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
@@ -80,7 +80,7 @@ private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
                 if (child == cycle.First())
                 {
                     children[cur_vertex].Remove(child);
-                    children[cur_vertex].Add(new_block);
+                    children[cur_vertex].Add(body_block);
                 }
             }
     /* ... */
@@ -88,7 +88,7 @@ private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
     var innerEdged = cycle_edges.Select(x => (_regions[Block_to_region[x.Item1]], _regions[Block_to_region[x.Item2]])).ToList();
 
     _regions.Add(new Region(innerRegions, innerEdged));
-    Block_to_region.Add(new_block, _regions.Count - 1);
+    Block_to_region.Add(body_block, _regions.Count - 1);
     /* ... */
 }
 ```
@@ -120,12 +120,19 @@ a = 8;
 ");
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
-    var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-    Assert.AreEqual(0, actual.Count);
     var result = new CFGregions(cfg);
+    var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+    var expected = new[]{
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (6, 6),
+    };
     Assert.AreEqual(7, result.Regions.Count);
-    Assert.AreEqual(6, result.Regions.Last().edges.Count);
-    Assert.AreEqual(6, result.Regions.Last().includedRegions.Count);
+    CollectionAssert.AreEquivalent(expected, actual);
 }
 ```
 
@@ -145,12 +152,21 @@ c = a + b;
 ");
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
-    var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-    Assert.AreEqual(1, actual.Count);
     var result = new CFGregions(cfg);
+    var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+    var expected = new []{
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),                
+        (1, 1),
+        (1, 2),
+        (4, 5)
+    };
     Assert.AreEqual(9, result.Regions.Count);
-    Assert.AreEqual(4, result.Regions[result.Regions.Count - 1].edges.Count);
-    Assert.AreEqual(5, result.Regions[result.Regions.Count - 1].includedRegions.Count);
+    CollectionAssert.AreEquivalent(expected, actual);
 }
 ```
 
@@ -174,12 +190,27 @@ c = a + b;
 ");
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
-    var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-    Assert.AreEqual(2, actual.Count);
     var result = new CFGregions(cfg);
+
+    var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+    var expected = new[]{
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (1, 1),
+        (1, 2),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (1, 1),
+        (1, 2),
+        (6, 7)
+    };
     Assert.AreEqual(14, result.Regions.Count);
-    Assert.AreEqual(6, result.Regions[result.Regions.Count - 1].edges.Count);
-    Assert.AreEqual(7, result.Regions[result.Regions.Count - 1].includedRegions.Count);
+    CollectionAssert.AreEquivalent(expected, actual);
 }
 ```
 
@@ -205,11 +236,33 @@ for x=1,10
 ");
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
-    var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-    Assert.AreEqual(3, actual.Count);
+    var loops = NaturalLoop.GetAllNaturalLoops(cfg);
+    Assert.AreEqual(3, loops.Count);
     var result = new CFGregions(cfg);
+
+    var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+    var expected = new[]{
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (0, 0),
+        (1, 2),
+        (1, 1),
+        (1, 2),
+        (1, 1),
+        (5, 6),
+        (1, 1),
+        (4, 5)
+    };
     Assert.AreEqual(19, result.Regions.Count);
-    Assert.AreEqual(4, result.Regions[result.Regions.Count - 1].edges.Count);
-    Assert.AreEqual(5, result.Regions[result.Regions.Count - 1].includedRegions.Count);
+    CollectionAssert.AreEquivalent(expected, actual);
 }
 ```
