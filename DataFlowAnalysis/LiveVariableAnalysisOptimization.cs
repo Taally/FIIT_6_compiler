@@ -8,15 +8,13 @@ namespace SimpleLang
 {
     public class LiveVariableAnalysisOptimization
     {
-        public static (bool wasChanged, IReadOnlyList<Instruction> instructions) LiveVariableDeleteDeadCode(IReadOnlyList<Instruction> instructions)
+        public static ControlFlowGraph LiveVariableDeleteDeadCode(ControlFlowGraph cfg)
         {
-            var wasChanged = false;
             var newInstructions = new List<Instruction>();
-            var divResult = BasicBlockLeader.DivideLeaderToLeader(instructions);
-            var cfg = new ControlFlowGraph(divResult);
+
             var activeVariable = new LiveVariableAnalysis();
             var resActiveVariable = activeVariable.Execute(cfg);
-            foreach (var x in divResult)
+            foreach (var x in cfg.GetCurrentBasicBlocks().Take(cfg.GetCurrentBasicBlocks().Count-1).Skip(1))
             {
                 var instructionsTemp = x.GetInstructions();
                 if (resActiveVariable.ContainsKey(x))
@@ -26,7 +24,6 @@ namespace SimpleLang
                     {
                         if (!InOutTemp.Out.Contains(i.Result) && i.Operation == "assign" && i.Argument1 != i.Result)
                         {
-                            wasChanged = true;
                             if (i.Label != "")
                             {
                                 newInstructions.Add(new Instruction(i.Label, "noop", "", "", ""));
@@ -39,7 +36,7 @@ namespace SimpleLang
                     }
                 }
             }
-            return (wasChanged, newInstructions);
+            return new ControlFlowGraph(newInstructions);
         }
     }
 }
