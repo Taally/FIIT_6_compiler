@@ -58,6 +58,7 @@ namespace SimpleLang.Visitors
 
         public override void VisitWhileNode(WhileNode w)
         {
+            var numStr = Instructions.Count;
             var exprTmpName = Gen(w.Expr);
 
             var whileHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
@@ -69,6 +70,12 @@ namespace SimpleLang.Visitors
                     : ThreeAddressCodeTmp.GenTmpLabel();
 
             var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
+
+            //Т.е. условие while() - константа
+            if (numStr == Instructions.Count)
+            {
+                GenCommand("", "noop", "", "", "");
+            }
 
             Instructions[Instructions.Count - 1].Label = whileHeadLabel;
 
