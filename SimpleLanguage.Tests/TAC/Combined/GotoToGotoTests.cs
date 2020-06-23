@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
     [TestFixture]
-    internal class GotoToGotoTests : TACTestsBase
+    internal class GotoToGotoTests : OptimizationsTestBase
     {
         [Test]
         public void TestGotoIfElseTACGen1()

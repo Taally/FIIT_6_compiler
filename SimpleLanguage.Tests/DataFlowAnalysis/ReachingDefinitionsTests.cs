@@ -7,7 +7,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
     [TestFixture]
-    internal class ReachingDefinitionsTests : TACTestsBase
+    internal class ReachingDefinitionsTests : OptimizationsTestBase
     {
         private (List<BasicBlock> basicBlocks, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
         {

@@ -88,12 +88,13 @@
     <Compile Include="AST\OptStatIfFalseTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
-    <Compile Include="CFG\AvailableExpressionsApplicationTests.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionsApplicationTests.cs" />
     <Compile Include="CFG\CFGcreateTests.cs" />
     <Compile Include="CFG\CFGdfsTests.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsGlobalTests.cs" />
+    <Compile Include="DataFlowAnalysis\OptimalSpeedIterativeAlgorithmTests.cs" />
     <Compile Include="LoopsInCFG\BackEdgesTests.cs" />
     <Compile Include="LoopsInCFG\NaturalLoopTests.cs" />
     <Compile Include="DataFlowAnalysis\BitUtilsTests.cs" />
@@ -110,7 +111,7 @@
     <Compile Include="TAC\Simple\BasicBlockLeaderTests.cs" />
     <Compile Include="TAC\Simple\DefUseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TAC\TACTestsBase.cs" />
+    <Compile Include="TAC\OptimizationsTestBase.cs" />
     <Compile Include="TAC\Simple\DeleteDeadCodeWithDeadVarsTests.cs" />
     <Compile Include="TAC\Simple\FoldConstantsTests.cs" />
     <Compile Include="TAC\Simple\GotoThroughGotoTests.cs" />

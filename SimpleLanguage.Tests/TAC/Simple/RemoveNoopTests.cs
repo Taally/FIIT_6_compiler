@@ -8,7 +8,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
 {
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     [TestFixture]
-    internal class RemoveNoopTests : TACTestsBase
+    internal class RemoveNoopTests : OptimizationsTestBase
     {
         public (bool wasChanged, IReadOnlyCollection<Instruction> instructions) OptimizeLocal(IReadOnlyList<Instruction> tac) => ThreeAddressCodeRemoveNoop.RemoveEmptyNodes(tac);
 

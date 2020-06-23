@@ -1,17 +1,18 @@
-### Итерационный алгоритм в структуре распространения констант
+## Итерационный алгоритм в структуре распространения констант
 
-#### Постановка задачи
+### Постановка задачи
 Необходимо в вершинах потока управления накопить IN-OUT информацию, реализовав итерационный алгоритм в структуре распространения констант.
 
-#### Команда
+### Команда
 Карякин В.В., Карякин Д.В.
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 Предшествующие:
+
 - Построение графа потока управления
 - Вычисление передаточной функции для распространения констант
 
-#### Теоретическая часть
+### Теоретическая часть
 Распространение констант является прямой задачей потока данных. Алгоритм позволяет найти переменные, которые имеют константые значения на входе в блоки, что позволит в дальнейшем подставить их для повышения эффективности программы. Множество значений потока данных представляет собой решетку произведения, в которой имеется по одному компоненту для каждой переменной программы. В решетку для переменной входит следующее:
 1. Все константы подходящего для данной переменной типа;
 2. Значение NAC, означающее "не константу". Переменная отображается на это значение, если выяснится, что она не имеет константного значения;
@@ -19,16 +20,16 @@
 
 Сбор двух значений представляет собой их наибольшую нижнюю границу. Таким образом:
 
-![Оператор сбора](3_ConstPropagation/img1.png)
+![Оператор сбора](3_ConstPropagation/img1.PNG)
 
 
 Итеративный алгоритм для прямой задачи потока данных имеет следующий вид:
 
-![Итеративныйалгоритм](3_ConstPropagation/img2.png)
+![Итеративныйалгоритм](3_ConstPropagation/img2.PNG)
 
 На каждом шаге вычисляются множества IN и OUT для каждого блока. 
 
-#### Практическая часть
+### Практическая часть
 Сначала определяется множество используемых в программе переменных проходом по всем блокам графа потока управления.
 Далее задаются начальные значения IN и OUT для всех блоков. Значение UNDEF ставится в соответствие всем переменным при инициализации входного узла и иницализации внутренних точек программы перед итерациями.
 
@@ -87,7 +88,7 @@ while (Changed)
 }
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 Данный итерационный алгоритм является одним из итерационных алгоритмов, вычисляющих IN-OUT иформацию для последующих оптимизаций. Для унифицированного применения в проекте реализован итерационный алгоритм в обобщенном виде. Он представлен в виде абстрактного класса, который наследуется классом, реализующим задачу.
 
 Свойства и методы абстрактного класса:
@@ -101,7 +102,7 @@ public virtual Direction Direction => Direction.Forward;
 public virtual InOutData<T> Execute(ControlFlowGraph graph);
 ```
 
-#### Тесты
+### Тесты
 Тесты проверяют соответсвие IN-OUT значений для графа потока управления, полученного по указываемому тексту программы. Некоторые примеры:
 
 ```cs
@@ -127,9 +128,11 @@ public void TransfNotDistr()
     Assert.AreEqual(4, blocks.Count);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["a"].Type, LatticeTypeData.NAC);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["b"].Type, LatticeTypeData.NAC);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["c"].Type, LatticeTypeData.NAC);
+    var actual = InOut.OUT[blocks.Last()];
+
+    Assert.AreEqual(LatticeTypeData.NAC, actual["a"].Type);
+    Assert.AreEqual(LatticeTypeData.NAC, actual["b"].Type);
+    Assert.AreEqual(LatticeTypeData.NAC, actual["c"].Type);
 }
 ```
 ```cs
@@ -148,12 +151,15 @@ public void PropagateTwoVariants()
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["a"].Type, LatticeTypeData.CONST);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["x"].Type, LatticeTypeData.CONST);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["c"].Type, LatticeTypeData.CONST);
-    Assert.AreEqual(InOut.OUT[blocks[3]]["x"].ConstValue, "10");
-    Assert.AreEqual(InOut.OUT[blocks[3]]["a"].ConstValue, "20");
-    Assert.AreEqual(InOut.OUT[blocks[3]]["c"].ConstValue, "30");
+    var actual = InOut.OUT[blocks.Last()];
+
+    Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
+    Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
+    Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
+
+    Assert.AreEqual("10", actual["x"].ConstValue);
+    Assert.AreEqual("20", actual["a"].ConstValue);
+    Assert.AreEqual("30", actual["c"].ConstValue);
 }
 ```
 ```cs
@@ -175,9 +181,11 @@ public void TwoConstValues()
     var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-    Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[6]]["a"].Type);
-    Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[6]]["x"].Type);
-    Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks[6]]["c"].Type);
+    var actual = InOut.OUT[blocks.Last()];
+
+    Assert.AreEqual(LatticeTypeData.NAC, actual["a"].Type);
+    Assert.AreEqual(LatticeTypeData.NAC, actual["x"].Type);
+    Assert.AreEqual(LatticeTypeData.NAC, actual["c"].Type);
 }
 ```
 ```cs
@@ -196,11 +204,13 @@ public void PropagateTwoVariants2()
         var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
         var cfg = new ControlFlowGraph(blocks);
         var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-        Assert.AreEqual(InOut.OUT[blocks[1]]["a"].Type, LatticeTypeData.CONST);
-        Assert.AreEqual(InOut.OUT[blocks[1]]["c"].Type, LatticeTypeData.CONST);
-        Assert.AreEqual(InOut.OUT[blocks[1]]["x"].Type, LatticeTypeData.CONST);
-        Assert.AreEqual(InOut.OUT[blocks[1]]["a"].ConstValue, "20");
-        Assert.AreEqual(InOut.OUT[blocks[1]]["c"].ConstValue, "30");
-        Assert.AreEqual(InOut.OUT[blocks[1]]["x"].ConstValue, "10");
+        var actual = InOut.OUT[blocks.Last()];
+        Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
+        Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
+        Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
+
+        Assert.AreEqual("20", actual["a"].ConstValue);
+        Assert.AreEqual("30", actual["c"].ConstValue);
+        Assert.AreEqual("10", actual["x"].ConstValue);
 }
 ```
