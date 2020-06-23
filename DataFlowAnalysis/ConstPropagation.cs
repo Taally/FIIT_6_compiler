@@ -117,7 +117,7 @@ namespace SimpleLang
                     second = instruction.Argument2;
                     operation = instruction.Operation;
 
-                    if (first == "True" || second == "True" || second == "False" || second == "False" || untreatedTypes.Contains(operation))
+                    if (first == "True" || second == "True" || first == "False" || second == "False" || untreatedTypes.Contains(operation))
                     {
                         OUT[instruction.Result] = new LatticeValue(LatticeTypeData.NAC);
                     }
