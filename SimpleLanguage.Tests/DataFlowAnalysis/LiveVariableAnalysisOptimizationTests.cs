@@ -11,7 +11,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
     [TestFixture]
     internal class LiveVariableAnalysisOptimizationTests : OptimizationsTestBase
     {
-        [Test]
+        /*[Test]
         public void Test1()
         {
             var TAC = GenTAC(@"
@@ -46,6 +46,6 @@ print (c);");
                 .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
-        }
+        }*/
     }
 }
