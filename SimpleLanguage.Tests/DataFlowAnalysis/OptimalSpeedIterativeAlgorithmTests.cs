@@ -29,7 +29,7 @@ e = zz + i;";
             algorithm.Execute(graph, false);
             var iterationsSlow = algorithm.Iterations;
 
-            Assert.LessOrEqual(iterationsSlow, iterationsFast);
+            Assert.LessOrEqual(iterationsFast, iterationsSlow);
         }
 
         [Test]
@@ -53,7 +53,7 @@ a = x;";
             algorithm.Execute(graph, false);
             var iterationsSlow = algorithm.Iterations;
 
-            Assert.LessOrEqual(iterationsSlow, iterationsFast);
+            Assert.LessOrEqual(iterationsFast, iterationsSlow);
         }
 
         [Test]
@@ -84,7 +84,7 @@ print (c+a+b);";
             algorithm.Execute(graph, false);
             var iterationsSlow = algorithm.Iterations;
 
-            Assert.LessOrEqual(iterationsSlow, iterationsFast);
+            Assert.LessOrEqual(iterationsFast, iterationsSlow);
         }
 
         [Test]
@@ -113,7 +113,7 @@ for k = 0, 1
             algorithm.Execute(graph, false);
             var iterationsSlow = algorithm.Iterations;
 
-            Assert.LessOrEqual(iterationsSlow, iterationsFast);
+            Assert.LessOrEqual(iterationsFast, iterationsSlow);
         }
 
         [Test]
@@ -137,7 +137,7 @@ a = 2;
             algorithm.Execute(graph, false);
             var iterationsSlow = algorithm.Iterations;
 
-            Assert.LessOrEqual(iterationsSlow, iterationsFast);
+            Assert.LessOrEqual(iterationsFast, iterationsSlow);
         }
     }
 }
