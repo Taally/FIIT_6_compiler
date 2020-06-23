@@ -33,7 +33,7 @@ for (var i = 0; i < instructions.Count; ++i)
 
         if (com1.Operation == "goto" && com1.Label == "" && com2.Operation != "noop" && com0.Argument2 == com2.Label && com1.Argument1 == com3.Label)
         {
-             var tmpName = ThreeAddressCodeTmp.GenTmpName();
+            var tmpName = ThreeAddressCodeTmp.GenTmpName();
             newInstructions.Add(new Instruction(com0.Label, "NOT", com0.Argument1, "", tmpName));
             newInstructions.Add(new Instruction("", "ifgoto", tmpName, com3.Label, ""));
 
