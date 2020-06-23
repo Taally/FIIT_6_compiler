@@ -30,7 +30,7 @@ namespace SimpleLang
         }
 
         /// <inheritdoc/>
-        public new Tree Execute(ControlFlowGraph graph)
+        public new Tree Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             var start = graph.GetCurrentBasicBlocks().First();
             var treeLayers = GetDominators(graph)

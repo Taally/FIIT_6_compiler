@@ -34,7 +34,7 @@ c = 5;
 ```
 
 Пример графа с недостижимым кодом.
-![картинка](2_CFGUnreachableCodeElimination/pic1.jpg)
+![Граф с недостижимым кодом](2_CFGUnreachableCodeElimination/pic1.jpg)
 
 
 ### Практическая часть

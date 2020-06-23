@@ -21,7 +21,7 @@ namespace SimpleLang
         /// <inheritdoc/>
         public override Func<BasicBlock, IEnumerable<Instruction>, IEnumerable<Instruction>> TransferFunction { get; protected set; }
 
-        public override InOutInfo Execute(ControlFlowGraph graph)
+        public override InOutInfo Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             TransferFunction = new ReachingTransferFunc(graph).Transfer;
             return base.Execute(graph);

@@ -1,4 +1,4 @@
-Introduction.md
+﻿Introduction.md
 0_Parser&AST.md
 1_PrettyPrinter.md
 1_ChangeVisitor.md
@@ -30,6 +30,8 @@ Introduction.md
 2_ThreeAddressCodeOptimizer.md
 3_CreateCFG.md
 3_LiveVariableAnalysis.md
+3_ReachingTransferFunc.md
+3_ConstPropagation.md
 3_TransferFunctionForConstPropagation.md 
 3_ReachingDefinitions.md
 3_GenericIterativeAlgorithm.md
@@ -38,4 +40,5 @@ Introduction.md
 4_DFSforCFG.md
 4_DominatorTree.md
 4_NaturalLoop.md
+4_CFGRegions.md
 4_BackEdges.md

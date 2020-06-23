@@ -48,38 +48,62 @@ L2: a = 5 // или любая другая операция с меткой
 ### Практическая часть  
 Для решения данной задачи используется подход пересоздания TAC. В цикле совершается проход по исходному TAC и аккумулируется новый оптимизированный TAC. 
 ```csharp
-var wasChanged = false;
+var commandsTmp = new List<Instruction>(commands);
+if (commands.Count == 0)
+{
+	return (false, commandsTmp);
+}
 var results = new List<Instruction>();
+var wasChanged = false;
+var toAddLast = true;
 
-for (var i = 0; i < commands.Count - 1; i++)  
+for (var i = 0; i < commandsTmp.Count - 1; i++)  
 {  
-    var currentCommand = commands[i]; 
+    var currentCommand = commandsTmp[i];
     // случай 1, просто удаляем
-    if (currentCommand.Operation == "noop" && currentCommand.Label == "")  
-        wasChanged = true;  
+    if (currentCommand.Operation == "noop" && currentCommand.Label == "")
+	{
+		wasChanged = true;
+	}
     // случаи 2 и 3, проверяем следующую операцию на наличие метки
 	else if (currentCommand.Operation == "noop")
     {
-	   var nextCommand = commands[i + 1];
 	   // случай 2, следующей метки нет, сливаем операции
-	   if (nextCommand.Label == "")
+	   if (commandsTmp[i + 1].Label == "")
 	   {
-	     var newCommand = ... // создать операцию - объединение текущей и следующей
-	     results.Add(newCommand);
-	     i += 1;
+		   var nextCommand = commandsTmp[i + 1];
+		   wasChanged = true;
+			result.Add(
+				new Instruction(
+					currentCommand.Label,
+					nextCommand.Operation,
+					nextCommand.Argument1,
+					nextCommand.Argument2,
+					nextCommand.Result
+				)
+			);
+			i += 1;
+			if (i == commandsTmp.Count - 1)
+			{
+				toAddLast = false;
+			}
 	   }
 	   // случай 3, следующая метка есть, 
 	   // необходимо переименовать goto по всему коду
 	   else
 	   {
-		   result = result.Select(/* переименование */).ToList();
-		   for (var j = i + 1; j < commands.Count; j++)
-			   commands[j] = /* переименование */;
+		   	var nextCommand = commandsTmp[i + 1];
+			wasChanged = true;
+			var currentLabel = currentCommand.Label;
+			var nextLabel = nextCommand.Label;
+			result = result.Select(/* переименование */).ToList();
+			for (var j = i + 1; j < commandsTmp.Count; j++)
+				commands[j] = /* переименование */;
 	   }
     }
     // иначе просто добавляем операцию
     else {
-	  results.Add(commands[i]);
+	  results.Add(commandsTmp[i]);
     }
 }
 ```

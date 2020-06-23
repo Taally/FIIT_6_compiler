@@ -1,15 +1,19 @@
 ## Итерационный алгоритм в обобщённой структуре
 
 ### Постановка задачи
+
 Реализовать итеративный алгоритм в обобщенной структуре.
 
 ### Команда
+
 К. Галицкий, А. Черкашин
 
 ### Зависимые и предшествующие задачи
+
 Предшествующие задачи:
 
 * Построение CFG. Обход потомков и обход предков для каждого ББл
+
 Зависимые задачи:
 * Вычисление передаточной функции для достигающих определений композицией передаточных функций команд
 * Активные переменные
@@ -20,6 +24,7 @@
 
 
 ### Теоретическая часть
+
 В рамках этой задачи необходимо было реализовать обобщенный итерационный алгоритм.
 
 Входы итерационного алгоритма:
@@ -34,13 +39,21 @@
 * Значения из V для in(b) и out(b) для каждого блока b в CFG
 
 
-Алгоритм для решения прямой задачи потока данных: ![Прямая задача](3_GenericIterativeAlgorithm/pic2.JPG)
-Алгоритм для решения обратной задачи потока данных: ![Обратная задача](3_GenericIterativeAlgorithm/pic1.JPG)
+Алгоритм для решения прямой задачи потока данных: 
+
+![Прямая задача](3_GenericIterativeAlgorithm/pic2.JPG)
+
+Алгоритм для решения обратной задачи потока данных: 
+
+![Обратная задача](3_GenericIterativeAlgorithm/pic1.JPG)
+
 Служит для избежания базового итеративного алгоритма для каждой структуры потока данных используемой на стадии оптимизации.
 Его задача вычисление in и out для каждого блока как ряд последовательных приближений. А так же его использование предоставляет ряд полезных свойств приведенных ниже:
+
 ![Свойства алгоритма](3_GenericIterativeAlgorithm/pic3.JPG)
 
 ### Практическая часть
+
 Реализовали класс выходных данных:
 ```csharp
 public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)> // Вид выходных данных вида (Базовый блок, (его входы, его выходы))
@@ -85,6 +98,7 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
 Переопределение входных данных, передаточной функции, оператора сбора, и элементов пула решетки, вынесли в вспомогательный алгоритм.
 
 ### Место в общем проекте (Интеграция)
+
 Используется для вызова итерационных алгоритмов в единой структуре.
 ```csharp
 
@@ -100,7 +114,9 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
 ```
 
 ### Тесты
-В тестах проверяется использование итерационных алгоритмов в обобщенной структуре, результаты совпадают с ожидаемыми.
+
+В тестах проверяется использование итерационных алгоритмов в обобщенной структуре, результаты совпадают с ожидаемыми. Ниже приведён тест проверки работы алгоритма живых переменных.
+
 ```csharp
 public void LiveVariableIterativeTest()
 {
@@ -116,37 +132,23 @@ c = b + a;
 print (c);"
 );
 
-	var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-	var activeVariable = new LiveVariableAnalysis();
-	var resActiveVariable = activeVariable.Execute(cfg);
-	HashSet<string> In = new HashSet<string>();
-	HashSet<string> Out = new HashSet<string>();
-	List<(HashSet<string> IN, HashSet<string> OUT)> actual = new List<(HashSet<string> IN, HashSet<string> OUT)>();
-	foreach (var x in resActiveVariable)
-	{
-		foreach (var y in x.Value.In)
-		{
-			In.Add(y);
-		}
+	var cfg = GenCFG(program);
+            var resActiveVariable = new LiveVariableAnalysis().Execute(cfg);
+            var actual = cfg.GetCurrentBasicBlocks()
+                .Select(z => resActiveVariable[z])
+                .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))
+                .ToList();
 
-		foreach (var y in x.Value.Out)
-		{
-			Out.Add(y);
-		}
-		actual.Add((new HashSet<string>(In), new HashSet<string>(Out)));
-		In.Clear(); Out.Clear();
-	}
-
-	List<(HashSet<string> IN, HashSet<string> OUT)> expected =
-		new List<(HashSet<string> IN, HashSet<string> OUT)>()
-		{
-			(new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
-			(new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-			(new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
-			(new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
-			(new HashSet<string>(){"c"}, new HashSet<string>(){ }),
-			(new HashSet<string>(){ }, new HashSet<string>(){ })
-		};
+	var expected =
+                new List<(IEnumerable<string>, IEnumerable<string>)>()
+                {
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
+                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
+                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+                    (new HashSet<string>(){ }, new HashSet<string>(){ })
+                };
 
 	AssertSet(expected, actual);
 }

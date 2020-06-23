@@ -8,7 +8,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
 {
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     [TestFixture]
-    public class InteractionWithNoopRemovalTests : TACTestsBase
+    public class InteractionWithNoopRemovalTests : OptimizationsTestBase
     {
         public void AssertEquality(IReadOnlyCollection<Instruction> result, List<string> expected)
         {

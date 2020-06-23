@@ -8,7 +8,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
 {
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     [TestFixture]
-    internal class AlebraicIdentitiesTests : TACTestsBase
+    internal class AlebraicIdentitiesTests : OptimizationsTestBase
     {
         private readonly string messageErrorResult = "Результат неверный";
         private readonly string messageErrorArgument1 = "Первый аргумент неверный";

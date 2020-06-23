@@ -10,7 +10,7 @@ namespace SimpleLanguage.Tests.LoopsInCFG
     using ParentsDictionary = Dictionary<int, BasicBlock>;
 
     [TestFixture]
-    internal class DominatorTreeTests : TACTestsBase
+    internal class DominatorTreeTests : OptimizationsTestBase
     {
         private void TestInternal(ControlFlowGraph graph,
             DominatorDictionary expectedDoms,

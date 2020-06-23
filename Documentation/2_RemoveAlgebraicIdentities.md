@@ -42,9 +42,9 @@
 - Разность равных аргументов: ``` a = b - b```
 
 ```csharp
-if (variablesAreNotBool && commands[i].Argument1 == commands[i].Argument2 && commands[i].Operation == "MINUS")
+if (variablesAreNotBool && command.Argument1 == command.Argument2 && command.Operation == "MINUS")
 {
-    result.Add(new Instruction(commands[i].Label, "assign", "0", "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", "0", "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -52,9 +52,9 @@ if (variablesAreNotBool && commands[i].Argument1 == commands[i].Argument2 && com
 - Значение делимого равно нулю: ``` a = 0 / b ```
 
 ```csharp
-if (commands[i].Operation == "DIV" && variablesAreNotBool && arg1IsNumber && arg1 == 0 && (arg2IsNumber && arg2 != 0 || !arg2IsNumber))
+if (command.Operation == "DIV" && variablesAreNotBool && arg1IsNumber && arg1 == 0 && (arg2IsNumber && arg2 != 0 || !arg2IsNumber))
 {
-    result.Add(new Instruction(commands[i].Label, "assign", "0", "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", "0", "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -62,10 +62,9 @@ if (commands[i].Operation == "DIV" && variablesAreNotBool && arg1IsNumber && arg
 - Умножение на ноль: ```a = 0 * b```
 
 ```csharp
-if (commands[i].Operation == "MULT" && variablesAreNotBool && (arg1IsNumber && arg1 == 0 
-|| arg2IsNumber && arg2 == 0))
+if (command.Operation == "MULT" && variablesAreNotBool && (arg1IsNumber && arg1 == 0 || arg2IsNumber && arg2 == 0))
 {
-    result.Add(new Instruction(commands[i].Label, "assign", "0", "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", "0", "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -73,17 +72,17 @@ if (commands[i].Operation == "MULT" && variablesAreNotBool && (arg1IsNumber && a
 - Умножение на единицу: ```a = 1 * b```
 
 ```csharp
-var arg1IsNumber = double.TryParse(commands[i].Argument1, out var arg1);
-if (commands[i].Operation == "MULT" && variablesAreNotBool && arg1IsNumber && arg1 == 1)
+var arg1IsNumber = double.TryParse(command.Argument1, out var arg1);
+if (command.Operation == "MULT" && variablesAreNotBool && arg1IsNumber && arg1 == 1)
 {
-    result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument2, "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", command.Argument2, "", command.Result));
     wasChanged = true;
     continue;
 }
-var arg2IsNumber = double.TryParse(commands[i].Argument2, out var arg2);
-if (commands[i].Operation == "MULT" && variablesAreNotBool && arg2IsNumber && arg2 == 1)
+var arg2IsNumber = double.TryParse(command.Argument2, out var arg2);
+if (command.Operation == "MULT" && variablesAreNotBool && arg2IsNumber && arg2 == 1)
 {
-    result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument1, "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", command.Argument1, "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -91,16 +90,16 @@ if (commands[i].Operation == "MULT" && variablesAreNotBool && arg2IsNumber && ar
 - Суммирование и вычитание с нулем: ```a = b + 0``` и ```a = b - 0```
 
 ```csharp
-if ((commands[i].Operation == "PLUS" || commands[i].Operation == "MINUS") && variablesAreNotBool && arg1IsNumber && arg1 == 0)
+if ((command.Operation == "PLUS" || command.Operation == "MINUS") && variablesAreNotBool && arg1IsNumber && arg1 == 0)
 {
-    var sign = commands[i].Operation == "PLUS" ? "" : "-";
-    result.Add(new Instruction(commands[i].Label, "assign", sign + commands[i].Argument2, "", commands[i].Result));
+    var sign = command.Operation == "PLUS" ? "" : "-";
+    result.Add(new Instruction(command.Label, "assign", sign + command.Argument2, "", command.Result));
     wasChanged = true;
     continue;
 }
-if ((commands[i].Operation == "PLUS" || commands[i].Operation == "MINUS") && variablesAreNotBool && arg2IsNumber && arg2 == 0)
+if ((command.Operation == "PLUS" || command.Operation == "MINUS") && variablesAreNotBool && arg2IsNumber && arg2 == 0)
 {
-    result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument1, "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", command.Argument1, "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -108,9 +107,9 @@ if ((commands[i].Operation == "PLUS" || commands[i].Operation == "MINUS") && var
 - Деление на единицу: ```a = b / 1```
 
 ```csharp
-if (commands[i].Operation == "DIV" && variablesAreNotBool && arg2IsNumber && arg2 == 1)
+if (command.Operation == "DIV" && variablesAreNotBool && arg2IsNumber && arg2 == 1)
 {
-    result.Add(new Instruction(commands[i].Label, "assign", commands[i].Argument1, "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", command.Argument1, "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -118,9 +117,9 @@ if (commands[i].Operation == "DIV" && variablesAreNotBool && arg2IsNumber && arg
 - Деление равных аргументов: ```a = b / b```
 
 ```csharp
-if (commands[i].Operation == "DIV" && variablesAreNotBool && arg1 == arg2)
+if (command.Operation == "DIV" && variablesAreNotBool && arg1 == arg2)
 {
-    result.Add(new Instruction(commands[i].Label, "assign", "1", "", commands[i].Result));
+    result.Add(new Instruction(command.Label, "assign", "1", "", command.Result));
     wasChanged = true;
     continue;
 }
@@ -145,6 +144,7 @@ private static List<Optimization> AllCodeOptimizations => new List<Optimization>
 {
     //...
 };
+
 //Main.cs
 var threeAddrCodeVisitor = new ThreeAddrGenVisitor();
 parser.root.Visit(threeAddrCodeVisitor);
