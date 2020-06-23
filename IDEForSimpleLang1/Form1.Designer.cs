@@ -32,12 +32,14 @@
             this.Compile = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+
             this.SwitchOffAST = new System.Windows.Forms.Button();
             this.SwitchOnAST = new System.Windows.Forms.Button();
             this.ASToptList = new System.Windows.Forms.CheckedListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.SwitchOff_TAC = new System.Windows.Forms.Button();
             this.SwitchOn_TAC = new System.Windows.Forms.Button();
+
             this.TACoptLocalList = new System.Windows.Forms.CheckedListBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.ItOptList = new System.Windows.Forms.CheckedListBox();
@@ -55,6 +57,7 @@
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.TACAfterIt = new System.Windows.Forms.TextBox();
             this.TACBeforeIt = new System.Windows.Forms.TextBox();
+
             this.panel1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -276,6 +279,7 @@
             // 
             // InformText
             // 
+
             this.InformText.Location = new System.Drawing.Point(6, 6);
             this.InformText.Multiline = true;
             this.InformText.Name = "InformText";
@@ -405,7 +409,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
-            this.Text = "s";
+            this.Text = "IDEForSimpleLang";
             this.panel1.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

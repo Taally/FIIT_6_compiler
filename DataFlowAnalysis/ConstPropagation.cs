@@ -117,7 +117,7 @@ namespace SimpleLang
                     second = instruction.Argument2;
                     operation = instruction.Operation;
 
-                    if (first == "True" || second == "True" || second == "False" || second == "False" || untreatedTypes.Contains(operation))
+                    if (first == "True" || second == "True" || first == "False" || second == "False" || untreatedTypes.Contains(operation))
                     {
                         OUT[instruction.Result] = new LatticeValue(LatticeTypeData.NAC);
                     }
@@ -276,7 +276,7 @@ namespace SimpleLang
 
         public override Dictionary<string, LatticeValue> Init { get; protected set; }
 
-        public override InOutData<Dictionary<string, LatticeValue>> Execute(ControlFlowGraph graph)
+        public override InOutData<Dictionary<string, LatticeValue>> Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             var blocks = graph.GetCurrentBasicBlocks();
             var variables = new HashSet<string>();

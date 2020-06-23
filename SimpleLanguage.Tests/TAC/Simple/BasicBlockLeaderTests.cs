@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.TAC.Simple
 {
     [TestFixture]
-    internal class BasicBlockLeaderTests : TACTestsBase
+    internal class BasicBlockLeaderTests : OptimizationsTestBase
     {
         [Test]
         public void LabelAliveTest()

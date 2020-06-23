@@ -19,6 +19,22 @@
 
         public Instruction Copy() => new Instruction(Label, Operation, Argument1, Argument2, Result);
 
+        public override bool Equals(object obj) =>
+            obj != null
+            && obj is Instruction instruction
+            && Label == instruction.Label
+            && Operation == instruction.Operation
+            && Argument1 == instruction.Argument1
+            && Argument2 == instruction.Argument2
+            && Result == instruction.Result;
+
+        public override int GetHashCode() =>
+            Label.GetHashCode()
+            ^ Operation.GetHashCode()
+            ^ Argument1.GetHashCode()
+            ^ Argument2.GetHashCode()
+            ^ Result.GetHashCode();
+
         public override string ToString()
         {
             var label = Label != "" ? Label + ": " : "";

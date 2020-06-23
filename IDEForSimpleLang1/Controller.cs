@@ -163,6 +163,7 @@ namespace IDEForSimpleLang1
 
         internal static string GetGraphInformation(ControlFlowGraph cfg) {
             var str = new StringBuilder();
+
             str.AppendLine("Доминаторы:");
             var domTree = new DominatorTree().GetDominators(cfg);
 
@@ -177,11 +178,11 @@ namespace IDEForSimpleLang1
 
 
             str.AppendLine("\r\nКлассификация ребер:");
+
             foreach (var pair in cfg.ClassifiedEdges)
             {
                 str.AppendLine($"{ pair }");
             }
-
 
             str.AppendLine("\r\nОбходы графа:");
 
@@ -194,7 +195,6 @@ namespace IDEForSimpleLang1
                 str.AppendLine($"({x.from} - > {x.to})");
             }
             
-
             var backEdges = cfg.GetBackEdges();
             if (backEdges.Count > 0)
             {
@@ -254,6 +254,7 @@ namespace IDEForSimpleLang1
             var strReturn = new StringBuilder();
             var strBefore = new StringBuilder();
 
+          
             foreach (var b in cfg.GetCurrentBasicBlocks())
             {
                 foreach (var inst in b.GetInstructions())

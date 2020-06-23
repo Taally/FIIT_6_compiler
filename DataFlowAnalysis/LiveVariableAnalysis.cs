@@ -104,7 +104,7 @@ namespace SimpleLang
             }
         }
 
-        public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
+        public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg, bool useRenumbering = true)
         {
             TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
             return base.Execute(cfg);

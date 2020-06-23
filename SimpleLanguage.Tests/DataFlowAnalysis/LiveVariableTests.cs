@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class LiveVariableTests : TACTestsBase
+    internal class LiveVariableTests : OptimizationsTestBase
     {
         [Test]
         public void SimpleTest()
