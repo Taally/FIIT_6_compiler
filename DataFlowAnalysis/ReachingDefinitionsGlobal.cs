@@ -3,14 +3,20 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    using InOutInfo = InOutData<IEnumerable<Instruction>>;
-
     public class ReachingDefinitionsGlobal
     {
-        public void DeleteDeadCode(ControlFlowGraph graph, InOutInfo info)
+        public void DeleteDeadCode(ControlFlowGraph graph)
         {
             var usedVars = CreateUsedVarsSets(graph);
             var reachabilityMatrix = CreateReachabilityMatrix(graph);
+            var info = new ReachingDefinitions().Execute(graph);
+
+            var usedDefinitions = new HashSet<Instruction>(
+                info[graph.GetCurrentBasicBlocks().Last()].In, 
+                new InstructionComparer());
+            var toDelete = new List<(BasicBlock Block, int Index)>();
+
+            var possibleOperationTypes = new[] { "assign", "input", "PLUS" };
 
             foreach (var block in graph.GetCurrentBasicBlocks().Reverse())
             {
@@ -22,29 +28,50 @@ namespace SimpleLang
                     // find first assign in current block that rewrites variable
                     var newDefIndex = block.GetInstructions()
                         .Select((t, i) => new { Instruction = t, Index = i })
-                        .First(t => t.Instruction.Operation == "assign" && t.Instruction.Result == variable)
+                        .First(t => possibleOperationTypes.Contains(t.Instruction.Operation) && t.Instruction.Result == variable) 
                         .Index;
 
                     var blockWithOldDef = graph.GetCurrentBasicBlocks()
-                        .Single(z => !info[z].In.Contains(oldDef) && info[z].Out.Contains(oldDef));
-                    var oldDefIndex = block.GetInstructions().IndexOf(oldDef);
+                        .SingleOrDefault(z => !info[z].In.Contains(oldDef) && info[z].Out.Contains(oldDef));
+                    // if we can't find the block with old definition, that means these definition used in a loop
+                    // so it can't be removed
+                    if (blockWithOldDef == null)
+                    {
+                        usedDefinitions.Add(oldDef);
+                        continue;
+                    }
+
+                    var oldDefIndex = blockWithOldDef.GetInstructions()
+                        .Select((t, i) => new { Instruction = t, Index = i })
+                        .Single(t => t.Instruction == oldDef)
+                        .Index;
 
                     var oldBlockIndex = graph.VertexOf(blockWithOldDef);
                     var newBlockIndex = graph.VertexOf(block);
 
-                    if (IsUsedInCurrentBlock(block, variable, newDefIndex)
+                    if (usedDefinitions.Contains(oldDef)
+                        || IsUsedInCurrentBlock(block, variable, newDefIndex)
                         || IsUsedInOriginalBlock(blockWithOldDef, variable, oldDefIndex)
                         || IsUsedInOtherBlocks(graph, oldBlockIndex, newBlockIndex, variable, usedVars, reachabilityMatrix))
                     {
+                        usedDefinitions.Add(oldDef);
                         continue;
                     }
 
-                    // if we delete oldDef, we must remove it from all INs and OUTs
-                    blockWithOldDef.RemoveInstructionByIndex(oldDefIndex);
-                    info = (InOutInfo)info.ToDictionary(
-                        z => z.Key,
-                        z => (z.Value.In.Where(t => t != oldDef), 
-                              z.Value.Out.Where(t => t != oldDef)));
+                    toDelete.Add((blockWithOldDef, oldDefIndex));
+                }
+            }
+
+            foreach (var block in toDelete.ToLookup(z => z.Block, z => z.Index))
+            {
+                foreach (var index in block.Distinct().OrderByDescending(z => z))
+                {
+                    var label = block.Key.GetInstructions()[index].Label;
+                    block.Key.RemoveInstructionByIndex(index);
+                    if (!string.IsNullOrEmpty(label))
+                    {
+                        block.Key.InsertInstruction(index, new Instruction(label, "noop", null, null, null));
+                    }
                 }
             }
         }
@@ -143,7 +170,7 @@ namespace SimpleLang
             // find reachability matrix
             for (var k = 0; k < blocksCount; ++k)
             {
-                for (var i = 0; i < blocksCount; ++k)
+                for (var i = 0; i < blocksCount; ++i)
                 {
                     for (var j = 0; j < blocksCount; ++j)
                     {
@@ -160,5 +187,12 @@ namespace SimpleLang
             && !int.TryParse(s, out _)
             && !(s == "true")
             && !(s == "false");
+
+        private class InstructionComparer : IEqualityComparer<Instruction>
+        {
+            public bool Equals(Instruction x, Instruction y) => ReferenceEquals(x, y);
+
+            public int GetHashCode(Instruction obj) => (obj as object).GetHashCode();
+        }
     }
 }
