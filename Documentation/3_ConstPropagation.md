@@ -14,6 +14,7 @@
 
 ### Теоретическая часть
 Распространение констант является прямой задачей потока данных. Алгоритм позволяет найти переменные, которые имеют константые значения на входе в блоки, что позволит в дальнейшем подставить их для повышения эффективности программы. Множество значений потока данных представляет собой решетку произведения, в которой имеется по одному компоненту для каждой переменной программы. В решетку для переменной входит следующее:
+
 1. Все константы подходящего для данной переменной типа;
 2. Значение NAC, означающее "не константу". Переменная отображается на это значение, если выяснится, что она не имеет константного значения;
 3. Значение UNDEF, которое означает "не определена".
@@ -33,7 +34,7 @@
 Сначала определяется множество используемых в программе переменных проходом по всем блокам графа потока управления.
 Далее задаются начальные значения IN и OUT для всех блоков. Значение UNDEF ставится в соответствие всем переменным при инициализации входного узла и иницализации внутренних точек программы перед итерациями.
 
-```cs
+```csharp
 var temp = new Dictionary<string, LatticeValue>();
 foreach (var elem in variables)
 {
@@ -49,7 +50,7 @@ foreach (var block in blocks)
 
 Сбор в структуре распространения констант выполняется следующим образом:
 
-```cs
+```csharp
 public static Dictionary<string, LatticeValue> Collect(Dictionary<string, LatticeValue> first, Dictionary<string, LatticeValue> second)
 {
     var result = new Dictionary<string, LatticeValue>(first.Count, first.Comparer);
@@ -63,12 +64,12 @@ public static Dictionary<string, LatticeValue> Collect(Dictionary<string, Lattic
 ```
 Передаточная функция реализована в рамках задачи другой команды. Применяется следующим образом:
 
-```cs
+```csharp
 var newOut = Transfer(block, INs[block]);
 ```
 Реализация итерационного алгоритма:
 
-```cs
+```csharp
 var Changed = true;
 while (Changed)
 {
@@ -92,7 +93,7 @@ while (Changed)
 Данный итерационный алгоритм является одним из итерационных алгоритмов, вычисляющих IN-OUT иформацию для последующих оптимизаций. Для унифицированного применения в проекте реализован итерационный алгоритм в обобщенном виде. Он представлен в виде абстрактного класса, который наследуется классом, реализующим задачу.
 
 Свойства и методы абстрактного класса:
-```cs
+```csharp
 public abstract Func<T, T, T> CollectingOperator { get; }
 public abstract Func<T, T, bool> Compare { get; }
 public abstract T Init { get; protected set; }
@@ -105,7 +106,7 @@ public virtual InOutData<T> Execute(ControlFlowGraph graph);
 ### Тесты
 Тесты проверяют соответсвие IN-OUT значений для графа потока управления, полученного по указываемому тексту программы. Некоторые примеры:
 
-```cs
+```csharp
 // Проверяет недистрибутивность структуры распространения констант
 [Test]
 public void TransfNotDistr()
@@ -135,7 +136,7 @@ public void TransfNotDistr()
     Assert.AreEqual(LatticeTypeData.NAC, actual["c"].Type);
 }
 ```
-```cs
+```csharp
 // Распространение констант из раличных блоков
 [Test]
 public void PropagateTwoVariants()
@@ -162,7 +163,7 @@ public void PropagateTwoVariants()
     Assert.AreEqual("30", actual["c"].ConstValue);
 }
 ```
-```cs
+```csharp
 // Случай с двумя достигающими константами
 [Test]
 public void TwoConstValues()
@@ -188,7 +189,7 @@ public void TwoConstValues()
     Assert.AreEqual(LatticeTypeData.NAC, actual["c"].Type);
 }
 ```
-```cs
+```csharp
 // Распространение переменных из одного предшествующего блока
 [Test]
 public void PropagateTwoVariants2()
