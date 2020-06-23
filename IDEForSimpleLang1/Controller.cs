@@ -163,13 +163,38 @@ namespace IDEForSimpleLang1
 
         internal static string GetGraphInformation(ControlFlowGraph cfg) {
             var str = new StringBuilder();
-            str.AppendLine("Классификация ребер:");
+            str.AppendLine("Доминаторы:");
+            var domTree = new DominatorTree().GetDominators(cfg);
+
+            foreach (var pair in domTree)
+            {
+                foreach (var x in pair.Value)
+                {
+                    str.AppendLine($"{cfg.VertexOf(x)} dom {cfg.VertexOf(pair.Key)}");
+                }
+                str.AppendLine("----------------");
+            }
+
+
+            str.AppendLine("\r\nКлассификация ребер:");
             foreach (var pair in cfg.ClassifiedEdges)
             {
                 str.AppendLine($"{ pair }");
             }
 
+
+            str.AppendLine("\r\nОбходы графа:");
+
+            str.AppendLine($"Прямой: { string.Join(" -> ", cfg.PreOrderNumeration) }");
+            str.AppendLine($"Обратный: { string.Join(" -> ", cfg.PostOrderNumeration) }");
+
+            str.AppendLine($"\r\nГлубинное остовное дерево:");
+            foreach (var x in cfg.DepthFirstSpanningTree)
+            {
+                str.AppendLine($"({x.from} - > {x.to})");
+            }
             
+
             var backEdges = cfg.GetBackEdges();
             if (backEdges.Count > 0)
             {
@@ -228,6 +253,7 @@ namespace IDEForSimpleLang1
         internal static (string, string) ApplyIterativeAlgorithm(ControlFlowGraph cfg, List<string> opts) {
             var strReturn = new StringBuilder();
             var strBefore = new StringBuilder();
+
             foreach (var b in cfg.GetCurrentBasicBlocks())
             {
                 foreach (var inst in b.GetInstructions())
