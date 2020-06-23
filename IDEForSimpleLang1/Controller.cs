@@ -273,7 +273,7 @@ namespace IDEForSimpleLang1
                         AvailableExpressionsApplication.Execute(cfg, inout);
                         break;
                     case "Активные переменные":
-                        cfg = LiveVariableAnalysisOptimization.LiveVariableDeleteDeadCode(cfg);
+                        cfg = LiveVariableAnalysisOptimization.DeleteDeadCode(cfg);
                         break;
                     case "Достигающие определения":
                         var reachDef = new ReachingDefinitionsGlobal();

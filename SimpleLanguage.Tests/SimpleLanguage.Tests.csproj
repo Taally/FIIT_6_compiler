@@ -93,6 +93,7 @@
     <Compile Include="CFG\CFGdfsTests.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariableAnalysisOptimizationTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsGlobalTests.cs" />
     <Compile Include="DataFlowAnalysis\OptimalSpeedIterativeAlgorithmTests.cs" />
     <Compile Include="LoopsInCFG\BackEdgesTests.cs" />
