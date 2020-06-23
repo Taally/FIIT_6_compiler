@@ -276,7 +276,7 @@ namespace SimpleLang
 
         public override Dictionary<string, LatticeValue> Init { get; protected set; }
 
-        public override InOutData<Dictionary<string, LatticeValue>> Execute(ControlFlowGraph graph)
+        public override InOutData<Dictionary<string, LatticeValue>> Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             var blocks = graph.GetCurrentBasicBlocks();
             var variables = new HashSet<string>();
