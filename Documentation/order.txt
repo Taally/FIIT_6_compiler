@@ -49,3 +49,4 @@ Introduction.md
 4_CFGRegions.md
 4_BackEdges.md
 4_OptimalSpeedIterativeAlgorithm.md
+4_ReachingDefinitionsGlobal.md
