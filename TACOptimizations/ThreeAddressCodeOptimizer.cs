@@ -65,10 +65,7 @@ namespace SimpleLang
             basicBlockOptimizations = basicBlockOptimizations ?? new List<Optimization>();
             allCodeOptimizations = allCodeOptimizations ?? new List<Optimization>();
 
-            var blocks = UnreachableCodeElimination ?
-                BasicBlockLeader.DivideLeaderToLeader(new ControlFlowGraph(instructions).GetInstructions()) :
-                BasicBlockLeader.DivideLeaderToLeader(instructions);
-
+            var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
             for (var i = 0; i < blocks.Count; ++i)
             {
                 blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
