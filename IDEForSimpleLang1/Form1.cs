@@ -22,43 +22,55 @@ namespace IDEForSimpleLang1
 
         private void Compile_Click(object sender, EventArgs e)
         {
-            var sourceCode = textSourceCode.Text;
-            var parser = Controller.GetParser(sourceCode);
-
-            //AST
-            textAST.Text = "";
-            var indicesForAST = new List<int>();
-            foreach (var x in ASToptList.CheckedIndices)
+            try
             {
-                indicesForAST.Add(Int32.Parse(x.ToString()));
+                var sourceCode = textSourceCode.Text;
+                var parser = Controller.GetParser(sourceCode);
+
+                //AST
+                textAST.Text = "";
+                var indicesForAST = new List<int>();
+                foreach (var x in ASToptList.CheckedIndices)
+                {
+                    indicesForAST.Add(Int32.Parse(x.ToString()));
+                }
+                textAST.Text = Controller.GetASTWithOpt(parser, indicesForAST);
+
+                //TAC
+                var indicesForTAC = new List<int>();
+                foreach (var x in TACoptLocalList.CheckedIndices)
+                {
+                    indicesForTAC.Add(Int32.Parse(x.ToString()));
+                }
+                var resultTAC = Controller.GetTACWithOpt(parser, indicesForTAC);
+                textTAC.Text = resultTAC.str;
+
+                //Graph
+                var graph = Controller.BuildCFG(resultTAC.instructions);
+                GraphText.Text = graph.str;
+
+                InformText.Text = Controller.GetGraphInformation(graph.cfg);
+
+                //Iterative
+                var strings = new List<string>();
+                foreach (var x in ItOptList.CheckedItems)
+                {
+                    strings.Add(x.ToString());
+                }
+
+                var resultForIt = Controller.ApplyIterativeAlgorithm(graph.cfg, strings);
+                TACBeforeIt.Text = resultForIt.Item1;
+                TACBeforeIt.Text = resultForIt.Item2;
             }
-            textAST.Text = Controller.GetASTWithOpt(parser, indicesForAST);
-
-            //TAC
-            var indicesForTAC = new List<int>();
-            foreach (var x in TACoptLocalList.CheckedIndices)
-            {
-                indicesForTAC.Add(Int32.Parse(x.ToString()));
+            catch (Exception except){
+                textAST.Text = "" + except.Message;
+                textTAC.Text = "";
+                GraphText.Text = "" + except.Message;
+                InformText.Text = "";
+                TACBeforeIt.Text = "" + except.Message;
+                TACBeforeIt.Text = "";
             }
-            var resultTAC = Controller.GetTACWithOpt(parser, indicesForTAC);
-            textTAC.Text = resultTAC.str;
-
-            //Graph
-            var graph = Controller.BuildCFG(resultTAC.instructions);
-            GraphText.Text = graph.str;
-
-            InformText.Text = Controller.GetGraphInformation(graph.cfg);
-
-            //Iterative
-            var strings = new List<string>();
-            foreach (var x in ItOptList.CheckedItems)
-            {
-                strings.Add(x.ToString());
-            }
-
-            var resultForIt = Controller.ApplyIterativeAlgorithm(graph.cfg, strings);
-            TACBeforeIt.Text = resultForIt.Item1;
-            TACAfterIt.Text = resultForIt.Item2;
+            
         }
 
         private void SwitchOnAST_Click(object sender, EventArgs e)
@@ -91,6 +103,16 @@ namespace IDEForSimpleLang1
             {
                 TACoptLocalList.SetItemChecked(i, false);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            textAST.Text = "";
+            textTAC.Text = "";
+            GraphText.Text = "";
+            InformText.Text = "";
+            TACBeforeIt.Text = "";
+            TACBeforeIt.Text = "";
         }
     }
 }
