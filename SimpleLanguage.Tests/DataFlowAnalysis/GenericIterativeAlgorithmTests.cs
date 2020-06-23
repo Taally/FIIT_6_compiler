@@ -124,6 +124,7 @@ e = zz + i;"
                 (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
                 new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}),
 
+                (new List<OneExpression>(), new List<OneExpression>())
             };
 
             AssertSet(expected, actual);
@@ -133,6 +134,7 @@ e = zz + i;"
             List<(IEnumerable<T> IN, IEnumerable<T> OUT)> expected,
             List<(IEnumerable<T> IN, IEnumerable<T> OUT)> actual)
         {
+            Assert.AreEqual(expected.Count, actual.Count);
             for (var i = 0; i < expected.Count; ++i)
             {
                 CollectionAssert.AreEquivalent(expected[i].IN, actual[i].IN);
