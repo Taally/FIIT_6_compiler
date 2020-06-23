@@ -21,12 +21,19 @@ a = 8;
 ");
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            Assert.AreEqual(0, actual.Count);
             var result = new CFGregions(cfg);
+            var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+            var expected = new[]{
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (6, 6),
+            };
             Assert.AreEqual(7, result.Regions.Count);
-            Assert.AreEqual(6, result.Regions.Last().edges.Count);
-            Assert.AreEqual(6, result.Regions.Last().includedRegions.Count);
+            CollectionAssert.AreEquivalent(expected, actual);
         }
 
         [Test]
@@ -42,12 +49,21 @@ c = a + b;
 ");
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            Assert.AreEqual(1, actual.Count);
             var result = new CFGregions(cfg);
+            var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+            var expected = new[]{
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (1, 1),
+                (1, 2),
+                (4, 5)
+            };
             Assert.AreEqual(9, result.Regions.Count);
-            Assert.AreEqual(4, result.Regions[result.Regions.Count - 1].edges.Count);
-            Assert.AreEqual(5, result.Regions[result.Regions.Count - 1].includedRegions.Count);
+            CollectionAssert.AreEquivalent(expected, actual);
         }
 
         [Test]
@@ -67,12 +83,27 @@ c = a + b;
 ");
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            Assert.AreEqual(2, actual.Count);
             var result = new CFGregions(cfg);
+
+            var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+            var expected = new[]{
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (1, 1),
+                (1, 2),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (1, 1),
+                (1, 2),
+                (6, 7)
+            };
             Assert.AreEqual(14, result.Regions.Count);
-            Assert.AreEqual(6, result.Regions[result.Regions.Count - 1].edges.Count);
-            Assert.AreEqual(7, result.Regions[result.Regions.Count - 1].includedRegions.Count);
+            CollectionAssert.AreEquivalent(expected, actual);
         }
 
         [Test]
@@ -94,12 +125,34 @@ for x=1,10
 ");
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
-            var actual = NaturalLoop.GetAllNaturalLoops(cfg);
-            Assert.AreEqual(3, actual.Count);
+            var loops = NaturalLoop.GetAllNaturalLoops(cfg);
+            Assert.AreEqual(3, loops.Count);
             var result = new CFGregions(cfg);
+
+            var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
+            var expected = new[]{
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (0, 0),
+                (1, 2),
+                (1, 1),
+                (1, 2),
+                (1, 1),
+                (5, 6),
+                (1, 1),
+                (4, 5)
+            };
             Assert.AreEqual(19, result.Regions.Count);
-            Assert.AreEqual(4, result.Regions[result.Regions.Count - 1].edges.Count);
-            Assert.AreEqual(5, result.Regions[result.Regions.Count - 1].includedRegions.Count);
+            CollectionAssert.AreEquivalent(expected, actual);
         }
     }
 }
