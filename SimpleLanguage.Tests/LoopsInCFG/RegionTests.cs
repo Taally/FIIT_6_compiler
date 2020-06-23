@@ -22,6 +22,7 @@ a = 8;
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
             var result = new CFGregions(cfg);
+            result.Regions.Last().Print();
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -50,6 +51,7 @@ c = a + b;
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
             var result = new CFGregions(cfg);
+            result.Regions.Last().Print();
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -84,7 +86,7 @@ c = a + b;
             var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
             var result = new CFGregions(cfg);
-
+            result.Regions.Last().Print();
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -128,7 +130,7 @@ for x=1,10
             var loops = NaturalLoop.GetAllNaturalLoops(cfg);
             Assert.AreEqual(3, loops.Count);
             var result = new CFGregions(cfg);
-
+            result.Regions.Last().Print();
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
