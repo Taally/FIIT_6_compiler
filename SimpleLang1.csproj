@@ -56,7 +56,7 @@
     <Compile Include="DataFlowAnalysis\AvailableExpressions.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagation.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsGlobal.cs" />
-    <Compile Include="LoopsInCFG\AvailableExpressionsApplication.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionsApplication.cs" />
     <Compile Include="LoopsInCFG\BackEdges.cs" />
     <Compile Include="LoopsInCFG\CFGRegions.cs" />
     <Compile Include="LoopsInCFG\NaturalLoop.cs" />

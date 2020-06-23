@@ -3,9 +3,7 @@
 ### Постановка задачи
 Реализовать оптимизацию по трёхадресному коду вида:
 
-| До оптимизации | Общие подвыражения | Результат оптимизации |
-|-|-|-|
-| a = b + c  <br>b = a – d <br>c = b + c  <br>d = a - d   | a = *b + c* <br>***b =*** `a – d`<br>c = *b + c*<br>d = `a – d` | a = b + c  <br>`b` = a – d  <br>c = b + c  <br>d = `b` |
+![Постановка задачи](2_CommonExprElimination/t1z2.JPG)
 
 ### Команда
 Д. Лутченко, М. Письменский
@@ -62,10 +60,9 @@ public static bool IsCommutative(Instruction instr)
 }
 ```
 
-Что позволяет выполять оптимизации вида:  
-| До оптимизации | Общие подвыражения | Результат оптимизации |
-|-|-|-|
-| a = b + c  <br>c = c + b   | a = `b + c`<br>c = `c + b` | `a` = b + c<br>c = `a` |
+Что позволяет выполнять оптимизации вида:  
+
+![Вид оптимизаций](2_CommonExprElimination/t2z2.JPG)
 
 Ориентированнй граф связей подвыражений представлен следующим образом:
 ```csharp
@@ -169,12 +166,8 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 ```
 
 ### Примеры работы
-| До оптимизации | Общие подвыражения | Результат оптимизации |
-|-|-|-|
-| a = b + c  <br>c = c + b<br>с = c + b | a = `b + c`<br>***c =*** `c + b`<br>с = `c + b` | `a` = b + c  <br>c = `a`<br>с = c + b |
-| a = x + y  <br>b = y + x<br>a = q + z<br>a = x + y | a = `x + y` <br>b = `y + x`<br>***a =*** q + z<br>a = `x + y` | `a` = x + y  <br>`b` =`a`<br>a = q + z<br>a = `b` |
-| a = -x<br>b = -x | a = `-x`<br>b = `-x` | `a` = -x<br>b = `a`|
-| a = x<br>b = x | a = x<br>b = x | a = x<br>b = x |
+
+![Примеры работы](2_CommonExprElimination/t3z2.JPG)
 
 ### Тесты
 ##### Проверка несрабатывания оптимизации:

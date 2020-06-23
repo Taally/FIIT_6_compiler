@@ -72,7 +72,7 @@ namespace SimpleLang
 
         public override Direction Direction => Direction.Forward;
 
-        public override InOutData<List<OneExpression>> Execute(ControlFlowGraph graph)
+        public override InOutData<List<OneExpression>> Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             TransferFunction = new AvailableExpressionTransferFunc(graph).Transfer;
             var inOutData = base.Execute(graph);

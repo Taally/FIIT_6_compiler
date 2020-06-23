@@ -72,9 +72,9 @@ namespace SimpleLang
 
         private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
         {
-            var new_block = new BasicBlock();
-            new_block.AddInstruction(new Instruction("", "", curID.ToString(), "", ""));
-            children.Add(new_block, new List<BasicBlock>());
+            var body_block = new BasicBlock();
+            body_block.AddInstruction(new Instruction("", "", curID.ToString(), "", ""));
+            children.Add(body_block, new List<BasicBlock>());
             var cycle_edges = new List<(BasicBlock, BasicBlock)>();
 
             foreach (var cur_vertex in blocks)
@@ -87,7 +87,7 @@ namespace SimpleLang
                         if (child == cycle.First())
                         {
                             children[cur_vertex].Remove(child);
-                            children[cur_vertex].Add(new_block);
+                            children[cur_vertex].Add(body_block);
                         }
                     }
                 }
@@ -98,12 +98,12 @@ namespace SimpleLang
                     {
                         if (child == cycle.First())
                         {
-                            children[new_block].Add(new_block);
+                            children[body_block].Add(body_block);
                             children[cur_vertex].Remove(child);
                         }
                         else if (!cycle.Contains(child))
                         {
-                            children[new_block].Add(child);
+                            children[body_block].Add(child);
                             children[cur_vertex].Remove(child);
                         }
                         else
@@ -114,32 +114,54 @@ namespace SimpleLang
                     }
                 }
             }
-            blocks.Add(new_block);
+            blocks.Add(body_block);
             foreach (var bblock in cycle)
             {
                 blocks.Remove(bblock);
                 children.Remove(bblock);
             }
+            var innerRegions = cycle.Select(x => _regions[Block_to_region[x]]).ToList();
+            var innerEdged = cycle_edges.Select(x => (_regions[Block_to_region[x.Item1]], _regions[Block_to_region[x.Item2]])).ToList();
+
+            _regions.Add(new Region(innerRegions, innerEdged));
+            Block_to_region.Add(body_block, _regions.Count - 1);
+            curID++;
+
+            //add new node
+            var cycle_block = new BasicBlock();
+            cycle_block.AddInstruction(new Instruction("", "", curID.ToString(), "", ""));
+            blocks.Add(cycle_block);
+            children.Add(cycle_block, new List<BasicBlock>());
+
+            //clear old node
+            children[body_block].Remove(body_block);
+            foreach (var child in children[body_block])
+            {
+                children[cycle_block].Add(child);
+            }
+
+            foreach (var child_list in children)
+            {
+                if (child_list.Value.Remove(body_block))
+                    child_list.Value.Add(cycle_block);
+            }
+
+            _regions.Add(new Region(new List<Region>() { _regions[Block_to_region[body_block]] },
+                                    new List<(Region, Region)>() { (_regions[Block_to_region[body_block]], _regions[Block_to_region[body_block]]) }));
+            Block_to_region.Add(cycle_block, _regions.Count - 1);
+            children.Remove(body_block);
+            blocks.Remove(body_block);
+            curID++;
+
             for (var i = 0; i < cycles.Count; i++)
             {
                 var c = cycles[i].Count;
                 cycles[i] = cycles[i].Except(cycle).ToList();
                 if (cycles[i].Count != c)
                 {
-                    cycles[i].Add(new_block);
+                    cycles[i].Add(cycle_block);
                 }
             }
-            var innerRegions = cycle.Select(x => _regions[Block_to_region[x]]).ToList();
-            var innerEdged = cycle_edges.Select(x => (_regions[Block_to_region[x.Item1]], _regions[Block_to_region[x.Item2]])).ToList();
-
-            _regions.Add(new Region(innerRegions, innerEdged));
-            Block_to_region.Add(new_block, _regions.Count - 1);
-            curID++;
-
-            _regions.Add(new Region(new List<Region>() { _regions[Block_to_region[new_block]] },
-                                    new List<(Region, Region)>() { (_regions[Block_to_region[new_block]], _regions[Block_to_region[new_block]]) }));
-
-            children[new_block].Remove(new_block);
         }
     }
 }
