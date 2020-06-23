@@ -34,6 +34,7 @@ Introduction.md
 2_ThreeAddressCodeOptimizer.md
 3_CreateCFG.md
 3_LiveVariableAnalysis.md
+3_LiveVariableAnalysisOptimization.md 
 3_ReachingTransferFunc.md
 3_ConstPropagation.md
 3_TransferFunctionForConstPropagation.md 
