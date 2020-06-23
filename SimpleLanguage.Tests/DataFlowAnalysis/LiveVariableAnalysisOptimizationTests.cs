@@ -6,10 +6,10 @@ using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<List<Instruction>, (bool, List<Instruction>)>;
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool, IReadOnlyList<Instruction>)>;
 
     [TestFixture]
-    internal class LiveVariableAnalysisOptimizationTests : TACTestsBase
+    internal class LiveVariableAnalysisOptimizationTests : OptimizationsTestBase
     {
         [Test]
         public void Test1()
