@@ -1,25 +1,33 @@
-### AST-оптимизация замены оператора сравнения двух значений на его булево значение
+## AST-оптимизация замены оператора сравнения двух значений на его булево значение
 
-#### Постановка задачи
+### Постановка задачи
 Реализовать оптимизацию по AST дереву вида false == false -> true, 5 == 6 -> false
 
-#### Команда
+### Команда
 А. Пацеев, И. Ушаков
 
-#### Зависимые и предшествующие задачи
-Предшествующие задачи:
-* Построение AST дерева
+### Зависимые и предшествующие задачи
 
-#### Теоретическая часть
+Предшествующие:
+
+- Построение AST-дерева
+- Базовые визиторы
+- ChangeVisitor
+
+### Теоретическая часть
 Реализовать оптимизацию по AST дереву вида false == false -> true, 5 == 6 -> false
+
   * До
+  
   ```csharp
-    5 == 5
-    5 == 6
-    false == false
-    true == false
+  5 == 5
+  5 == 6
+  false == false
+  true == false
   ```
+
   * После
+  
   ```csharp
   true
   false
@@ -27,59 +35,60 @@
   false
   ```
 
-#### Практическая часть
-Эта оптимизация представляет собой визитор, унаследованный от ChangeVisitor. Пример реализации метода:
+### Практическая часть
+Эта оптимизация представляет собой визитор, унаследованный от `ChangeVisitor`. Пример реализации метода:
 
 ```csharp
-internal class OptExprEqualBoolNum : ChangeVisitor
+public class OptExprEqualBoolNum : ChangeVisitor
+{
+    public override void PostVisit(Node n)
     {
-        public override void PostVisit(Node n)
+        if (n is BinOpNode binop && binop.Op == OpType.EQUAL)
         {
-            if (n is BinOpNode binop)
+            if (binop.Left is IntNumNode intValLeft && binop.Right is IntNumNode intValRight)
             {
-                switch (binop.Op)
-                {
-                    case OpType.EQUAL:
-                        if (binop.Left is IntNumNode leftNode2 && binop.Right is IntNumNode rightNode2)
-                        {
-                            ReplaceExpr(binop, new BoolValNode(leftNode2.Num == rightNode2.Num));
-                            break;
-                        }
-                        if (binop.Left is BoolValNode leftNode3 && binop.Right is BoolValNode rightNode3)
-                        {
-                            ReplaceExpr(binop, new BoolValNode(leftNode3.Val == rightNode3.Val));
-                        }
-                        break;
-                }
+                ReplaceExpr(binop, new BoolValNode(intValLeft.Num == intValRight.Num));
+            }
+            else if (binop.Left is BoolValNode boolValLeft && binop.Right is BoolValNode boolValRight)
+            {
+                ReplaceExpr(binop, new BoolValNode(boolValLeft.Val == boolValRight.Val));
             }
         }
     }
+}
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
+Данная оптимизация выполняется вместе с остальными оптимизациями по абстрактному синтаксическому дереву.
+
 ```csharp
-public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
-       {
-             /* ... */
-           new OptExprEqualBoolNum(),
-             /* ... */
-       };
+private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+{
+    /* ... */
+    new OptExprEqualBoolNum(),
+    /* ... */
+};
 
-       public static void Optimize(Parser parser)
-       {
-           int optInd = 0;
-           do
-           {
-               parser.root.Visit(Optimizations[optInd]);
-               if (Optimizations[optInd].Changed)
-                   optInd = 0;
-               else
-                   ++optInd;
-           } while (optInd < Optimizations.Count);
-       }
+public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimizations = null)
+{
+    Optimizations = Optimizations ?? ASTOptimizations;
+    var optInd = 0;
+    do
+    {
+        parser.root.Visit(Optimizations[optInd]);
+        if (Optimizations[optInd].Changed)
+        {
+            optInd = 0;
+        }
+        else
+        {
+            ++optInd;
+        }
+    } while (optInd < Optimizations.Count);
+}
 ```
 
-#### Тесты
+### Тесты
 ```csharp
 [Test]
 public void SumNumTest()
@@ -88,7 +97,7 @@ public void SumNumTest()
 var b, c, d;
 b = true == true;
 while (5 == 5)
-  c = true == false;
+    c = true == false;
 d = 7 == 8;");
     var expected = new[] {
         "var b, c, d;",

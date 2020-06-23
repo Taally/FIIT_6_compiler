@@ -5,31 +5,32 @@ namespace SimpleLang
 {
     public static class ThreeAddressCodeFoldConstants
     {
-        public static (bool wasChanged, List<Instruction> instruction) FoldConstants(List<Instruction> instructions)
+        public static (bool wasChanged, IReadOnlyList<Instruction> instruction) FoldConstants(IReadOnlyCollection<Instruction> instructions)
         {
             var wasChanged = false;
             var result = new List<Instruction>();
-            for (var i = 0; i < instructions.Count; ++i)
+            foreach (var instruction in instructions)
             {
-                if (instructions[i].Argument2 != "")
+                if (instruction.Argument2 != "")
                 {
-                    if (int.TryParse(instructions[i].Argument1, out var intArg1) && int.TryParse(instructions[i].Argument2, out var intArg2))
+                    if (int.TryParse(instruction.Argument1, out var intArg1) && int.TryParse(instruction.Argument2, out var intArg2))
                     {
-                        var constant = CalculateConstant(instructions[i].Operation, intArg1, intArg2);
-                        result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
+                        var constant = CalculateConstant(instruction.Operation, intArg1, intArg2);
+                        result.Add(new Instruction(instruction.Label, "assign", constant, "", instruction.Result));
                         wasChanged = true;
                         continue;
                     }
-                    else if (bool.TryParse(instructions[i].Argument1, out var boolArg1) && bool.TryParse(instructions[i].Argument2, out var boolArg2))
+                    else if (bool.TryParse(instruction.Argument1, out var boolArg1) && bool.TryParse(instruction.Argument2, out var boolArg2))
                     {
-                        var constant = CalculateConstant(instructions[i].Operation, boolArg1, boolArg2);
-                        result.Add(new Instruction(instructions[i].Label, "assign", constant, "", instructions[i].Result));
+                        var constant = CalculateConstant(instruction.Operation, boolArg1, boolArg2);
+                        result.Add(new Instruction(instruction.Label, "assign", constant, "", instruction.Result));
                         wasChanged = true;
                         continue;
                     }
                 }
-                result.Add(instructions[i]);
+                result.Add(instruction);
             }
+
             return (wasChanged, result);
         }
 

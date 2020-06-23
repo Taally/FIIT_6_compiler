@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
@@ -13,12 +13,14 @@ namespace SimpleLang
         /// </summary>
         public static bool IsReducibleGraph(this ControlFlowGraph cfg)
             => new BackEdges(cfg).GraphIsReducible;
+
         /// <summary>
         /// Обратные рёбра
         /// </summary>
         /// <returns>Список обратных рёбер</returns>
         public static IReadOnlyList<(BasicBlock, BasicBlock)> GetBackEdges(this ControlFlowGraph cfg)
             => new BackEdges(cfg).BackEdgesFromCFG;
+
         /// <summary>
         /// Класс обратных рёбер
         /// </summary>
@@ -30,23 +32,27 @@ namespace SimpleLang
                 Gray,
                 Black
             }
+
             internal IReadOnlyList<(BasicBlock From, BasicBlock To)> BackEdgesFromCFG
             {
                 get => enumBackEdges.Select(edge => (edge.From, edge.To)).ToList();
                 private set { }
             }
+
             internal bool GraphIsReducible => CheckReducibility();
             #region
             private readonly List<Edge> enumBackEdges = new List<Edge>();
             private readonly List<Edge> enumEdgesCFG = new List<Edge>();
             private readonly ControlFlowGraph controlFlowGraph;
             private readonly Dictionary<BasicBlock, BlockColor> BlockColorDictionary = new Dictionary<BasicBlock, BlockColor>();
+
             public BackEdges(ControlFlowGraph cfg)
             {
                 controlFlowGraph = cfg;
                 EdgesFromCFG();
                 GetBackEdges();
             }
+
             private void EdgesFromCFG()
             {
                 foreach (var block in controlFlowGraph.GetCurrentBasicBlocks())
@@ -58,6 +64,7 @@ namespace SimpleLang
                     }
                 }
             }
+
             private void GetBackEdges()
             {
                 var dominators = new DominatorTree().GetDominators(controlFlowGraph);
@@ -69,6 +76,7 @@ namespace SimpleLang
                     }
                 }
             }
+
             private bool CheckReducibility()
             {
                 foreach (var block in controlFlowGraph.GetCurrentBasicBlocks())
@@ -84,6 +92,7 @@ namespace SimpleLang
                 }
                 return true;
             }
+
             private bool OpenBlock(BasicBlock block)
             {
                 if (BlockColorDictionary[block] == BlockColor.White)
@@ -107,7 +116,7 @@ namespace SimpleLang
                 BlockColorDictionary[block] = BlockColor.Black;
                 return true;
             }
-            private bool ContainsEdge(List<Edge> edges, Edge edgeGraph)
+            private bool ContainsEdge(IReadOnlyCollection<Edge> edges, Edge edgeGraph)
             {
                 foreach (var edge in edges)
                 {

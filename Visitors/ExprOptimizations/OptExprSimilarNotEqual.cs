@@ -2,30 +2,21 @@
 
 namespace SimpleLang.Visitors
 {
-    internal class OptExprSimilarNotEqual : ChangeVisitor
+    public class OptExprSimilarNotEqual : ChangeVisitor
     {
-        public override void VisitBinOpNode(BinOpNode binop)
+        public override void PostVisit(Node n)
         {
-            if (
-                // Для цифр и значений bool :
-                binop.Left is IntNumNode && binop.Right is IntNumNode && (binop.Left as IntNumNode).Num == (binop.Right as IntNumNode).Num && (binop.Op == OpType.GREATER || binop.Op == OpType.LESS)
-                || binop.Left is BoolValNode && binop.Right is BoolValNode && (binop.Left as BoolValNode).Val == (binop.Right as BoolValNode).Val && (binop.Op == OpType.GREATER || binop.Op == OpType.LESS)
-                || binop.Left is IntNumNode && binop.Right is IntNumNode && (binop.Left as IntNumNode).Num == (binop.Right as IntNumNode).Num && binop.Op == OpType.NOTEQUAL
-                || binop.Left is BoolValNode && binop.Right is BoolValNode && (binop.Left as BoolValNode).Val == (binop.Right as BoolValNode).Val && binop.Op == OpType.NOTEQUAL
-                // Для переменных :
-                || binop.Left is IdNode && binop.Right is IdNode && (binop.Left as IdNode).Name == (binop.Right as IdNode).Name && (binop.Op == OpType.GREATER || binop.Op == OpType.LESS)
-                || binop.Left is IdNode && binop.Right is IdNode && (binop.Left as IdNode).Name == (binop.Right as IdNode).Name && binop.Op == OpType.NOTEQUAL
-                )
+            if (n is BinOpNode binOpNode &&
+                (binOpNode.Op == OpType.GREATER || binOpNode.Op == OpType.LESS || binOpNode.Op == OpType.NOTEQUAL)
+                &&
+                // Для цифр и значений bool:
+                (binOpNode.Left is IntNumNode inl && binOpNode.Right is IntNumNode inr && inl.Num == inr.Num
+                || binOpNode.Left is BoolValNode bvl && binOpNode.Right is BoolValNode bvr && bvl.Val == bvr.Val
+                // Для переменных:
+                || binOpNode.Left is IdNode idl && binOpNode.Right is IdNode idr && idl.Name == idr.Name))
             {
-                binop.Left.Visit(this);
-                binop.Right.Visit(this); // Вначале сделать то же в правом поддереве
-                ReplaceExpr(binop, new BoolValNode(false)); // Заменить себя на своё правое поддерево
+                ReplaceExpr(binOpNode, new BoolValNode(false));
             }
-            else
-            {
-                base.VisitBinOpNode(binop);
-            }
-
         }
     }
 }

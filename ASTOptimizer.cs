@@ -6,12 +6,13 @@ namespace SimpleLang
 {
     public static class ASTOptimizer
     {
-        private static List<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+        private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
         {
             new OptExprVarEqualToItself(),
             new OptExprMultDivByOne(),
             new OptExprMultZero(),
             new OptExprSumZero(),
+            new OptExprWithOperationsBetweenConsts(),
             new OptStatIfTrue(),
             new OptStatIfFalse(),
             new OptExprEqualBoolNum(),
@@ -25,7 +26,7 @@ namespace SimpleLang
             new OptExprSubEqualVar()
         };
 
-        public static void Optimize(Parser parser, List<ChangeVisitor> Optimizations = null)
+        public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimizations = null)
         {
             Optimizations = Optimizations ?? ASTOptimizations;
             var optInd = 0;

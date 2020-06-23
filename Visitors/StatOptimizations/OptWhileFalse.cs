@@ -15,10 +15,6 @@ namespace SimpleLang.Visitors
             {
                 ReplaceStat(n, new EmptyNode());
             }
-            else
-            {
-                n.Expr.Visit(this);
-            }
         }
     }
 }

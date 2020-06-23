@@ -1,76 +1,89 @@
-### AST-оптимизация замены while(false) st ветки на null
+## AST-оптимизация замены while(false) st ветки на null
 
-#### Постановка задачи
+### Постановка задачи
+
 Реализовать оптимизацию по AST дереву вида while (false) st на null
 
-#### Команда
+### Команда
 А. Пацеев, И. Ушаков
 
-#### Зависимые и предшествующие задачи
-Предшествующие задачи:
-* AST дерево
+### Зависимые и предшествующие задачи
 
-#### Теоретическая часть
+Предшествующие:
+
+- Построение AST-дерева
+- Базовые визиторы
+- ChangeVisitor
+
+### Теоретическая часть
+
 Реализовать оптимизацию по AST дереву вида while(false) st -> null
+
   * До
+
   ```csharp
 	while (false) 
     	a = 5; 
   ```
+
   * После
+
   ```csharp
 	null
   ```
 
-#### Практическая часть
-Эта оптимизация представляет собой визитор, унаследованный от ChangeVisitor. Пример реализации метода:
+### Практическая часть
+
+Эта оптимизация представляет собой визитор, унаследованный от `ChangeVisitor`. Пример реализации метода:
 
 ```csharp
-internal class OptWhileFalseVisitor : ChangeVisitor
+public class OptWhileFalseVisitor : ChangeVisitor
+{
+    public override void PostVisit(Node nd)
     {
-        public override void PostVisit(Node nd)
+        if (!(nd is WhileNode n))
         {
-            if (!(nd is WhileNode n))
-            {
-                return;
-            }
+            return;
+        }
 
-            if (n.Expr is BoolValNode bn && !bn.Val)
-            {
-                ReplaceStat(n, new EmptyNode());
-            }
-            else
-            {
-                n.Expr.Visit(this);
-            }
+        if (n.Expr is BoolValNode bn && !bn.Val)
+        {
+            ReplaceStat(n, new EmptyNode());
         }
     }
+}
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
+
 ```csharp
-public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
-       {
-             /* ... */
-           new OptWhileFalseVisitor(),
-             /* ... */
-       };
+private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+{
+    /* ... */
+    new OptWhileFalseVisitor(),
+    /* ... */
+};
 
-       public static void Optimize(Parser parser)
-       {
-           int optInd = 0;
-           do
-           {
-               parser.root.Visit(Optimizations[optInd]);
-               if (Optimizations[optInd].Changed)
-                   optInd = 0;
-               else
-                   ++optInd;
-           } while (optInd < Optimizations.Count);
-       }
+public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimizations = null)
+{
+    Optimizations = Optimizations ?? ASTOptimizations;
+    var optInd = 0;
+    do
+    {
+        parser.root.Visit(Optimizations[optInd]);
+        if (Optimizations[optInd].Changed)
+        {
+            optInd = 0;
+        }
+        else
+        {
+            ++optInd;
+        }
+    } while (optInd < Optimizations.Count);
+}
 ```
 
-#### Тесты
+### Тесты
 
 ```csharp
 [Test]
@@ -90,6 +103,7 @@ a = true;");
 [Test]
 public void TestShouldNotCreateNoop()
 {
+
     var AST = BuildAST(@"var a;
 a = false;
 while a

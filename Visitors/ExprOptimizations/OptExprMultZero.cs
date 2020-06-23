@@ -4,15 +4,15 @@ namespace SimpleLang.Visitors
 {
     public class OptExprMultZero : ChangeVisitor
     {
-        public override void VisitBinOpNode(BinOpNode binOpNode)
+        public override void PostVisit(Node n)
         {
-            base.VisitBinOpNode(binOpNode);
-            var operationIsMult = binOpNode.Op == OpType.MULT;
-            var leftIsZero = binOpNode.Left is IntNumNode && (binOpNode.Left as IntNumNode).Num == 0;
-            var rightIsZero = binOpNode.Right is IntNumNode && (binOpNode.Right as IntNumNode).Num == 0;
-            if (operationIsMult && (leftIsZero || rightIsZero))
+            if (n is BinOpNode binOpNode && binOpNode.Op == OpType.MULT &&
+                (binOpNode.Left is IntNumNode intNumLeft && intNumLeft.Num == 0 ||
+                binOpNode.Right is IntNumNode intNumRight && intNumRight.Num == 0))
             {
-                ReplaceExpr(binOpNode, new IntNumNode(0));
+                {
+                    ReplaceExpr(binOpNode, new IntNumNode(0));
+                }
             }
         }
     }

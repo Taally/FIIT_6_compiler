@@ -1,83 +1,103 @@
-### AST-оптимизация замены if(false) на его else ветку
+## AST-оптимизация замены if(false) на его else ветку
 
-#### Постановка задачи
+### Постановка задачи
+
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
 
-#### Команда
+### Команда
+
 К. Галицкий, А. Черкашин
 
-#### Зависимые и предшествующие задачи
-Предшествующие задачи:
-* AST дерево
+### Зависимые и предшествующие задачи
 
-#### Теоретическая часть
+Предшествующие:
+
+- Построение AST-дерева
+- Базовые визиторы
+- ChangeVisitor
+
+### Теоретическая часть
+
 Реализовать оптимизацию по AST дереву вида if(false) st1 else st2 => st2
+
   * До
+
   ```csharp
   if(false)
     st1;
   else
     st2;
   ```
+
   * После
+
   ```csharp
   st2;
   ```
 
-#### Практическая часть
-Примеры реализации метода:
+### Практическая часть
+
+Если условием выражения "if" является константа "false" необходимо заменить все выражение на его "else ветку", в случае отсутствия ветки "else" производим замену на пустой оператор.
+Пример реализации метода:
 
 ```csharp
-    if (n is IfElseNode ifNode)  // Если это корень if
-        if (ifNode.Expr is BoolValNode boolNode && boolNode.Val == false) // Если выражение == false
+public class OptStatIfFalse : ChangeVisitor
+{
+    public override void PostVisit(Node n)
+    {
+        // if (false) st1; else st2; => st2;
+        if (n is IfElseNode ifNode &&
+            ifNode.Expr is BoolValNode boolNode && boolNode.Val == false) // Если выражение == false
         {
-            if (ifNode.FalseStat != null)  // Если ветка fasle не NULL
+            if (ifNode.FalseStat != null) // Если ветка false не null
             {
-                ifNode.FalseStat.Visit(this);
-                ReplaceStat(ifNode, ifNode.FalseStat);  //  Меняем наш корень на ветку else
+                ReplaceStat(ifNode, ifNode.FalseStat); // Меняем наш корень на ветку else
             }
-            else 
+            else
             {
                 ReplaceStat(ifNode, new EmptyNode());
             }
         }
+    }
+}
 ```
 
-#### Место в общем проекте (Интеграция)
-```csharp
-public static List<ChangeVisitor> Optimizations { get; } = new List<ChangeVisitor>
-       {
-             /* ... */
-           new OptStatIfFalse(),
-             /* ... */
-       };
+### Место в общем проекте (Интеграция)
 
-       public static void Optimize(Parser parser)
-       {
-           int optInd = 0;
-           do
-           {
-               parser.root.Visit(Optimizations[optInd]);
-               if (Optimizations[optInd].Changed)
-                   optInd = 0;
-               else
-                   ++optInd;
-           } while (optInd < Optimizations.Count);
-       }
+Данная оптимизация выполняется на AST-дереве, построенном для данной программы. Применяется в классе `ASTOptimizer`.
+```csharp
+private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List<ChangeVisitor>
+{
+    /* ... */
+    new OptStatIfFalse(),
+    /* ... */
+};
 ```
 
-#### Пример работы
-Исходный код программы:
+### Тесты
+
+В тестах проверяется работоспособность оптимизации и соответствие результатов:
+
 ```csharp
+[Test]
+public void IfFalseBlockTest()
+{
+    var AST = BuildAST(@"
 var a, b;
-b = 5
-if(false)
-  a = 3;
+if false {
+a = b;
+b = 1;
+}
 else
-  a = 57;
-```
-Результат работы:
-```csharp
-b = 5;
-a = 57;
+a = 1;
+");
+
+    var expected = new[] {
+        "var a, b;",
+        "a = 1;"
+    };
+
+    var result = ApplyOpt(AST, new OptStatIfFalse());
+    CollectionAssert.AreEqual(expected, result);
+}
 ```

@@ -1,19 +1,21 @@
-### Анализ активных переменных
+## Анализ активных переменных
 
-#### Постановка задачи
+### Постановка задачи
 Необходимо накопить IN-OUT информацию для дальнейшей оптимизации «Живые и мертвые переменные» между базовыми блоками.
 
-#### Команда
+### Команда
 А. Татарова, Т. Шкуро
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 Предшествующие:
+
 - Построение графа потока управления
 
 Зависимые:
+
 - Использование информации IN-OUT в удалении мертвого кода (Живые и мертвые переменные)
 
-#### Теоретическая часть
+### Теоретическая часть
 Для переменной x и точки p анализ выясняет, может ли значение x из точки p использоваться вдоль некоторого пути в графе потока управления, начинающемся в точке p. Если может, то переменная x активна(жива) в точке p, если нет — неактивна(мертва). 
 __defB__ – множество переменных, определенных в блоке B до любых их использований в этом блоке.
 __useB__ -  множество переменных, значения которых могут использоваться в блоке B до любых определений этих переменных.
@@ -35,7 +37,7 @@ __useB__ -  множество переменных, значения котор
 
 Анализ активных переменных идет обратно направлению потока управления, поскольку необходимо проследить, что использование переменной x в точке p передается всем точкам, предшествующим p вдоль путей выполнения. 
 
-#### Практическая часть
+### Практическая часть
 Первым шагом для каждого блока строятся def и use множества переменных. 
 ```csharp
 private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> block)
@@ -43,22 +45,22 @@ private (HashSet<string> def, HashSet<string> use) FillDefUse(List<Instruction> 
     Func<string, bool> IsId = ThreeAddressCodeDefUse.IsId;
     var def = new HashSet<string>();
     var use = new HashSet<string>();
-    for (var i = 0; i < block.Count; ++i)
+    foreach (var instruction in block)
     {
-        var inst = block[i];
-        if (IsId(inst.Argument1) && !def.Contains(inst.Argument1))
+        if (IsId(instruction.Argument1) && !def.Contains(instruction.Argument1))
         {
-            use.Add(inst.Argument1);
+            use.Add(instruction.Argument1);
         }
-        if (IsId(inst.Argument2) && !def.Contains(inst.Argument2))
+        if (IsId(instruction.Argument2) && !def.Contains(instruction.Argument2))
         {
-            use.Add(inst.Argument2);
+            use.Add(instruction.Argument2);
         }
-        if (IsId(inst.Result) && !use.Contains(inst.Result))
+        if (IsId(instruction.Result) && !use.Contains(instruction.Result))
         {
-            def.Add(inst.Result);
+            def.Add(instruction.Result);
         }
     }
+    
     return (def, use);
 }
 ```
@@ -105,7 +107,7 @@ public void ExecuteInternal(ControlFlowGraph cfg)
 }
 ```
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 Анализ активных переменных является одним из итерационных алгоритмов по графу потока управления, преобразующих глобально текст программы. 
 На данный момент анализ представлен как отдельный метод (```ExecuteInternal```) и как реализация абстрактного класса, представляющего собой обобщенный итерационный алгоритм:
 
@@ -126,7 +128,7 @@ public void ExecuteInternal(ControlFlowGraph cfg)
     }
 ```
 
-#### Тесты
+### Тесты
 В тестах проверяется, что для заданного текста программы (для которого генерируется трехадресный код и граф потока управления по нему) анализ активных переменных возвращает ожидаемые IN-OUT множества для каждого блока:
 ```csharp
 [Test]

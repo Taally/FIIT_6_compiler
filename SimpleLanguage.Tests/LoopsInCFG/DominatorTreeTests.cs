@@ -12,14 +12,6 @@ namespace SimpleLanguage.Tests.LoopsInCFG
     [TestFixture]
     internal class DominatorTreeTests : TACTestsBase
     {
-        private ControlFlowGraph BuildCFG(string program)
-        {
-            var TAC = GenTAC(program);
-            var optResult = ThreeAddressCodeOptimizer.OptimizeAll(TAC);
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(optResult);
-            return new ControlFlowGraph(blocks);
-        }
-
         private void TestInternal(ControlFlowGraph graph,
             DominatorDictionary expectedDoms,
             ParentsDictionary expectedParents,
@@ -47,7 +39,7 @@ namespace SimpleLanguage.Tests.LoopsInCFG
         [Test]
         public void EmptyProgram()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a;
 ");
             var blocks = graph.GetCurrentBasicBlocks();
@@ -74,7 +66,7 @@ var a;
         [Test]
         public void BasicTest()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a;
 a = 1;
 ");
@@ -105,7 +97,7 @@ a = 1;
         [Test]
         public void LinearStructTest()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a, b, c, d, e, f;
 1: a = 1;
 b = 2;
@@ -153,7 +145,7 @@ goto 4;
         [Test]
         public void SimpleBranchingTest()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a;
 input(a);
 1: if a == 0
@@ -194,7 +186,7 @@ a = 2;
         [Test]
         public void DoubleBranchingTest()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a;
 input(a);
 1: if a == 0
@@ -243,7 +235,7 @@ a = 2;
         [Test]
         public void BranchingAtTheEndTest()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a, b, c;
 input(a);
 b = a * a;
@@ -288,7 +280,7 @@ else
         [Test]
         public void SimpleLoopTest()
         {
-            var graph = BuildCFG(@"
+            var graph = BuildTACOptimizeCFG(@"
 var a, b, i;
 input(a);
 for i = 1, 10

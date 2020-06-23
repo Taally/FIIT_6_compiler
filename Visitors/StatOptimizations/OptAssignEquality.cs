@@ -4,11 +4,11 @@ namespace SimpleLang.Visitors
 {
     public class OptAssignEquality : ChangeVisitor
     {
-        public override void VisitAssignNode(AssignNode n)
+        public override void PostVisit(Node n)
         {
-            if (n.Expr is IdNode idn && n.Id.Name == idn.Name)
+            if (n is AssignNode assignNode && assignNode.Expr is IdNode idn && assignNode.Id.Name == idn.Name)
             {
-                ReplaceStat(n, new EmptyNode());
+                ReplaceStat(assignNode, new EmptyNode());
             }
         }
     }

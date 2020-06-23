@@ -55,8 +55,9 @@
     <Compile Include="ASTOptimizer.cs" />
     <Compile Include="DataFlowAnalysis\AvailableExpressions.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagation.cs" />
-    <Compile Include="DataFlowAnalysis\ReachingDefinitionsGlobal.cs" />
+    <Compile Include="LoopsInCFG\AvailableExpressionsApplication.cs" />
     <Compile Include="LoopsInCFG\BackEdges.cs" />
+    <Compile Include="LoopsInCFG\CFGRegions.cs" />
     <Compile Include="LoopsInCFG\NaturalLoop.cs" />
     <Compile Include="DataFlowAnalysis\BitUtils.cs" />
     <Compile Include="DataFlowAnalysis\DefinitionInfo.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Visitors\ExprOptimizations\OptExprSubEqualVar.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprSumZero.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprTransformUnaryToValue.cs" />
+    <Compile Include="Visitors\ExprOptimizations\OptExprWithOperationsBetweenConsts.cs" />
     <Compile Include="Visitors\FillParentsVisitor.cs" />
     <Compile Include="Visitors\ChangeVisitor.cs" />
     <Compile Include="Visitors\ExprOptimizations\OptExprVarEqualToItself.cs" />

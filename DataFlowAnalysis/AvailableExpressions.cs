@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,145 +28,138 @@ namespace SimpleLang
             Argument2 = instruction.Argument2;
         }
 
-        public bool Equals(OneExpression expr1, OneExpression expr2)
-            => expr1.Operation == expr2.Operation
-                    && (expr1.Argument1 == expr2.Argument1 && expr1.Argument2 == expr2.Argument2
-                    || expr1.Argument1 == expr2.Argument2 && expr1.Argument2 == expr2.Argument1);
-
-        public bool Equals(OneExpression expr2)
-            => Equals(this, expr2);
-
         public override string ToString()
             => Argument1 + " " + Operation + " " + Argument2;
 
         public bool ContainsVariable(string variable)
             => Argument1 == variable || Argument2 == variable;
 
-        public int GetHashCode(OneExpression obj)
-            => throw new NotImplementedException();
+        public override bool Equals(object obj) =>
+            obj != null
+            && obj is OneExpression expr
+            && Operation == expr.Operation
+            && Argument1 == expr.Argument1
+            && Argument2 == expr.Argument2;
+
+        public override int GetHashCode() =>
+            Operation.GetHashCode()
+            ^ Argument1.GetHashCode()
+            ^ Argument2.GetHashCode();
         #endregion
     }
+
     /// <summary>
     /// Доступные выражения. Реализует итеративный алгоритм
     /// </summary>
     public class AvailableExpressions : GenericIterativeAlgorithm<List<OneExpression>>
     {
         #region
-        private ControlFlowGraph CFG;
         public override Func<List<OneExpression>, List<OneExpression>, List<OneExpression>> CollectingOperator
-            => (a, b) => a.Intersection(b);
+            => (a, b) => a.Intersect(b, new ExpressionEqualityComparer()).ToList();
 
         public override Func<List<OneExpression>, List<OneExpression>, bool> Compare
-            => (a, b) => a.IsEqual(b);
+            => (a, b) => !a.Except(b, new ExpressionEqualityComparer()).Any() && a.Count == b.Count;
+
         public override List<OneExpression> InitFirst { get => new List<OneExpression>(); protected set { } }
-        public override List<OneExpression> Init { get => AvailableExpressionTransferFunc.GetU(CFG); protected set { } }
+
+        public override List<OneExpression> Init
+        {
+            get => AvailableExpressionTransferFunc.UniversalSequence;
+            protected set { }
+        }
+
         public override Func<BasicBlock, List<OneExpression>, List<OneExpression>> TransferFunction { get; protected set; }
+
         public override Direction Direction => Direction.Forward;
+
         public override InOutData<List<OneExpression>> Execute(ControlFlowGraph graph)
         {
-            CFG = graph;
             TransferFunction = new AvailableExpressionTransferFunc(graph).Transfer;
-            GetInitData(graph, out var blocks, out var data,
-                out var getPreviousBlocks, out var getDataValue, out var combine);
-
-            var outChanged = true;
-            while (outChanged)
+            var inOutData = base.Execute(graph);
+            var outBlock = graph.GetCurrentBasicBlocks().Last();
+            if (graph.GetParentsBasicBlocks(graph.VertexOf(outBlock)).Count == 0)
             {
-                outChanged = false;
-                foreach (var block in blocks)
-                {
-                    var sets = getPreviousBlocks(block).Select(x => getDataValue(x));
-                    var inset = new List<OneExpression>();
-                    var count = sets.Count();
-                    if (count == 1)
-                    {
-                        inset = sets.First();
-                    }
-                    if (count >= 2)
-                    {
-                        inset = getPreviousBlocks(block).Aggregate(Init, (x, y) => CollectingOperator(x, getDataValue(y)));
-                    }
-                    var outset = TransferFunction(block, inset);
-                    if (!Compare(outset, getDataValue(block)))
-                    {
-                        outChanged = true;
-                    }
-                    data[block] = combine(inset, outset);
-                }
+                inOutData[outBlock] = (new List<OneExpression>(), new List<OneExpression>());
             }
-            return data;
+            return inOutData;
         }
         #endregion
     }
+
     /// <summary>
     /// Класс, определяющий передаточную функцию
     /// </summary>
     public class AvailableExpressionTransferFunc
     {
-        private static List<OneExpression> u;
+        public static List<OneExpression> UniversalSequence;
         private readonly Dictionary<BasicBlock, List<OneExpression>> e_gen;
         private readonly Dictionary<BasicBlock, List<OneExpression>> e_kill;
         private static readonly List<string> operationTypes = new List<string> { "OR", "AND", "LESS", "PLUS", "MINUS", "MULT", "DIV" };
+
         public AvailableExpressionTransferFunc(ControlFlowGraph graph)
         {
-            u = new List<OneExpression>();
             e_gen = new Dictionary<BasicBlock, List<OneExpression>>();
             e_kill = new Dictionary<BasicBlock, List<OneExpression>>();
             Initialization(graph);
         }
+
         #region
         public List<OneExpression> Transfer(BasicBlock basicBlock, List<OneExpression> input)
             => E_gen_join(basicBlock, In_minus_e_kill(basicBlock, input));
-        public static List<OneExpression> GetU(ControlFlowGraph graph)
+
+        private List<OneExpression> GetU(ControlFlowGraph graph)
         {
-            var blocks = graph.GetCurrentBasicBlocks();
-            foreach (var block in blocks)
+            foreach (var block in graph.GetCurrentBasicBlocks())
             {
-                var instructions = block.GetInstructions();
-                foreach (var instruction in instructions)
+                foreach (var instruction in block.GetInstructions())
                 {
                     if (operationTypes.Contains(instruction.Operation))
                     {
                         var newExpr = new OneExpression(instruction);
-                        if (!u.ContainsExpression(newExpr))
+                        if (!UniversalSequence.Contains(newExpr, new ExpressionEqualityComparer()))
                         {
-                            u.Add(newExpr);
+                            UniversalSequence.Add(newExpr);
                         }
                     }
                 }
             }
-            return u;
+            return UniversalSequence;
         }
+
         private void Initialization(ControlFlowGraph graph)
         {
+            UniversalSequence = new List<OneExpression>();
             GetU(graph);
             Get_e_gen(graph);
             Get_e_kill(graph);
         }
+
         private List<OneExpression> In_minus_e_kill(BasicBlock basicBlock, List<OneExpression> input)
         {
             var result = new List<OneExpression>(input);
             foreach (var expression in e_kill[basicBlock])
             {
-                if (result.ContainsExpression(expression))
+                if (result.Contains(expression))
                 {
-                    RemoveExpression(result, expression);
+                    result.Remove(expression);
                 }
             }
             return result;
         }
+
         private List<OneExpression> E_gen_join(BasicBlock basicBlock, List<OneExpression> list)
         {
             var result = new List<OneExpression>(e_gen[basicBlock]);
             foreach (var expression in list)
             {
-                if (!result.ContainsExpression(expression))
+                if (!result.Contains(expression))
                 {
                     result.Add(expression);
                 }
             }
             return result;
         }
+
         private void Get_e_gen(ControlFlowGraph graph)
         {
             foreach (var block in graph.GetCurrentBasicBlocks())
@@ -177,7 +170,7 @@ namespace SimpleLang
                     if (operationTypes.Contains(instruction.Operation))
                     {
                         var newExpr = new OneExpression(instruction);
-                        if (!s.ContainsExpression(newExpr))
+                        if (!s.Contains(newExpr))
                         {
                             s.Add(newExpr);
                         }
@@ -191,6 +184,7 @@ namespace SimpleLang
                 e_gen.Add(block, s);
             }
         }
+
         private void Get_e_kill(ControlFlowGraph graph)
         {
             foreach (var block in graph.GetCurrentBasicBlocks())
@@ -200,9 +194,9 @@ namespace SimpleLang
                 {
                     if (operationTypes.Contains(instruction.Operation) || instruction.Operation == "assign")
                     {
-                        foreach (var expression in u.Where(x => x.ContainsVariable(instruction.Result)).ToList())
+                        foreach (var expression in UniversalSequence.Where(x => x.ContainsVariable(instruction.Result)).ToList())
                         {
-                            if (!K.ContainsExpression(expression))
+                            if (!K.Contains(expression))
                             {
                                 K.Add(expression);
                             }
@@ -211,69 +205,21 @@ namespace SimpleLang
                 }
                 foreach (var genExpression in e_gen[block])
                 {
-                    RemoveExpression(K, genExpression);
+                    K.Remove(genExpression);
                 }
                 e_kill.Add(block, K);
             }
         }
-        private void RemoveExpression(List<OneExpression> K, OneExpression expression)
-        {
-            for (var i = 0; i < K.Count; i++)
-            {
-                if (K[i].Equals(expression))
-                {
-                    K.RemoveAt(i);
-                }
-            }
-        }
         #endregion
     }
-    public static class ListExtensionForAvailableExpression
-    {
-        #region
-        public static List<OneExpression> Intersection(this List<OneExpression> list1, List<OneExpression> list2)
-        {
-            var result = new List<OneExpression>();
-            foreach (var oneExpression in list1)
-            {
-                if (list2.ContainsExpression(oneExpression))
-                {
-                    result.Add(oneExpression);
-                }
-            }
-            return result;
-        }
-        public static bool IsEqual(this List<OneExpression> list1, List<OneExpression> list2)
-        {
-            if (list1 == null || list2 == null)
-            {
-                return false;
-            }
-            foreach (var expression in list1)
-            {
-                if (!list2.ContainsExpression(expression))
-                {
-                    return false;
-                }
-            }
-            return list1.Count == list2.Count;
-        }
 
-        public static bool ContainsExpression(this List<OneExpression> list, OneExpression expr)
-        {
-            if (list == null)
-            {
-                return false;
-            }
-            foreach (var elem in list)
-            {
-                if (elem.Equals(expr))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        #endregion
+    internal class ExpressionEqualityComparer : IEqualityComparer<OneExpression>
+    {
+        public bool Equals(OneExpression expr1, OneExpression expr2)
+            => expr1.Operation == expr2.Operation
+            && (expr1.Argument1 == expr2.Argument1 && expr1.Argument2 == expr2.Argument2
+            || expr1.Argument1 == expr2.Argument2 && expr1.Argument2 == expr2.Argument1);
+
+        public int GetHashCode(OneExpression obj) => obj.Operation.GetHashCode() + obj.Argument1.GetHashCode() + obj.Argument2.GetHashCode();
     }
 }

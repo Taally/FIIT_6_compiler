@@ -72,6 +72,8 @@
   <ItemGroup>
     <Compile Include="AST\ASTOptimizerTests.cs" />
     <Compile Include="AST\ASTTestsBase.cs" />
+    <Compile Include="AST\OptExprSimilarNotEqualTests.cs" />
+    <Compile Include="AST\OptAssignEqualityTests.cs" />
     <Compile Include="AST\OptExprAlgebraicTests.cs" />
     <Compile Include="AST\OptExprEqualBoolNumTests.cs" />
     <Compile Include="AST\OptExprFoldUnaryTests.cs" />
@@ -80,9 +82,13 @@
     <Compile Include="AST\OptExprSubEqualVarTests.cs" />
     <Compile Include="AST\OptExprSumZeroTests.cs" />
     <Compile Include="AST\OptExprTransformUnaryToValueTests.cs" />
+    <Compile Include="AST\OptIfNullElseNullTests.cs" />
     <Compile Include="AST\OptExprVarEqualToItselfTests.cs" />
+    <Compile Include="AST\OptExprWithOperationsBetweenConstsTests.cs" />
+    <Compile Include="AST\OptStatIfFalseTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
+    <Compile Include="CFG\AvailableExpressionsApplicationTests.cs" />
     <Compile Include="CFG\CFGcreateTests.cs" />
     <Compile Include="CFG\CFGdfsTests.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
@@ -96,6 +102,7 @@
     <Compile Include="DataFlowAnalysis\AvailableExpressionTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
+    <Compile Include="LoopsInCFG\RegionTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTests.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />

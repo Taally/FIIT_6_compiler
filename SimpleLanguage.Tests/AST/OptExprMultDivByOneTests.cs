@@ -70,5 +70,22 @@ a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
             var result = ApplyOpt(AST, new OptExprMultDivByOne());
             CollectionAssert.AreEqual(expected, result);
         }
+
+        [Test]
+        public void OneDivBySomething()
+        {
+            var AST = BuildAST(@"
+var a;
+a = 1 / a;
+");
+
+            var expected = new[] {
+                "var a;",
+                "a = (1 / a);"
+            };
+
+            var result = ApplyOpt(AST, new OptExprMultDivByOne());
+            CollectionAssert.AreEqual(expected, result);
+        }
     }
 }

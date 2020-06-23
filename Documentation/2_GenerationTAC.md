@@ -1,25 +1,28 @@
-### Генерация трехадресного кода
+## Генерация трехадресного кода
 
-#### Постановка задачи
+### Постановка задачи
 
 Реализовать генерацию трехадресного кода для всех инструкций языка
 
-#### Команда
+### Команда
 
 Д. Володин, А. Татарова, Т. Шкуро
 
-#### Зависимые и предшествующие задачи
+### Зависимые и предшествующие задачи
 
 Предшествующие:
+
 - Построение АСТ
 - Базовые визиторы
 
 Зависимые: 
+
 - Разбиение на базовые блоки
 
-#### Теоретическая часть
+### Теоретическая часть
 
 __Трехадресный код__ (ТАК) — это линеаризованное абстрактное синтаксическое дерево, из которого восстановить текст программы уже нельзя. В трехадресном коде в правой части выражении допускается только один оператор, т.е. выражение ```x+y*z``` транслируется как
+
 ```
 t1 = y * z
 t2 = x + t1
@@ -37,7 +40,7 @@ t2 = x + t1
 
 Для хранения меток перехода добавляется еще одно поле Label, и тогда транслируемые инструкции становятся пятерками полей. 
 
-#### Практическая часть
+### Практическая часть
 
 Для транслирования АСТ в трехадресный код создан класс Instruction, в котором хранится пятерка полей 
 
@@ -94,27 +97,28 @@ public override void VisitAssignNode(AssignNode a)
 ```csharp
 public override void VisitIfElseNode(IfElseNode i)
 {
+    // перевод в трёхадресный код условия
     var exprTmpName = Gen(i.Expr);
-    var trueLabel = ThreeAddressCodeTmp.GenTmpLabel();
-    if (i.TrueStat is LabelStatementNode label)
-    {
-        trueLabel = label.Label.Num.ToString();
-    }
-    else
-    if (i.TrueStat is BlockNode block
-        && block.List.StatChildren[0] is LabelStatementNode labelB)
-    {
-        trueLabel = labelB.Label.Num.ToString();
-    }
+
+    var trueLabel = i.TrueStat is LabelStatementNode label
+        ? label.Label.Num.ToString()
+        : i.TrueStat is BlockNode block
+            && block.List.StatChildren[0] is LabelStatementNode labelB
+            ? labelB.Label.Num.ToString()
+            : ThreeAddressCodeTmp.GenTmpLabel();
+
     var falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
     GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
 
+    // перевод в трёхадресный код false ветки
     i.FalseStat?.Visit(this);
     GenCommand("", "goto", falseLabel, "", "");
+
+    // перевод в трёхадресный код true ветки
     var instructionIndex = Instructions.Count;
-    
     i.TrueStat.Visit(this);
     Instructions[instructionIndex].Label = trueLabel;
+
     GenCommand(falseLabel, "noop", "", "", "");
 }
 ```
@@ -124,12 +128,20 @@ public override void VisitIfElseNode(IfElseNode i)
 {
     var exprTmpName = Gen(w.Expr);
     var whileHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
-    var whileBodyLabel = ThreeAddressCodeTmp.GenTmpLabel();
+    var whileBodyLabel = w.Stat is LabelStatementNode label
+        ? label.Label.Num.ToString()
+        : w.Stat is BlockNode block
+                        && block.List.StatChildren[0] is LabelStatementNode labelB
+            ? labelB.Label.Num.ToString()
+            : ThreeAddressCodeTmp.GenTmpLabel();
+
     var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
 
     Instructions[Instructions.Count - 1].Label = whileHeadLabel;
+
     GenCommand("", "ifgoto", exprTmpName, whileBodyLabel, "");
     GenCommand("", "goto", exitLabel, "", "");
+
     var instructionIndex = Instructions.Count;
     w.Stat.Visit(this);
     Instructions[instructionIndex].Label = whileBodyLabel;
@@ -144,14 +156,18 @@ public override void VisitIfElseNode(IfElseNode i)
     var Id = f.Id.Name;
     var forHeadLabel = ThreeAddressCodeTmp.GenTmpLabel();
     var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
+
     var fromTmpName = Gen(f.From);
     GenCommand("", "assign", fromTmpName, "", Id);
 
     var toTmpName = Gen(f.To);
+    // Делаем допущение, что for шагает на +1 до границы, не включая ее
     var condTmpName = ThreeAddressCodeTmp.GenTmpName();
     GenCommand(forHeadLabel, "EQGREATER", Id, toTmpName, condTmpName);
     GenCommand("", "ifgoto", condTmpName, exitLabel, "");
+
     f.Stat.Visit(this);
+
     GenCommand("", "PLUS", Id, "1", Id);
     GenCommand("", "goto", forHeadLabel, "", "");
     GenCommand(exitLabel, "noop", "", "", "");
@@ -176,6 +192,7 @@ public override void VisitGotoNode(GotoNode g) => GenCommand("", "goto", g.Label
 public override void VisitLabelstatementNode(LabelStatementNode l)
 {
     var instructionIndex = Instructions.Count;
+    // Чтобы не затиралась временная метка у while
     if (l.Stat is WhileNode)
     {
         GenCommand("", "noop", "", "", "");
@@ -190,7 +207,7 @@ public override void VisitEmptyNode(EmptyNode w) => GenCommand("", "noop", "", "
 ```
 где ```GenCommand``` --- функция, создающая инструкцию с заданной пятеркой полей.
 
-#### Место в общем проекте (Интеграция)
+### Место в общем проекте (Интеграция)
 
 Генерация трехадресного кода происходит после построения АСТ дерева и применения оптимизаций по нему, после генерации происходит разбиение трехадресного кода на блоки.
 ```csharp
@@ -203,7 +220,7 @@ var threeAddressCode = threeAddrCodeVisitor.Instructions;
 /*..*/
 ```
 
-#### Пример работы
+### Пример работы
 
 - АСТ дерево после оптимизаций
 ```
