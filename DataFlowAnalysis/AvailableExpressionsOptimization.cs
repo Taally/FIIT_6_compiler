@@ -6,7 +6,7 @@ namespace SimpleLang.DataFlowAnalysis
     /// <summary>
     /// Оптимизация по доступным выражениям
     /// </summary>
-    public static class AvailableExpressionsApplication
+    public static class AvailableExpressionsOptimization
     {
         /// <summary>
         /// Применение оптимизации
@@ -18,7 +18,7 @@ namespace SimpleLang.DataFlowAnalysis
 
         private class AvailableExpressionRun
         {
-            private ControlFlowGraph graph;
+            private readonly ControlFlowGraph graph;
 
             private readonly InOutData<List<OneExpression>> inOutData;
 
