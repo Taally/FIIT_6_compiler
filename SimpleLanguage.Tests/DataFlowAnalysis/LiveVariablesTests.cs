@@ -17,11 +17,12 @@ var a,b,c;
 input (b);
 a = b + 1;
 if a < c
-	c = b - a;
+    c = b - a;
 else
-	c = b + a;
+    c = b + a;
 print (c);
 ");
+
             var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
@@ -32,8 +33,8 @@ print (c);
                     (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
                     (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
-
             var actual = Execute(TAC);
+
             AssertSet(expected, actual);
         }
 
@@ -46,12 +47,13 @@ var a,b,c;
 input (b);
 
 while a > 5{
-	a = b + 1;
-	c = 5;
+    a = b + 1;
+    c = 5;
 }
 
 print (c);
 ");
+
             var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
@@ -64,6 +66,7 @@ print (c);
                     (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
             var actual = Execute(TAC);
+
             AssertSet(expected, actual);
         }
 
@@ -74,20 +77,21 @@ print (c);
 var a,b,c,i;
 
 for i = 1,b {
-	input (a);
-	c = c + a;
-	print(c);
-	if c < b
-		c = c + 1;
-	else {
-		b = b - 1;
-		print(b);
-		print(c);
-	}
+    input (a);
+    c = c + a;
+    print(c);
+    if c < b
+        c = c + 1;
+    else {
+        b = b - 1;
+        print(b);
+        print(c);
+    }
 }
 
 print (c+a+b);
 ");
+
             var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
@@ -102,6 +106,7 @@ print (c+a+b);
                     (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
             var actual = Execute(TAC);
+
             AssertSet(expected, actual);
         }
 

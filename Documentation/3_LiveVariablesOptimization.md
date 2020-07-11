@@ -72,9 +72,9 @@ public void Test1()
         a = b + 1;
         c = 6;
         if a < c
-	        c = b - a;
+            c = b - a;
         else
-	        c = b + a;
+            c = b + a;
         print (c);");
 
             var optimizations = new List<Optimization> { LiveVariableAnalysisOptimization.LiveVariableDeleteDeadCode };

@@ -33,8 +33,8 @@ Introduction.md
 2_CopyPropagation.md
 2_ThreeAddressCodeOptimizer.md
 3_CreateCFG.md
-3_LiveVariable.md
-3_LiveVariableOptimization.md
+3_LiveVariables.md
+3_LiveVariablesOptimization.md
 3_ReachingTransferFunc.md
 3_ConstPropagation.md
 3_TransferFunctionForConstPropagation.md
