@@ -81,7 +81,7 @@ public static class ThreeAddressCodeCopyPropagation
 ### Место в общем проекте (Интеграция)
 Данная оптимизация применяется в классе `ThreeAddressCodeOptimizer` наряду со всеми остальными TAC - оптимизациями.
 
-### Пример работы
+### Тесты
 
 ```csharp
 [Test]
