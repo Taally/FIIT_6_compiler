@@ -77,13 +77,16 @@ public HashSet<string> Transfer(BasicBlock basicBlock, HashSet<string> OUT) =>
 public void ExecuteInternal(ControlFlowGraph cfg)
 {
     var blocks = cfg.GetCurrentBasicBlocks();
-    var transferFunc = new LiveVariablesTransferFunc(cfg);
+    var transferFunc = new LiveVariablesTransferFunc(cfg); // определение передаточной функции
 
+    // каждый блок в начале работы алгоритма хранит пустые IN и OUT множества
+    // в том числе входной и выходной блоки
     foreach (var x in blocks)
     {
         dictInOut.Add(cfg.VertexOf(x), new InOutSet());
     }
 
+    // алгоритм вычисляет до тех пор, пока IN-OUT множества меняются на очередной итерации
     var isChanged = true;
     while (isChanged)
     {
@@ -92,12 +95,14 @@ public void ExecuteInternal(ControlFlowGraph cfg)
         {
             var children = cfg.GetChildrenBasicBlocks(i);
 
+            // здесь собирается информация IN множеств от дочерних узлов
             dictInOut[i].OUT =
                 children
                 .Select(x => dictInOut[x.vertex].IN)
                 .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
 
             var pred = dictInOut[i].IN;
+            // вычисление IN передаточной функцией
             dictInOut[i].IN = transferFunc.Transfer(blocks[i], dictInOut[i].OUT);
             isChanged = !dictInOut[i].IN.SetEquals(pred) || isChanged;
         }
