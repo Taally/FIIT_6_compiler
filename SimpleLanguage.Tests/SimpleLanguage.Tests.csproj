@@ -93,7 +93,7 @@
     <Compile Include="CFG\CFGdfsTests.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
-    <Compile Include="DataFlowAnalysis\LiveVariableOptimizationTests.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariablesOptimizationTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsGlobalTests.cs" />
     <Compile Include="DataFlowAnalysis\OptimalSpeedIterativeAlgorithmTests.cs" />
     <Compile Include="LoopsInCFG\BackEdgesTests.cs" />
@@ -101,7 +101,7 @@
     <Compile Include="DataFlowAnalysis\BitUtilsTests.cs" />
     <Compile Include="LoopsInCFG\DominatorTreeTests.cs" />
     <Compile Include="DataFlowAnalysis\GenericIterativeAlgorithmTests.cs" />
-    <Compile Include="DataFlowAnalysis\LiveVariableTests.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariablesTests.cs" />
     <Compile Include="DataFlowAnalysis\AvailableExpressionTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />

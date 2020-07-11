@@ -103,7 +103,7 @@ namespace SimpleCompiler
                     ///
                     Console.WriteLine("------------");
                     Console.WriteLine();
-                    var activeVariable = new LiveVariableAnalysis();
+                    var activeVariable = new LiveVariables();
                     var resActiveVariable = activeVariable.Execute(cfg);
 
                     foreach (var x in resActiveVariable)

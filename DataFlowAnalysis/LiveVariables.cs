@@ -53,7 +53,7 @@ namespace SimpleLang
         }
     }
 
-    public class LiveVariableAnalysis : GenericIterativeAlgorithm<HashSet<string>>
+    public class LiveVariables : GenericIterativeAlgorithm<HashSet<string>>
     {
         /// <inheritdoc/>
         public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator =>
@@ -77,7 +77,7 @@ namespace SimpleLang
         public void ExecuteInternal(ControlFlowGraph cfg)
         {
             var blocks = cfg.GetCurrentBasicBlocks();
-            var transferFunc = new LiveVariableTransferFunc(cfg);
+            var transferFunc = new LiveVariablesTransferFunc(cfg);
 
             foreach (var x in blocks)
             {
@@ -106,11 +106,11 @@ namespace SimpleLang
 
         public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg, bool useRenumbering = true)
         {
-            TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
+            TransferFunction = new LiveVariablesTransferFunc(cfg).Transfer;
             return base.Execute(cfg);
         }
 
-        public LiveVariableAnalysis() => dictInOut = new Dictionary<int, InOutSet>();
+        public LiveVariables() => dictInOut = new Dictionary<int, InOutSet>();
 
         public string ToString(ControlFlowGraph cfg)
         {
@@ -143,7 +143,7 @@ namespace SimpleLang
         }
     }
 
-    public class LiveVariableTransferFunc
+    public class LiveVariablesTransferFunc
     {
         private readonly Dictionary<BasicBlock, DefUseSet> dictDefUse;
 
@@ -172,7 +172,7 @@ namespace SimpleLang
             return (def, use);
         }
 
-        public LiveVariableTransferFunc(ControlFlowGraph cfg)
+        public LiveVariablesTransferFunc(ControlFlowGraph cfg)
         {
             var blocks = cfg.GetCurrentBasicBlocks();
             dictDefUse = new Dictionary<BasicBlock, DefUseSet>();

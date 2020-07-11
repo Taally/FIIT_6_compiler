@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class LiveVariableTests : OptimizationsTestBase
+    internal class LiveVariablesTests : OptimizationsTestBase
     {
         [Test]
         public void SimpleTest()
@@ -20,8 +20,8 @@ if a < c
 	c = b - a;
 else
 	c = b + a;
-print (c);"
-);
+print (c);
+");
             var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
@@ -50,8 +50,8 @@ while a > 5{
 	c = 5;
 }
 
-print (c);"
-);
+print (c);
+");
             var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
@@ -86,8 +86,8 @@ for i = 1,b {
 	}
 }
 
-print (c+a+b);"
-);
+print (c+a+b);
+");
             var expected =
                 new List<(HashSet<string> IN, HashSet<string> OUT)>()
                 {
@@ -109,7 +109,7 @@ print (c+a+b);"
         {
             var cfg = GenCFG(TAC);
 
-            var liveAct = new LiveVariableAnalysis();
+            var liveAct = new LiveVariables();
             liveAct.ExecuteInternal(cfg);
 
             var listAct = liveAct.dictInOut

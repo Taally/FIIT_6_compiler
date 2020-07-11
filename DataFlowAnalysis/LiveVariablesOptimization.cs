@@ -1,10 +1,10 @@
 ﻿namespace SimpleLang
 {
-    public class LiveVariableAnalysisOptimization
+    public class LiveVariablesOptimization
     {
         public static void DeleteDeadCode(ControlFlowGraph cfg)
         {
-            var info = new LiveVariableAnalysis().Execute(cfg);
+            var info = new LiveVariables().Execute(cfg);
             foreach (var block in cfg.GetCurrentBasicBlocks())
             {
                 var blockInfo = info[block].Out;

@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class LiveVariableOptimizationTests : OptimizationsTestBase
+    internal class LiveVariablesOptimizationTests : OptimizationsTestBase
     {
         [Test]
         public void SimpleTest()
@@ -23,7 +23,7 @@ else
 print (c);
 ";
             var cfg = GenCFG(program);
-            LiveVariableAnalysisOptimization.DeleteDeadCode(cfg);
+            LiveVariablesOptimization.DeleteDeadCode(cfg);
 
             var actual = cfg.GetCurrentBasicBlocks().SelectMany(z => z.GetInstructions().Select(t => t.ToString()));
             var expected = new List<string>()
@@ -70,7 +70,7 @@ goto 4;
 4: a = 0;
 ";
             var cfg = GenCFG(program);
-            LiveVariableAnalysisOptimization.DeleteDeadCode(cfg);
+            LiveVariablesOptimization.DeleteDeadCode(cfg);
 
             var actual = cfg.GetCurrentBasicBlocks().SelectMany(z => z.GetInstructions().Select(t => t.ToString()));
             var expected = new List<string>()
