@@ -65,7 +65,7 @@ parser.root.Visit(pp);
 Console.WriteLine(pp.Text);
 ```
 
-### Пример работы
+### Тесты
 Исходный код программы:
 ```csharp
 var a, b, c, d, i; 

@@ -62,25 +62,25 @@ d = !(a < b);
 ```csharp
 // полная форма условного оператора
 if c > a
-	a = c;
+    a = c;
 else {
     b = 1;
-	a = b;
+    a = b;
 }
 // Сокращенная форма условного оператора
 if a < 1 
-	c = 5 + 6 + 7; 
+    c = 5 + 6 + 7; 
 ```
 
 ```csharp
 // цикл while
 while x < 25 { 
-	x = x + 1; 
-	x = x * 2; 
+    x = x + 1; 
+    x = x * 2; 
 }
 // цикл for - всегда идет на увеличение с шагом == 1
 for i=2,7 
-	a = a + i;
+    a = a + i;
 ```
 
 ```csharp
@@ -117,23 +117,23 @@ goto 777; // оператор безусловного перехода
 %type <stVal> assign statement for while if input print varlist var labelstatement goto block
 
 stlist	: statement { $$ = new StListNode($1); }
-		| stlist statement 
-			{ 
-				$1.Add($2); 
-				$$ = $1; 
-			}
-		;
+        | stlist statement 
+            { 
+                $1.Add($2); 
+                $$ = $1; 
+            }
+        ;
 statement: assign SEMICOLON { $$ = $1; }
-		| for { $$ = $1; }
-		| while { $$ = $1; }
-		| if { $$ = $1; }
-		| block { $$ = $1; }
-		| input SEMICOLON { $$ = $1; }
-		| print SEMICOLON { $$ = $1; }
-		| var SEMICOLON { $$ = $1; }
-		| goto SEMICOLON { $$ = $1; }
-		| labelstatement { $$ = $1; }
-		;
+        | for { $$ = $1; }
+        | while { $$ = $1; }
+        | if { $$ = $1; }
+        | block { $$ = $1; }
+        | input SEMICOLON { $$ = $1; }
+        | print SEMICOLON { $$ = $1; }
+        | var SEMICOLON { $$ = $1; }
+        | goto SEMICOLON { $$ = $1; }
+        | labelstatement { $$ = $1; }
+        ;
 ```
 Здесь в фигурных скобках указываются семантические действия (действия, происходящие для каждого распознанного правила грамматики и придающие смысл переводу программы в промежуточное представление).
 
@@ -143,21 +143,21 @@ statement: assign SEMICOLON { $$ = $1; }
 ```csharp
 public class UnOpNode : ExprNode
 {
-	public ExprNode Expr
-	{
-		get => ExprChildren[0];
-		set => ExprChildren[0] = value;
-	}
+    public ExprNode Expr
+    {
+        get => ExprChildren[0];
+        set => ExprChildren[0] = value;
+    }
 
-	public OpType Op { get; set; }
+    public OpType Op { get; set; }
 
-	public UnOpNode(ExprNode expr, OpType op)
-	{
-		Op = op;
-		ExprChildren.Add(expr);
-	}
+    public UnOpNode(ExprNode expr, OpType op)
+    {
+        Op = op;
+        ExprChildren.Add(expr);
+    }
 
-	public override void Visit(Visitor v) => v.VisitUnOpNode(this);
+    public override void Visit(Visitor v) => v.VisitUnOpNode(this);
 }
 ```
 

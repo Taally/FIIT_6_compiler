@@ -220,7 +220,7 @@ var threeAddressCode = threeAddrCodeVisitor.Instructions;
 /*..*/
 ```
 
-### Пример работы
+### Тесты
 
 - АСТ дерево после оптимизаций
 ```

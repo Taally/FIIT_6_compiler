@@ -24,7 +24,7 @@ print (c);"
 ;
 
             var cfg = GenCFG(program);
-            var resActiveVariable = new LiveVariableAnalysis().Execute(cfg);
+            var resActiveVariable = new LiveVariables().Execute(cfg);
             var actual = cfg.GetCurrentBasicBlocks()
                 .Select(z => resActiveVariable[z])
                 .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))

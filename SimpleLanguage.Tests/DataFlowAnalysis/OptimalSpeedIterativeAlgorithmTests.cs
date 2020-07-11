@@ -77,7 +77,7 @@ for i = 1,b {
 
 print (c+a+b);";
             var graph = GenCFG(program);
-            var algorithm = new LiveVariableAnalysis();
+            var algorithm = new LiveVariables();
 
             algorithm.Execute(graph);
             var iterationsFast = algorithm.Iterations;
@@ -106,7 +106,7 @@ for k = 0, 1
     i = u3;
 }";
             var graph = GenCFG(program);
-            var algorithm = new LiveVariableAnalysis();
+            var algorithm = new LiveVariables();
 
             algorithm.Execute(graph);
             var iterationsFast = algorithm.Iterations;
