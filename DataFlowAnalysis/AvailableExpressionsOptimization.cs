@@ -39,6 +39,7 @@ namespace SimpleLang.DataFlowAnalysis
                 }
                 GraphTraversing();
             }
+
             private void GraphTraversing()
             {
                 foreach (var block in graph.GetCurrentBasicBlocks())
@@ -58,6 +59,7 @@ namespace SimpleLang.DataFlowAnalysis
                     }
                 }
             }
+
             private bool OpenBlock(BasicBlock block, OneExpression expression)
             {
                 var stack = new Stack<(BasicBlock block, List<BasicBlock> way)>();
@@ -69,7 +71,7 @@ namespace SimpleLang.DataFlowAnalysis
                 while (stack.Count != 0)
                 {
                     var element = stack.Pop();
-                    if (!IsContainedInListOfInstr(element.block.GetInstructions().ToList(), expression, element.block))
+                    if (!IsContainedInListOfInstr(element.block.GetInstructions(), expression, element.block))
                     {
                         foreach (var parent in graph.GetParentsBasicBlocks(graph.VertexOf(element.block)))
                         {
@@ -86,6 +88,7 @@ namespace SimpleLang.DataFlowAnalysis
                 }
                 return true;
             }
+
             private void ChangeInstructionsInGraph()
             {
                 var tmpVariable = ThreeAddressCodeTmp.GenTmpName();
@@ -103,6 +106,7 @@ namespace SimpleLang.DataFlowAnalysis
                 targetBlock.InsertInstruction(targetInstructionIndex,
                     new Instruction(targetTemp.Label, "assign", tmpVariable, "", targetTemp.Result));
             }
+
             private bool InstructionContainsExpression(Instruction instruction, OneExpression expression)
                =>
                 instruction.Operation == expression.Operation && (instruction.Operation == "MINUS" || instruction.Operation == "DIV")
@@ -124,7 +128,8 @@ namespace SimpleLang.DataFlowAnalysis
                 }
                 return false;
             }
-            private bool IsContainedInListOfInstr(List<Instruction> instructions,
+
+            private bool IsContainedInListOfInstr(IReadOnlyList<Instruction> instructions,
                 OneExpression expression,
                 BasicBlock block)
             {
