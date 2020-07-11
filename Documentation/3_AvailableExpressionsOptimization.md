@@ -111,7 +111,7 @@ private bool OpenBlock(BasicBlock block, OneExpression expression)
     while (stack.Count != 0)
     {
         var element = stack.Pop();
-        if (!IsContainedInListOfInstr(element.block.GetInstructions().ToList(), expression, element.block))
+        if (!IsContainedInListOfInstr(element.block.GetInstructions(), expression, element.block))
         {
             foreach (var parent in graph.GetParentsBasicBlocks(graph.VertexOf(element.block)))
             {
