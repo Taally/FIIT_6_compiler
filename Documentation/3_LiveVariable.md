@@ -22,15 +22,15 @@ __useB__ -  множество переменных, значения котор
 Отсюда любая переменная из useB рассматривается как активная на входе в блок B, а переменная из defB рассматривается как мертвая на входе в блок B. 
 И тогда множества IN и OUT определяются следующими уравнениями
 
-1. ![Уравнение 1](3_LiveVariableAnalysis/pic1.jpg)
+1. ![Уравнение 1](3_LiveVariable/pic1.jpg)
 
 Это уравнение определяет граничное условие, что активных переменных при выходе из программы нет.
 
-2. ![Уравнение 2](3_LiveVariableAnalysis/pic2.jpg)
+2. ![Уравнение 2](3_LiveVariable/pic2.jpg)
 
 Второе уравнение говорит о том, что переменная активна при выходе из блока тогда и только тогда, когда она активна при входе по крайней мере в один из дочерних блоков. Здесь оператор сбора является объединением.
 
-3. ![Уравнение 3](3_LiveVariableAnalysis/pic3.jpg)
+3. ![Уравнение 3](3_LiveVariable/pic3.jpg)
 
 Здесь уравнение гласит, что переменная активна при входе в блок, если она используется в блоке до переопределения или если она активна на выходе из блока и не переопределена в нем.
 
@@ -77,29 +77,27 @@ public HashSet<string> Transfer(BasicBlock basicBlock, HashSet<string> OUT) =>
 public void ExecuteInternal(ControlFlowGraph cfg)
 {
     var blocks = cfg.GetCurrentBasicBlocks();
-    var transferFunc = new LiveVariableTransferFunc(cfg); //определение передаточной функции
-    
-    //каждый блок в начале работы алгоритма хранит пустые IN и OUT множества
-    //в том числе входной и выходной блоки
+    var transferFunc = new LiveVariablesTransferFunc(cfg);
+
     foreach (var x in blocks)
-	{
-        dictInOut.Add(cfg.VertexOf(x), new InOutSet()); 
+    {
+        dictInOut.Add(cfg.VertexOf(x), new InOutSet());
     }
-    //алгоритм вычисляет до тех пор, пока IN-OUT множества меняются на очередной итерации
-    bool isChanged = true;
+
+    var isChanged = true;
     while (isChanged)
-	{
+    {
         isChanged = false;
-        for (int i = blocks.Count - 1; i >= 0; --i)
-		{
+        for (var i = blocks.Count - 1; i >= 0; --i)
+        {
             var children = cfg.GetChildrenBasicBlocks(i);
-            //здесь собирается информация IN множеств от дочерних узлов
+
             dictInOut[i].OUT =
                 children
-                .Select(x => dictInOut[x.Item1].IN)
+                .Select(x => dictInOut[x.vertex].IN)
                 .Aggregate(new HashSet<string>(), (a, b) => a.Union(b).ToHashSet());
+
             var pred = dictInOut[i].IN;
-            //Вычисление IN передаточной функцией
             dictInOut[i].IN = transferFunc.Transfer(blocks[i], dictInOut[i].OUT);
             isChanged = !dictInOut[i].IN.SetEquals(pred) || isChanged;
         }
@@ -112,38 +110,43 @@ public void ExecuteInternal(ControlFlowGraph cfg)
 На данный момент анализ представлен как отдельный метод (```ExecuteInternal```) и как реализация абстрактного класса, представляющего собой обобщенный итерационный алгоритм:
 
 ```csharp
-    public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator =>
-        (a, b) => a.Union(b).ToHashSet();
-    public override Func<HashSet<string>, HashSet<string>, bool> Compare =>
-        (a, b) => a.SetEquals(b);
-    public override HashSet<string> Init { get => new HashSet<string>(); protected set { } }
-    public override Func<BasicBlock, HashSet<string>, HashSet<string>> TransferFunction 
-        { get; protected set; }
-    public override Direction Direction => Direction.Backward;
-        /*...*/
-    public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg)
-    {
-        TransferFunction = new LiveVariableTransferFunc(cfg).Transfer;
-        return base.Execute(cfg);
-    }
+public override Func<HashSet<string>, HashSet<string>, HashSet<string>> CollectingOperator =>
+    (a, b) => a.Union(b).ToHashSet();
+public override Func<HashSet<string>, HashSet<string>, bool> Compare =>
+    (a, b) => a.SetEquals(b);
+public override HashSet<string> Init { get => new HashSet<string>(); protected set { } }
+public override Func<BasicBlock, HashSet<string>, HashSet<string>> TransferFunction { get; protected set; }
+public override Direction Direction => Direction.Backward;
+/*...*/
+public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg, bool useRenumbering = true)
+{
+    TransferFunction = new LiveVariablesTransferFunc(cfg).Transfer;
+    return base.Execute(cfg);
+}
 ```
 
 ### Тесты
 В тестах проверяется, что для заданного текста программы (для которого генерируется трехадресный код и граф потока управления по нему) анализ активных переменных возвращает ожидаемые IN-OUT множества для каждого блока:
 ```csharp
 [Test]
-public void WithCycle() {
-var TAC = GenTAC(@"
+public void WithLoop()
+{
+    var TAC = GenTAC(@"
 var a,b,c;
+
 input (b);
+
 while a > 5{
-	a = b + 1;
-	c = 5;
+    a = b + 1;
+    c = 5;
 }
-print (c);"
-);
-    List<(HashSet<string> IN, HashSet<string> OUT)> expected =
-        new List<(HashSet<string> IN, HashSet<string> OUT)>(){
+
+print (c);
+");
+
+    var expected =
+        new List<(HashSet<string> IN, HashSet<string> OUT)>()
+        {
             (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","c"}),
             (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","b","c"}),
             (new HashSet<string>(){"a","b","c"}, new HashSet<string>(){"b", "c"}),
@@ -153,34 +156,39 @@ print (c);"
             (new HashSet<string>(){ }, new HashSet<string>(){ })
         };
     var actual = Execute(TAC);
+
     AssertSet(expected, actual);
 }
 
 [Test]
-public void ComplexWithCycleTest() {
+public void ComplexWithLoopTest()
+{
     var TAC = GenTAC(@"
 var a,b,c,i;
+
 for i = 1,b {
-	input (a);
-	c = c + a;
-	print(c);
-	if c < b
-		c = c + 1;
-	else {
-		b = b - 1;
-		print(b);
-		print(c);
-	}
+    input (a);
+    c = c + a;
+    print(c);
+    if c < b
+        c = c + 1;
+    else {
+        b = b - 1;
+        print(b);
+        print(c);
+    }
 }
-print (c+a+b);"
-);
-    List<(HashSet<string> IN, HashSet<string> OUT)> expected =
-        new List<(HashSet<string> IN, HashSet<string> OUT)>(){
+
+print (c+a+b);
+");
+
+    var expected =
+        new List<(HashSet<string> IN, HashSet<string> OUT)>()
+        {
             (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","a"}),
-            (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","i","a"}),
+            (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","i","b","a"}),
             (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-            (new HashSet<string>(){"c","a","b"}, new HashSet<string>(){"c","a","b"}),
-            (new HashSet<string>(){"c","b","i"}, new HashSet<string>(){"c","b","i","a"}),
+            (new HashSet<string>(){"c","i","b"}, new HashSet<string>(){"c","a","b", "i"}),
             (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
             (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
             (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
@@ -188,6 +196,7 @@ print (c+a+b);"
             (new HashSet<string>(){ }, new HashSet<string>(){ })
         };
     var actual = Execute(TAC);
+
     AssertSet(expected, actual);
 }
 ```
