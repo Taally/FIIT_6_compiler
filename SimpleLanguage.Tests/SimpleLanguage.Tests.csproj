@@ -88,12 +88,12 @@
     <Compile Include="AST\OptStatIfFalseTests.cs" />
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
-    <Compile Include="DataFlowAnalysis\AvailableExpressionsApplicationTests.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionsOptimizationTests.cs" />
     <Compile Include="CFG\CFGcreateTests.cs" />
     <Compile Include="CFG\CFGdfsTests.cs" />
     <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
-    <Compile Include="DataFlowAnalysis\LiveVariableAnalysisOptimizationTests.cs" />
+    <Compile Include="DataFlowAnalysis\LiveVariableOptimizationTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsGlobalTests.cs" />
     <Compile Include="DataFlowAnalysis\OptimalSpeedIterativeAlgorithmTests.cs" />
     <Compile Include="LoopsInCFG\BackEdgesTests.cs" />
@@ -106,7 +106,6 @@
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsBinaryTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsTests.cs" />
     <Compile Include="LoopsInCFG\RegionTests.cs" />
-    <Compile Include="NewTest.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTests.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />

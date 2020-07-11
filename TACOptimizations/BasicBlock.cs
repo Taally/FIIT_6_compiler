@@ -18,10 +18,12 @@ namespace SimpleLang
 
         public void AddInstruction(Instruction instruction) => _instructions.Add(instruction);
 
-        public void InsertRangeOfInstructions(int index, List<Instruction> instruction) => _instructions.InsertRange(index, instruction);
+        public void InsertRangeOfInstructions(int index, IEnumerable<Instruction> instruction) => _instructions.InsertRange(index, instruction);
 
-        public void AddRangeOfInstructions(List<Instruction> instruction) => _instructions.AddRange(instruction);
+        public void AddRangeOfInstructions(IEnumerable<Instruction> instruction) => _instructions.AddRange(instruction);
 
         public void RemoveInstructionByIndex(int index) => _instructions.RemoveAt(index);
+
+        public void ClearInstructions() => _instructions.Clear();
     }
 }

@@ -22,8 +22,7 @@ namespace SimpleLang
                     varStatus[variable] = true;
                 }
             }
-
-            if (liveVariables == null)
+            else if (liveVariables == null)
             {
                 var last = instructions.Last();
                 newInstructions.Add(last);
@@ -45,13 +44,18 @@ namespace SimpleLang
             for (var i = iStart; i >= 0; --i)
             {
                 var instruction = instructions[i];
-                if (instruction.Operation == "noop")
+                if (instruction.Operation == "noop" || instruction.Result == "") // goto doesn't have result field
                 {
+                    if (instruction.Operation == "ifgoto")
+                    {
+                        varStatus[instruction.Argument1] = true;
+                    }
                     newInstructions.Add(instruction);
                     continue;
                 }
                 if (varStatus.ContainsKey(instruction.Result) && !varStatus[instruction.Result]
-                    || instruction.Result.FirstOrDefault() == '#' && !varStatus.ContainsKey(instruction.Result))
+                    || instruction.Result.FirstOrDefault() == '#' && !varStatus.ContainsKey(instruction.Result)
+                    || liveVariables != null && !liveVariables.Contains(instruction.Result) && !varStatus.ContainsKey(instruction.Result))
                 {
                     newInstructions.Add(new Instruction(instruction.Label, "noop", null, null, null));
                     wasChanged = true;
@@ -63,7 +67,7 @@ namespace SimpleLang
                 {
                     varStatus[instruction.Argument1] = true;
                 }
-                if (instruction.Operation != "UNMINUS" && instruction.Operation != "NOT"
+                if (instruction.Operation != "UNMINUS" && instruction.Operation != "NOT" && instruction.Argument2 != ""
                     && !int.TryParse(instruction.Argument2, out _) && instruction.Argument2 != "True" && instruction.Argument2 != "False")
                 {
                     varStatus[instruction.Argument2] = true;
