@@ -61,7 +61,7 @@ var x, y, z, p, q, i;
 p = y + z;
 for i = 1, 5
 {
-	x = y + z;
+    x = y + z;
 }
 q = y + z;
 ```
@@ -80,7 +80,7 @@ var x, y, z, p, q, r, s, i;
 p = y + z;
 for i = 1, 5
 {
-	p = r + s;
+    p = r + s;
 }
 q = y + z;
 ```
@@ -147,7 +147,7 @@ var a, b, x, y, z, p, q, s;
 x = y + z;
 if (a < b)
 {
-p = y + z;
+    p = y + z;
 }
 q = y + z;
 ");
@@ -185,8 +185,8 @@ e = x + d;
 zz = i + x;
 for i=2,7
 {
-x = x + d;
-a = a + b;
+    x = x + d;
+    a = a + b;
 }
 ");
     var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
