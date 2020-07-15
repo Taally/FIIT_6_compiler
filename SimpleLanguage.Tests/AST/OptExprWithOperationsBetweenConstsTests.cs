@@ -5,228 +5,163 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprWithOperationsBetweenConstsTests : ASTTestsBase
     {
-        [Test]
-        public void TestOpLess1()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 < 15;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpLessTrue")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpLess2()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 < 2;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = false;"
-            };
+            },
+            TestName = "OpLessFalse")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpGreater1()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 > 2;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpGreaterTrue")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpGreater2()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 > 4;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = false;"
-            };
+            },
+            TestName = "OpGreaterFalse")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpEQGREATER1()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 >= 2;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpEQGREATERTrue1")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpEQGREATER2()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 >= 4;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = false;"
-            };
+            },
+            TestName = "OpEQGREATERFalse")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpEQGREATER3()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 >= 3;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpEQGREATERTrue2")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpEQLESS1()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 <= 4;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpEQLESSTrue1")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpEQLESS2()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 <= 2;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = false;"
-            };
+            },
+            TestName = "OpEQLESSFalse")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpEQLESS3()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 <= 3;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpEQLESSTrue2")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpNOTEQUAL1()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = 3 != 2;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpNOTEQUALTrue1")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpNOTEQUAL2()
-        {
-            var AST = BuildAST(@"
-var c;
-c = 3 != 3;
-");
-            var expected = new[] {
-                "var c;",
-                "c = false;"
-            };
-
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpNOTEQUAL3()
-        {
-            var AST = BuildAST(@"
-var c;
-c = true != true;
-");
-            var expected = new[] {
-                "var c;",
-                "c = false;"
-            };
-
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestOpNOTEQUAL4()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var c;
 c = false != true;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var c;",
                 "c = true;"
-            };
+            },
+            TestName = "OpNOTEQUALTrue2")]
 
-            var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        [TestCase(@"
+var c;
+c = 3 != 3;
+",
+            ExpectedResult = new[]
+            {
+                "var c;",
+                "c = false;"
+            },
+            TestName = "OpNOTEQUALFalse1")]
+
+        [TestCase(@"
+var c;
+c = true != true;
+c = false != false;
+",
+            ExpectedResult = new[]
+            {
+                "var c;",
+                "c = false;",
+                "c = false;"
+            },
+            TestName = "OpNOTEQUALFalse2")]
+
+        public string[] TestOptExprWithOperationsBetweenConsts(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprWithOperationsBetweenConsts());
     }
 }

@@ -19,12 +19,15 @@ namespace SimpleLanguage.Tests.AST
             return parser;
         }
 
-        protected string[] ApplyOpt(Parser AST, ChangeVisitor opt)
+        protected string[] ApplyAstOpt(Parser AST, ChangeVisitor opt)
         {
             AST.root.Visit(opt);
             var pp = new PrettyPrintVisitor();
             AST.root.Visit(pp);
             return pp.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         }
+
+        protected string[] TestASTOptimization(string sourceCode, ChangeVisitor optimization) =>
+            ApplyAstOpt(BuildAST(sourceCode), optimization);
     }
 }

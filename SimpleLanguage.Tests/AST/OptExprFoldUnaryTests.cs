@@ -5,44 +5,37 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprFoldUnaryTests : ASTTestsBase
     {
-        [Test]
-        public void EqualIDTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 b = !a == !a;
 b = !a != !a;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "b = true;",
                 "b = false;"
-            };
+            },
+            TestName = "EqualID")]
 
-            var result = ApplyOpt(AST, new OptExprFoldUnary());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void LeftRightUnaryTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 b = !a == a;
 b = !a != a;
 b = a == !a;
 b = a != !a;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "b = false;",
                 "b = true;",
                 "b = false;",
                 "b = true;"
-            };
+            },
+            TestName = "LeftRightUnary")]
 
-            var result = ApplyOpt(AST, new OptExprFoldUnary());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptExprFoldUnary(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprFoldUnary());
     }
 }

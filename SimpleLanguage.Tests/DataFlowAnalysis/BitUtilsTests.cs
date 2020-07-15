@@ -14,7 +14,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToBitsTestEmptyMap()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
@@ -46,7 +47,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToBitsTestAllTrue()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                new Instruction("a", "", "", "", ""),
                new Instruction("b", "", "", "", ""),
                new Instruction("c", "", "", "", ""),
@@ -71,7 +73,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToBitsTestAllFalse()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
@@ -84,7 +87,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 { instructions[2], 2 },
             };
 
-            var instructionsToTestAgainst = new List<Instruction> {
+            var instructionsToTestAgainst = new List<Instruction>
+            {
                 new Instruction("d", "", "", "", ""),
                 new Instruction("e", "", "", "", ""),
                 new Instruction("f", "", "", "", ""),
@@ -102,7 +106,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToBitsBasicTest()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
@@ -116,7 +121,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
                 { new Instruction("z", "", "", "", ""), 3}
             };
 
-            var instructionsToTestAgainst = new List<Instruction> {
+            var instructionsToTestAgainst = new List<Instruction>
+            {
                 instructions[2],
                 new Instruction("e", "", "", "", ""),
                 instructions[0]
@@ -134,7 +140,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToInstructionsTestEmpty()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
@@ -150,7 +157,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToInstructionsTestOneTrue()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
             };
 
@@ -165,7 +173,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToInstructionsTestOneFalse()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
             };
 
@@ -179,7 +188,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void ToInstructionsTestBasic()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),
@@ -254,7 +264,8 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         [Test]
         public void TestGrouping()
         {
-            var instructions = new List<Instruction> {
+            var instructions = new List<Instruction>
+            {
                 new Instruction("a", "", "", "", ""),
                 new Instruction("b", "", "", "", ""),
                 new Instruction("c", "", "", "", ""),

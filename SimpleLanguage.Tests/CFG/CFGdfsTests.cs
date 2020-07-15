@@ -10,19 +10,19 @@ namespace SimpleLanguage.Tests.CFG
     internal class CFGdfs : OptimizationsTestBase
     {
         [Test]
-        public void Test1()
+        public void Test()
         {
             var program = @"
 var a, b, c, d, x, u, e,g, y,zz,i;
 goto 200;
 200: a = 10 + 5;
-for i=2,7 
-	x = 1;
+for i=2,7
+    x = 1;
 if c > a
 {
-	a = 1;
+    a = 1;
 }
-else 
+else
 {
     b = 1;
 }

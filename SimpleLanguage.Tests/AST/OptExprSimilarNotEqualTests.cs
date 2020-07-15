@@ -5,27 +5,24 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprSimilarNotEqualTests : ASTTestsBase
     {
-        [Test]
-        public void SimilarNotEqualTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b, d, k, c;
 c = a>a;
 b = k<k;
 d = a != a;
 d = 1 > 1;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b, d, k, c;",
                 "c = false;",
                 "b = false;",
                 "d = false;",
                 "d = false;",
-            };
+            },
+            TestName = "SimilarNotEqual")]
 
-            var result = ApplyOpt(AST, new OptExprSimilarNotEqual());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptExprSimilarNotEqual(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprSimilarNotEqual());
     }
 }

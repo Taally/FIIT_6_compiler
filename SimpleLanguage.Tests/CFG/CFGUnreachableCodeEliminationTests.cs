@@ -8,7 +8,7 @@ namespace SimpleLanguage.Tests.CFG
     internal class CFGUnreachableCodeEliminationTests : OptimizationsTestBase
     {
         [Test]
-        public void OneBlockTest()
+        public void OneBlock()
         {
             var program = @"
 var a, b, c;
@@ -40,28 +40,28 @@ c = 5;
         }
 
         [Test]
-        public void MultipleBlocksTest1()
+        public void MultipleBlocks1()
         {
             var program = @"
 var a, b, c;
 
 goto 1;
-111:a = 1; 
-goto 55; 
-55: goto 10; 
-10: goto 111; 
-if a>a goto 10; 
-else goto 111; 
- 
-c = c; 
-if a==b 
-	b = b; 
- 
-a = -1; 
-b = -a; 
-c = -(a+b); 
-a = !b; 
-c = !(a == b); 
+111:a = 1;
+goto 55;
+55: goto 10;
+10: goto 111;
+if a>a goto 10;
+else goto 111;
+
+c = c;
+if a==b
+    b = b;
+
+a = -1;
+b = -a;
+c = -(a+b);
+a = !b;
+c = !(a == b);
 1: b = 3;
 ";
             var cfg = GenCFG(program);
@@ -84,28 +84,28 @@ c = !(a == b);
         }
 
         [Test]
-        public void MultipleBlocksTest2()
+        public void MultipleBlocks2()
         {
             var TAC = GenTAC(@"
 var a, b, c;
 
 goto 1;
-111:a = 1; 
-goto 55; 
-55: goto 10; 
-10: goto 111; 
-if a>a goto 10; 
-else goto 111; 
- 
-c = c; 
-if a==b 
-	b = b; 
+111:a = 1;
+goto 55;
+55: goto 10;
+10: goto 111;
+if a>a goto 10;
+else goto 111;
 
-2: a = -1; 
-b = -a; 
-c = -(a+b); 
-a = !b; 
-c = !(a == b); 
+c = c;
+if a==b
+    b = b;
+
+2: a = -1;
+b = -a;
+c = -(a+b);
+a = !b;
+c = !(a == b);
 1: b = 3;
 goto 2;
 ");
@@ -124,7 +124,7 @@ goto 2;
         }
 
         [Test]
-        public void MultipleBlocksTest3()
+        public void MultipleBlocks3()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -148,7 +148,7 @@ goto 3;
         }
 
         [Test]
-        public void NoEliminationTest()
+        public void NoElimination()
         {
             var program = @"
 var a, b, c;

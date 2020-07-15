@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleLang
@@ -22,6 +21,7 @@ namespace SimpleLang
             }
             return false;
         }
+
         public static (bool wasChanged, IReadOnlyList<Instruction> instruction) CommonExprElimination(IReadOnlyList<Instruction> instructions)
         {
             var exprToResults = new StringToStrings();
@@ -50,41 +50,39 @@ namespace SimpleLang
                 }
             }
 
-            for (var i = 0; i < instructions.Count; ++i)
+            foreach (var instruction in instructions)
             {
-                if (instructions[i].Operation == "noop")
+                if (instruction.Operation == "noop")
                 {
                     continue;
                 }
 
-                var expr = uniqueExpr(instructions[i]);
-                if (instructions[i].Operation != "assign" && exprToResults.TryGetValue(expr, out var results) && results.Count != 0)
+                var expr = uniqueExpr(instruction);
+                if (instruction.Operation != "assign" && exprToResults.TryGetValue(expr, out var results) && results.Count != 0)
                 {
                     wasChanged = true;
 
-                    newInstructions.Add(new Instruction(instructions[i].Label, "assign", results.First(), "", instructions[i].Result));
+                    newInstructions.Add(new Instruction(instruction.Label, "assign", results.First(), "", instruction.Result));
                 }
                 else
                 {
-                    newInstructions.Add(instructions[i].Copy());
-                    addLink(argToExprs, instructions[i].Argument1, expr);
-                    addLink(argToExprs, instructions[i].Argument2, expr);
+                    newInstructions.Add(instruction.Copy());
+                    addLink(argToExprs, instruction.Argument1, expr);
+                    addLink(argToExprs, instruction.Argument2, expr);
                 }
 
-                if (resultToExpr.TryGetValue(instructions[i].Result, out var oldExpr))
+                if (resultToExpr.TryGetValue(instruction.Result, out var oldExpr) &&
+                    exprToResults.ContainsKey(oldExpr))
                 {
-                    if (exprToResults.ContainsKey(oldExpr))
-                    {
-                        exprToResults[oldExpr].Remove(instructions[i].Result);
-                    }
+                    exprToResults[oldExpr].Remove(instruction.Result);
                 }
 
-                resultToExpr[instructions[i].Result] = expr;
-                addLink(exprToResults, expr, instructions[i].Result);
+                resultToExpr[instruction.Result] = expr;
+                addLink(exprToResults, expr, instruction.Result);
 
-                if (argToExprs.ContainsKey(instructions[i].Result))
+                if (argToExprs.ContainsKey(instruction.Result))
                 {
-                    foreach (var delExpr in argToExprs[instructions[i].Result])
+                    foreach (var delExpr in argToExprs[instruction.Result])
                     {
                         if (exprToResults.ContainsKey(delExpr))
                         {

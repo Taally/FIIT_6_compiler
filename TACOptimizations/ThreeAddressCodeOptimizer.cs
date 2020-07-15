@@ -74,7 +74,8 @@ namespace SimpleLang
             var preResult = blocks.SelectMany(b => b.GetInstructions()).ToList();
             var result = OptimizeAllCode(preResult, allCodeOptimizations);
 
-            if (UnreachableCodeElimination) {
+            if (UnreachableCodeElimination)
+            {
                 result = new ControlFlowGraph(result).GetInstructions();
             }
 

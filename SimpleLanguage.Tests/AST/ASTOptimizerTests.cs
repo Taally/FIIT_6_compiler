@@ -18,51 +18,53 @@ namespace SimpleLanguage.Tests.AST
         }
 
         [Test]
-        public void SumMultZeroTest()
+        public void SumMultZero()
         {
             var AST = BuildAST(@"
 var a;
 a = (0 + 0) * a;
 ");
-            var expected = new[]
-            {
-                "var a;",
-                "a = 0;"
-            };
-
             var optimizations = new List<ChangeVisitor>
             {
                 new OptExprMultZero(),
                 new OptExprSumZero()
             };
-            var result = ApplyOptimizations(AST, optimizations);
-            CollectionAssert.AreEqual(expected, result);
-        }
 
-        [Test]
-        public void SubItselfSumZeroTest()
-        {
-            var AST = BuildAST(@"
-var a;
-a = a - ((a - a) + a);
-");
+            var result = ApplyOptimizations(AST, optimizations);
             var expected = new[]
             {
                 "var a;",
                 "a = 0;"
             };
 
+            CollectionAssert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void SubItselfSumZero()
+        {
+            var AST = BuildAST(@"
+var a;
+a = a - ((a - a) + a);
+");
             var optimizations = new List<ChangeVisitor>
             {
                 new OptExprSumZero(),
                 new OptExprSubEqualVar()
             };
+
             var result = ApplyOptimizations(AST, optimizations);
+            var expected = new[]
+            {
+                "var a;",
+                "a = 0;"
+            };
+
             CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
-        public void ExprAndStatTest()
+        public void ExprAndStat()
         {
             var AST = BuildAST(@"
 var a;
@@ -75,12 +77,6 @@ if true
 else
     a = 21;
 ");
-            var expected = new[]
-            {
-                "var a;",
-                "a = 42;"
-            };
-
             var optimizations = new List<ChangeVisitor>
             {
                 new OptExprAlgebraic(),
@@ -91,23 +87,24 @@ else
                 new OptStatIfFalse()
 
             };
+
             var result = ApplyOptimizations(AST, optimizations);
+            var expected = new[]
+            {
+                "var a;",
+                "a = 42;"
+            };
+
             CollectionAssert.AreEqual(expected, result);
         }
 
         [Test]
-        public void ComplexExprTest()
+        public void ComplexExpr()
         {
             var AST = BuildAST(@"
 var a, b;
 a = (2 * 3) - 6 + (a * 0 + 1 * a * 1 - a) * b - -21 * 2;
 ");
-            var expected = new[]
-            {
-                "var a, b;",
-                "a = 42;"
-            };
-
             var optimizations = new List<ChangeVisitor>
             {
                 new OptExprAlgebraic(),
@@ -118,7 +115,14 @@ a = (2 * 3) - 6 + (a * 0 + 1 * a * 1 - a) * b - -21 * 2;
                 new OptExprMultZero()
 
             };
+
             var result = ApplyOptimizations(AST, optimizations);
+            var expected = new[]
+            {
+                "var a, b;",
+                "a = 42;"
+            };
+
             CollectionAssert.AreEqual(expected, result);
         }
     }

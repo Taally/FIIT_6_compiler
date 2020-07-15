@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using SimpleLang;
-using System.Linq;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
@@ -8,7 +8,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
     internal class ConstPropagationTests : OptimizationsTestBase
     {
         [Test]
-        public void TestNoBlocks()
+        public void NoBlocks()
         {
             var program = @"
 var a,b,c;
@@ -293,8 +293,8 @@ goto 666;
 var a, b, x, c;
 while x > 1
 {
-	a = 2;
-	b = 5;
+    a = 2;
+    b = 5;
 }
 c = a + b;
 ";
@@ -315,8 +315,8 @@ c = a + b;
 var a, b, x, c;
 for x=1,10
 {
-	a = 2;
-	b = 2;
+    a = 2;
+    b = 2;
 }
 c = a + b;
 ";
@@ -360,7 +360,7 @@ for x=1,2
         }
 
         [Test]
-        public void ConstPropagationIterativeTest()
+        public void ConstPropagationIterative()
         {
             var program = @"
 var a, x, c;
@@ -375,15 +375,14 @@ if c > 5
             var constProp = new ConstPropagation();
             var result = constProp.Execute(cfg);
             var blocks = cfg.GetCurrentBasicBlocks();
-            var actual = result[blocks.Last()];
+            var (_, Out) = result[blocks.Last()];
 
-            Assert.AreEqual(LatticeTypeData.NAC, actual.Out["c"].Type);
-            Assert.AreEqual(LatticeTypeData.CONST, actual.Out["x"].Type);
-            Assert.AreEqual(LatticeTypeData.CONST, actual.Out["a"].Type);
+            Assert.AreEqual(LatticeTypeData.NAC, Out["c"].Type);
+            Assert.AreEqual(LatticeTypeData.CONST, Out["x"].Type);
+            Assert.AreEqual(LatticeTypeData.CONST, Out["a"].Type);
 
-            Assert.AreEqual("10", actual.Out["x"].ConstValue);
-            Assert.AreEqual("10", actual.Out["a"].ConstValue);
+            Assert.AreEqual("10", Out["x"].ConstValue);
+            Assert.AreEqual("10", Out["a"].ConstValue);
         }
-
     }
 }

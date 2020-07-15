@@ -5,84 +5,69 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptStatIfTrueTests : ASTTestsBase
     {
-        [Test]
-        public void IfTrueTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 if true
 a = b;
 else
 a = 1;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;"
-            };
+            },
+            TestName = "IfTrue")]
 
-            var result = ApplyOpt(AST, new OptStatIfTrue());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void IfTrueBlockTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 if true {
-a = b;
-b = 1;
+    a = b;
+    b = 1;
 }
 else
-a = 1;
-");
-
-            var expected = new[] {
+    a = 1;
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;",
                 "b = 1;"
-            };
+            },
+            TestName = "IfTrueBlock")]
 
-            var result = ApplyOpt(AST, new OptStatIfTrue());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void IfTrueComplexTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 if true
 if true {
-a = b;
-b = 1;
+    a = b;
+    b = 1;
 }
 else
-a = 1;
+    a = 1;
 
 if a > b{
-a = b;
-if true{
-b = b + 1;
-b = b / 5;
+    a = b;
+    if true{
+        b = b + 1;
+        b = b / 5;
+    }
 }
-}
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;",
                 "b = 1;",
                 "if (a > b) {",
-                "  a = b;",
-                "  b = (b + 1);",
-                "  b = (b / 5);",
+                "    a = b;",
+                "    b = (b + 1);",
+                "    b = (b / 5);",
                 "}"
-            };
+            },
+            TestName = "IfTrueComplex")]
 
-            var result = ApplyOpt(AST, new OptStatIfTrue());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptStatIfTrue(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptStatIfTrue());
     }
 }

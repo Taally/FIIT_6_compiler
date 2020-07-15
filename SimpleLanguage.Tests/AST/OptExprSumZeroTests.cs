@@ -5,53 +5,40 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprSumZeroTests : ASTTestsBase
     {
-        [Test]
-        public void SumWithRightZero()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = b + 0;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;"
-            };
+            },
+            TestName = "SumWithRightZero")]
 
-            var result = ApplyOpt(AST, new OptExprSumZero());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void SumWithLeftZero()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 0 + b;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;"
-            };
+            },
+            TestName = "SumWithLeftZero")]
 
-            var result = ApplyOpt(AST, new OptExprSumZero());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void SumWithRightLeftZero()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 0 + (0 + b + b * a + 0);
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = (b + (b * a));"
-            };
+            },
+            TestName = "SumWithRightLeftZero")]
 
-            var result = ApplyOpt(AST, new OptExprSumZero());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptExprSumZero(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprSumZero());
     }
 }

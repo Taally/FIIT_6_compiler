@@ -5,82 +5,67 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptStatIfFalseTests : ASTTestsBase
     {
-        [Test]
-        public void IfFalseTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 if false
 a = b;
 else
 a = 1;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 1;"
-            };
+            },
+            TestName = "IfFalse")]
 
-            var result = ApplyOpt(AST, new OptStatIfFalse());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void IfFalseBlockTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 if false {
-a = b;
-b = 1;
+    a = b;
+    b = 1;
 }
 else
-a = 1;
-");
-
-            var expected = new[] {
+    a = 1;
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 1;"
-            };
+            },
+            TestName = "IfFalseBlock")]
 
-            var result = ApplyOpt(AST, new OptStatIfFalse());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void IfFalseComplexTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 if false
 a =1;
 else
 if false {
-a = b;
-b = 1;
+    a = b;
+    b = 1;
 }
 else
-a = 1;
+    a = 1;
 
 if a > b{
-a = b;
-if false{
-b = b + 1;
-b = b / 5;
+    a = b;
+    if false{
+        b = b + 1;
+        b = b / 5;
+    }
 }
-}
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 1;",
                 "if (a > b) {",
-                "  a = b;",
+                "    a = b;",
                 "}"
-            };
+            },
+            TestName = "IfFalseComplex")]
 
-            var result = ApplyOpt(AST, new OptStatIfFalse());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptStatIfFalse(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptStatIfFalse());
     }
 }

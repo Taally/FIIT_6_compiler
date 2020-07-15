@@ -33,7 +33,7 @@ namespace SimpleLang
 
             _graph = graph;
             TransferFunction = new ReachingTransferFunc(graph, idByInstruction).Transfer;
-            var inOutData = base.Execute(graph);
+            var inOutData = base.Execute(graph, useRenumbering);
 
             var modifiedBackData = inOutData
                 .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })

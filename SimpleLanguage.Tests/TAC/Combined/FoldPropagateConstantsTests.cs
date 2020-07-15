@@ -11,59 +11,43 @@ namespace SimpleLanguage.Tests.TAC.Combined
     [TestFixture]
     internal class FoldPropagateConstantsTests : OptimizationsTestBase
     {
-        [Test]
-        public void Test1()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var x, y;
 x = 14;
 y = 7 - x;
 x = x + x;
-");
-            var optimizations = new List<Optimization>
-            {
-                ThreeAddressCodeFoldConstants.FoldConstants,
-                ThreeAddressCodeConstantPropagation.PropagateConstants,
-            };
-
-            var expected = new List<string>()
+",
+            ExpectedResult = new string[]
             {
                 "x = 14",
                 "#t1 = -7",
                 "y = -7",
                 "#t2 = 28",
                 "x = 28"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Test1")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void Test2()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a;
 a = 1 + 2 * 3 - 7;
-");
-            var optimizations = new List<Optimization>
-            {
-                ThreeAddressCodeFoldConstants.FoldConstants,
-                ThreeAddressCodeConstantPropagation.PropagateConstants,
-            };
-
-            var expected = new List<string>()
+",
+            ExpectedResult = new string[]
             {
                 "#t1 = 6",
                 "#t2 = 7",
                 "#t3 = 0",
                 "a = 0"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Test2")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
+        public IEnumerable<string> FoldPropagateConstants(string sourceCode) =>
+            ThreeAddressCodeOptimizer.Optimize(
+                GenTAC(sourceCode),
+                new List<Optimization>()
+                {
+                    ThreeAddressCodeFoldConstants.FoldConstants,
+                    ThreeAddressCodeConstantPropagation.PropagateConstants
+                })
+            .Select(instruction => instruction.ToString());
     }
 }

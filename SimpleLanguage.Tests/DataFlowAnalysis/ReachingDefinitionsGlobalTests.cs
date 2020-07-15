@@ -32,7 +32,7 @@ c = 3;
         }
 
         [Test]
-        public void OneBlockTest()
+        public void OneBlock()
         {
             var graph = GenCFG(@"
 var a, b, c;
@@ -77,7 +77,7 @@ goto 2;
 2: c = 6;
 ");
             new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-            
+
             var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
             var expected = new[]
             {
@@ -107,7 +107,7 @@ goto 4;
 goto 6;
 6: c = 6;
 ");
-            
+
             new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
 
             var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));

@@ -1,5 +1,4 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
@@ -8,19 +7,20 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
     public class OptimalSpeedIterativeAlgorithmTests : OptimizationsTestBase
     {
         [Test]
-        public void AvailableExpressionsTest()
+        public void AvailableExpressions()
         {
             var program = @"
-var a, b, c, d, x, u, e,g, y,zz,i; 
+var a, b, c, d, x, u, e,g, y,zz,i;
 2: a = x + y;
 g = c + d;
 3: zz = 1;
 goto 1;
-1: if(a < b) 
-    c = 1; 
+1: if(a < b)
+    c = 1;
 b = c + d;
 goto 3;
-e = zz + i;";
+e = zz + i;
+";
             var graph = GenCFG(program);
             var algorithm = new AvailableExpressions();
 
@@ -33,7 +33,7 @@ e = zz + i;";
         }
 
         [Test]
-        public void ConstPropagationTest()
+        public void ConstPropagation()
         {
             var program = @"
 var a, x, c;
@@ -44,7 +44,8 @@ else
     input(c);
 if c > 5
     x = 20;
-a = x;";
+a = x;
+";
             var graph = GenCFG(program);
             var algorithm = new ConstPropagation();
 
@@ -57,25 +58,26 @@ a = x;";
         }
 
         [Test]
-        public void LiveVariableTest()
+        public void LiveVariables()
         {
             var program = @"
 var a,b,c,i;
 
 for i = 1,b {
-	input (a);
-	c = c + a;
-	print(c);
-	if c < b
-		c = c + 1;
-	else {
-		b = b - 1;
-		print(b);
-		print(c);
-	}
+    input (a);
+    c = c + a;
+    print(c);
+    if c < b
+        c = c + 1;
+    else {
+        b = b - 1;
+        print(b);
+        print(c);
+    }
 }
 
-print (c+a+b);";
+print (c+a+b);
+";
             var graph = GenCFG(program);
             var algorithm = new LiveVariables();
 
@@ -88,7 +90,7 @@ print (c+a+b);";
         }
 
         [Test]
-        public void ReachingDefinitionsTest()
+        public void ReachingDefinitions()
         {
             var program = @"
 var i, m, j, n, a, u1, u2, u3, k;
@@ -104,7 +106,8 @@ for k = 0, 1
     if i < j
         a = u2;
     i = u3;
-}";
+}
+";
             var graph = GenCFG(program);
             var algorithm = new LiveVariables();
 
@@ -117,7 +120,7 @@ for k = 0, 1
         }
 
         [Test]
-        public void DominatorTreeTest()
+        public void DominatorTree()
         {
             var program = @"
 var a;

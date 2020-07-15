@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
-
     [TestFixture]
     internal class GotoToGotoTests : OptimizationsTestBase
     {
-        [Test]
-        public void MultiGoToTest()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b;
 1: goto 2;
 2: goto 5;
@@ -22,35 +15,25 @@ var a, b;
 4: a = 1;
 5: goto 6;
 6: a = b;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            true,
+            ExpectedResult = new string[]
             {
                 "1: goto 6",
                 "2: goto 6",
                 "5: goto 6",
                 "6: a = b",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "MultiGoTo")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void TestGotoIfElseTACGen1()
-        {
-            var TAC = GenTAC(@"
-var a,b;
+        [TestCase(@"
+var a, b;
 b = 5;
 if(a > b)
-	goto 6;
+    goto 6;
 6: a = 4;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            ExpectedResult = new string[]
             {
                 "b = 5",
                 "#t1 = a > b",
@@ -59,57 +42,39 @@ if(a > b)
                 "L1: goto 6",
                 "L2: noop",
                 "6: a = 4",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "GotoIfElseTACGen1")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void GoToLabelTest()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a;
 goto 1;
 1: goto 2;
 2: goto 3;
 3: goto 4;
 4: a = 4;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            ExpectedResult = new string[]
             {
                 "goto 4",
                 "1: goto 4",
                 "2: goto 4",
                 "3: goto 4",
                 "4: a = 4",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "GoToLabel")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void TestGotoIfElseTACGen2()
-        {
-            var TAC = GenTAC(@"
-var a,b;
+        [TestCase(@"
+var a, b;
 b = 5;
 if(a > b)
-	goto 6;
+    goto 6;
 else
     goto 4;
 6: a = 4;
 4: a = 6;
-
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            true,
+            ExpectedResult = new string[]
             {
                 "b = 5",
                 "#t1 = a > b",
@@ -118,27 +83,19 @@ else
                 "L1: goto 6",
                 "6: a = 4",
                 "4: a = 6",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "GotoIfElseTACGen2")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void OptimizationLabelIfTest()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b;
 goto 1;
 a = 1;
-1: if (true) 
+1: if (true)
     goto 2;
 2: a = 5;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            true,
+            ExpectedResult = new string[]
             {
                 "if True goto 2",
                 "goto L3",
@@ -147,51 +104,34 @@ a = 1;
                 "L1: goto 2",
                 "L2: noop",
                 "2: a = 5",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "OptimizationLabelIf")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void InfiniteLoopfTest()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 1: goto 2;
 2: goto 3;
 3: goto 1;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            ExpectedResult = new string[]
             {
                 "1: goto 1",
                 "2: goto 1",
                 "3: goto 1",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "InfiniteLoop")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void Task3Test()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b;
 goto 1;
 a = 1;
-1: if (true) 
+1: if (true)
     goto 4;
-else 
+else
 3: a=5;
 4: b = 2;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
-
-            var expected = new List<string>()
+",
+            true,
+            ExpectedResult = new string[]
             {
                 "if True goto 4",
                 "goto 3",
@@ -201,11 +141,15 @@ else
                 "L1: goto 4",
                 "L2: noop",
                 "4: b = 2",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations, UnreachableCodeElimination: true)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Task3")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
+        public IEnumerable<string> TestGotoToGoto(
+            string sourceCode,
+            bool unreachableCodeElimination = false) =>
+            TestTACOptimization(
+                sourceCode,
+                allCodeOptimization: ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto,
+                unreachableCodeElimination: unreachableCodeElimination);
     }
 }

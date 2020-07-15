@@ -5,87 +5,62 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprMultDivByOneTests : ASTTestsBase
     {
-        [Test]
-        public void MultByRightOne()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = b * 1;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;"
-            };
+            },
+            TestName = "MultByRightOne")]
 
-            var result = ApplyOpt(AST, new OptExprMultDivByOne());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void MultByLeftOne()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 1 * b;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;"
-            };
+            },
+            TestName = "MultByLeftOne")]
 
-            var result = ApplyOpt(AST, new OptExprMultDivByOne());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void DivByRightOne()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = b / 1;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;"
-            };
+            },
+            TestName = "DivByRightOne")]
 
-            var result = ApplyOpt(AST, new OptExprMultDivByOne());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void MultAndDivByLeftRightOne()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 1 * a * 1 + (1 * b / 1) * 1 / 1;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = (a + b);"
-            };
+            },
+            TestName = "MultAndDivByLeftRightOne")]
 
-            var result = ApplyOpt(AST, new OptExprMultDivByOne());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void OneDivBySomething()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a;
 a = 1 / a;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a;",
                 "a = (1 / a);"
-            };
+            },
+            TestName = "OneDivBySomething")]
 
-            var result = ApplyOpt(AST, new OptExprMultDivByOne());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptExprMultDivByOne(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprMultDivByOne());
     }
 }

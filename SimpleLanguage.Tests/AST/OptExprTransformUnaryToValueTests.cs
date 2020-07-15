@@ -7,58 +7,60 @@ namespace SimpleLanguage.Tests.AST
     internal class OptExprTransformUnaryToValueTests : ASTTestsBase
     {
         [Test]
-        public void TransformToIntTest()
+        public void TransformToInt()
         {
             var AST = BuildAST(@"
 var a, b;
 a = (-1);
 ");
-            var expected = new[] {
+            var expected = new[]
+            {
                 "var a, b;",
                 "a = -1;"
             };
 
-            var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
+            var result = ApplyAstOpt(AST, new OptExprTransformUnaryToValue());
             CollectionAssert.AreEqual(expected, result);
-            Assert.IsNotNull((AST.root.StatChildren[1] as AssignNode).Expr is IntNumNode);
+            Assert.IsTrue((AST.root.StatChildren[1] as AssignNode).Expr is IntNumNode);
         }
 
         [Test]
-        public void TransformToBoolTest()
+        public void TransformToBool()
         {
             var AST = BuildAST(@"
 var a, b;
 a = !true;
 b = !false;
 ");
-            var expected = new[] {
+            var expected = new[]
+            {
                 "var a, b;",
                 "a = false;",
                 "b = true;"
             };
 
-            var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
+            var result = ApplyAstOpt(AST, new OptExprTransformUnaryToValue());
             CollectionAssert.AreEqual(expected, result);
+            Assert.IsTrue((AST.root.StatChildren[1] as AssignNode).Expr is BoolValNode);
+            Assert.IsTrue((AST.root.StatChildren[2] as AssignNode).Expr is BoolValNode);
         }
 
-        [Test]
-        public void TransformTwiceUnaryTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = !!b;
 b = --a;
 a = --b - ---a;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = b;",
                 "b = a;",
                 "a = (b - (-a));"
-            };
+            },
+            TestName = "TransformTwiceUnary")]
 
-            var result = ApplyOpt(AST, new OptExprTransformUnaryToValue());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptExprTransformUnaryToValue(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprTransformUnaryToValue());
     }
 }
