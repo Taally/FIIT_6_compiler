@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    public class ReachingDefinitionBinary : GenericIterativeAlgorithm<BitArray>
+    public class ReachingDefinitionsBinary : GenericIterativeAlgorithm<BitArray>
     {
         /// <inheritdoc/>
         public override Func<BitArray, BitArray, BitArray> CollectingOperator => (a, b) => a.Or(b);
@@ -80,7 +80,7 @@ namespace SimpleLang
                 foreach (var block in blocks)
                 {
                     var used = new HashSet<string>();
-                    foreach (var instruction in block.GetInstructions().Reverse<Instruction>())
+                    foreach (var instruction in block.GetInstructions().Reverse())
                     {
                         if (!used.Contains(instruction.Result) &&
                             (instruction.Operation == "assign" ||

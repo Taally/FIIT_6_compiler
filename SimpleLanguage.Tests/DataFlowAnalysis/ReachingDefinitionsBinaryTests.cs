@@ -12,7 +12,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         {
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var inOutInfo = new ReachingDefinitionBinary().Execute(cfg);
+            var inOutInfo = new ReachingDefinitionsBinary().Execute(cfg);
             return (blocks, inOutInfo);
         }
 

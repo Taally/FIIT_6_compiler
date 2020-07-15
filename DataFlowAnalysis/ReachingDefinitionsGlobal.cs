@@ -183,7 +183,7 @@ namespace SimpleLang
         {
             public bool Equals(Instruction x, Instruction y) => ReferenceEquals(x, y);
 
-            public int GetHashCode(Instruction obj) => (obj as object).GetHashCode();
+            public int GetHashCode(Instruction obj) => obj.GetHashCode();
         }
     }
 }
