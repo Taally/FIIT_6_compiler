@@ -33,7 +33,7 @@ var idByInstruction = assigns
     .Select((value, index) => new { value, index })  
     .ToDictionary(x => x.value, x => x.index);  
   
-var inOutData = base.Execute(graph); // основная логика алгоритма
+var inOutData = base.Execute(graph, useRenumbering); // основная логика алгоритма
   
 var modifiedBackData = inOutData  
     .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })  
@@ -55,7 +55,7 @@ private BitArray ApplyTransferFunc(BitArray @in, BasicBlock block)
 }
 ```
   
-Для представления множеств Gen и Kill в виде битовых массивов используется вспомогательный метод, который на основании `idByInstruction`, вычисленному в начале работы алгоритма и информации об определениях формирует битовый массив.
+Для представления множеств Gen и Kill в виде битовых массивов используется вспомогательный метод, который на основании `idByInstruction`, вычисленному в начале работы алгоритма и информации об определениях, формирует битовый массив.
 
 ```csharp
 public static Dictionary<BasicBlock, BitArray> 
