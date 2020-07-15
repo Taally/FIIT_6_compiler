@@ -15,7 +15,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
 var a, b;
 b = 5;
 if (a > b)
-	goto 6;
+    goto 6;
 6: a = 4;
 ",
             ExpectedResult = new string[]
@@ -33,7 +33,7 @@ if (a > b)
 var a, b;
 b = 5;
 if (a > b)
-	goto 6;
+    goto 6;
 else
     goto 4;
 6: a = 4;

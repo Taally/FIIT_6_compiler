@@ -63,7 +63,7 @@ namespace SimpleLang
             _children = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
             _parents = new List<List<(int, BasicBlock)>>(_basicBlocks.Count);
 
-            for (var i = 0; i < _basicBlocks.Count; ++i)
+            foreach (var basicBlock in _basicBlocks)
             {
                 _children.Add(new List<(int, BasicBlock)>());
                 _parents.Add(new List<(int, BasicBlock)>());

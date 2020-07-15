@@ -51,7 +51,7 @@ L2: a = 5 // или любая другая операция с меткой
 var commandsTmp = new List<Instruction>(commands);
 if (commands.Count == 0)
 {
-	return (false, commandsTmp);
+    return (false, commandsTmp);
 }
 var results = new List<Instruction>();
 var wasChanged = false;
@@ -62,48 +62,48 @@ for (var i = 0; i < commandsTmp.Count - 1; i++)
     var currentCommand = commandsTmp[i];
     // случай 1, просто удаляем
     if (currentCommand.Operation == "noop" && currentCommand.Label == "")
-	{
-		wasChanged = true;
-	}
-    // случаи 2 и 3, проверяем следующую операцию на наличие метки
-	else if (currentCommand.Operation == "noop")
     {
-	   // случай 2, следующей метки нет, сливаем операции
-	   if (commandsTmp[i + 1].Label == "")
-	   {
-		   var nextCommand = commandsTmp[i + 1];
-		   wasChanged = true;
-			result.Add(
-				new Instruction(
-					currentCommand.Label,
-					nextCommand.Operation,
-					nextCommand.Argument1,
-					nextCommand.Argument2,
-					nextCommand.Result
-				)
-			);
-			i += 1;
-			if (i == commandsTmp.Count - 1)
-			{
-				toAddLast = false;
-			}
-	   }
-	   // случай 3, следующая метка есть, 
-	   // необходимо переименовать goto по всему коду
-	   else
-	   {
-		   	var nextCommand = commandsTmp[i + 1];
-			wasChanged = true;
-			var currentLabel = currentCommand.Label;
-			var nextLabel = nextCommand.Label;
-			result = result.Select(/* переименование */).ToList();
-			for (var j = i + 1; j < commandsTmp.Count; j++)
-				commands[j] = /* переименование */;
-	   }
+        wasChanged = true;
+    }
+    // случаи 2 и 3, проверяем следующую операцию на наличие метки
+    else if (currentCommand.Operation == "noop")
+    {
+       // случай 2, следующей метки нет, сливаем операции
+       if (commandsTmp[i + 1].Label == "")
+       {
+           var nextCommand = commandsTmp[i + 1];
+           wasChanged = true;
+            result.Add(
+                new Instruction(
+                    currentCommand.Label,
+                    nextCommand.Operation,
+                    nextCommand.Argument1,
+                    nextCommand.Argument2,
+                    nextCommand.Result
+                )
+            );
+            i += 1;
+            if (i == commandsTmp.Count - 1)
+            {
+                toAddLast = false;
+            }
+       }
+       // случай 3, следующая метка есть, 
+       // необходимо переименовать goto по всему коду
+       else
+       {
+            var nextCommand = commandsTmp[i + 1];
+            wasChanged = true;
+            var currentLabel = currentCommand.Label;
+            var nextLabel = nextCommand.Label;
+            result = result.Select(/* переименование */).ToList();
+            for (var j = i + 1; j < commandsTmp.Count; j++)
+                commands[j] = /* переименование */;
+       }
     }
     // иначе просто добавляем операцию
     else {
-	  results.Add(commandsTmp[i]);
+      results.Add(commandsTmp[i]);
     }
 }
 ```
@@ -141,13 +141,13 @@ goto old_label
 Пример проверки корректности интеграции с `GotoThroughGoto`
 ```
 1: if(1 < 2)			 	1: #t1 = 1 < 2
-	a = 4 + 5 * 6;   ->  	if #t1 goto L1
+    a = 4 + 5 * 6;   ->  	if #t1 goto L1
    else					 	goto 4
-	goto 4;			    	goto L2
-				         	L1: #t2 = 5 * 6
-					     	#t3 = 4 + #t2
-						 	a = #t3
-					     	L2: noop
+    goto 4;			    	goto L2
+                            L1: #t2 = 5 * 6
+                            #t3 = 4 + #t2
+                            a = #t3
+                            L2: noop
 ```
 
 Выполняется проверка на не удаление L2: noop, который является последней операцией в программе.

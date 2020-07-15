@@ -79,16 +79,16 @@ var resultToExpr = new Dictionary<string, string>();
 Для построения общего ключа для выражений с коммутативной операцией применяется сортировка операнд:
 ```
 string uniqueExpr(Instruction instr) =>
-	string.Format(IsCommutative(instr) && string.Compare(instr.Argument1, instr.Argument2) > 0 ?
-		"{2}{1}{0}" : "{0}{1}{2}", instr.Argument1, instr.Operation, instr.Argument2);
+    string.Format(IsCommutative(instr) && string.Compare(instr.Argument1, instr.Argument2) > 0 ?
+        "{2}{1}{0}" : "{0}{1}{2}", instr.Argument1, instr.Operation, instr.Argument2);
 ```
 Основной алгоритм представляет из себя цикл по входным инструкциям,  
 на каждой итерации которого, происходят следующие действия для каждой инструкции:
 
 - создание ключа по выражению
 - если для выражения есть связь с результатом
-	- то - выполняем оптимизацию
-	- иначе - добавляем связи операнд к выражению
+    - то - выполняем оптимизацию
+    - иначе - добавляем связи операнд к выражению
 - обновлям связи результата и выражения
 - если результат имеет связь с выражениями как операнд - удаляем все зависимые связи
 
@@ -97,14 +97,14 @@ for (var i = 0; i < instructions.Count; ++i)
 {
     var expr = uniqueExpr(instructions[i]);
     if (instructions[i].Operation != "assign" &&
-    	exprToResults.TryGetValue(expr, out var results) &&
-	results.Count != 0)
+        exprToResults.TryGetValue(expr, out var results) &&
+    results.Count != 0)
     {
         changed = true;
         newInstructions.Add(new Instruction(instructions[i].Label, 
-						"assign", 
-						results.First(), "", 
-						instructions[i].Result));
+                        "assign", 
+                        results.First(), "", 
+                        instructions[i].Result));
     }
     else
     {

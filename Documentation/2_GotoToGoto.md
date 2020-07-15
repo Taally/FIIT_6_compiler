@@ -147,7 +147,7 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 [Test]
 public void MultiGoToTest()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
         var a, b;
         1: goto 2;
         2: goto 5;
@@ -156,48 +156,48 @@ public void MultiGoToTest()
         5: goto 6;
         6: a = b;
         ");
-	var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
+    var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
-	var expected = new List<string>()
-	{
-		"1: goto 6",
-		"2: goto 6",
-		"3: goto 6",
-		"4: a = 1",
-		"5: goto 6",
-		"6: a = b",
-	};
-	var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-		.Select(instruction => instruction.ToString());
+    var expected = new List<string>()
+    {
+        "1: goto 6",
+        "2: goto 6",
+        "3: goto 6",
+        "4: a = 1",
+        "5: goto 6",
+        "6: a = b",
+    };
+    var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+        .Select(instruction => instruction.ToString());
 
-	CollectionAssert.AreEqual(expected, actual);
+    CollectionAssert.AreEqual(expected, actual);
 }
 
 [Test]
 public void TestGotoIfElseTACGen1()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
         var a,b;
         b = 5;
         if(a > b)
         goto 6;
         6: a = 4;
         ");
-	var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
+    var optimizations = new List<Optimization> { ThreeAddressCodeGotoToGoto.ReplaceGotoToGoto };
 
-	var expected = new List<string>()
-	{
-		"b = 5",
-		"#t1 = a > b",
-		"if #t1 goto 6",
-		"goto L2",
-		"L1: goto 6",
-		"L2: noop",
-		"6: a = 4",
-	};
-	var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-		.Select(instruction => instruction.ToString());
+    var expected = new List<string>()
+    {
+        "b = 5",
+        "#t1 = a > b",
+        "if #t1 goto 6",
+        "goto L2",
+        "L1: goto 6",
+        "L2: noop",
+        "6: a = 4",
+    };
+    var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
+        .Select(instruction => instruction.ToString());
 
-	CollectionAssert.AreEqual(expected, actual);
+    CollectionAssert.AreEqual(expected, actual);
 }
 ```

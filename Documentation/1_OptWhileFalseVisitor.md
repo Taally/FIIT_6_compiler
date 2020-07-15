@@ -22,14 +22,14 @@
   * До
 
   ```csharp
-	while (false) 
-    	a = 5; 
+    while (false) 
+        a = 5; 
   ```
 
   * После
 
   ```csharp
-	null
+    null
   ```
 
 ### Практическая часть

@@ -23,22 +23,18 @@ namespace SimpleLang
                     listOfLeaders.Add(i);
                 }
 
-                if (instructions[i].Label != null
-                    && IsLabelAlive(instructions, instructions[i].Label)) // Команда с меткой
+                if (instructions[i].Label != null &&
+                    IsLabelAlive(instructions, instructions[i].Label) && // Команда с меткой
+                    !listOfLeaders.Contains(i))
                 {
-                    if (!listOfLeaders.Contains(i))
-                    {
-                        listOfLeaders.Add(i);
-                    }
+                    listOfLeaders.Add(i);
                 }
 
-                if (instructions[i].Operation == "goto"
-                    || instructions[i].Operation == "ifgoto") // Следующая после Goto
+                if ((instructions[i].Operation == "goto" ||
+                    instructions[i].Operation == "ifgoto") && // Следующая после Goto
+                    !listOfLeaders.Contains(i + 1))
                 {
-                    if (!listOfLeaders.Contains(i + 1))
-                    {
-                        listOfLeaders.Add(i + 1);
-                    }
+                    listOfLeaders.Add(i + 1);
                 }
             }
 
@@ -70,7 +66,7 @@ namespace SimpleLang
         /// <returns>
         /// Возвращает true, если есть переход на эту метку
         /// </returns>
-        public static bool IsLabelAlive(IReadOnlyCollection<Instruction> instructions, string checkLabel) // Есть ли переход на метку ? 
+        public static bool IsLabelAlive(IReadOnlyCollection<Instruction> instructions, string checkLabel) // Есть ли переход на метку?
         {
             foreach (var instruction in instructions)
             {
@@ -81,12 +77,9 @@ namespace SimpleLang
                         return true;
                     }
                 }
-                else if (instruction.Operation == "ifgoto")
+                else if (instruction.Operation == "ifgoto" && instruction.Argument2 == checkLabel)
                 {
-                    if (instruction.Argument2 == checkLabel)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;

@@ -67,10 +67,10 @@ var a, b, c, d, x, u, e,g, y,zz,i;
 goto 200;
 200: a = 10 + 5;
 for i=2,7 
-	x = 1;
+    x = 1;
 if c > a
 {
-	a = 1;
+    a = 1;
 }
 else 
 {
@@ -109,17 +109,17 @@ CollectionAssert.AreEqual(lrn, cfg.LRN);
 lrn.Reverse();
 
 for (int i = 0; i< lrn.Count; ++i)
-	Assert.AreEqual(cfg.DFN[lrn[i]], i);
+    Assert.AreEqual(cfg.DFN[lrn[i]], i);
 
 var check = new bool[cfg.GetCurrentBasicBlocks().Count];
 foreach ((var u, var v) in cfg.DFST)
 {
-	check[u] = true;
-	check[v] = true;
+    check[u] = true;
+    check[v] = true;
 }
 
 foreach (var c in check)
-	Assert.IsTrue(c);
+    Assert.IsTrue(c);
 
 Assert.AreEqual(check.Length - 1, cfg.DFST.Count);
 ```

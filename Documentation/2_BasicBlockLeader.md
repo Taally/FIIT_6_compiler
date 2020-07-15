@@ -40,34 +40,34 @@
 ```csharp
 for (int i = 0; i < instructions.Count; i++) // формируем список лидеров
 {
-	if (i == 0) //Первая команда трехадресного кода
-	{
-		listOfLeaders.Add(i);
-	}
+    if (i == 0) // Первая команда трехадресного кода
+    {
+        listOfLeaders.Add(i);
+    }
 
-	if (instructions[i].Label != null
-		&& IsLabelAlive(instructions, instructions[i].Label)) //Команда содержит метку, на которую существует переход
-	{
-		if (!listOfLeaders.Contains(i)) // проверка на наличие данного лидера в списке лидеров
-		{
-			listOfLeaders.Add(i);
-		}
-	}
+    if (instructions[i].Label != null
+        && IsLabelAlive(instructions, instructions[i].Label)) // Команда содержит метку, на которую существует переход
+    {
+        if (!listOfLeaders.Contains(i)) // проверка на наличие данного лидера в списке лидеров
+        {
+            listOfLeaders.Add(i);
+        }
+    }
 
-	if (instructions[i].Operation == "goto"
-		|| instructions[i].Operation == "ifgoto") //Команда является следующей после операции перехода (goto или ifgoto)
-	{
-		if (!listOfLeaders.Contains(i + 1)) // проверка на наличие данного лидера в списке лидеров
-		{
-			listOfLeaders.Add(i + 1);
-		}
-	}
+    if (instructions[i].Operation == "goto"
+        || instructions[i].Operation == "ifgoto") // Команда является следующей после операции перехода (goto или ifgoto)
+    {
+        if (!listOfLeaders.Contains(i + 1)) // проверка на наличие данного лидера в списке лидеров
+        {
+            listOfLeaders.Add(i + 1);
+        }
+    }
 }
 ```
 
 Результатом работы является список базовых блоков, состоящий из команд трехадресного кода, разбитых от лидера до лидера:
 ```csharp
-	return basicBlockList;
+    return basicBlockList;
 ```
 
 ### Место в общем проекте (Интеграция)
@@ -88,19 +88,19 @@ var divResult = BasicBlockLeader.DivideLeaderToLeader(optResult);
 public void LabelAliveTest()
 {
 var TAC = GenTAC(@"
-		var a, b, c;
-		goto 3;
-		a = 54;
-		3: b = 11;
-		");
+        var a, b, c;
+        goto 3;
+        a = 54;
+        3: b = 11;
+        ");
 
 
 var expected = new List<BasicBlock>()
-		{
-			new BasicBlock(new List<Instruction>(){new Instruction("3", "", "", "goto", "")}),
-			new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a")}),
-			new BasicBlock(new List<Instruction>(){new Instruction("11", "3", "", "assign", "b")}),
-		};
+        {
+            new BasicBlock(new List<Instruction>(){new Instruction("3", "", "", "goto", "")}),
+            new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a")}),
+            new BasicBlock(new List<Instruction>(){new Instruction("11", "3", "", "assign", "b")}),
+        };
 var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
 AssertSet(expected, actual);
@@ -110,19 +110,19 @@ AssertSet(expected, actual);
 public void LabelNotAliveTest()
 {
 var TAC = GenTAC(@"
-		var a, b, c;
-		goto 4;
-		a = 54;
-		3: b = 11;
-		");
+        var a, b, c;
+        goto 4;
+        a = 54;
+        3: b = 11;
+        ");
 
 
 var expected = new List<BasicBlock>()
-		{
-			new BasicBlock(new List<Instruction>(){new Instruction("4", "", "", "goto", "")}),
-			new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"),
-							new Instruction("11", "3", "", "assign", "b")}),
-		};
+        {
+            new BasicBlock(new List<Instruction>(){new Instruction("4", "", "", "goto", "")}),
+            new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"),
+                            new Instruction("11", "3", "", "assign", "b")}),
+        };
 var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
 AssertSet(expected, actual);
@@ -139,10 +139,10 @@ b = 11;
 
 
 var expected = new List<BasicBlock>()
-		{
-			new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"),
-							new Instruction("11", "", "", "assign", "b")}),
-		};
+        {
+            new BasicBlock(new List<Instruction>(){new Instruction("54", "", "", "assign", "a"),
+                            new Instruction("11", "", "", "assign", "b")}),
+        };
 var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
 AssertSet(expected, actual);

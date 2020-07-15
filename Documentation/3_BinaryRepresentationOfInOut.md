@@ -48,9 +48,9 @@ return new InOutData<IEnumerable<Instruction>>(modifiedBackData);
 private BitArray ApplyTransferFunc(BitArray @in, BasicBlock block)  
 {  
     var gen = gen_block.ContainsKey(block) ? 
-	    gen_block[block] : new BitArray(@in.Count, false);  
+        gen_block[block] : new BitArray(@in.Count, false);  
     var kill = kill_block.ContainsKey(block) ? 
-	    kill_block[block] : new BitArray(@in.Count, false);  
+        kill_block[block] : new BitArray(@in.Count, false);  
     return gen.Or(BitUtils.Except(@in, kill));  
 }
 ```
@@ -59,10 +59,10 @@ private BitArray ApplyTransferFunc(BitArray @in, BasicBlock block)
 
 ```csharp
 public static Dictionary<BasicBlock, BitArray> 
-	GroupByBlockAndTurnIntoInstructions(  
-	    IEnumerable<DefinitionInfo> defs,  
-	    Dictionary<Instruction, int> idsByInstruction  
-	)  
+    GroupByBlockAndTurnIntoInstructions(  
+        IEnumerable<DefinitionInfo> defs,  
+        Dictionary<Instruction, int> idsByInstruction  
+    )  
 {  
     var result = defs  
         .ToLookup(x => x.BasicBlock, x => x.Instruction)  

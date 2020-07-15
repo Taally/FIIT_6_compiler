@@ -123,7 +123,7 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
 ```csharp
 public void LiveVariableIterativeTest()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
 var a,b,c;
 
 input (b);
@@ -135,14 +135,14 @@ c = b + a;
 print (c);"
 );
 
-	var cfg = GenCFG(program);
+    var cfg = GenCFG(program);
             var resActiveVariable = new LiveVariableAnalysis().Execute(cfg);
             var actual = cfg.GetCurrentBasicBlocks()
                 .Select(z => resActiveVariable[z])
                 .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))
                 .ToList();
 
-	var expected =
+    var expected =
                 new List<(IEnumerable<string>, IEnumerable<string>)>()
                 {
                     (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
@@ -153,6 +153,6 @@ print (c);"
                     (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
 
-	AssertSet(expected, actual);
+    AssertSet(expected, actual);
 }
 ```
