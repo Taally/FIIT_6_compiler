@@ -64,23 +64,19 @@ private static IReadOnlyList<ChangeVisitor> ASTOptimizations { get; } = new List
 Метод ```BuildAST``` используется для создания абстрактного синтаксического дерева по переданной ему строке кода. Схема тестирования выглядит следующим образом: сначала по заданному тексту программы генерируется AST, затем применяется оптимизация, после сравниваются строка ожидаемого результата и строка полученная с помощью визитора ```PrettyPrintVisitor``` по оптимизированному абстрактному дереву. Пустая строчка соответствуют пустому оператору. Ниже приведён один из тестов.
 
 ```csharp
-[Test]
-public void RemoveNode()
-{
-    var AST = BuildAST(@"
+[TestCase(@"
 var a, b;
 a = a;
 { b = b; }
-");
-    var expected = @"var a, b;
+",
+    ExpectedResult = new[]
+    {
+        "var a, b;",
+        "{",
+        "}"
+    },
+    TestName = "RemoveNode")]
 
-{
-
-}";
-    var opt = new OptAssignEquality();
-    AST.root.Visit(opt);
-    var pp = new PrettyPrintVisitor();
-    AST.root.Visit(pp);
-    Assert.AreEqual(expected, pp.Text);
-}
+public string[] TestOptAssignEquality(string sourceCode) =>
+    TestASTOptimization(sourceCode, new OptAssignEquality());
 ```
