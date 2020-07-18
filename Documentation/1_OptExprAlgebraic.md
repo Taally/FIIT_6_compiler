@@ -20,34 +20,34 @@
 
 ```csharp
 public class OptExprAlgebraic : ChangeVisitor
+{
+    public override void PostVisit(Node n)
     {
-        public override void PostVisit(Node n)
+        // Algebraic expressions of the form: 2 * 3 => 6
+        if (n is BinOpNode binop && binop.Left is IntNumNode intNumLeft && binop.Right is IntNumNode intNumRight)
         {
-            // Algebraic expressions of the form: 2 * 3 => 6
-            if (n is BinOpNode binop && binop.Left is IntNumNode intNumLeft && binop.Right is IntNumNode intNumRight)
+            var result = new IntNumNode(0);
+            switch (binop.Op)
             {
-                var result = new IntNumNode(0);
-                switch (binop.Op)
-                {
-                    case OpType.PLUS:
-                        result.Num = intNumLeft.Num + intNumRight.Num;
-                        break;
-                    case OpType.MINUS:
-                        result.Num = intNumLeft.Num - intNumRight.Num;
-                        break;
-                    case OpType.DIV:
-                        result.Num = intNumLeft.Num / intNumRight.Num;
-                        break;
-                    case OpType.MULT:
-                        result.Num = intNumLeft.Num * intNumRight.Num;
-                        break;
-                    default:
-                        return;
-                }
-                ReplaceExpr(binop, result);
+                case OpType.PLUS:
+                    result.Num = intNumLeft.Num + intNumRight.Num;
+                    break;
+                case OpType.MINUS:
+                    result.Num = intNumLeft.Num - intNumRight.Num;
+                    break;
+                case OpType.DIV:
+                    result.Num = intNumLeft.Num / intNumRight.Num;
+                    break;
+                case OpType.MULT:
+                    result.Num = intNumLeft.Num * intNumRight.Num;
+                    break;
+                default:
+                    return;
             }
+            ReplaceExpr(binop, result);
         }
     }
+}
 ```
 
 ### Место в общем проекте (Интеграция)
@@ -56,35 +56,28 @@ public class OptExprAlgebraic : ChangeVisitor
 ### Тесты
 
 ```csharp
-[Test]
-public void SumNumTest()
-{
-    var AST = BuildAST(@"
-            var a, b;
-            a = 1 + 41;
-            ");
-    var expected = new[] {
-            "var a, b;",
-            "a = 42;"
-            };
-
-    var result = ApplyOpt(AST, new OptExprAlgebraic());
-    CollectionAssert.AreEqual(expected, result);
-}
-
-[Test]
-public void MultNumTest()
-{
-    var AST = BuildAST(@"
-        var a, b;
-        a = 6 * 7;
-        ");
-    var expected = new[] {
+[TestCase(@"
+var a, b;
+a = 1 + 41;
+",
+    ExpectedResult = new[]
+    {
         "var a, b;",
         "a = 42;"
-        };
+    },
+    TestName = "SumNum")]
 
-    var result = ApplyOpt(AST, new OptExprAlgebraic());
-    CollectionAssert.AreEqual(expected, result);
-}
+[TestCase(@"
+var a, b;
+a = 6 * 7;
+",
+    ExpectedResult = new[]
+    {
+        "var a, b;",
+        "a = 42;"
+    },
+    TestName = "MultNum")]
+
+public string[] TestOptExprAlgebraic(string sourceCode) =>
+    TestASTOptimization(sourceCode, new OptExprAlgebraic());
 ```
