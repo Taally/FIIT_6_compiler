@@ -87,7 +87,7 @@ public void RemoveInnerIf1()
     Assert.IsNull(root.Parent);
     Assert.AreEqual(root.ExprChildren.Count, 0);
     Assert.AreEqual(root.StatChildren.Count, 1);
-    Assert.IsTrue(root.StatChildren[0].GetType() == typeof(ProgramTree.EmptyNode));
+    Assert.IsTrue(root.StatChildren[0].GetType() == typeof(EmptyNode));
 }
 
 [Test]
@@ -116,10 +116,10 @@ public void RemoveInBlock()
 
     foreach (var node in root.StatChildren)
     {
-        Assert.IsTrue(node.GetType() == typeof(ProgramTree.BlockNode));
+        Assert.IsTrue(node.GetType() == typeof(BlockNode));
         Assert.AreEqual(node.ExprChildren.Count, 0);
         Assert.AreEqual(node.StatChildren.Count, 1);
-        Assert.IsTrue(node.StatChildren[0].GetType() == typeof(ProgramTree.EmptyNode));
+        Assert.IsTrue(node.StatChildren[0].GetType() == typeof(EmptyNode));
     }
 }
 ```
