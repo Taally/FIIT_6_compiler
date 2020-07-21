@@ -45,7 +45,8 @@ if (useRenumbering)
 В тестах проверяется, что для созданных ранее итерационных алгоритмов количество итераций, совершённое с упорядочением блоков, не превосходит количество итераций без упорядочения. Ниже представлен тест для алгоритма анализа достигающих определений.
 
 ```csharp
-public void ReachingDefinitionsTest()
+[Test]
+public void ReachingDefinitions()
 {
     var program = @"
 var i, m, j, n, a, u1, u2, u3, k;
@@ -55,15 +56,16 @@ var i, m, j, n, a, u1, u2, u3, k;
 
 for k = 0, 1
 {
-i = i + 1;
-j = j - 1;
+    i = i + 1;
+    j = j - 1;
 
-if i < j
-a = u2;
-i = u3;
-}";
+    if i < j
+        a = u2;
+    i = u3;
+}
+";
     var graph = GenCFG(program);
-    var algorithm = new LiveVariableAnalysis();
+    var algorithm = new LiveVariables();
 
     algorithm.Execute(graph);
     var iterationsFast = algorithm.Iterations;
