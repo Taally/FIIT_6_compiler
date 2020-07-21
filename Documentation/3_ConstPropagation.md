@@ -111,21 +111,21 @@ public virtual InOutData<T> Execute(ControlFlowGraph graph);
 [Test]
 public void TransfNotDistr()
 {
-    var TAC = GenTAC(@"
-        var a,b,c;
-        if c > 5
-        {
-            a = 2;
-            b = 3;
-        }
-        else
-        {
-            a = 3;
-            b = 2;
-        }
-        c = a + b;
-    ");
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var program = @"
+var a,b,c;
+if c > 5
+{
+    a = 2;
+    b = 3;
+}
+else
+{
+    a = 3;
+    b = 2;
+}
+c = a + b;
+";
+    var blocks = GenBlocks(program);
     Assert.AreEqual(4, blocks.Count);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
@@ -141,15 +141,15 @@ public void TransfNotDistr()
 [Test]
 public void PropagateTwoVariants()
 {
-    var TAC = GenTAC(@"
-        var a, x, c;
-        if c > 10
-            x = 10;
-        else
-            a = 20;
-        c = a + x;
-    ");
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var program = @"
+var a, x, c;
+if c > 10
+    x = 10;
+else
+    a = 20;
+c = a + x;
+";
+    var blocks = GenBlocks(program);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
@@ -168,18 +168,18 @@ public void PropagateTwoVariants()
 [Test]
 public void TwoConstValues()
 {
-    var TAC = GenTAC(@"
-        var a, x, c;
-        input(c);
-        if c > 5
-            x = 10;
-        else
-            input(c);
-        if c > 5
-            x = 20;
-        a = x;
-");
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var program = @"
+var a, x, c;
+input(c);
+if c > 5
+    x = 10;
+else
+    input(c);
+if c > 5
+    x = 20;
+a = x;
+";
+    var blocks = GenBlocks(program);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
@@ -194,24 +194,23 @@ public void TwoConstValues()
 [Test]
 public void PropagateTwoVariants2()
 {
-    var TAC = GenTAC(@"
-        var a, x, c;
-        x = 10;
-        a = 20;
-        goto 666;
-        666: c = a + x;
-        ");
+    var program = @"
+var a, x, c;
+x = 10;
+a = 20;
+goto 666;
+666: c = a + x;
+";
+    var blocks = GenBlocks(program);
+    var cfg = new ControlFlowGraph(blocks);
+    var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+    var actual = InOut.OUT[blocks.Last()];
+    Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
+    Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
+    Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
 
-        var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
-        var cfg = new ControlFlowGraph(blocks);
-        var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-        var actual = InOut.OUT[blocks.Last()];
-        Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
-        Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
-        Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
-
-        Assert.AreEqual("20", actual["a"].ConstValue);
-        Assert.AreEqual("30", actual["c"].ConstValue);
-        Assert.AreEqual("10", actual["x"].ConstValue);
+    Assert.AreEqual("20", actual["a"].ConstValue);
+    Assert.AreEqual("30", actual["c"].ConstValue);
+    Assert.AreEqual("10", actual["x"].ConstValue);
 }
 ```
