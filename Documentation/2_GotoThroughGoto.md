@@ -114,7 +114,7 @@ public void Optimization()
 
     var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
     var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-        .Select(instruction => instruction.ToString()).ToList();
+        .Select(instruction => instruction.ToString());
 
     CollectionAssert.AreEqual(expected, actual);
 }
