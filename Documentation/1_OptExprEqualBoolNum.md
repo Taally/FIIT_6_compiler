@@ -94,7 +94,7 @@ public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimiza
 var b, c, d;
 b = true == true;
 while (5 == 5)
-c = true == false;
+    c = true == false;
 d = 7 == 8;
 ",
     ExpectedResult = new[]
