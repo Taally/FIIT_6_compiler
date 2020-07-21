@@ -67,91 +67,82 @@ public class InOutData<T> : Dictionary<BasicBlock, (T In, T Out)> // Вид вы
 public enum Direction { Forward, Backward }
 ```
 
-Реализовали обобщенный итерационный алгоритм для прямого и обратного прохода. Алгоритм реализован в виде абстрактного класса, это предоставит возможность, каждому итерационному алгоритму самостоятельно переопределить входные данные, передаточную функцию, верхний или нижний элемент пула решетки ( относительно прохода алгоритма) и оператор сбора.
+Реализовали обобщенный итерационный алгоритм для прямого и обратного прохода. Алгоритм реализован в виде абстрактного класса, это предоставит возможность каждому итерационному алгоритму самостоятельно переопределить входные данные, передаточную функцию, верхний или нижний элемент пула решетки (относительно прохода алгоритма) и оператор сбора.
 Пример реализации:
 ```csharp
 public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
+{
+    public virtual InOutData<T> Execute(ControlFlowGraph graph, bool useRenumbering = true)
     {
-        public virtual InOutData<T> Execute(ControlFlowGraph graph)
+        GetInitData(graph, useRenumbering, out var blocks, out var data,
+            out var getPreviousBlocks, out var getDataValue, out var combine);
+
+        var outChanged = true;
+        Iterations = 0;
+        while (outChanged)
         {
-            GetInitData(graph, out var blocks, out var data,
-                out var getPreviousBlocks, out var getDataValue, out var combine);  
-                // Заполнение первого элемента верхним или нижним элементом полурешетки в зависимости от прохода
-
-            var outChanged = true;  // Были ли внесены изменения
-            while (outChanged)
+            outChanged = false;
+            foreach (var block in blocks)
             {
-                outChanged = false;
-                foreach (var block in blocks)  //  цикл по блокам
-                {
-                    var inset = getPreviousBlocks(block).Aggregate(Init, (x, y) => CollectingOperator(x, getDataValue(y)));  // Применение оператора сбора для всей колекции
-                    var outset = TransferFunction(block, inset);  // применение передаточной функции
+                var inset = getPreviousBlocks(block).Aggregate(Init, (x, y) => CollectingOperator(x, getDataValue(y)));
+                var outset = TransferFunction(block, inset);
 
-                    if (!Compare(outset, getDataValue(block)))  // Сравнение на равенство множеств методом пересечения
-                    {
-                        outChanged = true;
-                    }
-                    data[block] = combine(inset, outset);  // Запись выходных данных
+                if (!Compare(outset, getDataValue(block)))
+                {
+                    outChanged = true;
                 }
+                data[block] = combine(inset, outset);
             }
-            return data;
+            ++Iterations;
         }
+        return data;
+    }
+}
 ```
 
-Переопределение входных данных, передаточной функции, оператора сбора, и элементов пула решетки, вынесли в вспомогательный алгоритм.
+Переопределение входных данных, передаточной функции, оператора сбора и элементов пула решетки вынесли во вспомогательный алгоритм.
 
 ### Место в общем проекте (Интеграция)
 
 Используется для вызова итерационных алгоритмов в единой структуре.
-```csharp
-
-            /* ... */
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<IEnumerable<Instruction>>();
-            return iterativeAlgorithm.Analyze(graph, new Operation(), new ReachingTransferFunc(graph));
-            /* ... */
-            /* ... */
-            var iterativeAlgorithm = new GenericIterativeAlgorithm<HashSet<string>>(Pass.Backward);
-           return iterativeAlgorithm.Analyze(cfg, new Operation(), new LiveVariableTransferFunc(cfg));
-           /* ... */
-
-```
 
 ### Тесты
 
 В тестах проверяется использование итерационных алгоритмов в обобщенной структуре, результаты совпадают с ожидаемыми. Ниже приведён тест проверки работы алгоритма живых переменных.
 
 ```csharp
-public void LiveVariableIterativeTest()
+[Test]
+public void LiveVariables()
 {
-    var TAC = GenTAC(@"
+    var program = @"
 var a,b,c;
 
 input (b);
 a = b + 1;
 if a < c
-c = b - a;
+    c = b - a;
 else
-c = b + a;
-print (c);"
-);
+    c = b + a;
+print (c);
+";
 
     var cfg = GenCFG(program);
-            var resActiveVariable = new LiveVariableAnalysis().Execute(cfg);
-            var actual = cfg.GetCurrentBasicBlocks()
-                .Select(z => resActiveVariable[z])
-                .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))
-                .ToList();
+    var resActiveVariable = new LiveVariables().Execute(cfg);
+    var actual = cfg.GetCurrentBasicBlocks()
+        .Select(z => resActiveVariable[z])
+        .Select(p => ((IEnumerable<string>)p.In, (IEnumerable<string>)p.Out))
+        .ToList();
 
     var expected =
-                new List<(IEnumerable<string>, IEnumerable<string>)>()
-                {
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
-                    (new HashSet<string>(){ }, new HashSet<string>(){ })
-                };
+        new List<(IEnumerable<string>, IEnumerable<string>)>()
+        {
+            (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
+            (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
+            (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
+            (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
+            (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+            (new HashSet<string>(){ }, new HashSet<string>(){ })
+        };
 
     AssertSet(expected, actual);
 }
