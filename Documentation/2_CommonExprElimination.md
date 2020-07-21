@@ -64,7 +64,7 @@ public static bool IsCommutative(Instruction instr)
 
 ![Вид оптимизаций](2_CommonExprElimination/t2z2.JPG)
 
-Ориентированнй граф связей подвыражений представлен следующим образом:
+Ориентированный граф связей подвыражений представлен следующим образом:
 ```csharp
 var exprToResults = new StringToStrings();
 var argToExprs = new StringToStrings();
@@ -93,40 +93,39 @@ string uniqueExpr(Instruction instr) =>
 - если результат имеет связь с выражениями как операнд - удаляем все зависимые связи
 
 ```csharp
-for (var i = 0; i < instructions.Count; ++i)
+foreach (var instruction in instructions)
 {
-    var expr = uniqueExpr(instructions[i]);
-    if (instructions[i].Operation != "assign" &&
-        exprToResults.TryGetValue(expr, out var results) &&
-    results.Count != 0)
+    if (instruction.Operation == "noop")
     {
-        changed = true;
-        newInstructions.Add(new Instruction(instructions[i].Label, 
-                        "assign", 
-                        results.First(), "", 
-                        instructions[i].Result));
+        continue;
+    }
+
+    var expr = uniqueExpr(instruction);
+    if (instruction.Operation != "assign" && exprToResults.TryGetValue(expr, out var results) && results.Count != 0)
+    {
+        wasChanged = true;
+
+        newInstructions.Add(new Instruction(instruction.Label, "assign", results.First(), "", instruction.Result));
     }
     else
     {
-        newInstructions.Add(instructions[i].Copy());
-        addLink(argToExprs, instructions[i].Argument1, expr);
-        addLink(argToExprs, instructions[i].Argument2, expr);
+        newInstructions.Add(instruction.Copy());
+        addLink(argToExprs, instruction.Argument1, expr);
+        addLink(argToExprs, instruction.Argument2, expr);
     }
 
-    if (resultToExpr.TryGetValue(instructions[i].Result, out var oldExpr))
+    if (resultToExpr.TryGetValue(instruction.Result, out var oldExpr) &&
+        exprToResults.ContainsKey(oldExpr))
     {
-        if (exprToResults.ContainsKey(oldExpr))
-        {
-            exprToResults[oldExpr].Remove(instructions[i].Result);
-        }
+        exprToResults[oldExpr].Remove(instruction.Result);
     }
 
-    resultToExpr[instructions[i].Result] = expr;
-    addLink(exprToResults, expr, instructions[i].Result);
+    resultToExpr[instruction.Result] = expr;
+    addLink(exprToResults, expr, instruction.Result);
 
-    if (argToExprs.ContainsKey(instructions[i].Result))
+    if (argToExprs.ContainsKey(instruction.Result))
     {
-        foreach (var delExpr in argToExprs[instructions[i].Result])
+        foreach (var delExpr in argToExprs[instruction.Result])
         {
             if (exprToResults.ContainsKey(delExpr))
             {
@@ -173,19 +172,13 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 ##### Проверка несрабатывания оптимизации:
 
 ```csharp
-[Test]
-public void Test1()
-{
-    var TAC = GenTAC(@"
-var a, b, c, d, e, f, g, h, k;
+[TestCase(@"
+var a, b, c, g, k;
 a = b + c;
 c = a + g;
 k = b + c;
-");
-    
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsFalse(ok);
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "#t1 = b + c",
         "a = #t1",
@@ -193,110 +186,74 @@ k = b + c;
         "c = #t2",
         "#t3 = b + c",
         "k = #t3"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "NoCommonExpressions")]
 ```
 
 ##### Проверка срабатывания оптимизации:
 
 ```csharp
-[Test]
-public void Test2()
-{
-    var TAC = GenTAC(@"
-var a, b, c, d, e, f, g, h, k;
+[TestCase(@"
+var a, b, c, k;
 a = b + c;
 k = b + c;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsTrue(ok);
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "#t1 = b + c",
         "a = #t1",
         "#t2 = #t1",
         "k = #t2"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "SimplestCase")]
 ```
 
 ##### Корректность проверки коммутативности:
 
 ```csharp
-[Test]
-public void CommutativeOpTest()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, c, k;
 a = b + c;
 k = c + b;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsTrue(ok);
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "#t1 = b + c",
         "a = #t1",
         "#t2 = #t1",
         "k = #t2"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "CommutativeOperation")]
 ```
 
 ##### Корректность проверки некоммутативности:
 
 ```csharp
-[Test]
-public void NotCommutativeOpTest()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, c, k;
 a = b - c;
 k = c - b;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsFalse(ok);
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "#t1 = b - c",
         "a = #t1",
         "#t2 = c - b",
         "k = #t2"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "NotCommutativeOperation")]
 ```
 
 ##### Проверка сброса связи:
 
 ```csharp
-[Test]
-public void Test5()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, c, k;
 a = b * c;
 b = b * c;
 k = b * c;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsTrue(ok);
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "#t1 = b * c",
         "a = #t1",
@@ -304,87 +261,24 @@ k = b * c;
         "b = #t2",
         "#t3 = b * c",
         "k = #t3"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "UsingItselfInExpression")]
 ```
 
 ##### С унарными операциями:
 
 ```csharp
-[Test]
-public void UnarOp()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, c, k;
 a = -b;
 k = -b;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsTrue(ok);
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "#t1 = -b",
         "a = #t1",
         "#t2 = #t1",
         "k = #t2"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
-```
-
-##### Без унарных операций:
-
-```csharp
-[Test]
-public void NotUnarOp()
-{
-    var TAC = GenTAC(@"
-var a, b, c, k;
-a = b;
-k = b;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsFalse(ok);
-    var expected = new List<string>()
-    {
-        "a = b",
-        "k = b"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
-```  
-
-##### Константы:
-
-```csharp
-[Test]
-public void Constants()
-{
-    var TAC = GenTAC(@"
-var a, b, c, k;
-a = 5;
-k = 5;
-");
-
-    var (ok, instructions) = ThreeAddressCodeCommonExprElimination.CommonExprElimination(TAC);
-    Assert.IsFalse(ok);
-    var expected = new List<string>()
-    {
-        "a = 5",
-        "k = 5"
-    };
-    var actual = instructions.Select(instruction => instruction.ToString());
-
-    CollectionAssert.AreEqual(expected, actual);
-}
-
+    },
+    TestName = "UnaryOperation")]
 ```
