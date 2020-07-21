@@ -5,7 +5,7 @@ namespace SimpleLang
 {
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
 
-    public class ReachingDefinitionsGlobal
+    public class ReachingDefinitionsOptimization
     {
         public void DeleteDeadCode(ControlFlowGraph graph)
         {

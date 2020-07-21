@@ -64,7 +64,7 @@ namespace SimpleLang
 
         public override List<OneExpression> Init
         {
-            get => AvailableExpressionTransferFunc.UniversalSequence;
+            get => AvailableExpressionTransferFunc.UniversalSet;
             protected set { }
         }
 
@@ -91,7 +91,7 @@ namespace SimpleLang
     /// </summary>
     public class AvailableExpressionTransferFunc
     {
-        public static List<OneExpression> UniversalSequence;
+        public static List<OneExpression> UniversalSet;
         private readonly Dictionary<BasicBlock, List<OneExpression>> e_gen;
         private readonly Dictionary<BasicBlock, List<OneExpression>> e_kill;
         private static readonly List<string> operationTypes = new List<string> { "OR", "AND", "LESS", "PLUS", "MINUS", "MULT", "DIV" };
@@ -116,19 +116,19 @@ namespace SimpleLang
                     if (operationTypes.Contains(instruction.Operation))
                     {
                         var newExpr = new OneExpression(instruction);
-                        if (!UniversalSequence.Contains(newExpr, new ExpressionEqualityComparer()))
+                        if (!UniversalSet.Contains(newExpr, new ExpressionEqualityComparer()))
                         {
-                            UniversalSequence.Add(newExpr);
+                            UniversalSet.Add(newExpr);
                         }
                     }
                 }
             }
-            return UniversalSequence;
+            return UniversalSet;
         }
 
         private void Initialization(ControlFlowGraph graph)
         {
-            UniversalSequence = new List<OneExpression>();
+            UniversalSet = new List<OneExpression>();
             GetU(graph);
             Get_e_gen(graph);
             Get_e_kill(graph);
@@ -194,7 +194,7 @@ namespace SimpleLang
                 {
                     if (operationTypes.Contains(instruction.Operation) || instruction.Operation == "assign")
                     {
-                        foreach (var expression in UniversalSequence.Where(x => x.ContainsVariable(instruction.Result)).ToList())
+                        foreach (var expression in UniversalSet.Where(x => x.ContainsVariable(instruction.Result)).ToList())
                         {
                             if (!K.Contains(expression))
                             {
