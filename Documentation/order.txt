@@ -29,14 +29,14 @@ Introduction.md
 2_GotoToGoto.md
 2_RemoveAlgebraicIdentities.md
 2_RemoveNoopInTac.md
-2_ConstantPropagation.md
+2_LocalConstantPropagation.md
 2_CopyPropagation.md
 2_ThreeAddressCodeOptimizer.md
 3_CreateCFG.md
 3_LiveVariables.md
 3_LiveVariablesOptimization.md
 3_ReachingTransferFunc.md
-3_ConstPropagation.md
+3_GlobalConstPropagation.md
 3_TransferFunctionForConstPropagation.md
 3_ReachingDefinitions.md
 3_AvailableExpressions.md
