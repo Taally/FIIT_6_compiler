@@ -16,7 +16,7 @@ var a,b,c;
             var blocks = GenBlocks(program);
             Assert.AreEqual(0, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
 
             Assert.AreEqual(2, InOut.IN.Count);
             Assert.AreEqual(2, InOut.OUT.Count);
@@ -31,7 +31,7 @@ a = 5;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
@@ -48,7 +48,7 @@ p = u + 2;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["u"].Type);
@@ -71,7 +71,7 @@ goto 12;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["b"].Type);
@@ -95,7 +95,7 @@ c = b + 2;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["b"].Type);
@@ -115,7 +115,7 @@ a = 2 * b;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["b"].Type);
@@ -136,7 +136,7 @@ c = a * b - 2;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
@@ -168,7 +168,7 @@ c = a + b;
             var blocks = GenBlocks(program);
             Assert.AreEqual(4, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.NAC, actual["a"].Type);
@@ -185,7 +185,7 @@ input(c);
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks.Last()]["c"].Type);
         }
 
@@ -204,7 +204,7 @@ if c > 5
             var blocks = GenBlocks(program);
             Assert.AreEqual(7, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.NAC, actual["c"].Type);
@@ -230,7 +230,7 @@ a = x;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.NAC, actual["a"].Type);
@@ -251,7 +251,7 @@ c = a + x;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
@@ -275,7 +275,7 @@ goto 666;
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
             Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
             Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
@@ -301,7 +301,7 @@ c = a + b;
 
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
@@ -323,7 +323,7 @@ c = a + b;
 
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
@@ -345,7 +345,7 @@ for x=1,2
 ";
             var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
-            var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+            var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
 
             Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
@@ -372,7 +372,7 @@ if c > 5
     a = x;
 ";
             var cfg = GenCFG(program);
-            var constProp = new ConstPropagation();
+            var constProp = new ConstantPropagation();
             var result = constProp.Execute(cfg);
             var blocks = cfg.GetCurrentBasicBlocks();
             var (_, Out) = result[blocks.Last()];

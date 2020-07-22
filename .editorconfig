@@ -53,7 +53,7 @@ dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 ###############################
 # Style Definitions
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
-# Use PascalCase for constant fields  
+# Use PascalCase for constant fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
 dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style

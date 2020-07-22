@@ -54,7 +54,7 @@
   <ItemGroup>
     <Compile Include="ASTOptimizer.cs" />
     <Compile Include="DataFlowAnalysis\AvailableExpressions.cs" />
-    <Compile Include="DataFlowAnalysis\ConstPropagation.cs" />
+    <Compile Include="DataFlowAnalysis\ConstantPropagation.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsOptimization.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariablesOptimization.cs" />
     <Compile Include="DataFlowAnalysis\AvailableExpressionsOptimization.cs" />

@@ -47,7 +47,7 @@ if c > 5
 a = x;
 ";
             var graph = GenCFG(program);
-            var algorithm = new ConstPropagation();
+            var algorithm = new ConstantPropagation();
 
             algorithm.Execute(graph);
             var iterationsFast = algorithm.Iterations;
