@@ -1,29 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
-
     [TestFixture]
     internal class FoldConstantsTests : OptimizationsTestBase
     {
-        [Test]
-        public void Test1()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a;
 a = 1 - 20;
 a = 4 * 2;
 a = 10 / 5;
 a = 9 + 3;
-");
-            var optimizations = new List<Optimization> { ThreeAddressCodeFoldConstants.FoldConstants };
-
-            var expected = new List<string>()
+",
+            ExpectedResult = new string[]
             {
                 "#t1 = -19",
                 "a = #t1",
@@ -33,11 +24,10 @@ a = 9 + 3;
                 "a = #t3",
                 "#t4 = 12",
                 "a = #t4"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Test")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
+        public IEnumerable<string> TestFoldConstants(string sourceCode) =>
+            TestTACOptimization(sourceCode, ThreeAddressCodeFoldConstants.FoldConstants);
     }
 }

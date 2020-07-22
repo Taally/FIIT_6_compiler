@@ -53,19 +53,17 @@ public class OptExprSumZero : ChangeVisitor
 ### Тесты
 
 ```csharp
-[Test]
-public void SumWithRightZero()
-{
-    var AST = BuildAST(@"
+[TestCase(@"
 var a, b;
-a = b + 0;
-");
-    var expected = new[] {
+a = 0 + (0 + b + b * a + 0);
+",
+    ExpectedResult = new[]
+    {
         "var a, b;",
-        "a = b;"
-    };
+        "a = (b + (b * a));"
+    },
+    TestName = "SumWithRightLeftZero")]
 
-    var result = ApplyOpt(AST, new OptExprSumZero());
-    CollectionAssert.AreEqual(expected, result);
-}
+public string[] TestOptExprSumZero(string sourceCode) =>
+    TestASTOptimization(sourceCode, new OptExprSumZero());
 ```

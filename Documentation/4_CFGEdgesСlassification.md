@@ -104,10 +104,10 @@ var a, b, c, d, x, u, e,g, y,zz,i;
 goto 200;
 200: a = 10 + 5;
 for i=2,7 
-	x = 1;
+    x = 1;
 if c > a
 {
-	a = 1;
+    a = 1;
 }
 else 
 {

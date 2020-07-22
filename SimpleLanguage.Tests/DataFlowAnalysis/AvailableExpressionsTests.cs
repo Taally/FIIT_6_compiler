@@ -6,7 +6,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    public class AvailableExpressionTests : OptimizationsTestBase
+    public class AvailableExpressionsTests : OptimizationsTestBase
     {
         private List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)> GetActualInOutData(string program)
         {
@@ -47,16 +47,17 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         public void SimpleProgramWithUnreachableCode()
         {
             var actual = GetActualInOutData(@"
-var a, b, c, d, x, u, e,g, y,zz,i; 
+var a, b, c, d, x, u, e,g, y,zz,i;
 2: a = x + y;
 g = c + d;
 3: zz = 1;
 goto 1;
-1: if(a < b) 
-    c = 1; 
+1: if(a < b)
+    c = 1;
 b = c + d;
 goto 3;
-e = zz + i;");
+e = zz + i;
+");
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
@@ -91,14 +92,15 @@ e = zz + i;");
         }
 
         [Test]
-        public void SimpleTestWithUnreachableCode2()
+        public void SimpleProgramWithUnreachableCode2()
         {
             var actual = GetActualInOutData(@"
 var a, b, c, d, x, u, e, g, y, zz, i;
 1: g = c + d;
 b = c + x;
 goto 1;
-e = zz + i;");
+e = zz + i;
+");
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
@@ -108,17 +110,19 @@ e = zz + i;");
             Assert.AreEqual(expected.Count, actual.Count);
             AssertSet(expected, actual);
         }
+
         [Test]
         public void ProgramWithLoopFor()
         {
             var actual = GetActualInOutData(@"
-var a, b, c, d, x, u, e,g, y,zz,i; 
+var a, b, c, d, x, u, e,g, y,zz,i;
 zz = i + x;
-for i=2,7 
+for i=2,7
 {
-	x = x + d; 
-	a = a + b;
-}");
+    x = x + d;
+    a = a + b;
+}
+");
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
@@ -137,13 +141,14 @@ for i=2,7
         public void ProgramWithLoopWhile()
         {
             var actual = GetActualInOutData(@"
-var a, b, c, d, x, u, e,g, y,zz,i; 
+var a, b, c, d, x, u, e,g, y,zz,i;
 zz = i + x;
-while (e < g) 
+while (e < g)
 {
-	x = x + d; 
-	a = a + b;
-}");
+    x = x + d;
+    a = a + b;
+}
+");
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
@@ -163,15 +168,16 @@ while (e < g)
         public void TrashProgramWithGoto()
         {
             var actual = GetActualInOutData(@"
-var a, b, c, d, x, u, e,g, y,zz,i; 
+var a, b, c, d, x, u, e,g, y,zz,i;
 zz = i + x;
-for i=2,7 
+for i=2,7
 {
-	b = x + d; 
-	1: x = e + g;
+    b = x + d;
+    1: x = e + g;
 }
 a = c + d;
-goto 1;");
+goto 1;
+");
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),
@@ -190,14 +196,15 @@ goto 1;");
         public void ProgramWithCrossGoTo()
         {
             var actual = GetActualInOutData(@"
-var a, b, c, d, x, u, e,g, y,zz,i; 
+var a, b, c, d, x, u, e,g, y,zz,i;
 a = b + c;
 1: d = x + u;
 goto 2;
 x = x + x;
 2: e = g + zz;
 goto 1;
-i = a + b;");
+i = a + b;
+");
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
                 (new List<OneExpression>(), new List<OneExpression>()),

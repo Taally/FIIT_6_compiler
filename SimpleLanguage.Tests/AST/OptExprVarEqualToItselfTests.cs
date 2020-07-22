@@ -15,6 +15,7 @@ a = a == a;
                 "a = true;"
             },
             TestName = "EQUAL")]
+
         [TestCase(@"
 var a;
 a = a <= a;
@@ -25,6 +26,7 @@ a = a <= a;
                 "a = true;"
             },
             TestName = "EQLESS")]
+
         [TestCase(@"
 var a;
 a = a >= a;
@@ -35,6 +37,8 @@ a = a >= a;
                 "a = true;"
             },
             TestName = "EQGREATER")]
-        public string[] TestOptimization(string sourceCode) => ApplyOpt(BuildAST(sourceCode), new OptExprVarEqualToItself());
+
+        public string[] TestOptExprVarEqualToItself(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprVarEqualToItself());
     }
 }

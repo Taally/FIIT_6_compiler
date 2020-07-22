@@ -19,20 +19,19 @@
 Нужная оптимизация производится с применением паттерна Visitor, для этого созданный класс наследует `ChangeVisitor` и переопределяет метод `PostVisit`.
 ```csharp
 public class OptExprSubEqualVar : ChangeVisitor
+{
+    public override void PostVisit(Node n)
     {
-        public override void PostVisit(Node n)
+        if (n is BinOpNode binop && binop.Op == OpType.MINUS
+            && binop.Left is IdNode id1 && binop.Right is IdNode id2 && id1.Name == id2.Name)
         {
-            // a - a => 0
-            if (n is BinOpNode binop && binop.Op == OpType.MINUS
-                && binop.Left is IdNode id1 && binop.Right is IdNode id2 && id1.Name == id2.Name)
+            if (id1.Name == id2.Name)
             {
-                if (id1.Name == id2.Name)
-                {
-                    ReplaceExpr(binop, new IntNumNode(0));
-                }
+                ReplaceExpr(binop, new IntNumNode(0));
             }
         }
     }
+}
 ```
 
 ### Место в общем проекте (Интеграция)
@@ -41,36 +40,28 @@ public class OptExprSubEqualVar : ChangeVisitor
 ### Тесты
 
 ```csharp
-[Test]
-public void SubIDTest()
-{
-    var AST = BuildAST(@"
-        var a, b;
-        a = b - b;
-        ");
-    var expected = new[] {
+[TestCase(@"
+var a, b;
+a = b - b;
+",
+    ExpectedResult = new[]
+    {
         "var a, b;",
         "a = 0;"
-        };
+    },
+    TestName = "SubID")]
 
-    var result = ApplyOpt(AST, new OptExprSubEqualVar());
-    CollectionAssert.AreEqual(expected, result);
-}
-
-[Test]
-public void SubIDInPrintTest()
-{
-    var AST = BuildAST(@"
-        var a, b;
-        print(a - a, b - b, b - a, a - a - b);
-        ");
-
-    var expected = new[] {
+[TestCase(@"
+var a, b;
+print(a - a, b - b, b - a, a - a - b);
+",
+    ExpectedResult = new[]
+    {
         "var a, b;",
         "print(0, 0, (b - a), (0 - b));"
-    };
+    },
+    TestName = "SubIDInPrint")]
 
-    var result = ApplyOpt(AST, new OptExprSubEqualVar());
-    CollectionAssert.AreEqual(expected, result);
-}
+public string[] TestOptExprSubEqualVar(string sourceCode) =>
+    TestASTOptimization(sourceCode, new OptExprSubEqualVar());
 ```

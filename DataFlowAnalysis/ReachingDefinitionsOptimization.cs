@@ -5,7 +5,7 @@ namespace SimpleLang
 {
     using InOutInfo = InOutData<IEnumerable<Instruction>>;
 
-    public class ReachingDefinitionsGlobal
+    public class ReachingDefinitionsOptimization
     {
         public void DeleteDeadCode(ControlFlowGraph graph)
         {
@@ -13,7 +13,7 @@ namespace SimpleLang
             var info = new ReachingDefinitions().Execute(graph);
 
             var usedDefinitions = new HashSet<Instruction>(
-                info[graph.GetCurrentBasicBlocks().Last()].In, 
+                info[graph.GetCurrentBasicBlocks().Last()].In,
                 new InstructionComparer());
 
             var possibleOperationTypes = new[] { "assign", "input", "PLUS" };
@@ -92,7 +92,7 @@ namespace SimpleLang
         }
 
         private bool IsUsedInOtherBlocks(
-            ControlFlowGraph graph, 
+            ControlFlowGraph graph,
             BasicBlock blockWithDefinition,
             Instruction definitionToCheck,
             Dictionary<BasicBlock, HashSet<string>> usedVars,
@@ -173,8 +173,8 @@ namespace SimpleLang
             return result;
         }
 
-        private bool IsVariable(string s) => 
-            !string.IsNullOrEmpty(s) 
+        private bool IsVariable(string s) =>
+            !string.IsNullOrEmpty(s)
             && !int.TryParse(s, out _)
             && !(s == "true")
             && !(s == "false");
@@ -183,7 +183,7 @@ namespace SimpleLang
         {
             public bool Equals(Instruction x, Instruction y) => ReferenceEquals(x, y);
 
-            public int GetHashCode(Instruction obj) => (obj as object).GetHashCode();
+            public int GetHashCode(Instruction obj) => obj.GetHashCode();
         }
     }
 }

@@ -5,38 +5,33 @@ namespace SimpleLanguage.Tests.AST
 {
     public class OptWhileFalseTests : ASTTestsBase
     {
-        [Test]
-        public void TestShouldCreateNoop()
-        {
-            var AST = BuildAST(@"var a;
+        [TestCase(@"
+var a;
 while false
-   a = true;");
-            var expected = new[] {
+    a = true;
+",
+            ExpectedResult = new[]
+            {
                 "var a;"
-            };
+            },
+            TestName = "ShouldCreateNoop")]
 
-            var result = ApplyOpt(AST, new OptWhileFalseVisitor());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestShouldNotCreateNoop()
-        {
-
-            var AST = BuildAST(@"var a;
+        [TestCase(@"
+var a;
 a = false;
 while a
-  a = true;");
-
-            var expected = new[] {
+    a = true;
+",
+            ExpectedResult = new[]
+            {
                 "var a;",
                 "a = false;",
                 "while a",
-                "  a = true;"
-            };
+                "    a = true;"
+            },
+            TestName = "ShouldNotCreateNoop")]
 
-            var result = ApplyOpt(AST, new OptWhileFalseVisitor());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptWhileFalse(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptWhileFalseVisitor());
     }
 }

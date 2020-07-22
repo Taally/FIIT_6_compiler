@@ -95,7 +95,7 @@ a = 1;
         }
 
         [Test]
-        public void LinearStructTest()
+        public void LinearStruct()
         {
             var graph = BuildTACOptimizeCFG(@"
 var a, b, c, d, e, f;
@@ -143,7 +143,7 @@ goto 4;
         }
 
         [Test]
-        public void SimpleBranchingTest()
+        public void SimpleBranching()
         {
             var graph = BuildTACOptimizeCFG(@"
 var a;
@@ -184,7 +184,7 @@ a = 2;
         }
 
         [Test]
-        public void DoubleBranchingTest()
+        public void DoubleBranching()
         {
             var graph = BuildTACOptimizeCFG(@"
 var a;
@@ -233,7 +233,7 @@ a = 2;
         }
 
         [Test]
-        public void BranchingAtTheEndTest()
+        public void BranchingAtTheEnd()
         {
             var graph = BuildTACOptimizeCFG(@"
 var a, b, c;
@@ -278,7 +278,7 @@ else
         }
 
         [Test]
-        public void SimpleLoopTest()
+        public void SimpleLoop()
         {
             var graph = BuildTACOptimizeCFG(@"
 var a, b, i;

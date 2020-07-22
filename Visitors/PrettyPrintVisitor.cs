@@ -9,8 +9,8 @@ namespace SimpleLang.Visitors
         private int Indent = 0;
 
         private string IndentStr() => new string(' ', Indent);
-        private void IndentPlus() => Indent += 2;
-        private void IndentMinus() => Indent -= 2;
+        private void IndentPlus() => Indent += 4;
+        private void IndentMinus() => Indent -= 4;
         public override void VisitIdNode(IdNode id) => Text += id.Name;
         public override void VisitIntNumNode(IntNumNode num) => Text += num.Num.ToString();
 

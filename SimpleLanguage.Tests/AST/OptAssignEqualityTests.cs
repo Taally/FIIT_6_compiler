@@ -5,44 +5,35 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptAssignEqualityTests : ASTTestsBase
     {
-        [Test]
-        public void RemoveNode()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = a;
 { b = b; }
-");
-            var expected = @"var a, b;
+",
+            ExpectedResult = new[]
+            {
+                "var a, b;",
+                "{",
+                "}"
+            },
+            TestName = "RemoveNode")]
 
-{
-
-}";
-            var opt = new OptAssignEquality();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
-        }
-
-        [Test]
-        public void WithoutRemoveConstants()
-        {
-            var AST = BuildAST(@"var a;
+        [TestCase(@"
+var a;
 a = a + 0;
 a = a - 0;
 a = a * 1;
-");
-            var expected = @"var a;
-a = (a + 0);
-a = (a - 0);
-a = (a * 1);";
+",
+            ExpectedResult = new[]
+            {
+                "var a;",
+                "a = (a + 0);",
+                "a = (a - 0);",
+                "a = (a * 1);"
+            },
+            TestName = "WithoutRemoveConstants")]
 
-            var opt = new OptAssignEquality();
-            AST.root.Visit(opt);
-            var pp = new PrettyPrintVisitor();
-            AST.root.Visit(pp);
-            Assert.AreEqual(expected, pp.Text);
-        }
+        public string[] TestOptAssignEquality(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptAssignEquality());
     }
 }

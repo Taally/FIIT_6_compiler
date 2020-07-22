@@ -1,40 +1,30 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    public class ReachingDefinitionsGlobalTests : OptimizationsTestBase
+    public class ReachingDefinitionsOptimizationTests : OptimizationsTestBase
     {
-        [Test]
-        public void SimpleTest()
-        {
-            var graph = GenCFG(@"
+        [TestCase(@"
 var a, b, c;
 a = 1;
 b = 2;
 c = 3;
-");
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+",
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "a = 1",
                 "b = 2",
                 "c = 3",
                 "#out: noop"
-            };
+            },
+            TestName = "Simple")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void OneBlockTest()
-        {
-            var graph = GenCFG(@"
+        [TestCase(@"
 var a, b, c;
 a = 1;
 b = 2;
@@ -42,12 +32,9 @@ c = 3;
 a = 4;
 c = 5;
 c = 6;
-");
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-
+",
             // this optimization doesn't delete definitions which are rewritten in the same block
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "a = 1",
@@ -57,15 +44,10 @@ c = 6;
                 "c = 5",
                 "c = 6",
                 "#out: noop"
-            };
+            },
+            TestName = "OneBlock")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void SomeBlocksInARow()
-        {
-            var graph = GenCFG(@"
+        [TestCase(@"
 var a, b, c;
 a = 1;
 b = 2;
@@ -75,11 +57,8 @@ goto 1;
 c = 5;
 goto 2;
 2: c = 6;
-");
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-            
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+",
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "b = 2",
@@ -88,15 +67,10 @@ goto 2;
                 "goto 2",
                 "2: c = 6",
                 "#out: noop"
-            };
+            },
+            TestName = "SomeBlocksInARow")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void DeleteDefinitionsWithLabels()
-        {
-            var graph = GenCFG(@"
+        [TestCase(@"
 var a, b, c;
 1: a = 1;
 2: b = 2;
@@ -106,12 +80,8 @@ goto 4;
 5: c = 5;
 goto 6;
 6: c = 6;
-");
-            
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+",
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "1: noop",
@@ -123,15 +93,10 @@ goto 6;
                 "goto 6",
                 "6: c = 6",
                 "#out: noop"
-            };
+            },
+            TestName = "DeleteDefinitionsWithLabels")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void IfTest()
-        {
-            var graph = GenCFG(@"
+        [TestCase(@"
 var a, b, c, d, e;
 a = 2;
 b = 5;
@@ -149,12 +114,8 @@ if e == 0
 }
 else
     d = 0;
-");
-
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+",
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "a = 2",
@@ -176,15 +137,10 @@ else
                 "d = #t4",
                 "L4: noop",
                 "#out: noop"
-            };
+            },
+            TestName = "If")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void LoopTest()
-        {
-            var graph = BuildTACOptimizeCFG(@"
+        [TestCase(@"
 var a, b, c, d, i;
 a = 1;
 b = 2;
@@ -199,12 +155,9 @@ for i = 10, 100
     c = 128;
     d = 256;
 }
-");
-
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+",
+            true,
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "a = 1",
@@ -232,15 +185,10 @@ for i = 10, 100
                 "goto L5",
                 "L6: noop",
                 "#out: noop"
-            };
+            },
+            TestName = "Loop")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void ComplexTest()
-        {
-            var graph = BuildTACOptimizeCFG(@"
+        [TestCase(@"
 var a, b, c, d, i, j;
 a = 1;
 b = 2;
@@ -265,12 +213,9 @@ while i > 0
     for j = 1, 5
         d = d * 2;
 }
-");
-
-            new ReachingDefinitionsGlobal().DeleteDeadCode(graph);
-
-            var actual = graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
-            var expected = new[]
+",
+            true,
+            ExpectedResult = new[]
             {
                 "#in: noop",
                 "a = 1",
@@ -307,9 +252,15 @@ while i > 0
                 "goto L8",
                 "L3: noop",
                 "#out: noop"
-            };
+            },
+            TestName = "Complex")]
 
-            CollectionAssert.AreEqual(expected, actual);
+        public IEnumerable<string> TestReachingDefinitionsOptimization(string sourceCode, bool preOptimize = false)
+        {
+            var graph = preOptimize ? BuildTACOptimizeCFG(sourceCode) : GenCFG(sourceCode);
+            new ReachingDefinitionsOptimization().DeleteDeadCode(graph);
+
+            return graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
         }
     }
 }

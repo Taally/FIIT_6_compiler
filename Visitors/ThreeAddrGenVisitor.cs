@@ -71,7 +71,7 @@ namespace SimpleLang.Visitors
 
             var exitLabel = ThreeAddressCodeTmp.GenTmpLabel();
 
-            //Т.е. условие while() - константа
+            // Т.е. условие while() - константа
             if (numStr == Instructions.Count)
             {
                 GenCommand("", "noop", "", "", "");

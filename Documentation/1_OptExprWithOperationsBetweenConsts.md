@@ -117,57 +117,42 @@ public static class ASTOptimizer
 Тест для проверки операции "<":
 
 ```csharp
-[Test]
-public void TestOpLess1()
-{
-    var AST = BuildAST(@"
+[TestCase(@"
 var c;
 c = 3 < 15;
-");
-    var expected = new[] {
+",
+    ExpectedResult = new[]
+    {
         "var c;",
         "c = true;"
-    };
-
-    var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-    CollectionAssert.AreEqual(expected, result);
-}
+    },
+    TestName = "OpLessTrue")]
 ```
 Тест для проверки операции "<":
 
 ```csharp
-[Test]
-public void TestOpLess2()
-{
-    var AST = BuildAST(@"
+[TestCase(@"
 var c;
 c = 3 < 2;
-");
-    var expected = new[] {
+",
+    ExpectedResult = new[]
+    {
         "var c;",
         "c = false;"
-    };
-
-    var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-    CollectionAssert.AreEqual(expected, result);
-}
+    },
+    TestName = "OpLessFalse")]
 ```
 Тест для проверки операции ">=":
 
 ```csharp
-[Test]
-public void TestOpEQGREATER1()
-{
-    var AST = BuildAST(@"
+[TestCase(@"
 var c;
 c = 3 >= 2;
-");
-    var expected = new[] {
+",
+    ExpectedResult = new[]
+    {
         "var c;",
         "c = true;"
-    };
-
-    var result = ApplyOpt(AST, new OptExprWithOperationsBetweenConsts());
-    CollectionAssert.AreEqual(expected, result);
-}
+    },
+    TestName = "OpEQGREATERTrue1")]
 ```

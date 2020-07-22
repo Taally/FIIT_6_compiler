@@ -131,10 +131,8 @@ private bool OpenBlock(BasicBlock block)
 
 Тест на наличие обратных рёбер
 ```csharp
-[Test]
-public void BackEdgesWithGoTo()
-{
-    var graph = BuildCFG(@"var a, b, c, d, e, f;
+[TestCase(@"
+var a, b, c, d, e, f;
 1: a = 1;
 5: b = 2;
 goto 2;
@@ -144,17 +142,19 @@ goto 3;
 3: e = 5;
 goto 4;
 4: f = 6;
-goto 5;");
-    Assert.AreEqual(1, graph.GetBackEdges().Count);
-}
+goto 5;
+",
+    ExpectedResult = 1,
+    TestName = "BackEdgesWithGoTo")]
+
+public int TestBackEdges(string sourceCode) =>
+    BuildTACOptimizeCFG(sourceCode).GetBackEdges().Count;
 ```
 
 Тест на приводимость графа
 ```csharp
-[Test]
-public void CheckIfGraphIsReducible1()
-{
-    var graph = BuildCFG(@"var a, b, i, j, p, x;
+[TestCase(@"
+var a, b, i, j, p, x;
 input(a);
 1: for i = 1, 5
 {
@@ -168,7 +168,10 @@ goto 1;
     x = a + 1;
 }
 goto 2;
-");
-    Assert.AreEqual(true, graph.IsReducibleGraph());
-}
+",
+    ExpectedResult = true,
+    TestName = "CheckIfGraphIsReducible1")]
+
+public bool TestReducibility(string sourceCode) =>
+    BuildTACOptimizeCFG(sourceCode).IsReducibleGraph();
 ```

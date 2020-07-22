@@ -1,32 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SimpleLang;
 
 namespace SimpleLanguage.Tests.TAC.Simple
 {
-    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
-
     [TestFixture]
     internal class PropagateCopiesTests : OptimizationsTestBase
     {
-        [Test]
-        public void Test1()
-        {
-            var TAC = GenTAC(@"
-                var a, b, c, d, e, x, y, k;
-                a = b;
-                c = b - a;
-                d = c + 1;
-                e = d * a;
-                a = x - y;
-                k = c + a;
-                ");
-
-            var optimizations = new List<Optimization> { ThreeAddressCodeCopyPropagation.PropagateCopies };
-
-            var expected = new List<string>()
+        [TestCase(@"
+var a, b, c, d, e, x, y, k;
+a = b;
+c = b - a;
+d = c + 1;
+e = d * a;
+a = x - y;
+k = c + a;
+",
+            ExpectedResult = new string[]
             {
                 "a = b",
                 "#t1 = b - b",
@@ -39,27 +29,18 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "a = #t4",
                 "#t5 = #t1 + #t4",
                 "k = #t5"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Test1")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void Test2()
-        {
-            var TAC = GenTAC(@"
-                var a, b, c, d, e, x, y, k;
-                b = x;
-                x = 5;
-                c = b + 5;
-                d = c;
-                e = d;
-                ");
-            var optimizations = new List<Optimization> { ThreeAddressCodeCopyPropagation.PropagateCopies };
-
-            var expected = new List<string>()
+        [TestCase(@"
+var a, b, c, d, e, x, y, k;
+b = x;
+x = 5;
+c = b + 5;
+d = c;
+e = d;
+",
+            ExpectedResult = new string[]
             {
                 "b = x",
                 "x = 5",
@@ -67,35 +48,25 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "c = #t1",
                 "d = #t1",
                 "e = #t1"
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Test2")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void Test3()
-        {
-            var TAC = GenTAC(@"
-                var a, b, c, d, e, x, y, k;
-                a = b;
-                b = d + a;
-                e = a;
-                ");
-            var optimizations = new List<Optimization> { ThreeAddressCodeCopyPropagation.PropagateCopies };
-
-            var expected = new List<string>()
+        [TestCase(@"
+var a, b, c, d, e, x, y, k;
+a = b;
+b = d + a;
+e = a;
+",
+            ExpectedResult = new string[]
             {
                 "a = b",
                 "#t1 = d + b",
                 "b = #t1",
                 "e = a",
-            };
-            var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-                .Select(instruction => instruction.ToString());
+            },
+            TestName = "Test3")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
+        public IEnumerable<string> TestPropagateConstants(string sourceCode) =>
+            TestTACOptimization(sourceCode, ThreeAddressCodeCopyPropagation.PropagateCopies);
     }
 }

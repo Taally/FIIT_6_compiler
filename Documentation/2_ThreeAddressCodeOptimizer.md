@@ -51,24 +51,18 @@ private static BasicBlock OptimizeBlock(BasicBlock block, List<Optimization> opt
 ### Тесты
 Класс `ThreeAddressCodeOptimizer` используется во всех тестах для проверки оптимизаций трёхадресного кода (в том числе тех оптимизаций, которые дополняют действие друг друга). Схема тестирования выглядит следующим образом: сначала по заданному тексту программы генерируется трёхадресный код, затем задаются списки оптимизаций для проверки, после этого вызывается метод `Optimize` класса `ThreeAddressCodeOptimizer` и сравнивается полученный набор инструкций с ожидаемым набором. Ниже приведён один из тестов. 
 ```csharp
-[Test]
-public void VarAssignSimple()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, x;
 x = a;
 x = b;
-");
-    var optimizations = new List<Optimization> { ThreeAddressCodeDefUse.DeleteDeadCode };
-
-    var expected = new List<string>()
+",
+    ExpectedResult = new string[]
     {
         "noop",
         "x = b"
-    };
-    var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-        .Select(instruction => instruction.ToString());
+    },
+    TestName = "VarAssignSimple")]
 
-    CollectionAssert.AreEqual(expected, actual);
-}
+public IEnumerable<string> TestDefUse(string sourceCode) =>
+    TestTACOptimization(sourceCode, ThreeAddressCodeDefUse.DeleteDeadCode);
 ```

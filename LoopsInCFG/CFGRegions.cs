@@ -146,13 +146,13 @@ namespace SimpleLang
             Block_to_region.Add(body_block, _regions.Count - 1);
             curID++;
 
-            //add new node
+            // add new node
             var cycle_block = new BasicBlock();
             cycle_block.AddInstruction(new Instruction("", "", curID.ToString(), "", ""));
             blocks.Add(cycle_block);
             children.Add(cycle_block, new List<BasicBlock>());
 
-            //clear old node
+            // clear old node
             children[body_block].Remove(body_block);
             foreach (var child in children[body_block])
             {
@@ -162,7 +162,9 @@ namespace SimpleLang
             foreach (var child_list in children)
             {
                 if (child_list.Value.Remove(body_block))
+                {
                     child_list.Value.Add(cycle_block);
+                }
             }
 
             _regions.Add(new Region(new List<Region>() { _regions[Block_to_region[body_block]] },

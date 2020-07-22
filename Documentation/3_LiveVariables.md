@@ -166,7 +166,7 @@ print (c);
 }
 
 [Test]
-public void ComplexWithLoopTest()
+public void ComplexWithLoop()
 {
     var TAC = GenTAC(@"
 var a,b,c,i;

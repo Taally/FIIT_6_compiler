@@ -33,7 +33,7 @@ var idByInstruction = assigns
     .Select((value, index) => new { value, index })  
     .ToDictionary(x => x.value, x => x.index);  
   
-var inOutData = base.Execute(graph); // основная логика алгоритма
+var inOutData = base.Execute(graph, useRenumbering); // основная логика алгоритма
   
 var modifiedBackData = inOutData  
     .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })  
@@ -48,21 +48,21 @@ return new InOutData<IEnumerable<Instruction>>(modifiedBackData);
 private BitArray ApplyTransferFunc(BitArray @in, BasicBlock block)  
 {  
     var gen = gen_block.ContainsKey(block) ? 
-	    gen_block[block] : new BitArray(@in.Count, false);  
+        gen_block[block] : new BitArray(@in.Count, false);  
     var kill = kill_block.ContainsKey(block) ? 
-	    kill_block[block] : new BitArray(@in.Count, false);  
+        kill_block[block] : new BitArray(@in.Count, false);  
     return gen.Or(BitUtils.Except(@in, kill));  
 }
 ```
   
-Для представления множеств Gen и Kill в виде битовых массивов используется вспомогательный метод, который на основании `idByInstruction`, вычисленному в начале работы алгоритма и информации об определениях формирует битовый массив.
+Для представления множеств Gen и Kill в виде битовых массивов используется вспомогательный метод, который на основании `idByInstruction`, вычисленному в начале работы алгоритма и информации об определениях, формирует битовый массив.
 
 ```csharp
 public static Dictionary<BasicBlock, BitArray> 
-	GroupByBlockAndTurnIntoInstructions(  
-	    IEnumerable<DefinitionInfo> defs,  
-	    Dictionary<Instruction, int> idsByInstruction  
-	)  
+    GroupByBlockAndTurnIntoInstructions(  
+        IEnumerable<DefinitionInfo> defs,  
+        Dictionary<Instruction, int> idsByInstruction  
+    )  
 {  
     var result = defs  
         .ToLookup(x => x.BasicBlock, x => x.Instruction)  

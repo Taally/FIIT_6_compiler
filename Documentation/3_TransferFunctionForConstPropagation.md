@@ -64,17 +64,17 @@ var instrs = basicBlock.GetInstructions();
 ```csharp
 foreach (var instruction in basicBlock.GetInstructions())
 {
-	if (instruction.Result.StartsWith("#"))
-	{
-		OUT.Add(instruction.Result, new LatticeValue(LatticeTypeData.UNDEF));
+    if (instruction.Result.StartsWith("#"))
+    {
+        OUT.Add(instruction.Result, new LatticeValue(LatticeTypeData.UNDEF));
 
-		string first, second, operation;
+        string first, second, operation;
 
-		first = instruction.Argument1;
-		second = instruction.Argument2;
-		operation = instruction.Operation;
+        first = instruction.Argument1;
+        second = instruction.Argument2;
+        operation = instruction.Operation;
         /*...*/
-	}
+    }
 }
 ```
 В трёхадресном коде все операции имеют не более 2 аргументов, результирующую переменную и операцию. 
@@ -95,79 +95,79 @@ c = #t1
 Таким образом, видно, что временные переменные в трёхадресном всегда предшествуют результирующей (переменной `c` в данном случае), поэтому сначала мы анализируем те переменные, которые начинаются с решётки(`#`), т.е. временные переменные трёхадресного кода. Сохраняем операнды и операцию в переменные. Далее начинаем проверять операнды согласно правилам, преведённым в теоретической части. Bool-переменные не участвуют в протяжке констант, а также все операции, связанные с ними. Для таких операций было введено специально множество `untreatedTypes`:
 ```csharp
 public HashSet<string> untreatedTypes = new HashSet<string>() {
-	"OR",
-	"AND",
-	"EQUAL",
-	"NOTEQUAL",
-	"GREATER",
-	"LESS",
-	"EQGREATER",
-	"EQLESS",
-	"NOT",
-	"UNMINUS"
+    "OR",
+    "AND",
+    "EQUAL",
+    "NOTEQUAL",
+    "GREATER",
+    "LESS",
+    "EQGREATER",
+    "EQLESS",
+    "NOT",
+    "UNMINUS"
 };
 ```
 Таким образом, сначала мы проверяем, участвуют ли bool-переменные в операции и является ли операция допустимой. Если она не является допустимой, то значение переменной полагается NAC.
 ```csharp
 if (first == "True" || second == "True" || first == "False" 
-	|| second == "False" || untreatedTypes.Contains(operation)) //проверка на bool и недопустимые операции
+    || second == "False" || untreatedTypes.Contains(operation)) //проверка на bool и недопустимые операции
 {
-	OUT[instruction.Result] = new LatticeValue(LatticeTypeData.NAC);
+    OUT[instruction.Result] = new LatticeValue(LatticeTypeData.NAC);
 }
 ```
 Далее проверяется, является ли выражение во временной переменной выражением вида `2 + b` и `b + 2`, где `b`-константа. Здесь под `+` понимается любая базовая бинарная операция между константами. Для уточнения операции была написана вспомогательная функция `FindOperations`:
 ```csharp
 public int FindOperations(int v1, int v2, string op)
 {
-	switch (op)
-	{
-	case "PLUS":
-		return v1 + v2;
-	case "MULT":
-		return v1 * v2;
-	case "DIV":
-		return v1 / v2;
-	case "MINUS":
-		return v1 - v2;
-	}
-	return 0;
+    switch (op)
+    {
+    case "PLUS":
+        return v1 + v2;
+    case "MULT":
+        return v1 * v2;
+    case "DIV":
+        return v1 / v2;
+    case "MINUS":
+        return v1 - v2;
+    }
+    return 0;
 }
 ```
 Проверка на выражения вида `2 + b` и `b + 2`:
 ```csharp
 else if (int.TryParse(first, out var v2) && OUT[second].Type == LatticeTypeData.CONST)
 {
-	int.TryParse(OUT[second].ConstValue, out var val2);
-	OUT[instruction.Result] = new LatticeValue
-    						(LatticeTypeData.CONST, FindOperations(val2, v2, operation).ToString());
+    int.TryParse(OUT[second].ConstValue, out var val2);
+    OUT[instruction.Result] = new LatticeValue
+                            (LatticeTypeData.CONST, FindOperations(val2, v2, operation).ToString());
 }
 else if (OUT[first].Type == LatticeTypeData.CONST && int.TryParse(second, out var v1))
 {
-	int.TryParse(OUT[first].ConstValue, out var val1);
-	OUT[instruction.Result] = new LatticeValue
-    						(LatticeTypeData.CONST, FindOperations(val1, v1, operation).ToString());
+    int.TryParse(OUT[first].ConstValue, out var val1);
+    OUT[instruction.Result] = new LatticeValue
+                            (LatticeTypeData.CONST, FindOperations(val1, v1, operation).ToString());
 }
 ```
 Далее проверяется, является ли выражение во временной переменной выражением вида `a + b`, где `a, b`-константы:
 ```csharp
 else if (OUT[first].Type == LatticeTypeData.CONST && OUT[second].Type == LatticeTypeData.CONST)
 {
-	int.TryParse(OUT[first].ConstValue, out var val1);
-	int.TryParse(OUT[second].ConstValue, out var val2);
-	OUT[instruction.Result] = new LatticeValue
-    						(LatticeTypeData.CONST, FindOperations(val1, val2, operation).ToString());
+    int.TryParse(OUT[first].ConstValue, out var val1);
+    int.TryParse(OUT[second].ConstValue, out var val2);
+    OUT[instruction.Result] = new LatticeValue
+                            (LatticeTypeData.CONST, FindOperations(val1, val2, operation).ToString());
 }
 ```
 Наконец, если в выражении содержится что-то, помимо констант, то временной переменной присваивается значение согласно описанному в теории определнию передаточной функции.
 ```csharp
 else
 {
-	OUT[instruction.Result] =
-	OUT[first].Type == LatticeTypeData.UNDEF
-	? new LatticeValue(LatticeTypeData.UNDEF)
-	: OUT[first].Type == LatticeTypeData.NAC || OUT[second].Type == LatticeTypeData.NAC
-	? new LatticeValue(LatticeTypeData.NAC)
-	: new LatticeValue(LatticeTypeData.UNDEF);
+    OUT[instruction.Result] =
+    OUT[first].Type == LatticeTypeData.UNDEF
+    ? new LatticeValue(LatticeTypeData.UNDEF)
+    : OUT[first].Type == LatticeTypeData.NAC || OUT[second].Type == LatticeTypeData.NAC
+    ? new LatticeValue(LatticeTypeData.NAC)
+    : new LatticeValue(LatticeTypeData.UNDEF);
 }
 ```
 Дав значение временной переменной трёхадресного кода, мы можем определиться с результирующей переменной, которая в трёхадресном коде идёт следующей:
@@ -181,26 +181,26 @@ c = #t1
 ```csharp
 if (instruction.Operation == "assign")
 {
-	if (int.TryParse(instruction.Argument1, out var s))
-	{
-		OUT[instruction.Result] = new LatticeValue(LatticeTypeData.CONST, s);
-	}
-	else
-	{
-	var operation = instruction.Operation;
-	var first = instruction.Argument1;
+    if (int.TryParse(instruction.Argument1, out var s))
+    {
+        OUT[instruction.Result] = new LatticeValue(LatticeTypeData.CONST, s);
+    }
+    else
+    {
+    var operation = instruction.Operation;
+    var first = instruction.Argument1;
 
-	OUT[instruction.Result] =
-		untreatedTypes.Contains(operation)
-		? new LatticeValue(LatticeTypeData.NAC)
-		:first == "True" || first == "False"
-		? new LatticeValue(LatticeTypeData.NAC)
-		: OUT[first].Type == LatticeTypeData.CONST
-		? new LatticeValue(LatticeTypeData.CONST, OUT[first].ConstValue)
-		: OUT[first].Type == LatticeTypeData.NAC
-		? new LatticeValue(LatticeTypeData.NAC)
-		: new LatticeValue(LatticeTypeData.UNDEF);
-	}
+    OUT[instruction.Result] =
+        untreatedTypes.Contains(operation)
+        ? new LatticeValue(LatticeTypeData.NAC)
+        :first == "True" || first == "False"
+        ? new LatticeValue(LatticeTypeData.NAC)
+        : OUT[first].Type == LatticeTypeData.CONST
+        ? new LatticeValue(LatticeTypeData.CONST, OUT[first].ConstValue)
+        : OUT[first].Type == LatticeTypeData.NAC
+        ? new LatticeValue(LatticeTypeData.NAC)
+        : new LatticeValue(LatticeTypeData.UNDEF);
+    }
 }
 ```
 Далее из вспомогательного словаря убираются временные переменные трёхадресного кода, и он подаётся на выход функции.
@@ -208,7 +208,7 @@ if (instruction.Operation == "assign")
 var temp_keys = OUT.Keys.Where(x => x.StartsWith("#")).ToList();
 foreach (var k in temp_keys)
 {
-	OUT.Remove(k);
+    OUT.Remove(k);
 }
 
 return OUT;
@@ -223,19 +223,19 @@ return OUT;
 [Test]
 public void ConstAndVariable()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
 var a,b,c;
 b = 3;
 a = 2 * b;
-	");
-	var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
-	var cfg = new ControlFlowGraph(blocks);
-	var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-	Assert.AreEqual(InOut.OUT[blocks[0]]["b"].Type, LatticeTypeData.CONST);
-	Assert.AreEqual(InOut.OUT[blocks[0]]["a"].Type, LatticeTypeData.CONST);
+    ");
+    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var cfg = new ControlFlowGraph(blocks);
+    var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+    Assert.AreEqual(InOut.OUT[blocks[0]]["b"].Type, LatticeTypeData.CONST);
+    Assert.AreEqual(InOut.OUT[blocks[0]]["a"].Type, LatticeTypeData.CONST);
 
-	Assert.AreEqual("3", InOut.OUT[blocks[0]]["b"].ConstValue);
-	Assert.AreEqual("6", InOut.OUT[blocks[0]]["a"].ConstValue);
+    Assert.AreEqual("3", InOut.OUT[blocks[0]]["b"].ConstValue);
+    Assert.AreEqual("6", InOut.OUT[blocks[0]]["a"].ConstValue);
 }
 ```
 Тест проверки работоспособности для меток:
@@ -243,7 +243,7 @@ a = 2 * b;
 [Test]
 public void PropagateTwoVariants2()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
 var a, x, c;
 x = 10;
 a = 20;
@@ -251,7 +251,7 @@ goto 666;
 666: c = a + x;
 ");
 
-	var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
     Assert.AreEqual(InOut.OUT[blocks[1]]["c"].Type, LatticeTypeData.CONST);
@@ -263,18 +263,18 @@ goto 666;
 [Test]
 public void VariableAndConst()
 {
-	var TAC = GenTAC(@"
+    var TAC = GenTAC(@"
 var u,p,v;
 u = 3;
 p = u + 2;
 ");
-	var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
     Assert.AreEqual(InOut.OUT[blocks[0]]["u"].Type, LatticeTypeData.CONST);
     Assert.AreEqual(InOut.OUT[blocks[0]]["p"].Type, LatticeTypeData.CONST);
 
-	Assert.AreEqual("3", InOut.OUT[blocks[0]]["u"].ConstValue);
-	Assert.AreEqual("5", InOut.OUT[blocks[0]]["p"].ConstValue);
+    Assert.AreEqual("3", InOut.OUT[blocks[0]]["u"].ConstValue);
+    Assert.AreEqual("5", InOut.OUT[blocks[0]]["p"].ConstValue);
 }
 ```

@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.LoopsInCFG
 {
     [TestFixture]
-    internal class RegionTests : OptimizationsTestBase
+    internal class CFGRegionsTests : OptimizationsTestBase
     {
         [Test]
         public void WithoutCycles()
@@ -23,6 +23,7 @@ a = 8;
             var cfg = new ControlFlowGraph(blocks);
             var result = new CFGregions(cfg);
             result.Regions.Last().Print();
+
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -33,6 +34,7 @@ a = 8;
                 (0, 0),
                 (6, 6),
             };
+
             Assert.AreEqual(7, result.Regions.Count);
             CollectionAssert.AreEquivalent(expected, actual);
         }
@@ -52,6 +54,7 @@ c = a + b;
             var cfg = new ControlFlowGraph(blocks);
             var result = new CFGregions(cfg);
             result.Regions.Last().Print();
+
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -64,6 +67,7 @@ c = a + b;
                 (1, 2),
                 (4, 5)
             };
+
             Assert.AreEqual(9, result.Regions.Count);
             CollectionAssert.AreEquivalent(expected, actual);
         }
@@ -87,6 +91,7 @@ c = a + b;
             var cfg = new ControlFlowGraph(blocks);
             var result = new CFGregions(cfg);
             result.Regions.Last().Print();
+
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -104,6 +109,7 @@ c = a + b;
                 (1, 2),
                 (6, 7)
             };
+
             Assert.AreEqual(14, result.Regions.Count);
             CollectionAssert.AreEquivalent(expected, actual);
         }
@@ -121,7 +127,7 @@ for x=1,10
     }
     for b = 1,10
     {
-        c = 4;        
+        c = 4;
     }
 }
 ");
@@ -131,6 +137,7 @@ for x=1,10
             Assert.AreEqual(3, loops.Count);
             var result = new CFGregions(cfg);
             result.Regions.Last().Print();
+
             var actual = result.Regions.Select(x => (x.edges?.Count ?? 0, x.includedRegions?.Count ?? 0)).ToArray();
             var expected = new[]{
                 (0, 0),
@@ -153,6 +160,7 @@ for x=1,10
                 (1, 1),
                 (4, 5)
             };
+
             Assert.AreEqual(19, result.Regions.Count);
             CollectionAssert.AreEquivalent(expected, actual);
         }

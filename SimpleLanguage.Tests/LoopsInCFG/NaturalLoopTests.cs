@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.LoopsInCFG
     internal class NaturalLoopTests : OptimizationsTestBase
     {
         [Test]
-        public void IntersectLoopsTest()
+        public void IntersectingLoops()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -20,8 +20,8 @@ b = 6;
 goto 54;
 goto 55;
 ");
-
             var cfg = GenCFG(TAC);
+
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
@@ -37,7 +37,7 @@ goto 55;
         }
 
         [Test]
-        public void NestedLoopsTest()
+        public void NestedLoops()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -47,10 +47,9 @@ var a, b;
 b = 6;
 goto 55;
 goto 54;
-
 ");
-
             var cfg = GenCFG(TAC);
+
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
@@ -65,7 +64,7 @@ goto 54;
         }
 
         [Test]
-        public void OneRootLoopsTest()
+        public void OneRootLoops()
         {
             var TAC = GenTAC(@"
 var a, b;
@@ -74,10 +73,9 @@ var a, b;
 b = 6;
 goto 54;
 goto 54;
-
 ");
-
             var cfg = GenCFG(TAC);
+
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>()
             {
@@ -91,21 +89,21 @@ goto 54;
         }
 
         [Test]
-        public void IrreducibilityGraphTest1()
+        public void IrreducibleGraph1()
         {
             var program = @"
-var a, b, c, d, x, u, e,g, y,zz,i; 
-while (zz == i) 
-{      
-a = b;     
-1: c = d;     
-goto 2;
-} 
-2: x = u; 
+var a, b, c, d, x, u, e,g, y,zz,i;
+while (zz == i)
+{
+    a = b;
+1:  c = d;
+    goto 2;
+}
+2: x = u;
 goto 1;
 ";
-
             var cfg = GenCFG(program);
+
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>();
 
@@ -113,21 +111,21 @@ goto 1;
         }
 
         [Test]
-        public void IrreducibilityGraphTest2()
+        public void IrreducibleGraph2()
         {
             var program = @"
 var a, b, c, d, x, u, e,g, y,zz,i;
 for i = 1, 10
 {
-a = b;
-1: c = d;
-goto 2;
+    a = b;
+1:  c = d;
+    goto 2;
 }
 2: x = u;
 goto 1;
 ";
-
             var cfg = GenCFG(program);
+
             var actual = NaturalLoop.GetAllNaturalLoops(cfg);
             var expected = new List<List<BasicBlock>>();
 

@@ -114,73 +114,49 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 ### Тесты
 В тестах проверяется, что для заданного трехадресного кода ББл оптимизация возвращает ожидаемый результат:
 ```csharp
-[Test]
-public void VarAssignSimple()
-{
-    var TAC = GenTAC(@"
-    var a, b, x;
-    x = a;
-    x = b;
-    ");
-    var optimizations = new List<Optimization> { 
-        ThreeAddressCodeDefUse.DeleteDeadCode 
-    };
-    var expected = new List<string>() 
+[TestCase(@"
+var a, b, x;
+x = a;
+x = b;
+",
+    ExpectedResult = new string[]
     {
         "noop",
         "x = b"
-    };
-    var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-        .Select(instruction => instruction.ToString());
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "VarAssignSimple")]
 
-[Test]
-public void NoDeadCode()
-{
-    var TAC = GenTAC(@"
-    var a, b, c;
-    a = 2;
-    b = a + 4;
-    c = a * b;
-    ");
-    var optimizations = new List<Optimization> { 
-        ThreeAddressCodeDefUse.DeleteDeadCode
-    };
-    var expected = new List<string>()
+[TestCase(@"
+var a, b, c;
+a = 2;
+b = a + 4;
+c = a * b;
+",
+    ExpectedResult = new string[]
     {
         "a = 2",
         "#t1 = a + 4",
         "b = #t1",
         "#t2 = a * b",
         "c = #t2"
-    };
-    var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-        .Select(instruction => instruction.ToString());
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "NoDeadCode")]
 
-[Test]
-public void DeadInput()
-{
-    var TAC = GenTAC(@"
-    var a, b;
-    input(a);
-    input(a);
-    b = a + 1;
-    ");
-    var optimizations = new List<Optimization> { 
-        ThreeAddressCodeDefUse.DeleteDeadCode
-    };
-    var expected = new List<string>()
+[TestCase(@"
+var a, b;
+input(a);
+input(a);
+b = a + 1;
+",
+    ExpectedResult = new string[]
     {
         "noop",
         "input a",
         "#t1 = a + 1",
         "b = #t1"
-    };
-    var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)
-        .Select(instruction => instruction.ToString());
-    CollectionAssert.AreEqual(expected, actual);
-}
+    },
+    TestName = "DeadInput")]
+
+public IEnumerable<string> TestDefUse(string sourceCode) =>
+    TestTACOptimization(sourceCode, ThreeAddressCodeDefUse.DeleteDeadCode);
 ```

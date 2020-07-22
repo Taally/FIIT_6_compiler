@@ -6,32 +6,24 @@ namespace SimpleLanguage.Tests.LoopsInCFG
     [TestFixture]
     internal class BackEdgesTests : OptimizationsTestBase
     {
-        [Test]
-        public void EmptyGraph()
-        {
-            var graph = BuildTACOptimizeCFG(@"
+        [TestCase(@"
 var a;
-");
-            Assert.AreEqual(0, graph.GetBackEdges().Count);
-        }
+",
+            ExpectedResult = 0,
+            TestName = "EmptyGraph")]
 
-        [Test]
-        public void SimpleTestBackEdges()
-        {
-            var graph = BuildTACOptimizeCFG(@"
+        [TestCase(@"
 var a, b;
 2: a = 1;
 goto 1;
 1: b = 2;
 goto 2;
-");
-            Assert.AreEqual(1, graph.GetBackEdges().Count);
-        }
+",
+            ExpectedResult = 1,
+            TestName = "SimpleTestBackEdges")]
 
-        [Test]
-        public void SimpleNoBackEdgesWithoutGoTo()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, f;
+        [TestCase(@"
+var a, b, c, d, f;
 a = 1;
 b = 5;
 c = a + b;
@@ -46,14 +38,13 @@ else
 {
     f = 5;
 }
-a = f + c;");
-            Assert.AreEqual(0, graph.GetBackEdges().Count);
-        }
+a = f + c;
+",
+            ExpectedResult = 0,
+            TestName = "SimpleNoBackEdgesWithoutGoTo")]
 
-        [Test]
-        public void BackEdgesWithGoTo()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, e, f;
+        [TestCase(@"
+var a, b, c, d, e, f;
 1: a = 1;
 5: b = 2;
 goto 2;
@@ -63,14 +54,13 @@ goto 3;
 3: e = 5;
 goto 4;
 4: f = 6;
-goto 5;");
-            Assert.AreEqual(1, graph.GetBackEdges().Count);
-        }
+goto 5;
+",
+            ExpectedResult = 1,
+            TestName = "BackEdgesWithGoTo")]
 
-        [Test]
-        public void SimpleNoBackEdgesWithGoTo()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, e, f;
+        [TestCase(@"
+var a, b, c, d, e, f;
 1: a = 1;
 b = 2;
 goto 2;
@@ -79,15 +69,13 @@ d = 4;
 goto 3;
 3: e = 5;
 goto 4;
-4: f = 6;");
+4: f = 6;
+",
+            ExpectedResult = 0,
+            TestName = "SimpleNoBackEdgesWithGoTo")]
 
-            Assert.AreEqual(0, graph.GetBackEdges().Count);
-        }
-
-        [Test]
-        public void TrashProgram()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, e, y;
+        [TestCase(@"
+var a, b, c, d, e, y;
 input(a);
 b = 5 + a;
 c = 6 + a;
@@ -100,14 +88,13 @@ c = 6 + a;
 goto 4;
 4: if d > c
     goto 6;
-6: e = a + d;");
-            Assert.AreEqual(1, graph.GetBackEdges().Count);
-        }
+6: e = a + d;
+",
+            ExpectedResult = 1,
+            TestName = "TrashProgram")]
 
-        [Test]
-        public void ProgramWithLoop()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, i, j, p, x;
+        [TestCase(@"
+var a, b, i, j, p, x;
 input(a);
 1: for i = 1, 5
 {
@@ -118,15 +105,19 @@ input(a);
 {
     p = b + a * a;
     x = a + 1;
-}");
-            Assert.AreEqual(2, graph.GetBackEdges().Count);
-        }
+}
+",
+            ExpectedResult = 2,
+            TestName = "ProgramWithLoop")]
+
+        public int TestBackEdges(string sourceCode) =>
+            BuildTACOptimizeCFG(sourceCode).GetBackEdges().Count;
+
 
         // Тесты на приводимость / неприводимость графа потока управления (cfg)
-        [Test]
-        public void CheckIfGraphIsReducible1()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, i, j, p, x;
+
+        [TestCase(@"
+var a, b, i, j, p, x;
 input(a);
 1: for i = 1, 5
 {
@@ -140,20 +131,18 @@ goto 1;
     x = a + 1;
 }
 goto 2;
-");
-            Assert.AreEqual(true, graph.IsReducibleGraph());
-        }
+",
+            ExpectedResult = true,
+            TestName = "CheckIfGraphIsReducible1")]
 
-        [Test]
-        public void CheckIfGraphIsReducible2()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, i, j, p, x;
+        [TestCase(@"
+var a, b, c, d, i, j, p, x;
 a = b + 2;
 if a < b
 {
     c = d + a;
 }
-else 
+else
 {
     a = d + c;
 }
@@ -176,25 +165,24 @@ while (a < b)
 {
     d = d + b * a;
     b = b + 1;
-goto 3;
-while (a < b)
-{
-    x = a + b;
-    goto 2;
+    goto 3;
+    while (a < b)
+    {
+        x = a + b;
+        goto 2;
+    }
+3:  for i = 1, 5
+    {
+        d = d + b * a;
+        b = b + 1;
+    }
 }
-3: for i = 1, 5
-{
-    d = d + b * a;
-    b = b + 1;
-}
-}");
-            Assert.AreEqual(true, graph.IsReducibleGraph());
-        }
+",
+            ExpectedResult = true,
+            TestName = "CheckIfGraphIsReducible2")]
 
-        [Test]
-        public void CheckIfGraphIsNotReducible1()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+        [TestCase(@"
+var a, b, c, d, x, u, e,g, y,zz,i;
 if a > b
 {
     c = d;
@@ -206,14 +194,13 @@ else
     e = g;
     2: a = d;
     goto 1;
-}");
-            Assert.AreEqual(false, graph.IsReducibleGraph());
-        }
+}
+",
+            ExpectedResult = false,
+            TestName = "CheckIfGraphIsNotReducible1")]
 
-        [Test]
-        public void CheckIfGraphIsNotReducible2()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+        [TestCase(@"
+var a, b, c, d, x, u, e,g, y,zz,i;
 for i = 1, 10
 {
     a = b;
@@ -221,24 +208,26 @@ for i = 1, 10
     goto 2;
 }
 2: x = u;
-goto 1;");
-            Assert.AreEqual(false, graph.IsReducibleGraph());
-        }
+goto 1;
+",
+            ExpectedResult = false,
+            TestName = "CheckIfGraphIsNotReducible2")]
 
-        [Test]
-        public void CheckIfGraphIsNotReducible3()
-        {
-            var graph = BuildTACOptimizeCFG(@"var a, b, c, d, x, u, e,g, y,zz,i; 
-while (zz == i) 
-{    
+        [TestCase(@"
+var a, b, c, d, x, u, e,g, y,zz,i;
+while (zz == i)
+{
     a = b;
     1: c = d;
     goto 2;
 }
 2: x = u;
 goto 1;
-");
-            Assert.AreEqual(false, graph.IsReducibleGraph());
-        }
+",
+            ExpectedResult = false,
+            TestName = "CheckIfGraphIsNotReducible3")]
+
+        public bool TestReducibility(string sourceCode) =>
+            BuildTACOptimizeCFG(sourceCode).IsReducibleGraph();
     }
 }

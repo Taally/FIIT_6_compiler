@@ -5,28 +5,28 @@
 %namespace SimpleScanner
 
 Alpha 	[a-zA-Z_]
-Digit   [0-9] 
+Digit   [0-9]
 AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
 BOOL	false|true
-ID {Alpha}{AlphaDigit}* 
+ID {Alpha}{AlphaDigit}*
 
 %%
 
-{INTNUM} { 
-  yylval.iVal = int.Parse(yytext); 
-  return (int)Tokens.INUM; 
+{INTNUM} {
+  yylval.iVal = int.Parse(yytext);
+  return (int)Tokens.INUM;
 }
 
 {BOOL} {
-	yylval.bVal = bool.Parse(yytext);
+    yylval.bVal = bool.Parse(yytext);
     return (int)Tokens.BOOL;
 }
 
-{ID}  { 
+{ID}  {
   int res = ScannerHelper.GetIDToken(yytext);
   if (res == (int)Tokens.ID)
-	yylval.sVal = yytext;
+    yylval.sVal = yytext;
   return res;
 }
 
@@ -51,7 +51,7 @@ ID {Alpha}{AlphaDigit}*
 "!" {return (int)Tokens.NOT; }
 
 [^ \r\n\t] {
-	LexError();
+    LexError();
 }
 
 %{
@@ -73,30 +73,30 @@ public void LexError()
   throw new LexException(errorMsg);
 }
 
-class ScannerHelper 
+class ScannerHelper
 {
   private static Dictionary<string,int> keywords;
 
-  static ScannerHelper() 
+  static ScannerHelper()
   {
     keywords = new Dictionary<string,int>();
-	keywords.Add("for",(int)Tokens.FOR);
-	keywords.Add("while",(int)Tokens.WHILE);
-	keywords.Add("if",(int)Tokens.IF);
-	keywords.Add("else",(int)Tokens.ELSE);
-	keywords.Add("print",(int)Tokens.PRINT);
-	keywords.Add("var",(int)Tokens.VAR);
-	keywords.Add("and",(int)Tokens.AND);
-	keywords.Add("or",(int)Tokens.OR);
-	keywords.Add("goto",(int)Tokens.GOTO);
-	keywords.Add("input",(int)Tokens.INPUT);
+    keywords.Add("for",(int)Tokens.FOR);
+    keywords.Add("while",(int)Tokens.WHILE);
+    keywords.Add("if",(int)Tokens.IF);
+    keywords.Add("else",(int)Tokens.ELSE);
+    keywords.Add("print",(int)Tokens.PRINT);
+    keywords.Add("var",(int)Tokens.VAR);
+    keywords.Add("and",(int)Tokens.AND);
+    keywords.Add("or",(int)Tokens.OR);
+    keywords.Add("goto",(int)Tokens.GOTO);
+    keywords.Add("input",(int)Tokens.INPUT);
   }
   public static int GetIDToken(string s)
   {
-	if (keywords.ContainsKey(s.ToLower()))
-	  return keywords[s];
-	else
+    if (keywords.ContainsKey(s.ToLower()))
+      return keywords[s];
+    else
       return (int)Tokens.ID;
   }
-  
+
 }

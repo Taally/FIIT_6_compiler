@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
     internal class GenericIterativeAlgorithmTests : OptimizationsTestBase
     {
         [Test]
-        public void LiveVariableIterativeTest()
+        public void LiveVariables()
         {
             var program = @"
 var a,b,c;
@@ -17,11 +17,11 @@ var a,b,c;
 input (b);
 a = b + 1;
 if a < c
-	c = b - a;
+    c = b - a;
 else
-	c = b + a;
-print (c);"
-;
+    c = b + a;
+print (c);
+";
 
             var cfg = GenCFG(program);
             var resActiveVariable = new LiveVariables().Execute(cfg);
@@ -45,7 +45,7 @@ print (c);"
         }
 
         [Test]
-        public void ReachingDefinitionIterativeTest()
+        public void ReachingDefinitions()
         {
             var TAC = GenTAC(@"
 var a,b,c;
@@ -53,11 +53,11 @@ var a,b,c;
 input (b);
 a = b + 1;
 if a < c
-	c = b - a;
+    c = b - a;
 else
-	c = b + a;
-print (c);"
-);
+    c = b + a;
+print (c);
+");
 
             var cfg = GenCFG(TAC);
             var resReachingDefinitions = new ReachingDefinitions().Execute(cfg);
@@ -79,16 +79,17 @@ print (c);"
 
             AssertSet(expected, actual);
         }
+
         [Test]
-        public void AvailableExpressionsTest()
+        public void AvailableExpressions()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i; 
+            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i;
 2: a = x + y;
 g = c + d;
 3: zz = 1;
 goto 1;
-1: if(a < b) 
-    c = 1; 
+1: if(a < b)
+    c = 1;
 b = c + d;
 goto 3;
 e = zz + i;"
@@ -103,10 +104,10 @@ e = zz + i;"
 
             var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
             {
-                (new List<OneExpression>(), 
+                (new List<OneExpression>(),
                 new List<OneExpression>()),
 
-                (new List<OneExpression>(), 
+                (new List<OneExpression>(),
                 new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ),
 
                 (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ,

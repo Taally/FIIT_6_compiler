@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SimpleLang;
 using SimpleLang.Visitors;
 using SimpleParser;
@@ -6,6 +8,7 @@ using SimpleScanner;
 
 namespace SimpleLanguage.Tests
 {
+    using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
     public class OptimizationsTestBase
     {
         protected List<Instruction> GenTAC(string sourceCode)
@@ -40,5 +43,25 @@ namespace SimpleLanguage.Tests
 
         protected ControlFlowGraph GenCFG(List<Instruction> TAC)
             => new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+
+        protected IEnumerable<string> TestTACOptimization(
+            string sourceCode,
+            Optimization basicBlockOptimization = null,
+            Optimization allCodeOptimization = null,
+            bool unreachableCodeElimination = false) =>
+            ThreeAddressCodeOptimizer.Optimize(
+                GenTAC(sourceCode),
+                basicBlockOptimization == null ? null :
+                new List<Optimization>()
+                {
+                    basicBlockOptimization
+                },
+                allCodeOptimization == null ? null :
+                new List<Optimization>()
+                {
+                    allCodeOptimization
+                },
+                unreachableCodeElimination)
+            .Select(instruction => instruction.ToString());
     }
 }

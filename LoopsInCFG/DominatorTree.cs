@@ -33,7 +33,7 @@ namespace SimpleLang
         public new Tree Execute(ControlFlowGraph graph, bool useRenumbering = true)
         {
             var start = graph.GetCurrentBasicBlocks().First();
-            var treeLayers = GetDominators(graph)
+            var treeLayers = GetDominators(graph, useRenumbering)
                 .Where(z => z.Key != start)
                 .GroupBy(z => z.Value.Count())
                 .OrderBy(z => z.Key);
@@ -60,11 +60,11 @@ namespace SimpleLang
         /// </summary>
         /// <param name="graph"> Граф потоков управления </param>
         /// <returns> Словарь базовый блок - доминаторы </returns>
-        public DominatorInfo GetDominators(ControlFlowGraph graph)
+        public DominatorInfo GetDominators(ControlFlowGraph graph, bool useRenumbering = true)
         {
             Init = graph.GetCurrentBasicBlocks();
             InitFirst = graph.GetCurrentBasicBlocks().Take(1);
-            return base.Execute(graph).ToDictionary(z => z.Key, z => z.Value.Out);
+            return base.Execute(graph, useRenumbering).ToDictionary(z => z.Key, z => z.Value.Out);
         }
 
         /// <summary>

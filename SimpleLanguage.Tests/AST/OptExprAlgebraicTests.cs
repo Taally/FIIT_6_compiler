@@ -5,124 +5,90 @@ namespace SimpleLanguage.Tests.AST
 {
     internal class OptExprAlgebraicTests : ASTTestsBase
     {
-        [Test]
-        public void SumNumTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 1 + 41;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 42;"
-            };
+            },
+            TestName = "SumNum")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void MultNumTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 6 * 7;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 42;"
-            };
+            },
+            TestName = "MultNum")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void SubNumTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 55 - 13;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 42;"
-            };
+            },
+            TestName = "SubNum")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void DivNumTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 546 / 13;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 42;"
-            };
+            },
+            TestName = "DivNum")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void NotFoldTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 546 > 13;
 b = 546 < 13;
 a = 546 != 13;
 b = 42 == 13;
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = (546 > 13);",
                 "b = (546 < 13);",
                 "a = (546 != 13);",
                 "b = (42 == 13);"
-            };
+            },
+            TestName = "NotFold")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void FoldComplexTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 a = 42 / 6 * 3 - 3 * (1 + 1) - 2;
-");
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "a = 13;"
-            };
+            },
+            TestName = "FoldComplex")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void FoldInPrintTest()
-        {
-            var AST = BuildAST(@"
+        [TestCase(@"
 var a, b;
 print(4 + 5, 2 - 1, 6 / 3, 2 * 5);
-");
-
-            var expected = new[] {
+",
+            ExpectedResult = new[]
+            {
                 "var a, b;",
                 "print(9, 1, 2, 10);"
-            };
+            },
+            TestName = "FoldInPrint")]
 
-            var result = ApplyOpt(AST, new OptExprAlgebraic());
-            CollectionAssert.AreEqual(expected, result);
-        }
+        public string[] TestOptExprAlgebraic(string sourceCode) =>
+            TestASTOptimization(sourceCode, new OptExprAlgebraic());
     }
 }

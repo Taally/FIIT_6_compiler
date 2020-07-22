@@ -43,7 +43,7 @@ namespace SimpleLang
         public override int GetHashCode()
             => (Type.ToString() + ConstValue).GetHashCode();
 
-        public LatticeValue collecting(LatticeValue second) =>
+        public LatticeValue Collecting(LatticeValue second) =>
             Type == LatticeTypeData.NAC || second.Type == LatticeTypeData.NAC
             ? new LatticeValue(LatticeTypeData.NAC)
             : Type == LatticeTypeData.UNDEF
@@ -70,7 +70,7 @@ namespace SimpleLang
         }
     }
 
-    public class ConstPropagation : GenericIterativeAlgorithm<Dictionary<string, LatticeValue>>
+    public class ConstantPropagation : GenericIterativeAlgorithm<Dictionary<string, LatticeValue>>
     {
         public int FindOperations(int v1, int v2, string op)
         {
@@ -199,18 +199,18 @@ namespace SimpleLang
             {
                 foreach (var instr in block.GetInstructions())
                 {
-                    if (checkStr(instr.Result) && !variables.Contains(instr.Result))
+                    if (CheckStr(instr.Result) && !variables.Contains(instr.Result))
                     {
                         variables.Add(instr.Result);
                     }
 
-                    if (checkStr(instr.Argument1) && instr.Argument1 != "True"
+                    if (CheckStr(instr.Argument1) && instr.Argument1 != "True"
                         && instr.Argument1 != "False" && !int.TryParse(instr.Argument1, out var temp1) && !variables.Contains(instr.Argument1))
                     {
                         variables.Add(instr.Argument1);
                     }
 
-                    if (checkStr(instr.Argument2) && instr.Argument2 != "True" && instr.Argument2 != "False"
+                    if (CheckStr(instr.Argument2) && instr.Argument2 != "True" && instr.Argument2 != "False"
                         && !int.TryParse(instr.Argument2, out var temp2) && !variables.Contains(instr.Argument2))
                     {
                         variables.Add(instr.Argument2);
@@ -260,7 +260,7 @@ namespace SimpleLang
             var result = new Dictionary<string, LatticeValue>(first.Count, first.Comparer);
             foreach (var elem in second)
             {
-                result[elem.Key] = first[elem.Key].collecting(elem.Value);
+                result[elem.Key] = first[elem.Key].Collecting(elem.Value);
             }
 
             return result;
@@ -284,18 +284,18 @@ namespace SimpleLang
             {
                 foreach (var instr in block.GetInstructions())
                 {
-                    if (checkStr(instr.Result) && !variables.Contains(instr.Result))
+                    if (CheckStr(instr.Result) && !variables.Contains(instr.Result))
                     {
                         variables.Add(instr.Result);
                     }
 
-                    if (checkStr(instr.Argument1) && instr.Argument1 != "True"
+                    if (CheckStr(instr.Argument1) && instr.Argument1 != "True"
                         && instr.Argument1 != "False" && !int.TryParse(instr.Argument1, out var temp1) && !variables.Contains(instr.Argument1))
                     {
                         variables.Add(instr.Argument1);
                     }
 
-                    if (checkStr(instr.Argument2) && instr.Argument2 != "True" && instr.Argument2 != "False"
+                    if (CheckStr(instr.Argument2) && instr.Argument2 != "True" && instr.Argument2 != "False"
                         && !int.TryParse(instr.Argument2, out var temp2) && !variables.Contains(instr.Argument2))
                     {
                         variables.Add(instr.Argument2);
@@ -313,6 +313,6 @@ namespace SimpleLang
             return base.Execute(graph);
         }
 
-        private bool checkStr(string str) => str != "" && !str.StartsWith("#") && !str.StartsWith("L");
+        private bool CheckStr(string str) => str != "" && !str.StartsWith("#") && !str.StartsWith("L");
     }
 }

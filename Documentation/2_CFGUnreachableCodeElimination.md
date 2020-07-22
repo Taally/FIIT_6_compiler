@@ -86,31 +86,31 @@ public ControlFlowGraph(IReadOnlyCollection<BasicBlock> basicBlocks)
 В тестах проверяется, что применение оптимизации удаления недостижимого кода возвращает ожидаемый результат:
 ```csharp
 [Test]
-public void MultipleBlocksTest1()
+public void MultipleBlocks1()
 {
-    var TAC = GenTAC(@"
+    var program = @"
 var a, b, c;
 
 goto 1;
-111:a = 1; 
-goto 55; 
-55: goto 10; 
-10: goto 111; 
-if a>a goto 10; 
-else goto 111; 
+111:a = 1;
+goto 55;
+55: goto 10;
+10: goto 111;
+if a>a goto 10;
+else goto 111;
 
-c = c; 
-if a==b 
-b = b; 
+c = c;
+if a==b
+    b = b;
 
-a = -1; 
-b = -a; 
-c = -(a+b); 
-a = !b; 
-c = !(a == b); 
+a = -1;
+b = -a;
+c = -(a+b);
+a = !b;
+c = !(a == b);
 1: b = 3;
-");
-    var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
+";
+    var cfg = GenCFG(program);
 
     var actual = cfg.GetCurrentBasicBlocks();
 

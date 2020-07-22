@@ -37,7 +37,7 @@ namespace SimpleLang
                     continue;
                 }
 
-                // Суммирование и вычитание с 0                
+                // Суммирование и вычитание с 0
                 if ((command.Operation == "PLUS" || command.Operation == "MINUS") && variablesAreNotBool && arg1IsNumber && arg1 == 0)
                 {
                     var sign = command.Operation == "PLUS" ? "" : "-";

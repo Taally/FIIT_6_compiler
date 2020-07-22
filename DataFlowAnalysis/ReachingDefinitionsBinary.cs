@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimpleLang
 {
-    public class ReachingDefinitionBinary : GenericIterativeAlgorithm<BitArray>
+    public class ReachingDefinitionsBinary : GenericIterativeAlgorithm<BitArray>
     {
         /// <inheritdoc/>
         public override Func<BitArray, BitArray, BitArray> CollectingOperator => (a, b) => a.Or(b);
@@ -33,7 +33,7 @@ namespace SimpleLang
 
             _graph = graph;
             TransferFunction = new ReachingTransferFunc(graph, idByInstruction).Transfer;
-            var inOutData = base.Execute(graph);
+            var inOutData = base.Execute(graph, useRenumbering);
 
             var modifiedBackData = inOutData
                 .Select(x => new { x.Key, ModifyInOutBack = ModifyInOutBack(x.Value, instructions) })
@@ -80,7 +80,7 @@ namespace SimpleLang
                 foreach (var block in blocks)
                 {
                     var used = new HashSet<string>();
-                    foreach (var instruction in block.GetInstructions().Reverse<Instruction>())
+                    foreach (var instruction in block.GetInstructions().Reverse())
                     {
                         if (!used.Contains(instruction.Result) &&
                             (instruction.Operation == "assign" ||

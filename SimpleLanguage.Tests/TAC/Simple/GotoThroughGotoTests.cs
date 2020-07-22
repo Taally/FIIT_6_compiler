@@ -60,11 +60,9 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "666: a = False"
             };
 
-            //CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
-
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-                .Select(instruction => instruction.ToString()).ToList();
+                .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
         }
@@ -99,8 +97,6 @@ namespace SimpleLanguage.Tests.TAC.Simple
             ThreeAddressCodeTmp.GenTmpName();  // #t1
             ThreeAddressCodeTmp.GenTmpName();  // #t2
 
-            //CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
-
             var expected = new List<string>()
             {
                 "input a",
@@ -114,7 +110,7 @@ namespace SimpleLanguage.Tests.TAC.Simple
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
-                .Select(instruction => instruction.ToString()).ToList();
+                .Select(instruction => instruction.ToString());
 
             CollectionAssert.AreEqual(expected, actual);
         }
@@ -154,8 +150,6 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "a = 5 * 6",
                 "L2: noop"
             };
-
-            //CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, allCodeOptimizations: optimizations)
@@ -209,8 +203,6 @@ namespace SimpleLanguage.Tests.TAC.Simple
                 "a = #t3",
                 "L2: noop"
             };
-
-            //CollectionAssert.AreEqual(TAC.Select(instruction => instruction.ToString()), expectedTAC);
 
             var optimizations = new List<Optimization> { ThreeAddressCodeRemoveGotoThroughGoto.RemoveGotoThroughGoto };
             var actual = ThreeAddressCodeOptimizer.Optimize(TAC, optimizations)

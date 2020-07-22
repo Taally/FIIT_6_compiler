@@ -21,12 +21,12 @@
 
 Сбор двух значений представляет собой их наибольшую нижнюю границу. Таким образом:
 
-![Оператор сбора](3_ConstPropagation/img1.PNG)
+![Оператор сбора](3_GlobalConstantPropagation/img1.PNG)
 
 
 Итеративный алгоритм для прямой задачи потока данных имеет следующий вид:
 
-![Итеративный алгоритм](3_ConstPropagation/img2.PNG)
+![Итеративный алгоритм](3_GlobalConstantPropagation/img2.PNG)
 
 На каждом шаге вычисляются множества IN и OUT для каждого блока. 
 
@@ -56,7 +56,7 @@ public static Dictionary<string, LatticeValue> Collect(Dictionary<string, Lattic
     var result = new Dictionary<string, LatticeValue>(first.Count, first.Comparer);
     foreach (var elem in second)
     {
-        result[elem.Key] = first[elem.Key].collecting(elem.Value);
+        result[elem.Key] = first[elem.Key].Collecting(elem.Value);
     }
 
     return result;
@@ -111,24 +111,24 @@ public virtual InOutData<T> Execute(ControlFlowGraph graph);
 [Test]
 public void TransfNotDistr()
 {
-    var TAC = GenTAC(@"
-        var a,b,c;
-        if c > 5
-        {
-            a = 2;
-            b = 3;
-        }
-        else
-        {
-            a = 3;
-            b = 2;
-        }
-        c = a + b;
-    ");
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var program = @"
+var a,b,c;
+if c > 5
+{
+    a = 2;
+    b = 3;
+}
+else
+{
+    a = 3;
+    b = 2;
+}
+c = a + b;
+";
+    var blocks = GenBlocks(program);
     Assert.AreEqual(4, blocks.Count);
     var cfg = new ControlFlowGraph(blocks);
-    var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+    var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
 
     Assert.AreEqual(LatticeTypeData.NAC, actual["a"].Type);
@@ -141,17 +141,17 @@ public void TransfNotDistr()
 [Test]
 public void PropagateTwoVariants()
 {
-    var TAC = GenTAC(@"
-        var a, x, c;
-        if c > 10
-            x = 10;
-        else
-            a = 20;
-        c = a + x;
-    ");
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var program = @"
+var a, x, c;
+if c > 10
+    x = 10;
+else
+    a = 20;
+c = a + x;
+";
+    var blocks = GenBlocks(program);
     var cfg = new ControlFlowGraph(blocks);
-    var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+    var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
 
     Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
@@ -168,20 +168,20 @@ public void PropagateTwoVariants()
 [Test]
 public void TwoConstValues()
 {
-    var TAC = GenTAC(@"
-        var a, x, c;
-        input(c);
-        if c > 5
-            x = 10;
-        else
-            input(c);
-        if c > 5
-            x = 20;
-        a = x;
-");
-    var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+    var program = @"
+var a, x, c;
+input(c);
+if c > 5
+    x = 10;
+else
+    input(c);
+if c > 5
+    x = 20;
+a = x;
+";
+    var blocks = GenBlocks(program);
     var cfg = new ControlFlowGraph(blocks);
-    var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
+    var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
 
     Assert.AreEqual(LatticeTypeData.NAC, actual["a"].Type);
@@ -194,24 +194,23 @@ public void TwoConstValues()
 [Test]
 public void PropagateTwoVariants2()
 {
-    var TAC = GenTAC(@"
-        var a, x, c;
-        x = 10;
-        a = 20;
-        goto 666;
-        666: c = a + x;
-        ");
+    var program = @"
+var a, x, c;
+x = 10;
+a = 20;
+goto 666;
+666: c = a + x;
+";
+    var blocks = GenBlocks(program);
+    var cfg = new ControlFlowGraph(blocks);
+    var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
+    var actual = InOut.OUT[blocks.Last()];
+    Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
+    Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
+    Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
 
-        var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
-        var cfg = new ControlFlowGraph(blocks);
-        var InOut = new ConstPropagation().ExecuteNonGeneric(cfg);
-        var actual = InOut.OUT[blocks.Last()];
-        Assert.AreEqual(LatticeTypeData.CONST, actual["a"].Type);
-        Assert.AreEqual(LatticeTypeData.CONST, actual["x"].Type);
-        Assert.AreEqual(LatticeTypeData.CONST, actual["c"].Type);
-
-        Assert.AreEqual("20", actual["a"].ConstValue);
-        Assert.AreEqual("30", actual["c"].ConstValue);
-        Assert.AreEqual("10", actual["x"].ConstValue);
+    Assert.AreEqual("20", actual["a"].ConstValue);
+    Assert.AreEqual("30", actual["c"].ConstValue);
+    Assert.AreEqual("10", actual["x"].ConstValue);
 }
 ```

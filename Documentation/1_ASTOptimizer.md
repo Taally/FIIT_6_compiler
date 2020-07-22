@@ -51,24 +51,25 @@ public static void Optimize(Parser parser, IReadOnlyList<ChangeVisitor> Optimiza
 
 ```csharp
 [Test]
-public void SubItselfSumZeroTest()
+public void SubItselfSumZero()
 {
     var AST = BuildAST(@"
 var a;
 a = a - ((a - a) + a);
 ");
+    var optimizations = new List<ChangeVisitor>
+    {
+        new OptExprSumZero(),
+        new OptExprSubEqualVar()
+    };
+
+    var result = ApplyOptimizations(AST, optimizations);
     var expected = new[]
     {
         "var a;",
         "a = 0;"
     };
 
-    var optimizations = new List<ChangeVisitor>
-    {
-        new OptExprSumZero(),
-        new OptExprSubEqualVar()
-    };
-    var result = ApplyOptimizations(AST, optimizations);
     CollectionAssert.AreEqual(expected, result);
 }
 ```
