@@ -56,7 +56,7 @@ public static Dictionary<string, LatticeValue> Collect(Dictionary<string, Lattic
     var result = new Dictionary<string, LatticeValue>(first.Count, first.Comparer);
     foreach (var elem in second)
     {
-        result[elem.Key] = first[elem.Key].collecting(elem.Value);
+        result[elem.Key] = first[elem.Key].Collecting(elem.Value);
     }
 
     return result;
