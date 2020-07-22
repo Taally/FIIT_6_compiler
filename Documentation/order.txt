@@ -39,9 +39,11 @@ Introduction.md
 3_GlobalConstantPropagation.md
 3_TransferFunctionForConstPropagation.md
 3_ReachingDefinitions.md
+3_ReachingDefinitionsOptimization.md
 3_AvailableExpressions.md
 3_AvailableExpressionsOptimization.md
 3_GenericIterativeAlgorithm.md
+3_OptimalSpeedIterativeAlgorithm.md
 3_BinaryRepresentationOfInOut.md
 4_CFGEdgesСlassification.md
 4_DFSforCFG.md
@@ -49,5 +51,3 @@ Introduction.md
 4_NaturalLoop.md
 4_CFGRegions.md
 4_BackEdges.md
-4_OptimalSpeedIterativeAlgorithm.md
-4_ReachingDefinitionsOptimization.md
