@@ -19,9 +19,18 @@ a = 54;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "3", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("3", "assign", "11", "", "b")}),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "goto", "3", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "assign", "54", "", "a")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("3", "assign", "11", "", "b")
+                }),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -40,8 +49,15 @@ a = 54;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "4", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a"), new Instruction("3", "assign", "11", "", "b")}),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "goto", "4", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "assign", "54", "", "a"),
+                    new Instruction("3", "assign", "11", "", "b")
+                }),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -59,7 +75,11 @@ b = 11;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a"), new Instruction("", "assign", "11", "", "b")}),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "assign", "54", "", "a"),
+                    new Instruction("", "assign", "11", "", "b")
+                }),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -67,7 +87,7 @@ b = 11;
         }
 
         [Test]
-        public void StandartGotoTest()
+        public void StandardGotoTest()
         {
             var TAC = GenTAC(@"
 var a, b, c;
@@ -80,10 +100,23 @@ b = 11;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "3", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "4", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "54", "", "a"), new Instruction("", "goto", "5", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("", "assign", "11", "", "b")}),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "goto", "3", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "goto", "4", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "assign", "54", "", "a"),
+                    new Instruction("", "goto", "5", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "assign", "11", "", "b")
+                }),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
@@ -101,9 +134,18 @@ goto 1;
 
             var expected = new List<BasicBlock>()
             {
-                new BasicBlock(new List<Instruction>(){new Instruction("", "goto", "1", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("1", "goto", "1", "", "")}),
-                new BasicBlock(new List<Instruction>(){new Instruction("2", "goto", "1", "", "")}),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("", "goto", "1", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("1", "goto", "1", "", "")
+                }),
+                new BasicBlock(new List<Instruction>()
+                {
+                    new Instruction("2", "goto", "1", "", "")
+                }),
             };
             var actual = BasicBlockLeader.DivideLeaderToLeader(TAC);
 
