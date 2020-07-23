@@ -99,7 +99,7 @@ namespace SimpleLang.Visitors
             GenCommand("", "assign", fromTmpName, "", Id);
 
             var toTmpName = Gen(f.To);
-            // Делаем допущение, что for шагает на +1 до границы, не включая ее
+            // Делаем допущение, что for шагает на +1 до границы, не включая её
             var condTmpName = ThreeAddressCodeTmp.GenTmpName();
             GenCommand(forHeadLabel, "EQGREATER", Id, toTmpName, condTmpName);
             GenCommand("", "ifgoto", condTmpName, exitLabel, "");

@@ -35,9 +35,9 @@ Introduction.md
 3_CreateCFG.md
 3_LiveVariables.md
 3_LiveVariablesOptimization.md
-3_ReachingTransferFunc.md
 3_GlobalConstantPropagation.md
 3_TransferFunctionForConstPropagation.md
+3_ReachingTransferFunc.md
 3_ReachingDefinitions.md
 3_ReachingDefinitionsOptimization.md
 3_AvailableExpressions.md

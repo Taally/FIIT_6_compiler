@@ -10,9 +10,9 @@ namespace SimpleLang
         /// <summary>
         /// Устранит переходы к переходам
         /// </summary>
-        /// <param name="commands">Программа в трехадресном коде</param>
+        /// <param name="commands">Программа в трёхадресном коде</param>
         /// <returns>
-        /// Вернет программу с устраненными переходами к переходам
+        /// Вернёт программу с устранёнными переходами к переходам
         /// </returns>
         public static (bool wasChanged, IReadOnlyList<Instruction> instructions) ReplaceGotoToGoto(IReadOnlyCollection<Instruction> commands)
         {

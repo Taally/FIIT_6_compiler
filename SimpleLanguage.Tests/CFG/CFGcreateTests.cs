@@ -33,7 +33,7 @@ else
 
             var vertexCount = cfg.GetCurrentBasicBlocks().Count;
 
-            Assert.AreEqual(vertexCount, blocks.Count + 2); // standart blocks, in and out
+            Assert.AreEqual(vertexCount, blocks.Count + 2); // standard blocks, in and out
             Assert.AreEqual(cfg.GetChildrenBasicBlocks(0).Count, 1); // inblock has 1 child
             Assert.AreEqual(cfg.GetParentsBasicBlocks(0).Count, 0);  // inblock does not have parents
             Assert.AreEqual(cfg.GetChildrenBasicBlocks(vertexCount - 1).Count, 0); // outblock does not have children
