@@ -89,7 +89,7 @@ string uniqueExpr(Instruction instr) =>
 - если для выражения есть связь с результатом
     - то - выполняем оптимизацию
     - иначе - добавляем связи операнд к выражению
-- обновлям связи результата и выражения
+- обновляем связи результата и выражения
 - если результат имеет связь с выражениями как операнд - удаляем все зависимые связи
 
 ```csharp
@@ -141,7 +141,7 @@ foreach (var instruction in instructions)
 ```
 
 ### Место в общем проекте (Интеграция)
-Используется после создания трехадресного кода:
+Используется после создания трёхадресного кода:
 ```csharp
 /* ThreeAddressCodeOptimizer.cs */
 private static List<Optimization> BasicBlockOptimizations => new List<Optimization>()
@@ -169,7 +169,7 @@ var optResult = ThreeAddressCodeOptimizer.OptimizeAll(threeAddressCode);
 ![Примеры работы](2_CommonExprElimination/t3z2.JPG)
 
 ### Тесты
-##### Проверка несрабатывания оптимизации:
+#### Проверка несрабатывания оптимизации:
 
 ```csharp
 [TestCase(@"
@@ -190,7 +190,7 @@ k = b + c;
     TestName = "NoCommonExpressions")]
 ```
 
-##### Проверка срабатывания оптимизации:
+#### Проверка срабатывания оптимизации:
 
 ```csharp
 [TestCase(@"
@@ -208,7 +208,7 @@ k = b + c;
     TestName = "SimplestCase")]
 ```
 
-##### Корректность проверки коммутативности:
+#### Корректность проверки коммутативности:
 
 ```csharp
 [TestCase(@"
@@ -226,7 +226,7 @@ k = c + b;
     TestName = "CommutativeOperation")]
 ```
 
-##### Корректность проверки некоммутативности:
+#### Корректность проверки некоммутативности:
 
 ```csharp
 [TestCase(@"
@@ -244,7 +244,7 @@ k = c - b;
     TestName = "NotCommutativeOperation")]
 ```
 
-##### Проверка сброса связи:
+#### Проверка сброса связи:
 
 ```csharp
 [TestCase(@"
@@ -265,7 +265,7 @@ k = b * c;
     TestName = "UsingItselfInExpression")]
 ```
 
-##### С унарными операциями:
+#### С унарными операциями:
 
 ```csharp
 [TestCase(@"
