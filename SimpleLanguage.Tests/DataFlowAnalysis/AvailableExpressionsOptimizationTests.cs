@@ -9,34 +9,13 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
     [TestFixture]
     internal class AvailableExpressionsOptimizationTests : OptimizationsTestBase
     {
-        private IReadOnlyList<BasicBlock> GeneratorBasicBlockAfterOptimization(List<Instruction> TAC)
-        {
-            var cfg = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var inOutData = new AvailableExpressions().Execute(cfg);
-            AvailableExpressionsOptimization.Execute(cfg, inOutData);
-            return cfg.GetCurrentBasicBlocks();
-        }
+        [TestCase(@"
+var a;
+",
+            ExpectedResult = new string[0],
+            TestName = "EmptyProgram")]
 
-        private IReadOnlyCollection<string> GetStringFromBlocks(IReadOnlyList<BasicBlock> basicBlocks) =>
-            basicBlocks
-            .SelectMany(block => block.GetInstructions().Select(instruction => instruction.ToString()))
-            .ToList();
-
-        [Test]
-        public void EmptyProgram()
-        {
-            var TAC = GenTAC(@"var a;");
-
-            var availableExpressionOpt = GeneratorBasicBlockAfterOptimization(TAC);
-            var expected = new List<BasicBlock>() { new BasicBlock(), new BasicBlock() };
-
-            Assert.AreEqual(availableExpressionOpt.Count, expected.Count);
-        }
-
-        [Test]
-        public void NoOptimizationInNotReducibleGraph() // hardest
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b, c, d, x, u, e, g, y, zz, i;
 if a > b
 {
@@ -50,21 +29,21 @@ else
     2: a = d;
     goto 1;
 }
-");
-            var availableExprOpt = GeneratorBasicBlockAfterOptimization(TAC);
-            var graph = new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));
-            var expectedBlock = graph.GetCurrentBasicBlocks();
+",
+            ExpectedResult = new[]
+            {
+                "#t1 = a > b",
+                "if #t1 goto L1",
+                "e = g",
+                "2: a = d",
+                "goto 1",
+                "L1: c = d",
+                "1: x = e",
+                "goto 2",
+            },
+            TestName = "NoOptimizationInNotReducibleGraph")] // hardest
 
-            var actual = GetStringFromBlocks(availableExprOpt);
-            var expected = GetStringFromBlocks(expectedBlock);
-
-            CollectionAssert.AreEqual(actual, expected);
-        }
-
-        [Test]
-        public void SimpleProgram()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b, x, y, z, p, q, s;
 x = y + z;
 if (a < b)
@@ -72,13 +51,9 @@ if (a < b)
     p = y + z;
 }
 q = y + z;
-");
-            var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
-
-            var actual = GetStringFromBlocks(availableExpr);
-            var expected = new List<string>()
+",
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "#t6 = y + z",
                 "#t5 = #t6",
                 "#t1 = #t5",
@@ -91,29 +66,19 @@ q = y + z;
                 "L2: noop" ,
                 "#t4 = #t6",
                 "q = #t4",
-                "#out: noop",
-            };
+            },
+            TestName = "SimpleProgram")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void SimpleProgramWithGoto()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b, x, y, z, p, q, s;
 x = y + z;
 goto 1;
 1: p = y + z;
 goto 2;
 2: q = y + z;
-");
-            var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
-
-            var actual = GetStringFromBlocks(availableExpr);
-            var expected = new List<string>()
+",
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "#t5 = y + z",
                 "#t4 = #t5",
                 "#t1 = #t4",
@@ -124,16 +89,10 @@ goto 2;
                 "goto 2",
                 "2: #t3 = #t5",
                 "q = #t3",
-                "#out: noop"
-            };
+            },
+            TestName = "SimpleProgramWithGoto")]
 
-            CollectionAssert.AreEqual(actual, expected);
-        }
-
-        [Test]
-        public void ProgramWithLoopForNoOptimization1()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b, c, d, x, u, e,g, y,zz,i;
 zz = i + x;
 for i=2,7
@@ -141,13 +100,9 @@ for i=2,7
     x = x + d;
     a = a + b;
 }
-");
-            var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
-
-            var actual = GetStringFromBlocks(availableExpr);
-            var expected = new List<string>()
+",
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "#t1 = i + x",
                 "zz = #t1",
                 "i = 2",
@@ -160,16 +115,10 @@ for i=2,7
                 "i = i + 1",
                 "goto L1",
                 "L2: noop",
-                "#out: noop",
-            };
+            },
+            TestName = "ProgramWithLoopForNoOptimization1")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void ProgramWithLoopForNoOptimization2()
-        {
-            var TAC = GenTAC(@"
+        [TestCase(@"
 var a, b, c, d, x, u, e,g, y,zz,i;
 e = x + d;
 zz = i + x;
@@ -178,13 +127,9 @@ for i=2,7
     x = x + d;
     a = a + b;
 }
-");
-            var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
-
-            var actual = GetStringFromBlocks(availableExpr);
-            var expected = new List<string>()
+",
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "#t1 = x + d",
                 "e = #t1",
                 "#t2 = i + x",
@@ -199,16 +144,10 @@ for i=2,7
                 "i = i + 1",
                 "goto L1",
                 "L2: noop",
-                "#out: noop",
-            };
+            },
+            TestName = "ProgramWithLoopForNoOptimization2")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void NoOptimizationAfterAllOptimization()
-        {
-            var graph = BuildTACOptimizeCFG(@"
+        [TestCase(@"
 var a, b, x, y, z, p, q, s;
 x = y + z;
 y = 1;
@@ -219,13 +158,10 @@ if (a < b)
 }
 z = 1;
 q = y + z;
-");
-            var ae = new AvailableExpressions().Execute(graph);
-            AvailableExpressionsOptimization.Execute(graph, ae);
-
-            var expected = new List<string>()
+",
+            true,
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "#t1 = y + z",
                 "x = #t1",
                 "y = 1",
@@ -238,11 +174,14 @@ q = y + z;
                 "L2: z = 1",
                 "#t4 = y + 1",
                 "q = #t4",
-                "#out: noop"
-            };
-            var actual = GetStringFromBlocks(graph.GetCurrentBasicBlocks());
+            },
+            TestName = "NoOptimizationAfterAllOptimization")]
 
-            CollectionAssert.AreEqual(expected, actual);
+        public IEnumerable<string> TestAvailableExpressionsOptimization(string sourceCode, bool optimizeAll = false)
+        {
+            var cfg = optimizeAll ? BuildTACOptimizeCFG(sourceCode) : GenCFG(sourceCode);
+            AvailableExpressionsOptimization.Execute(cfg, new AvailableExpressions().Execute(cfg));
+            return cfg.GetInstructions().Select(x => x.ToString());
         }
     }
 }
