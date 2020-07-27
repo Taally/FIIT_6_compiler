@@ -53,33 +53,7 @@ namespace SimpleLang
 
             var preResult = blocks.SelectMany(b => b.GetInstructions()).ToList();
             var result = OptimizeAllCode(preResult, allCodeOptimizations);
-            return result;
-        }
-
-        public static IReadOnlyList<Instruction> OptimizeForIDE(
-           IReadOnlyList<Instruction> instructions,
-           List<Optimization> basicBlockOptimizations = null,
-           List<Optimization> allCodeOptimizations = null,
-           bool UnreachableCodeElimination = false)
-        {
-            basicBlockOptimizations = basicBlockOptimizations ?? new List<Optimization>();
-            allCodeOptimizations = allCodeOptimizations ?? new List<Optimization>();
-
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(instructions);
-            for (var i = 0; i < blocks.Count; ++i)
-            {
-                blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
-            }
-
-            var preResult = blocks.SelectMany(b => b.GetInstructions()).ToList();
-            var result = OptimizeAllCode(preResult, allCodeOptimizations);
-
-            if (UnreachableCodeElimination)
-            {
-                result = new ControlFlowGraph(result).GetInstructions();
-            }
-
-            return result;
+            return UnreachableCodeElimination ? new ControlFlowGraph(result).GetInstructions() : result;
         }
 
         private static BasicBlock OptimizeBlock(BasicBlock block, List<Optimization> opts)

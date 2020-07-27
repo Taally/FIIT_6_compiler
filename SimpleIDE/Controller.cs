@@ -117,7 +117,7 @@ namespace SimpleIDE
 
                 var UCE = lstCheck[lstCheck.Count - 1] == numPosFalse;
 
-                var result = ThreeAddressCodeOptimizer.OptimizeForIDE(threeAddressCode,
+                var result = ThreeAddressCodeOptimizer.Optimize(threeAddressCode,
                         bBlOpt, allCodeOpt, UCE).ToList();
 
                 var strR = new StringBuilder();

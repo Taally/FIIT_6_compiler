@@ -20,8 +20,6 @@ var a, b;
             ExpectedResult = new string[]
             {
                 "1: goto 6",
-                "2: goto 6",
-                "5: goto 6",
                 "6: a = b",
             },
             TestName = "MultiGoTo")]
@@ -80,7 +78,6 @@ else
                 "#t1 = a > b",
                 "if #t1 goto 6",
                 "goto 4",
-                "L1: goto 6",
                 "6: a = 4",
                 "4: a = 6",
             },
@@ -101,7 +98,6 @@ a = 1;
                 "goto L3",
                 "L3: noop",
                 "goto L2",
-                "L1: goto 2",
                 "L2: noop",
                 "2: a = 5",
             },
@@ -135,10 +131,8 @@ else
             {
                 "if True goto 4",
                 "goto 3",
-                "noop",
                 "3: a = 5",
                 "goto L2",
-                "L1: goto 4",
                 "L2: noop",
                 "4: b = 2",
             },
