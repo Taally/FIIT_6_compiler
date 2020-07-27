@@ -139,10 +139,7 @@ private bool OpenBlock(BasicBlock block, OneExpression expression)
 Для проверки работоспособности программы был написан ряд разнообразных тестов, охватывающих всевозможные случаи.
 
 ```csharp
-[Test]
-public void SimpleProgram()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, x, y, z, p, q, s;
 x = y + z;
 if (a < b)
@@ -150,13 +147,9 @@ if (a < b)
     p = y + z;
 }
 q = y + z;
-");
-    var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
-
-    var actual = GetStringFromBlocks(availableExpr);
-    var expected = new List<string>()
+",
+    ExpectedResult = new[]
     {
-        "#in: noop",
         "#t6 = y + z",
         "#t5 = #t6",
         "#t1 = #t5",
@@ -169,17 +162,10 @@ q = y + z;
         "L2: noop" ,
         "#t4 = #t6",
         "q = #t4",
-        "#out: noop",
-    };
+    },
+    TestName = "SimpleProgram")]
 
-    CollectionAssert.AreEqual(expected, actual);
-}
-```
-```csharp
-[Test]
-public void ProgramWithLoopForNoOptimization2()
-{
-    var TAC = GenTAC(@"
+[TestCase(@"
 var a, b, c, d, x, u, e,g, y,zz,i;
 e = x + d;
 zz = i + x;
@@ -188,13 +174,9 @@ for i=2,7
     x = x + d;
     a = a + b;
 }
-");
-    var availableExpr = GeneratorBasicBlockAfterOptimization(TAC);
-
-    var actual = GetStringFromBlocks(availableExpr);
-    var expected = new List<string>()
+",
+    ExpectedResult = new[]
     {
-        "#in: noop",
         "#t1 = x + d",
         "e = #t1",
         "#t2 = i + x",
@@ -209,9 +191,13 @@ for i=2,7
         "i = i + 1",
         "goto L1",
         "L2: noop",
-        "#out: noop",
-    };
+    },
+    TestName = "ProgramWithLoopForNoOptimization2")]
 
-    CollectionAssert.AreEqual(expected, actual);
+public IEnumerable<string> TestAvailableExpressionsOptimization(string sourceCode, bool optimizeAll = false)
+{
+    var cfg = optimizeAll ? BuildTACOptimizeCFG(sourceCode) : GenCFG(sourceCode);
+    AvailableExpressionsOptimization.Execute(cfg, new AvailableExpressions().Execute(cfg));
+    return cfg.GetInstructions().Select(x => x.ToString());
 }
 ```
