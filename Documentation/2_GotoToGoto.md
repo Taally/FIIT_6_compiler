@@ -157,8 +157,6 @@ var a, b;
     ExpectedResult = new string[]
     {
         "1: goto 6",
-        "2: goto 6",
-        "5: goto 6",
         "6: a = b",
     },
     TestName = "MultiGoTo")]
