@@ -1,4 +1,4 @@
-﻿namespace IDEForSimpleLang1
+﻿namespace SimpleIDE
 {
     partial class Form1
     {
@@ -205,8 +205,8 @@
             this.TACoptLocalList.CheckOnClick = true;
             this.TACoptLocalList.FormattingEnabled = true;
             this.TACoptLocalList.Items.AddRange(new object[] {
-            "Def-Use: удаление мертвого кода",
-            "Активные переменные: удаление мертвого кода",
+            "Def-Use: удаление мёртвого кода",
+            "Активные переменные: удаление мёртвого кода",
             "Удаление алгебраических тождеств",
             "Оптимизация общих подвыражений",
             "Распространение копий",
@@ -417,7 +417,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
-            this.Text = "IDEForSimpleLang";
+            this.Text = "SimpleIDE";
             this.panel1.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

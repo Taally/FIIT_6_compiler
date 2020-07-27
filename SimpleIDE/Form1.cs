@@ -11,7 +11,7 @@ using SimpleLang;
 using SimpleLang.Visitors;
 using SimpleParser;
 
-namespace IDEForSimpleLang1
+namespace SimpleIDE
 {
     public partial class Form1 : Form
     {

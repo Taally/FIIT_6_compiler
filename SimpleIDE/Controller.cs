@@ -13,7 +13,7 @@ using System.IO;
 using System.Drawing;
 using SimpleLang.DataFlowAnalysis;
 
-namespace IDEForSimpleLang1
+namespace SimpleIDE
 {
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
@@ -26,7 +26,7 @@ namespace IDEForSimpleLang1
             scanner.SetSource(sourceCode, 0);
             var parser = new Parser(scanner);
 
-            return parser; 
+            return parser;
         }
 
         private static readonly List<ChangeVisitor> ASTOptimizations = new List<ChangeVisitor>{
@@ -66,7 +66,7 @@ namespace IDEForSimpleLang1
                 }
                 ASTOptimizer.Optimize(parser, listOpt);
             }
-            
+
             var pp = new PrettyPrintVisitor();
             parser.root.Visit(pp);
             return pp.Text;
@@ -102,7 +102,7 @@ namespace IDEForSimpleLang1
 
             if (lstCheck.Count > 0)
             {
-                List<Optimization> bBlOpt = new List<Optimization>(), 
+                List<Optimization> bBlOpt = new List<Optimization>(),
                     allCodeOpt = new List<Optimization>(), allAllOpt = new List<Optimization>();
                 var numPos = BasicBlockOptimizations.Count;
                 var numPosFalse = BasicBlockOptimizations.Count + AllCodeOptimizations.Count;
@@ -187,7 +187,7 @@ namespace IDEForSimpleLang1
             }
 
 
-            str.AppendLine("\r\nКлассификация ребер:");
+            str.AppendLine("\r\nКлассификация рёбер:");
 
             foreach (var pair in cfg.ClassifiedEdges)
             {
@@ -204,11 +204,11 @@ namespace IDEForSimpleLang1
             {
                 str.AppendLine($"({x.from} - > {x.to})");
             }
-            
+
             var backEdges = cfg.GetBackEdges();
             if (backEdges.Count > 0)
             {
-                str.AppendLine("\r\nОбратные ребра:");
+                str.AppendLine("\r\nОбратные рёбра:");
                 foreach (var x in backEdges)
                 {
                     str.AppendLine($"({cfg.VertexOf(x.Item1)}, {cfg.VertexOf(x.Item2)})");
@@ -216,7 +216,7 @@ namespace IDEForSimpleLang1
             }
             else
             {
-                str.AppendLine("\r\nОбратных ребер нет");
+                str.AppendLine("\r\nОбратных рёбер нет");
             }
 
 
@@ -264,7 +264,7 @@ namespace IDEForSimpleLang1
             var strReturn = new StringBuilder();
             var strBefore = new StringBuilder();
 
-          
+
             foreach (var b in cfg.GetCurrentBasicBlocks())
             {
                 foreach (var inst in b.GetInstructions())
@@ -280,19 +280,19 @@ namespace IDEForSimpleLang1
                 {
                     case "Доступные выражения":
                         var inout = new AvailableExpressions().Execute(cfg);
-                        AvailableExpressionsApplication.Execute(cfg, inout);
+                        AvailableExpressionsOptimization.Execute(cfg, inout);
                         break;
                     case "Активные переменные":
-                        cfg = LiveVariableAnalysisOptimization.DeleteDeadCode(cfg);
+                        LiveVariablesOptimization.DeleteDeadCode(cfg);
                         break;
                     case "Достигающие определения":
-                        var reachDef = new ReachingDefinitionsGlobal();
+                        var reachDef = new ReachingDefinitionsOptimization();
                         reachDef.DeleteDeadCode(cfg);
                         break;
                 }
             }
 
-            
+
             foreach (var b in cfg.GetCurrentBasicBlocks())
             {
                 foreach (var inst in b.GetInstructions())
