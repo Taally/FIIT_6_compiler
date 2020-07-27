@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SimpleLang;
+using SimpleLang.DataFlowAnalysis;
 using SimpleLang.Visitors;
 using SimpleParser;
 using SimpleScanner;
-//using GraphVizWrapper;
-//using GraphVizWrapper.Commands;
-//using GraphVizWrapper.Queries;
-using System.IO;
-using System.Drawing;
-using SimpleLang.DataFlowAnalysis;
 
 namespace SimpleIDE
 {
@@ -53,13 +48,14 @@ namespace SimpleIDE
             var b = parser.Parse();
             if (!b)
             {
-                return "Error. AST not build";
+                return "Error building AST";
             }
 
             var fillParents = new FillParentsVisitor();
             parser.root.Visit(fillParents);
             var listOpt = new List<ChangeVisitor>();
-            if (lstCheck.Count > 0) {
+            if (lstCheck.Count > 0)
+            {
                 foreach (var n in lstCheck)
                 {
                     listOpt.Add(ASTOptimizations[n]);
@@ -107,7 +103,7 @@ namespace SimpleIDE
                 var numPos = BasicBlockOptimizations.Count;
                 var numPosFalse = BasicBlockOptimizations.Count + AllCodeOptimizations.Count;
 
-                foreach (var n in lstCheck.TakeWhile(x=>x < numPos))
+                foreach (var n in lstCheck.TakeWhile(x => x < numPos))
                 {
                     bBlOpt.Add(BasicBlockOptimizations[n]);
                     allAllOpt.Add(BasicBlockOptimizations[n]);
@@ -141,8 +137,8 @@ namespace SimpleIDE
             return (str.ToString(), threeAddressCode);
         }
 
-
-        internal static (string str, ControlFlowGraph cfg) BuildCFG(IReadOnlyList<Instruction> instructions) {
+        internal static (string str, ControlFlowGraph cfg) BuildCFG(IReadOnlyList<Instruction> instructions)
+        {
             var divResult = BasicBlockLeader.DivideLeaderToLeader(instructions);
             var cfg = new ControlFlowGraph(divResult);
 
@@ -170,8 +166,8 @@ namespace SimpleIDE
             return (str.ToString(), cfg);
         }
 
-
-        internal static string GetGraphInformation(ControlFlowGraph cfg) {
+        internal static string GetGraphInformation(ControlFlowGraph cfg)
+        {
             var str = new StringBuilder();
 
             str.AppendLine("Доминаторы:");
@@ -200,9 +196,9 @@ namespace SimpleIDE
             str.AppendLine($"Обратный: { string.Join(" -> ", cfg.PostOrderNumeration) }");
 
             str.AppendLine($"\r\nГлубинное остовное дерево:");
-            foreach (var x in cfg.DepthFirstSpanningTree)
+            foreach (var (from, to) in cfg.DepthFirstSpanningTree)
             {
-                str.AppendLine($"({x.from} - > {x.to})");
+                str.AppendLine($"({from} - > {to})");
             }
 
             var backEdges = cfg.GetBackEdges();
@@ -260,7 +256,8 @@ namespace SimpleIDE
             return str.ToString();
         }
 
-        internal static (string, string) ApplyIterativeAlgorithm(ControlFlowGraph cfg, List<string> opts) {
+        internal static (string, string) ApplyIterativeAlgorithm(ControlFlowGraph cfg, List<string> opts)
+        {
             var strReturn = new StringBuilder();
             var strBefore = new StringBuilder();
 
@@ -302,7 +299,7 @@ namespace SimpleIDE
                 strReturn.AppendLine("----------");
             }
 
-            return (strBefore.ToString(),strReturn.ToString());
+            return (strBefore.ToString(), strReturn.ToString());
         }
     }
 }
