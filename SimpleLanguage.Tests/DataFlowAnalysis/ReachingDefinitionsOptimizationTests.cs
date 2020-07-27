@@ -16,11 +16,9 @@ c = 3;
 ",
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "a = 1",
                 "b = 2",
                 "c = 3",
-                "#out: noop"
             },
             TestName = "Simple")]
 
@@ -36,14 +34,12 @@ c = 6;
             // this optimization doesn't delete definitions which are rewritten in the same block
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "a = 1",
                 "b = 2",
                 "c = 3",
                 "a = 4",
                 "c = 5",
                 "c = 6",
-                "#out: noop"
             },
             TestName = "OneBlock")]
 
@@ -60,13 +56,11 @@ goto 2;
 ",
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "b = 2",
                 "goto 1",
                 "1: a = 4",
                 "goto 2",
                 "2: c = 6",
-                "#out: noop"
             },
             TestName = "SomeBlocksInARow")]
 
@@ -83,7 +77,6 @@ goto 6;
 ",
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "1: noop",
                 "2: b = 2",
                 "3: noop",
@@ -92,7 +85,6 @@ goto 6;
                 "5: noop",
                 "goto 6",
                 "6: c = 6",
-                "#out: noop"
             },
             TestName = "DeleteDefinitionsWithLabels")]
 
@@ -117,7 +109,6 @@ else
 ",
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "a = 2",
                 "b = 5",
                 "#t1 = e > 0",
@@ -136,7 +127,6 @@ else
                 "#t4 = -5",
                 "d = #t4",
                 "L4: noop",
-                "#out: noop"
             },
             TestName = "If")]
 
@@ -159,7 +149,6 @@ for i = 10, 100
             true,
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "a = 1",
                 "b = 2",
                 "i = 1",
@@ -184,7 +173,6 @@ for i = 10, 100
                 "i = i + 1",
                 "goto L5",
                 "L6: noop",
-                "#out: noop"
             },
             TestName = "Loop")]
 
@@ -217,7 +205,6 @@ while i > 0
             true,
             ExpectedResult = new[]
             {
-                "#in: noop",
                 "a = 1",
                 "b = 2",
                 "i = 100",
@@ -251,7 +238,6 @@ while i > 0
                 "j = j + 1",
                 "goto L8",
                 "L3: noop",
-                "#out: noop"
             },
             TestName = "Complex")]
 
@@ -259,8 +245,7 @@ while i > 0
         {
             var graph = preOptimize ? BuildTACOptimizeCFG(sourceCode) : GenCFG(sourceCode);
             new ReachingDefinitionsOptimization().DeleteDeadCode(graph);
-
-            return graph.GetCurrentBasicBlocks().SelectMany(b => b.GetInstructions().Select(i => i.ToString()));
+            return graph.GetInstructions().Select(i => i.ToString());
         }
     }
 }

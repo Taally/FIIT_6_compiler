@@ -8,10 +8,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
     [TestFixture]
     internal class LiveVariablesOptimizationTests : OptimizationsTestBase
     {
-        [Test]
-        public void SimpleTest()
-        {
-            var program = @"
+        [TestCase(@"
 var a,b,c;
 input (b);
 a = b + 1;
@@ -21,14 +18,9 @@ if a < b
 else
     c = b + a;
 print (c);
-";
-            var cfg = GenCFG(program);
-            LiveVariablesOptimization.DeleteDeadCode(cfg);
-
-            var actual = cfg.GetCurrentBasicBlocks().SelectMany(z => z.GetInstructions().Select(t => t.ToString()));
-            var expected = new List<string>()
+",
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "input b",
                 "#t1 = b + 1",
                 "a = #t1",
@@ -42,16 +34,10 @@ print (c);
                 "c = #t4",
                 "L2: noop",
                 "print c",
-                "#out: noop",
-            };
+            },
+            TestName = "Simple")]
 
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void ComplexTest()
-        {
-            var program = @"
+        [TestCase(@"
 var a, b, c, d;
 input(a);
 b = a * 2;
@@ -68,14 +54,9 @@ a = 111111111;
 goto 4;
 
 4: a = 0;
-";
-            var cfg = GenCFG(program);
-            LiveVariablesOptimization.DeleteDeadCode(cfg);
-
-            var actual = cfg.GetCurrentBasicBlocks().SelectMany(z => z.GetInstructions().Select(t => t.ToString()));
-            var expected = new List<string>()
+",
+            ExpectedResult = new[]
             {
-                "#in: noop",
                 "input a",
                 "#t1 = a * 2",
                 "b = #t1",
@@ -92,10 +73,14 @@ goto 4;
                 "noop",
                 "goto 4",
                 "4: noop",
-                "#out: noop",
-            };
+            },
+            TestName = "Complex")]
 
-            CollectionAssert.AreEqual(expected, actual);
+        public IEnumerable<string> TestLiveVariablesOptimization(string sourceCode)
+        {
+            var cfg = GenCFG(sourceCode);
+            LiveVariablesOptimization.DeleteDeadCode(cfg);
+            return cfg.GetInstructions().Select(x => x.ToString());
         }
     }
 }
