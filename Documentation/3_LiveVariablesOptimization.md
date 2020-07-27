@@ -44,9 +44,7 @@ public class LiveVariablesOptimization
 ### Тесты
 
 ```csharp
-public void SimpleTest()
-{
-    var program = @"
+[TestCase(@"
 var a,b,c;
 input (b);
 a = b + 1;
@@ -56,14 +54,9 @@ if a < b
 else
     c = b + a;
 print (c);
-";
-    var cfg = GenCFG(program);
-    LiveVariablesOptimization.DeleteDeadCode(cfg);
-
-    var actual = cfg.GetCurrentBasicBlocks().SelectMany(z => z.GetInstructions().Select(t => t.ToString()));
-    var expected = new List<string>()
+",
+    ExpectedResult = new[]
     {
-        "#in: noop",
         "input b",
         "#t1 = b + 1",
         "a = #t1",
@@ -77,9 +70,13 @@ print (c);
         "c = #t4",
         "L2: noop",
         "print c",
-        "#out: noop",
-    };
+    },
+    TestName = "Simple")]
 
-    CollectionAssert.AreEqual(expected, actual);
+public IEnumerable<string> TestLiveVariablesOptimization(string sourceCode)
+{
+    var cfg = GenCFG(sourceCode);
+    LiveVariablesOptimization.DeleteDeadCode(cfg);
+    return cfg.GetInstructions().Select(x => x.ToString());
 }
 ```
