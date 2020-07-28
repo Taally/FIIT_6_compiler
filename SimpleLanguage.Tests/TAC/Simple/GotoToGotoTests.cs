@@ -75,11 +75,8 @@ a = 1;
             true,
             ExpectedResult = new string[]
             {
-                "if True goto 2",
-                "goto L3",
-                "L3: noop",
-                "goto L2",
-                "L2: noop",
+                "if False goto 2",
+                "goto 2",
                 "2: a = 5",
             },
             TestName = "OptimizationLabelIf")]
@@ -104,7 +101,7 @@ a = 1;
 1: if (true)
     goto 4;
 else
-3: a=5;
+3: a = 5;
 4: b = 2;
 ",
             true,
@@ -113,8 +110,7 @@ else
                 "if True goto 4",
                 "goto 3",
                 "3: a = 5",
-                "goto L2",
-                "L2: noop",
+                "goto 4",
                 "4: b = 2",
             },
             TestName = "Task3")]

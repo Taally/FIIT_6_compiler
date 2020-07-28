@@ -44,7 +44,7 @@ a = 1;
                 "goto 2",
                 "2: a = 5",
             },
-            TestName = "GototoGotoEmptyNodes")]
+            TestName = "GotoToGotoEmptyNodes")]
 
         public IEnumerable<string> GotoToGoto(string sourceCode, bool unreachableCodeElimination = false) =>
             ThreeAddressCodeOptimizer.Optimize(
