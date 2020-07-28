@@ -27,29 +27,76 @@ namespace SimpleLang.Visitors
 
         public override void VisitIfElseNode(IfElseNode i)
         {
-            // перевод в трёхадресный код условия
-            var exprTmpName = Gen(i.Expr);
+            string endLabel;
+            void GenEndLabel()
+            {
+                Node parent, curNode;
+                if (i.Parent is LabelStatementNode)
+                {
+                    parent = i.Parent.Parent;
+                    curNode = i.Parent;
+                }
+                else
+                {
+                    parent = i.Parent;
+                    curNode = i;
+                }
+                var ifIndex = parent.StatChildren.IndexOf(curNode as StatementNode);
+                endLabel = parent.StatChildren.Count > ifIndex + 1 ? // next statement exists
+                    (parent.StatChildren[ifIndex + 1] is LabelStatementNode nextLabelNode) ? // next statement has label
+                    nextLabelNode.Label.Num.ToString() :
+                    ThreeAddressCodeTmp.GenTmpLabel() :
+                    ThreeAddressCodeTmp.GenTmpLabel();
+            }
 
-            var trueLabel = i.TrueStat is LabelStatementNode label
-                ? label.Label.Num.ToString()
-                : i.TrueStat is BlockNode block
-                    && block.List.StatChildren[0] is LabelStatementNode labelB
-                    ? labelB.Label.Num.ToString()
-                    : ThreeAddressCodeTmp.GenTmpLabel();
+            var exprTmpName = string.Empty;
+            if (!(i.Expr is BoolValNode))
+            {
+                exprTmpName = Gen(i.Expr);
+            }
 
-            var falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
-            GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
+            if (i.FalseStat == null)
+            {
+                var tmpVar = ThreeAddressCodeTmp.GenTmpName();
 
-            // перевод в трёхадресный код false ветки
-            i.FalseStat?.Visit(this);
-            GenCommand("", "goto", falseLabel, "", "");
+                GenEndLabel();
+                if (i.Expr is BoolValNode)
+                {
+                    GenCommand("", "ifgoto", (!(i.Expr as BoolValNode).Val).ToString(), endLabel, "");
+                }
+                else
+                {
+                    GenCommand("", "assign", $"!{exprTmpName}", "", tmpVar);
+                    GenCommand("", "ifgoto", tmpVar, endLabel, "");
+                }
 
-            // перевод в трёхадресный код true ветки
-            var instructionIndex = Instructions.Count;
-            i.TrueStat.Visit(this);
-            Instructions[instructionIndex].Label = trueLabel;
+                i.TrueStat.Visit(this);
+            }
+            else
+            {
+                var trueLabel = i.TrueStat is LabelStatementNode label
+                   ? label.Label.Num.ToString()
+                   : i.TrueStat is BlockNode block
+                       && block.List.StatChildren[0] is LabelStatementNode labelB
+                       ? labelB.Label.Num.ToString()
+                       : ThreeAddressCodeTmp.GenTmpLabel();
 
-            GenCommand(falseLabel, "noop", "", "", "");
+                GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
+
+                i.FalseStat.Visit(this);
+
+                GenEndLabel();
+                GenCommand("", "goto", endLabel, "", "");
+
+                var instructionIndex = Instructions.Count;
+                i.TrueStat.Visit(this);
+                Instructions[instructionIndex].Label = trueLabel;
+            }
+
+            if (endLabel.StartsWith("L"))
+            {
+                GenCommand(endLabel, "noop", "", "", "");
+            }
         }
 
         public override void VisitEmptyNode(EmptyNode w) => GenCommand("", "noop", "", "", "");
