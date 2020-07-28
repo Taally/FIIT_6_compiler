@@ -129,20 +129,13 @@ namespace SimpleLang
 
             wasChanged = true;
             instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
-            if (instructions[findIndexIf + 1].Label == "")
+            instructions.RemoveAt(findIndexIf);
+            if (instructions[findIndexIf].Label == "")
             {
-                var tmp = ThreeAddressCodeTmp.GenTmpLabel();
-                instructions.RemoveAt(findIndexIf);
-                instructions[findIndexIf].Label = tmp;
-                instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
+                instructions[findIndexIf].Label = ThreeAddressCodeTmp.GenTmpLabel();
             }
-            else
-            {
-                var tmp = instructions[findIndexIf + 1].Label;
-                instructions.RemoveAt(findIndexIf);
-                //instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
-                instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
-            }
+            instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", instructions[findIndexIf].Label, "", ""));
+
             return instructions;
         }
     }
