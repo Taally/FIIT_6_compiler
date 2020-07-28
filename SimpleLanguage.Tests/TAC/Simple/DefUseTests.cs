@@ -274,12 +274,12 @@ a = 3;
             ExpectedResult = new string[]
             {
                 "a = 2",
-                "if a goto L1",
-                "goto L2",
-                "L1: b = 1",
-                "#t1 = b + 3",
-                "c = #t1",
-                "L2: noop",
+                "#t1 = !a",
+                "if #t1 goto L1",
+                "b = 1",
+                "#t2 = b + 3",
+                "c = #t2",
+                "L1: noop",
                 "a = 3"
             },
             TestName = "IfNoDead")]
