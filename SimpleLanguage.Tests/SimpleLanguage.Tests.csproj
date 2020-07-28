@@ -122,7 +122,6 @@
     <Compile Include="TAC\Simple\PropagateConstantsTests.cs" />
     <Compile Include="TAC\Simple\PropagateCopiesTests.cs" />
     <Compile Include="TAC\Simple\RemoveNoopTests.cs" />
-    <Compile Include="TAC\Combined\GotoToGotoTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
