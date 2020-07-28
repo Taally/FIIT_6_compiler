@@ -49,11 +49,7 @@ namespace SimpleLang.Visitors
                     ThreeAddressCodeTmp.GenTmpLabel();
             }
 
-            var exprTmpName = string.Empty;
-            if (!(i.Expr is BoolValNode))
-            {
-                exprTmpName = Gen(i.Expr);
-            }
+            var exprTmpName = Gen(i.Expr);
 
             if (i.FalseStat == null)
             {
