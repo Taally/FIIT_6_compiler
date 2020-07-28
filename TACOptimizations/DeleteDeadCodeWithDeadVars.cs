@@ -29,7 +29,7 @@ namespace SimpleLang
                 varStatus.Add(last.Result, false);
                 if (!int.TryParse(last.Argument1, out _) && last.Argument1 != "True" && last.Argument1 != "False")
                 {
-                    varStatus[last.Argument1] = true;
+                    varStatus[last.Argument1.StartsWith("!") ? last.Argument1.Substring(1) : last.Argument1] = true;
                 }
                 if (!int.TryParse(last.Argument2, out _) && last.Argument2 != "True" && last.Argument2 != "False")
                 {
@@ -44,20 +44,21 @@ namespace SimpleLang
             for (var i = iStart; i >= 0; --i)
             {
                 var instruction = instructions[i];
-                if (instruction.Operation == "noop" || instruction.Result == "" || // goto doesn't have result field
-                    instruction.Argument1 != null && instruction.Argument1.StartsWith("!")) // for this case: if !#t1 goto L
+                if (instruction.Operation == "noop" || instruction.Result == "") // goto doesn't have result field
                 {
                     if (instruction.Operation == "ifgoto")
                     {
                         varStatus[instruction.Argument1] = true;
                     }
-                    else if (instruction.Argument1 != null && instruction.Argument1.StartsWith("!"))
-                    {
-                        varStatus[instruction.Argument1.Substring(1)] = true;
-                    }
                     newInstructions.Add(instruction);
                     continue;
                 }
+
+                if (instruction.Argument1 != null && instruction.Argument1.StartsWith("!")) // for this case: if !#t1 goto L
+                {
+                    varStatus[instruction.Argument1.Substring(1)] = true;
+                }
+
                 if (varStatus.ContainsKey(instruction.Result) && !varStatus[instruction.Result]
                     || instruction.Result.FirstOrDefault() == '#' && !varStatus.ContainsKey(instruction.Result)
                     || liveVariables != null && !liveVariables.Contains(instruction.Result) && !varStatus.ContainsKey(instruction.Result))

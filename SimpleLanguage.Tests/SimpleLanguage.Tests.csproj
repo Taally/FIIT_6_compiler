@@ -108,6 +108,7 @@
     <Compile Include="LoopsInCFG\CFGRegionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTests.cs" />
+    <Compile Include="TAC\Combined\PropagateCopiesDeleteDeadCodeTests.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />
     <Compile Include="TAC\Simple\BasicBlockLeaderTests.cs" />
     <Compile Include="TAC\Simple\CommonExprEliminationTests.cs" />
