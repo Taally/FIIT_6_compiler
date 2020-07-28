@@ -282,7 +282,24 @@ a = 3;
                 "L1: noop",
                 "a = 3"
             },
-            TestName = "IfNoDead")]
+            TestName = "IfNoDead1")]
+
+        [TestCase(@"
+var a;
+input(a);
+if (a == true)
+    a = false;
+",
+            ExpectedResult = new string[]
+            {
+                "input a",
+                "#t1 = a == True",
+                "#t2 = !#t1",
+                "if #t2 goto L1",
+                "a = False",
+                "L1: noop",
+            },
+            TestName = "IfNoDead2")]
 
         [TestCase(@"
 var a, b, c;

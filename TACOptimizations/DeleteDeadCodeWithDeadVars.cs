@@ -22,7 +22,7 @@ namespace SimpleLang
                     varStatus[variable] = true;
                 }
             }
-            else if (liveVariables == null)
+            else
             {
                 var last = instructions.Last();
                 newInstructions.Add(last);
@@ -44,11 +44,16 @@ namespace SimpleLang
             for (var i = iStart; i >= 0; --i)
             {
                 var instruction = instructions[i];
-                if (instruction.Operation == "noop" || instruction.Result == "") // goto doesn't have result field
+                if (instruction.Operation == "noop" || instruction.Result == "" || // goto doesn't have result field
+                    instruction.Argument1 != null && instruction.Argument1.StartsWith("!"))
                 {
                     if (instruction.Operation == "ifgoto")
                     {
                         varStatus[instruction.Argument1] = true;
+                    }
+                    else if (instruction.Argument1 != null && instruction.Argument1.StartsWith("!"))
+                    {
+                        varStatus[instruction.Argument1.Substring(1)] = true;
                     }
                     newInstructions.Add(instruction);
                     continue;

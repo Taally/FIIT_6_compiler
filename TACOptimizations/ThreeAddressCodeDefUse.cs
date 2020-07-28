@@ -13,6 +13,10 @@ namespace SimpleLang
 
         private static void AddUse(string id, Instruction c, int num)
         {
+            if (id != null && id.StartsWith("!"))
+            {
+                id = id.Substring(1);
+            }
             if (IsId(id))
             {
                 var def = DefList.FindLastIndex(x => x.Id == id);
