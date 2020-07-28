@@ -26,15 +26,16 @@ namespace SimpleLang
                 {
                     tmpCommands = PropagateTransitions(instr.Argument1, tmpCommands);
                 }
-
-                if (instr.Operation == "ifgoto" && instr.Label == "") // Инструкции вида if(усл) goto (случай из задания 2)
+                else if (instr.Operation == "ifgoto")
                 {
-                    tmpCommands = PropagateIfWithoutLabel(instr.Argument2, tmpCommands);
-                }
-
-                if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (случай из задания 2)
-                {
-                    tmpCommands = PropagateIfWithLabel(instr, tmpCommands);
+                    if (instr.Label == "") // Инструкции вида if(усл) goto (случай из задания 2)
+                    {
+                        tmpCommands = PropagateIfWithoutLabel(instr.Argument2, tmpCommands);
+                    }
+                    else // Инструкции вида l1: if(усл) goto (случай из задания 2)
+                    {
+                        tmpCommands = PropagateIfWithLabel(instr, tmpCommands);
+                    }
                 }
             }
 
@@ -127,18 +128,19 @@ namespace SimpleLang
             }
 
             wasChanged = true;
+            instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
             if (instructions[findIndexIf + 1].Label == "")
             {
-                instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
                 var tmp = ThreeAddressCodeTmp.GenTmpLabel();
-                instructions[findIndexIf] = new Instruction(tmp, "noop", "", "", "");
+                instructions.RemoveAt(findIndexIf);
+                instructions[findIndexIf].Label = tmp;
                 instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
             }
             else
             {
-                instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
                 var tmp = instructions[findIndexIf + 1].Label;
-                instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
+                instructions.RemoveAt(findIndexIf);
+                //instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
                 instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
             }
             return instructions;
