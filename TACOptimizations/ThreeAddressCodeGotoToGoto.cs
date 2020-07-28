@@ -47,7 +47,7 @@ namespace SimpleLang
         /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции с протянутыми goto
+        /// Вернёт изменённые инструкции с протянутыми goto
         /// </returns>
         private static List<Instruction> PropagateTransitions(string label, List<Instruction> instructions)
         {
@@ -76,7 +76,7 @@ namespace SimpleLang
         /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции с протянутыми goto из if
+        /// Вернёт изменённые инструкции с протянутыми goto из if
         /// </returns>
         private static List<Instruction> PropagateIfWithoutLabel(string label, List<Instruction> instructions)
         {
@@ -105,7 +105,7 @@ namespace SimpleLang
         /// <param name="findInstruction">Инструкция, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции, если меток if не более двух
+        /// Вернёт изменённые инструкции, если меток if не более двух
         /// </returns>
         private static List<Instruction> PropagateIfWithLabel(Instruction findInstruction, List<Instruction> instructions)
         {
@@ -117,10 +117,10 @@ namespace SimpleLang
                 return instructions;
             }
 
-            var finditem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
+            var findItem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
                 instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0) :
                 new Instruction("", "", "", "", "");
-            var findIndexGoto = instructions.IndexOf(finditem);
+            var findIndexGoto = instructions.IndexOf(findItem);
             if (findIndexGoto == -1)
             {
                 return instructions;

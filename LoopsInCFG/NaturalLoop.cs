@@ -11,7 +11,7 @@ namespace SimpleLang
         /// </summary>
         /// <param name="cfg">Граф потока управления</param>
         /// <returns>
-        /// Вернет все натуральные циклы
+        /// Вернёт все натуральные циклы
         /// </returns>
         public static IReadOnlyList<IReadOnlyList<BasicBlock>> GetAllNaturalLoops(ControlFlowGraph cfg)
         {
@@ -48,12 +48,12 @@ namespace SimpleLang
         }
 
         /// <summary>
-        /// Првоерка цикла на естественность
+        /// Проверка цикла на естественность
         /// </summary>
         /// <param name="loop">Проверяемый цикл</param>
         /// <param name="cfg">Граф потока управления</param>
         /// <returns>
-        /// Вернет флаг, естественнен ли он
+        /// Вернёт флаг, естественнен ли он
         /// </returns>
         private static bool IsNaturalLoop(IReadOnlyCollection<BasicBlock> loop, ControlFlowGraph cfg)
         {
