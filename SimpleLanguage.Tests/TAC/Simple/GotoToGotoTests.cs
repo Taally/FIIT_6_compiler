@@ -25,25 +25,6 @@ var a, b;
             TestName = "MultiGoTo")]
 
         [TestCase(@"
-var a, b;
-b = 5;
-if(a > b)
-    goto 6;
-6: a = 4;
-",
-            ExpectedResult = new string[]
-            {
-                "b = 5",
-                "#t1 = a > b",
-                "if #t1 goto 6",
-                "goto L2",
-                "L1: goto 6",
-                "L2: noop",
-                "6: a = 4",
-            },
-            TestName = "GotoIfElseTACGen1")]
-
-        [TestCase(@"
 var a;
 goto 1;
 1: goto 2;
@@ -81,7 +62,7 @@ else
                 "6: a = 4",
                 "4: a = 6",
             },
-            TestName = "GotoIfElseTACGen2")]
+            TestName = "GotoIfElseTACGen")]
 
         [TestCase(@"
 var a, b;
