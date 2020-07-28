@@ -13,7 +13,7 @@ namespace SimpleLang
 
         private static void AddUse(string id, Instruction c, int num)
         {
-            if (id != null && id.StartsWith("!"))
+            if (id != null && id.StartsWith("!")) // for this case: if !#t1 goto L
             {
                 id = id.Substring(1);
             }

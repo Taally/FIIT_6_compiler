@@ -45,7 +45,7 @@ namespace SimpleLang
             {
                 var instruction = instructions[i];
                 if (instruction.Operation == "noop" || instruction.Result == "" || // goto doesn't have result field
-                    instruction.Argument1 != null && instruction.Argument1.StartsWith("!"))
+                    instruction.Argument1 != null && instruction.Argument1.StartsWith("!")) // for this case: if !#t1 goto L
                 {
                     if (instruction.Operation == "ifgoto")
                     {
