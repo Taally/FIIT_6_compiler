@@ -91,7 +91,7 @@
     <Compile Include="DataFlowAnalysis\AvailableExpressionsOptimizationTests.cs" />
     <Compile Include="CFG\CFGcreateTests.cs" />
     <Compile Include="CFG\CFGdfsTests.cs" />
-    <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
+    <Compile Include="DataFlowAnalysis\ConstantPropagationTests.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariablesOptimizationTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsOptimizationTests.cs" />

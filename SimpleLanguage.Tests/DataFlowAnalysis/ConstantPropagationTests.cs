@@ -5,7 +5,7 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class ConstPropagationTests : OptimizationsTestBase
+    internal class ConstantPropagationTests : OptimizationsTestBase
     {
         [Test]
         public void NoBlocks()
@@ -202,7 +202,7 @@ if c > 5
     a = x;
 ";
             var blocks = GenBlocks(program);
-            Assert.AreEqual(7, blocks.Count);
+            Assert.AreEqual(6, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];

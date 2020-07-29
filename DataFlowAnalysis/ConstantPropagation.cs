@@ -88,7 +88,8 @@ namespace SimpleLang
             return 0;
         }
 
-        public HashSet<string> untreatedTypes = new HashSet<string>() {
+        public HashSet<string> untreatedTypes = new HashSet<string>()
+        {
             "OR",
             "AND",
             "EQUAL",
