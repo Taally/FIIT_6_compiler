@@ -56,32 +56,31 @@ public string Result { get; }
 ```csharp
 private string Gen(ExprNode ex)
 {
-    if (ex.GetType() == typeof(BinOpNode))
+    if (ex is BinOpNode binOp)
     {
-        var bin = (BinOpNode)ex;
-        var argument1 = Gen(bin.Left);
-        var argument2 = Gen(bin.Right);
+        var argument1 = Gen(binOp.Left);
+        var argument2 = Gen(binOp.Right);
         var result = ThreeAddressCodeTmp.GenTmpName();
-        GenCommand("", bin.Op.ToString(), argument1, argument2, result);
+        GenCommand("", binOp.Op.ToString(), argument1, argument2, result);
         return result;
     }
-    else if (ex.GetType() == typeof(UnOpNode))
+    else if (ex is UnOpNode unOp)
     {
         /*..*/
     }
-    else if (ex.GetType() == typeof(IdNode))
+    else if (ex is IdNode id)
     {
-        var id = (IdNode)ex;
         return id.Name;
     }
-    else if (ex.GetType() == typeof(IntNumNode))
+    else if (ex is IntNumNode intNum)
     {
-        /*..*/
+        return intNum.Num.ToString();
     }
-    else if (ex.GetType() == typeof(BoolValNode))
+    else if (ex is BoolValNode bl)
     {
-        /*..*/
+        return bl.Val.ToString();
     }
+
     return null;
 }
 ```

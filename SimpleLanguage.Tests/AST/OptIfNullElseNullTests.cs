@@ -25,8 +25,8 @@ namespace SimpleLanguage.Tests.AST
             Assert.AreEqual(root.ExprChildren.Count, 0);
             Assert.AreEqual(root.StatChildren.Count, 2);
 
-            Assert.IsTrue(root.StatChildren[0].GetType() == typeof(EmptyNode));
-            Assert.IsTrue(root.StatChildren[1].GetType() == typeof(EmptyNode));
+            Assert.IsTrue(root.StatChildren[0] is EmptyNode);
+            Assert.IsTrue(root.StatChildren[1] is EmptyNode);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace SimpleLanguage.Tests.AST
             Assert.IsNull(root.Parent);
             Assert.AreEqual(root.ExprChildren.Count, 0);
             Assert.AreEqual(root.StatChildren.Count, 1);
-            Assert.IsTrue(root.StatChildren[0].GetType() == typeof(EmptyNode));
+            Assert.IsTrue(root.StatChildren[0] is EmptyNode);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace SimpleLanguage.Tests.AST
             Assert.IsNull(root.Parent);
             Assert.AreEqual(root.ExprChildren.Count, 0);
             Assert.AreEqual(root.StatChildren.Count, 1);
-            Assert.IsTrue(root.StatChildren[0].GetType() == typeof(EmptyNode));
+            Assert.IsTrue(root.StatChildren[0] is EmptyNode);
         }
 
         [Test]
@@ -97,10 +97,10 @@ namespace SimpleLanguage.Tests.AST
 
             foreach (var node in root.StatChildren)
             {
-                Assert.IsTrue(node.GetType() == typeof(BlockNode));
+                Assert.IsTrue(node is BlockNode);
                 Assert.AreEqual(node.ExprChildren.Count, 0);
                 Assert.AreEqual(node.StatChildren.Count, 1);
-                Assert.IsTrue(node.StatChildren[0].GetType() == typeof(EmptyNode));
+                Assert.IsTrue(node.StatChildren[0] is EmptyNode);
             }
         }
 
@@ -123,8 +123,8 @@ namespace SimpleLanguage.Tests.AST
             Assert.AreEqual(root.ExprChildren.Count, 0);
             Assert.AreEqual(root.StatChildren.Count, 2);
 
-            Assert.IsTrue(root.StatChildren[0].GetType() == typeof(IfElseNode));
-            Assert.IsTrue(root.StatChildren[1].GetType() == typeof(IfElseNode));
+            Assert.IsTrue(root.StatChildren[0] is IfElseNode);
+            Assert.IsTrue(root.StatChildren[1] is IfElseNode);
         }
     }
 }
