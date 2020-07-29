@@ -9,7 +9,7 @@ namespace SimpleLanguage.Tests.TAC.Combined
     using Optimization = Func<IReadOnlyList<Instruction>, (bool wasChanged, IReadOnlyList<Instruction> instructions)>;
 
     [TestFixture]
-    internal class PropagateCopiesDeleteDeadCodeTests : OptimizationsTestBase
+    internal class InteractionWithDeleteDeadCodeTests : OptimizationsTestBase
     {
         [TestCase(@"
 if (true == true)
@@ -17,21 +17,21 @@ if (true == true)
 ",
             ExpectedResult = new string[]
             {
-                "#t1 = True == True",
-                "noop",
-                "if !#t1 goto L1",
+                "if False goto L1",
                 "print 0",
-                "L1: noop"
+                "L1: noop",
             },
             TestName = "PropagateCopiesDeleteDeadCode")]
 
-        public IEnumerable<string> PropagateCopiesDeleteDeadCodeTest(string sourceCode) =>
+        public IEnumerable<string> ComplexInteractionTest(string sourceCode) =>
             ThreeAddressCodeOptimizer.Optimize(
                 GenTAC(sourceCode),
                 basicBlockOptimizations: new List<Optimization>()
                 {
                     DeleteDeadCodeWithDeadVars.DeleteDeadCode,
                     ThreeAddressCodeCopyPropagation.PropagateCopies,
+                    ThreeAddressCodeFoldConstants.FoldConstants,
+                    ThreeAddressCodeRemoveNoop.RemoveEmptyNodes
                 })
             .Select(instruction => instruction.ToString());
     }
