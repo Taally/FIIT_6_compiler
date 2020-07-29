@@ -86,7 +86,7 @@ public bool Equals(OneExpression expr1, OneExpression expr2)
 public static List<OneExpression> UniversalSet;
 private readonly Dictionary<BasicBlock, List<OneExpression>> e_gen;
 private readonly Dictionary<BasicBlock, List<OneExpression>> e_kill;
-private static readonly List<string> operationTypes = new List<string> { "OR", "AND", "LESS", "PLUS", "MINUS", "MULT", "DIV" };
+private static readonly List<string> operationTypes = new List<string> { /*...*/ };
 ```
 Метод `GetU` указанного класса отвечает за создание списка всех выражений, встречающихся в компилируемой программе. Оно получается путём прохода по всем блокам программы. В случае, если, выражение, стоящее в правой части от знака равенства, не встречается в результирующем множестве, оно добавляется в него.
 
