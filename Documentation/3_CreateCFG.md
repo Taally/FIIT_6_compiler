@@ -111,7 +111,7 @@ for (var i = 0; i < _basicBlocks.Count; ++i)
 Тест заключается в тщательной проверке потомков каждого блока в построенном графе потока управления для программы, включающей в себя все типы переходов.
 
 ```csharp
-var TAC = GenTAC(@"
+var blocks = GenBlocks(@"
 var a, b, c, x, i;
 goto 200;
 
@@ -130,7 +130,6 @@ else
 }
 ");
 
-var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
 var cfg = new ControlFlowGraph(blocks);
 
 var vertexCount = cfg.GetCurrentBasicBlocks().Count;

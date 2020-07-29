@@ -83,7 +83,7 @@ print(c);
         [Test]
         public void AvailableExpressions()
         {
-            var TAC = GenTAC(@"
+            var cfg = GenCFG(@"
 var a, b, c, d, x, e, g, y, zz, i;
 2: a = x + y;
 g = c + d;
@@ -96,7 +96,6 @@ goto 3;
 e = zz + i;
 ");
 
-            var cfg = GenCFG(TAC);
             var resAvailableExpressions = new AvailableExpressions().Execute(cfg);
             var actual = cfg.GetCurrentBasicBlocks()
                 .Select(z => resAvailableExpressions[z])

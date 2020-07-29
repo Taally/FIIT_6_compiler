@@ -4,12 +4,12 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.CFG
 {
     [TestFixture]
-    internal class CFGcreate : OptimizationsTestBase
+    internal class CFGCreateTests : OptimizationsTestBase
     {
         [Test]
         public void Test()
         {
-            var TAC = GenTAC(@"
+            var blocks = GenBlocks(@"
 var a, b, c, x, i;
 goto 200;
 
@@ -28,7 +28,6 @@ else
 }
 ");
 
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
             var cfg = new ControlFlowGraph(blocks);
 
             var vertexCount = cfg.GetCurrentBasicBlocks().Count;

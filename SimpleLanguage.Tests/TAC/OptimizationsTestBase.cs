@@ -39,7 +39,7 @@ namespace SimpleLanguage.Tests
         }
 
         protected ControlFlowGraph GenCFG(string program)
-            => new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(GenTAC(program)));
+            => new ControlFlowGraph(GenBlocks(program));
 
         protected ControlFlowGraph GenCFG(List<Instruction> TAC)
             => new ControlFlowGraph(BasicBlockLeader.DivideLeaderToLeader(TAC));

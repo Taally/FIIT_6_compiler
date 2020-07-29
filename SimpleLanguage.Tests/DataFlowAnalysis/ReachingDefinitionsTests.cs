@@ -11,8 +11,7 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
     {
         private (List<BasicBlock> basicBlocks, InOutInfo inOutInfo) GenGraphAndGetInOutInfo(string program)
         {
-            var TAC = GenTAC(program);
-            var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
+            var blocks = GenBlocks(program);
             var cfg = new ControlFlowGraph(blocks);
             var inOutInfo = new ReachingDefinitions().Execute(cfg);
             return (blocks, inOutInfo);
