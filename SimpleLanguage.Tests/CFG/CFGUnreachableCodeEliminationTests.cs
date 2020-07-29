@@ -116,8 +116,8 @@ goto 2;
             var expected = new[]
             {
                 new BasicBlock(new[]{ TAC[0] }),
-                new BasicBlock(new[]{ TAC[17], TAC[18], TAC[19], TAC[20], TAC[21], TAC[22], TAC[23], TAC[24], TAC[25], TAC[26], TAC[27], TAC[28] }),
-                new BasicBlock(new[]{ TAC[29], TAC[30] }),
+                new BasicBlock(new[]{ TAC[15], TAC[16], TAC[17], TAC[18], TAC[19], TAC[20], TAC[21], TAC[22], TAC[23], TAC[24], TAC[25], TAC[26] }),
+                new BasicBlock(new[]{ TAC[27], TAC[28] }),
             };
 
             AssertSet(expected, actual.Skip(1).Take(actual.Count - 2).ToArray());
