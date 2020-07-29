@@ -293,9 +293,8 @@ if (a == true)
             ExpectedResult = new string[]
             {
                 "input a",
-                "#t1 = a == True",
-                "#t2 = !#t1",
-                "if #t2 goto L1",
+                "#t1 = a != True",
+                "if #t1 goto L1",
                 "a = False",
                 "L1: noop",
             },

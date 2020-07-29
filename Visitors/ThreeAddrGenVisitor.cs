@@ -25,43 +25,101 @@ namespace SimpleLang.Visitors
             GenCommand("", "assign", argument1, "", a.Id.Name);
         }
 
+        private string GenEndLabel(IfElseNode i)
+        {
+            Node parent, curNode;
+            if (i.Parent is LabelStatementNode)
+            {
+                parent = i.Parent.Parent;
+                curNode = i.Parent;
+            }
+            else
+            {
+                parent = i.Parent;
+                curNode = i;
+            }
+            var ifIndex = parent.StatChildren.IndexOf(curNode as StatementNode);
+            return parent.StatChildren.Count > ifIndex + 1 ? // next statement exists
+                (parent.StatChildren[ifIndex + 1] is LabelStatementNode nextLabelNode) ? // next statement has label
+                nextLabelNode.Label.Num.ToString() :
+                ThreeAddressCodeTmp.GenTmpLabel() :
+                ThreeAddressCodeTmp.GenTmpLabel();
+        }
+
+        private bool InvertIfExpression(IfElseNode i)
+        {
+            if (i.Expr is BoolValNode boolValNode)
+            {
+                boolValNode.Val = !boolValNode.Val;
+                return true;
+            }
+            if (i.Expr is UnOpNode unOpNode && unOpNode.Op == OpType.NOT) // if it's negation, just remove it
+            {
+                i.Expr = (i.Expr as UnOpNode).Expr;
+                return true;
+            }
+            if (i.Expr is BinOpNode binOpNode &&
+                (binOpNode.Op == OpType.AND ||
+                binOpNode.Op == OpType.EQGREATER ||
+                binOpNode.Op == OpType.EQLESS ||
+                binOpNode.Op == OpType.EQUAL ||
+                binOpNode.Op == OpType.GREATER ||
+                binOpNode.Op == OpType.LESS ||
+                binOpNode.Op == OpType.NOTEQUAL ||
+                binOpNode.Op == OpType.OR))
+            {
+                switch (binOpNode.Op)
+                {
+                    case OpType.OR:
+                        binOpNode.Op = OpType.AND;
+                        binOpNode.Left = new UnOpNode(binOpNode.Left, OpType.NOT);
+                        binOpNode.Right = new UnOpNode(binOpNode.Right, OpType.NOT);
+                        break;
+                    case OpType.AND:
+                        binOpNode.Op = OpType.OR;
+                        binOpNode.Left = new UnOpNode(binOpNode.Left, OpType.NOT);
+                        binOpNode.Right = new UnOpNode(binOpNode.Right, OpType.NOT);
+                        break;
+                    case OpType.EQUAL:
+                        binOpNode.Op = OpType.NOTEQUAL;
+                        break;
+                    case OpType.NOTEQUAL:
+                        binOpNode.Op = OpType.EQUAL;
+                        break;
+                    case OpType.GREATER:
+                        binOpNode.Op = OpType.EQLESS;
+                        break;
+                    case OpType.LESS:
+                        binOpNode.Op = OpType.EQGREATER;
+                        break;
+                    case OpType.EQGREATER:
+                        binOpNode.Op = OpType.LESS;
+                        break;
+                    case OpType.EQLESS:
+                        binOpNode.Op = OpType.GREATER;
+                        break;
+                }
+                return true;
+            }
+            return false;
+        }
+
         public override void VisitIfElseNode(IfElseNode i)
         {
-            string endLabel;
-            void GenEndLabel()
-            {
-                Node parent, curNode;
-                if (i.Parent is LabelStatementNode)
-                {
-                    parent = i.Parent.Parent;
-                    curNode = i.Parent;
-                }
-                else
-                {
-                    parent = i.Parent;
-                    curNode = i;
-                }
-                var ifIndex = parent.StatChildren.IndexOf(curNode as StatementNode);
-                endLabel = parent.StatChildren.Count > ifIndex + 1 ? // next statement exists
-                    (parent.StatChildren[ifIndex + 1] is LabelStatementNode nextLabelNode) ? // next statement has label
-                    nextLabelNode.Label.Num.ToString() :
-                    ThreeAddressCodeTmp.GenTmpLabel() :
-                    ThreeAddressCodeTmp.GenTmpLabel();
-            }
-
-            var exprTmpName = Gen(i.Expr);
+            string endLabel, exprTmpName;
 
             if (i.FalseStat == null)
             {
-                var tmpVar = ThreeAddressCodeTmp.GenTmpName();
-
-                GenEndLabel();
-                if (i.Expr is BoolValNode)
+                var wasInverted = InvertIfExpression(i);
+                exprTmpName = Gen(i.Expr);
+                endLabel = GenEndLabel(i);
+                if (wasInverted)
                 {
-                    GenCommand("", "ifgoto", (!(i.Expr as BoolValNode).Val).ToString(), endLabel, "");
+                    GenCommand("", "ifgoto", exprTmpName, endLabel, "");
                 }
                 else
                 {
+                    var tmpVar = ThreeAddressCodeTmp.GenTmpName();
                     GenCommand("", "assign", $"!{exprTmpName}", "", tmpVar);
                     GenCommand("", "ifgoto", tmpVar, endLabel, "");
                 }
@@ -70,6 +128,7 @@ namespace SimpleLang.Visitors
             }
             else
             {
+                exprTmpName = Gen(i.Expr);
                 var trueLabel = i.TrueStat is LabelStatementNode label
                    ? label.Label.Num.ToString()
                    : i.TrueStat is BlockNode block
@@ -81,7 +140,7 @@ namespace SimpleLang.Visitors
 
                 i.FalseStat.Visit(this);
 
-                GenEndLabel();
+                endLabel = GenEndLabel(i);
                 GenCommand("", "goto", endLabel, "", "");
 
                 var instructionIndex = Instructions.Count;
