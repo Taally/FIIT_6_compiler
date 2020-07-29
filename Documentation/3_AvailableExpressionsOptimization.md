@@ -140,7 +140,7 @@ private bool OpenBlock(BasicBlock block, OneExpression expression)
 
 ```csharp
 [TestCase(@"
-var a, b, x, y, z, p, q, s;
+var a, b, x, y, z, p, q;
 x = y + z;
 if (a < b)
 {
@@ -154,22 +154,21 @@ q = y + z;
         "#t5 = #t6",
         "#t1 = #t5",
         "x = #t1",
-        "#t2 = a < b",
+        "#t2 = a >= b",
         "if #t2 goto L1",
-        "goto L2",
-        "L1: #t3 = #t5",
+        "#t3 = #t5",
         "p = #t3",
-        "L2: noop" ,
+        "L1: noop",
         "#t4 = #t6",
         "q = #t4",
     },
     TestName = "SimpleProgram")]
 
 [TestCase(@"
-var a, b, c, d, x, u, e,g, y,zz,i;
+var a, b, d, x, e, zz, i;
 e = x + d;
 zz = i + x;
-for i=2,7
+for i = 2, 7
 {
     x = x + d;
     a = a + b;
