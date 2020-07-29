@@ -123,15 +123,14 @@ private static readonly List<string> operationTypes = new List<string> { /*...*/
 
 ```csharp
 private void AssertSet(
-    List<(List<OneExpression>, List<OneExpression>)> expected,
-    List<(List<OneExpression>, List<OneExpression>)> actual)
+    List<(IEnumerable<OneExpression> In, IEnumerable<OneExpression> Out)> expected,
+    List<(IEnumerable<OneExpression> In, IEnumerable<OneExpression> Out)> actual)
 {
+    Assert.AreEqual(expected.Count, actual.Count);
     for (var i = 0; i < expected.Count; i++)
     {
-        Assert.AreEqual(expected[i].Item1.Count, actual[i].Item1.Count);
-        Assert.AreEqual(expected[i].Item2.Count, actual[i].Item2.Count);
-        Assert.True(ContainsExpression(expected[i].Item1, actual[i].Item1));
-        Assert.True(ContainsExpression(expected[i].Item2, actual[i].Item2));
+        CollectionAssert.AreEquivalent(expected[i].In, actual[i].In, $"In: i = {i}");
+        CollectionAssert.AreEquivalent(expected[i].Out, actual[i].Out, $"Out: i = {i}");
     }
 }
 ```
@@ -140,17 +139,29 @@ private void AssertSet(
 public void SimpleProgramWithUnreachableCode2()
 {
     var actual = GetActualInOutData(@"
-var a, b, c, d, x, u, e, g, y, zz, i;
+var b, c, d, x, e, g, zz, i;
 1: g = c + d;
 b = c + x;
 goto 1;
 e = zz + i;
 ");
-    var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
+    var expected = new List<(IEnumerable<OneExpression> In, IEnumerable<OneExpression> Out)>()
     {
-        (new List<OneExpression>(), new List<OneExpression>()),
-        (new List<OneExpression>(), new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "c", "x")} ),
-        (new List<OneExpression>(), new List<OneExpression>())
+        // 0
+        (In: new List<OneExpression>(),
+        Out: new List<OneExpression>()),
+
+        // 1
+        (In: new List<OneExpression>(),
+        Out: new List<OneExpression>()
+        {
+            new OneExpression("PLUS", "c", "d"),
+            new OneExpression("PLUS", "c", "x")
+        }),
+
+        // 2
+        (In: new List<OneExpression>(),
+        Out: new List<OneExpression>())
     };
     Assert.AreEqual(expected.Count, actual.Count);
     AssertSet(expected, actual);
