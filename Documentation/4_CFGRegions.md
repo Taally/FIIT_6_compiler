@@ -26,15 +26,15 @@
 ```csharp
 public class Region
 {
-    public IReadOnlyCollection<Region> includedRegions;
-    public IReadOnlyCollection<(Region, Region)> edges;
+    public IReadOnlyCollection<Region> IncludedRegions;
+    public IReadOnlyCollection<(Region, Region)> Edges;
     public BasicBlock Initial;
 
-    public Region(IReadOnlyCollection<Region> _regs = null, IReadOnlyCollection<(Region, Region)> _edges = null, BasicBlock _initial = null)
+    public Region(IReadOnlyCollection<Region> regions = null, IReadOnlyCollection<(Region, Region)> edges = null, BasicBlock initial = null)
     {
-        includedRegions = _regs;
-        edges = _edges;
-        Initial = _initial;
+        IncludedRegions = regions;
+        Edges = edges;
+        Initial = initial;
     }
 }
 ```
@@ -46,23 +46,23 @@ private void FindRegions()
 {
     foreach (var item in blocks)
     {
-        _regions.Add(new Region(_initial: item));
-        Block_to_region.Add(item, _regions.Count - 1);
+        regions.Add(new Region(initial: item));
+        BlockToRegion.Add(item, regions.Count - 1);
         curID++;
     }
     for (var i = 0; i < cycles.Count; ++i)
     {
         CollapseCycle(cycles[i]);
     }
-    var temp_edges = new List<(Region, Region)>();
+    var tempEdges = new List<(Region, Region)>();
     foreach (var entry in children)
     {
         foreach (var second in entry.Value)
         {
-            temp_edges.Add((_regions[Block_to_region[entry.Key]], _regions[Block_to_region[second]]));
+            tempEdges.Add((regions[BlockToRegion[entry.Key]], regions[BlockToRegion[second]]));
         }
     }
-    _regions.Add(new Region(blocks.Select(x => _regions[Block_to_region[x]]).ToList(), temp_edges));
+    regions.Add(new Region(blocks.Select(x => regions[BlockToRegion[x]]).ToList(), tempEdges));
 }
 ```
 
@@ -72,31 +72,31 @@ private void FindRegions()
 private void CollapseCycle(IReadOnlyCollection<BasicBlock> cycle)
 {
     /* ... */
-    foreach (var cur_vertex in blocks)
+    foreach (var curVertex in blocks)
     {
-        if (!cycle.Contains(cur_vertex))
+        if (!cycle.Contains(curVertex))
         {
-            var temp = children[cur_vertex].ToList();
+            var temp = children[curVertex].ToList();
             foreach (var child in temp)
             {
                 if (child == cycle.First())
                 {
-                    children[cur_vertex].Remove(child);
-                    children[cur_vertex].Add(body_block);
+                    children[curVertex].Remove(child);
+                    children[curVertex].Add(bodyBlock);
                 }
             }
     /* ... */
-    var innerRegions = cycle.Select(x => _regions[Block_to_region[x]]).ToList();
-    var innerEdged = cycle_edges.Select(x => (_regions[Block_to_region[x.Item1]], _regions[Block_to_region[x.Item2]])).ToList();
+    var innerRegions = cycle.Select(x => regions[BlockToRegion[x]]).ToList();
+    var innerEdged = cycleEdges.Select(x => (regions[BlockToRegion[x.Item1]], regions[BlockToRegion[x.Item2]])).ToList();
 
-    _regions.Add(new Region(innerRegions, innerEdged));
-    Block_to_region.Add(body_block, _regions.Count - 1);
+    regions.Add(new Region(innerRegions, innerEdged));
+    BlockToRegion.Add(bodyBlock, regions.Count - 1);
     /* ... */
 }
 ```
 
 ### Место в общем проекте (Интеграция)
-Данный метод был успешно интегрирован в проект оптимизирующего компилятора. Использовать предлагаемое решение можно, создав объект класса CFGRegions, используя в качестве параметра граф потока управления.
+Данный метод был успешно интегрирован в проект оптимизирующего компилятора. Использовать предлагаемое решение можно, создав объект класса `CFGRegions`, используя в качестве параметра граф потока управления.
 
 ```csharp
 var blocks = BasicBlockLeader.DivideLeaderToLeader(TAC);
