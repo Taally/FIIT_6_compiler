@@ -26,16 +26,11 @@ namespace SimpleLang
                 {
                     tmpCommands = PropagateTransitions(instr.Argument1, tmpCommands);
                 }
-                else if (instr.Operation == "ifgoto")
+                else if (instr.Operation == "ifgoto") // Инструкции вида [label] if(усл) goto (случай из задания 2)
                 {
-                    if (instr.Label == "") // Инструкции вида if(усл) goto (случай из задания 2)
-                    {
-                        tmpCommands = PropagateIfWithoutLabel(instr.Argument2, tmpCommands);
-                    }
-                    else // Инструкции вида l1: if(усл) goto (случай из задания 2)
-                    {
-                        tmpCommands = PropagateIfWithLabel(instr, tmpCommands);
-                    }
+                    tmpCommands = instr.Label == "" ?
+                        PropagateIfWithoutLabel(instr.Argument2, tmpCommands) :
+                        PropagateIfWithLabel(instr, tmpCommands);
                 }
             }
 
