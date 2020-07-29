@@ -94,7 +94,23 @@ namespace SimpleLang
         public static List<OneExpression> UniversalSet;
         private readonly Dictionary<BasicBlock, List<OneExpression>> e_gen;
         private readonly Dictionary<BasicBlock, List<OneExpression>> e_kill;
-        private static readonly List<string> operationTypes = new List<string> { "OR", "AND", "LESS", "PLUS", "MINUS", "MULT", "DIV" };
+        private static readonly List<string> operationTypes = new List<string>
+        {
+            "OR",
+            "AND",
+            "EQUAL",
+            "NOTEQUAL",
+            "GREATER",
+            "LESS",
+            "EQGREATER",
+            "EQLESS",
+            "PLUS",
+            "MINUS",
+            "MULT",
+            "DIV",
+            "NOT",
+            "UNMINUS"
+        };
 
         public AvailableExpressionTransferFunc(ControlFlowGraph graph)
         {

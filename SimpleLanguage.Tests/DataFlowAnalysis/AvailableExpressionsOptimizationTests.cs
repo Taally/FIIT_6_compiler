@@ -16,7 +16,7 @@ var a;
             TestName = "EmptyProgram")]
 
         [TestCase(@"
-var a, b, c, d, x, u, e, g, y, zz, i;
+var a, b, c, d, x, e, g;
 if a > b
 {
     c = d;
@@ -44,7 +44,7 @@ else
             TestName = "NoOptimizationInNotReducibleGraph")] // hardest
 
         [TestCase(@"
-var a, b, x, y, z, p, q, s;
+var a, b, x, y, z, p, q;
 x = y + z;
 if (a < b)
 {
@@ -58,19 +58,18 @@ q = y + z;
                 "#t5 = #t6",
                 "#t1 = #t5",
                 "x = #t1",
-                "#t2 = a < b",
+                "#t2 = a >= b",
                 "if #t2 goto L1",
-                "goto L2",
-                "L1: #t3 = #t5",
+                "#t3 = #t5",
                 "p = #t3",
-                "L2: noop" ,
+                "L1: noop",
                 "#t4 = #t6",
                 "q = #t4",
             },
             TestName = "SimpleProgram")]
 
         [TestCase(@"
-var a, b, x, y, z, p, q, s;
+var x, y, z, p, q;
 x = y + z;
 goto 1;
 1: p = y + z;
@@ -93,9 +92,9 @@ goto 2;
             TestName = "SimpleProgramWithGoto")]
 
         [TestCase(@"
-var a, b, c, d, x, u, e,g, y,zz,i;
+var a, b, d, x, zz, i;
 zz = i + x;
-for i=2,7
+for i = 2, 7
 {
     x = x + d;
     a = a + b;
@@ -119,10 +118,10 @@ for i=2,7
             TestName = "ProgramWithLoopForNoOptimization1")]
 
         [TestCase(@"
-var a, b, c, d, x, u, e,g, y,zz,i;
+var a, b, d, x, e, zz, i;
 e = x + d;
 zz = i + x;
-for i=2,7
+for i = 2, 7
 {
     x = x + d;
     a = a + b;
@@ -148,7 +147,7 @@ for i=2,7
             TestName = "ProgramWithLoopForNoOptimization2")]
 
         [TestCase(@"
-var a, b, x, y, z, p, q, s;
+var a, b, x, y, z, p, q;
 x = y + z;
 y = 1;
 if (a < b)
@@ -165,17 +164,16 @@ q = y + z;
                 "#t1 = y + z",
                 "x = #t1",
                 "y = 1",
-                "#t2 = a < b",
+                "#t2 = a >= b",
                 "if #t2 goto L1",
-                "goto L2",
-                "L1: z = 2",
+                "z = 2",
                 "#t3 = y + 2",
                 "p = #t3",
-                "L2: z = 1",
+                "L1: z = 1",
                 "#t4 = y + 1",
                 "q = #t4",
             },
-            TestName = "NoOptimizationAfterAllOptimization")]
+            TestName = "NoOptimizationAfterAllOptimizations")]
 
         public IEnumerable<string> TestAvailableExpressionsOptimization(string sourceCode, bool optimizeAll = false)
         {
