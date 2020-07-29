@@ -62,7 +62,7 @@ dfs(0);
 - глубинного остовного дерева
 
 ```csharp
-var program = @"
+var cfg = GenCFG(@"
 var a, b, c, x, i;
 goto 200;
 200: a = 10 + 5;
@@ -76,9 +76,7 @@ else
 {
     b = 1;
 }
-";
-
-var cfg = GenCFG(program);
+");
 
 //            0
 //            ↓
