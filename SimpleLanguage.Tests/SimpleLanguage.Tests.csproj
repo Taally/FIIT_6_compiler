@@ -127,9 +127,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleLang1.csproj">
+    <ProjectReference Include="..\SimpleLanguage.csproj">
       <Project>{12b9d996-7b4a-4ee4-9ad8-2e24eaf3f574}</Project>
-      <Name>SimpleLang1</Name>
+      <Name>SimpleLanguage</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

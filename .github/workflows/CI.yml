@@ -23,7 +23,7 @@ jobs:
         git fetch -u origin master:master
         source_files="$(git diff --name-only master | grep '\.cs\|\.sln' || true)"
         echo "::set-output name=source_files::$source_files"
-        
+
   build_and_test:
     # The type of runner that the job will run on
     runs-on: windows-latest
@@ -37,15 +37,15 @@ jobs:
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
-    
+
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
-    
+
     - name: Restore NuGet packages
-      run: nuget restore SimpleLang1.sln
-    
+      run: nuget restore SimpleLanguage.sln
+
     - name: Build the Solution
-      run: msbuild SimpleLang1.sln
+      run: msbuild SimpleLanguage.sln
 
     - name: Run tests
       run: powershell "& (Resolve-Path packages\NUnit.ConsoleRunner*\tools\nunit3-console.exe -Relative) SimpleLanguage.Tests\bin\Debug\SimpleLanguage.Tests.dll"
