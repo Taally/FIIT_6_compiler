@@ -83,16 +83,16 @@ if (instr.Operation == "goto")
         tmpCommands = PropagateTransitions(instr.Argument1, tmpCommands);
 }
 ```
-Инструкции вида if(усл) goto (для случая 2)
+Инструкции вида if (усл) goto (для случая 2)
 ```csharp
 if (instr.Operation == "ifgoto" && instr.Label == "")
 {
         tmpCommands = PropagateIfWithoutLabel(instr.Argument2, tmpCommands);
 }
 ```
-Инструкции вида l1: if(усл) goto (для случая 3)
+Инструкции вида l1: if (усл) goto (для случая 3)
 ```csharp
-if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (для случая 3)
+if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if (усл) goto (для случая 3)
 {
         tmpCommands = PropagateIfWithLabel(instr, tmpCommands);
 }

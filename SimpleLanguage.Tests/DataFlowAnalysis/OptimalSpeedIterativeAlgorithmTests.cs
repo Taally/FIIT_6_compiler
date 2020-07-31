@@ -10,12 +10,12 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         public void AvailableExpressions()
         {
             var program = @"
-var a, b, c, d, x, u, e,g, y,zz,i;
+var a, b, c, d, x, e, g, y, zz, i;
 2: a = x + y;
 g = c + d;
 3: zz = 1;
 goto 1;
-1: if(a < b)
+1: if (a < b)
     c = 1;
 b = c + d;
 goto 3;

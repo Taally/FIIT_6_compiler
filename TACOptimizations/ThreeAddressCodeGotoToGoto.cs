@@ -26,7 +26,7 @@ namespace SimpleLang
                 {
                     tmpCommands = PropagateTransitions(instr.Argument1, tmpCommands);
                 }
-                else if (instr.Operation == "ifgoto") // Инструкции вида [label] if(усл) goto (случай из задания 2)
+                else if (instr.Operation == "ifgoto") // Инструкции вида [label] if (усл) goto (случай из задания 2)
                 {
                     tmpCommands = instr.Label == "" ?
                         PropagateIfWithoutLabel(instr.Argument2, tmpCommands) :
@@ -67,7 +67,7 @@ namespace SimpleLang
         }
 
         /// <summary>
-        /// Протягивает метки для if(усл) goto
+        /// Протягивает метки для if (усл) goto
         /// </summary>
         /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>

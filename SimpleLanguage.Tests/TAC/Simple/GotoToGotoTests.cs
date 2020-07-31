@@ -45,7 +45,7 @@ goto 1;
         [TestCase(@"
 var a, b;
 b = 5;
-if(a > b)
+if (a > b)
     goto 6;
 else
     goto 4;

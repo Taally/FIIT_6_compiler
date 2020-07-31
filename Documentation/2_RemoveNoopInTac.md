@@ -139,7 +139,7 @@ goto old_label
 
 Пример проверки корректности интеграции с `GotoThroughGoto`
 ```
-1: if(1 < 2)			 	1: #t1 = 1 < 2
+1: if (1 < 2)			 	1: #t1 = 1 < 2
     a = 4 + 5 * 6;   ->  	if #t1 goto L1
    else					 	goto 4
     goto 4;			    	goto L2
