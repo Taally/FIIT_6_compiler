@@ -115,15 +115,15 @@ public abstract class GenericIterativeAlgorithm<T> where T : IEnumerable
 public void LiveVariables()
 {
     var program = @"
-var a,b,c;
+var a, b, c;
 
-input (b);
+input(b);
 a = b + 1;
 if a < c
     c = b - a;
 else
     c = b + a;
-print (c);
+print(c);
 ";
 
     var cfg = GenCFG(program);
@@ -136,11 +136,11 @@ print (c);
     var expected =
         new List<(IEnumerable<string>, IEnumerable<string>)>()
         {
-            (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
-            (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-            (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
-            (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
-            (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+            (new HashSet<string>(){ "c" }, new HashSet<string>(){ "c" }),
+            (new HashSet<string>(){ "c" }, new HashSet<string>(){ "a", "b" }),
+            (new HashSet<string>(){ "a", "b" }, new HashSet<string>(){ "c" }),
+            (new HashSet<string>(){ "a", "b" }, new HashSet<string>(){ "c" }),
+            (new HashSet<string>(){ "c" }, new HashSet<string>(){ }),
             (new HashSet<string>(){ }, new HashSet<string>(){ })
         };
 
