@@ -174,7 +174,7 @@ var a, b, c, i;
 
 for i = 1, b
 {
-    input (a);
+    input(a);
     c = c + a;
     print(c);
     if c < b
@@ -187,7 +187,7 @@ for i = 1, b
     }
 }
 
-print (c + a + b);
+print(c + a + b);
 ");
 
     var expected =
