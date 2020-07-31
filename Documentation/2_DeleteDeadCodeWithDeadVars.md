@@ -33,7 +33,7 @@ newInstructions.Add(last);
 varStatus.Add(last.Result, false);
 if (!int.TryParse(last.Argument1, out _) && last.Argument1 != "True" && last.Argument1 != "False")
 {
-    varStatus[last.Argument1] = true;
+    varStatus[last.Argument1.StartsWith("!") ? last.Argument1.Substring(1) : last.Argument1] = true;
 }
 if (!int.TryParse(last.Argument2, out _) && last.Argument2 != "True" && last.Argument2 != "False")
 {
