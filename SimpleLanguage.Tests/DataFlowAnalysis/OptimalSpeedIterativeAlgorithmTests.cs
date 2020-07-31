@@ -61,22 +61,24 @@ a = x;
         public void LiveVariables()
         {
             var program = @"
-var a,b,c,i;
+var a, b, c, i;
 
-for i = 1,b {
-    input (a);
+for i = 1, b
+{
+    input(a);
     c = c + a;
     print(c);
     if c < b
         c = c + 1;
-    else {
+    else
+    {
         b = b - 1;
         print(b);
         print(c);
     }
 }
 
-print (c+a+b);
+print(c + a + b);
 ";
             var graph = GenCFG(program);
             var algorithm = new LiveVariables();
