@@ -81,41 +81,46 @@ public static Dictionary<BasicBlock, BitArray>
 Тестами покрыты как и вспомогательные битовые операции для преобразование данных, так и непосредственно сам итерационный алгоритм по поиску достигающих определений. Примеры исходных данных для тестирования:
 
 ```
-var a;  
-a = 1;  
+var a;
+a = 1;
 a = 2;
 
-var a;  
-a = 1;  
+var a;
+a = 1;
 input(a);
 
-var a, b;  
-a = 1;  
-goto 1;  
+var a, b;
+a = 1;
+goto 1;
 1: b = 2;
 
-var a, b;  
-input(a);  
-if a > 0  
- b = 0;else  
- a = 1;b = a;
+var a, b;
+input(a);
+if a > 0
+    b = 0;
+else
+    a = 1;
+b = a;
 
-var i, k;  
-for k = 0, 2  
- i = i + 1;
+var i, k;
+for k = 0, 2
+    i = i + 1;
 
-var a;  
-1: a = 1;  
-goto 1;  
+var a;
+1: a = 1;
+goto 1;
 a = 4;
 
-var i, m, j, n, a, u1, u2, u3, k;  
-1: i = m - 1;  
-2: j = n;  
-3: a = u1;  
-  
-for k = 0, 1 {
- i = i + 1; j = j - 1;  
- if i < j a = u2; i = u3;
+var i, m, j, n, a, u1, u2, u3, k;
+1: i = m - 1;
+2: j = n;
+3: a = u1;
+
+for k = 0, 1
+{
+    i = i + 1; j = j - 1;
+    if i < j
+        a = u2;
+    i = u3;
 }
 ```
