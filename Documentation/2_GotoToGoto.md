@@ -164,21 +164,23 @@ var a, b;
 [TestCase(@"
 var a, b;
 b = 5;
-if(a > b)
+if (a > b)
     goto 6;
+else
+    goto 4;
 6: a = 4;
+4: a = 6;
 ",
     ExpectedResult = new string[]
     {
         "b = 5",
         "#t1 = a > b",
         "if #t1 goto 6",
-        "goto L2",
-        "L1: goto 6",
-        "L2: noop",
+        "goto 4",
         "6: a = 4",
+        "4: a = 6",
     },
-    TestName = "GotoIfElseTACGen1")]
+    TestName = "GotoIfElseTACGen")]
 
 public IEnumerable<string> TestGotoToGoto(
     string sourceCode,
