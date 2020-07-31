@@ -117,23 +117,23 @@ for (var i = 0; i < commandsTmp.Count - 1; i++)
 
 Примеры тестовых кейсов:
 ```
-6: a = b   		 	->	 6: a = b
-1: noop					 9: b = a
+6: a = b              ->    6: a = b
+1: noop                     9: b = a
 9: b = a
 
-L1: noop    		->   L1: b = a
+L1: noop              ->    L1: b = a
 b = a
 
-1: noop				->	 a = 1
-2: noop			 		 b = a
+1: noop               ->    a = 1
+2: noop                     b = a
 3: a = 1
 4: noop
 5: noop
 6: b = a
 
-goto old_label		->	 goto new_label
-old_label: noop			 new_label: a = b
-new_label: a = b		 goto new_label
+goto old_label        ->    goto new_label
+old_label: noop             new_label: a = b
+new_label: a = b            goto new_label
 goto old_label
 ```
 
@@ -149,4 +149,4 @@ else                        goto 4
                             L2: noop
 ```
 
-Выполняется проверка на не удаление L2: noop, который является последней операцией в программе.
+Выполняется проверка на не удаление `L2: noop`, который является последней операцией в программе.
