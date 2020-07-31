@@ -5,15 +5,14 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.DataFlowAnalysis
 {
     [TestFixture]
-    internal class ConstPropagationTests : OptimizationsTestBase
+    internal class ConstantPropagationTests : OptimizationsTestBase
     {
         [Test]
         public void NoBlocks()
         {
-            var program = @"
-var a,b,c;
-";
-            var blocks = GenBlocks(program);
+            var blocks = GenBlocks(@"
+var a, b, c;
+");
             Assert.AreEqual(0, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
@@ -25,11 +24,10 @@ var a,b,c;
         [Test]
         public void OneAssign()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a,b,c;
 a = 5;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -41,12 +39,11 @@ a = 5;
         [Test]
         public void VariableAndConst()
         {
-            var program = @"
-var u,p,v;
+            var blocks = GenBlocks(@"
+var u, p, v;
 u = 3;
 p = u + 2;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -61,15 +58,14 @@ p = u + 2;
         [Test]
         public void VariableAndConst2()
         {
-            var program = @"
-var a,b,c;
+            var blocks = GenBlocks(@"
+var a, b, c;
 b = 3;
 goto 11;
 12: c = b + 2;
 11: a = 7;
 goto 12;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -86,14 +82,13 @@ goto 12;
         [Test]
         public void VariableAndConst3()
         {
-            var program = @"
-var a,b,c;
+            var blocks = GenBlocks(@"
+var a, b, c;
 b = 3;
 goto 11;
 c = b + 2;
 11: a = 7;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -108,12 +103,11 @@ c = b + 2;
         [Test]
         public void ConstAndVariable()
         {
-            var program = @"
-var a,b,c;
+            var blocks = GenBlocks(@"
+var a, b, c;
 b = 3;
 a = 2 * b;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -128,13 +122,12 @@ a = 2 * b;
         [Test]
         public void ComplicatedEquation()
         {
-            var program = @"
-var a,b,c;
+            var blocks = GenBlocks(@"
+var a, b, c;
 a = 2;
 b = 3;
 c = a * b - 2;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -151,8 +144,8 @@ c = a * b - 2;
         [Test]
         public void TransfNotDistr()
         {
-            var program = @"
-var a,b,c;
+            var blocks = GenBlocks(@"
+var a, b, c;
 if c > 5
 {
     a = 2;
@@ -164,8 +157,7 @@ else
     b = 2;
 }
 c = a + b;
-";
-            var blocks = GenBlocks(program);
+");
             Assert.AreEqual(4, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
@@ -179,11 +171,10 @@ c = a + b;
         [Test]
         public void InputAssignsNAC()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, x, c;
 input(c);
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             Assert.AreEqual(LatticeTypeData.NAC, InOut.OUT[blocks.Last()]["c"].Type);
@@ -192,7 +183,7 @@ input(c);
         [Test]
         public void PropagateOneVariant()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, x, c;
 if c > 5
     x = 10;
@@ -200,9 +191,8 @@ else
     input(c);
 if c > 5
     a = x;
-";
-            var blocks = GenBlocks(program);
-            Assert.AreEqual(7, blocks.Count);
+");
+            Assert.AreEqual(6, blocks.Count);
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -217,7 +207,7 @@ if c > 5
         [Test]
         public void TwoConstValues()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, x, c;
 input(c);
 if c > 5
@@ -227,8 +217,7 @@ else
 if c > 5
     x = 20;
 a = x;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -241,15 +230,14 @@ a = x;
         [Test]
         public void PropagateTwoVariants()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, x, c;
 if c > 10
     x = 10;
 else
     a = 20;
 c = a + x;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -266,14 +254,13 @@ c = a + x;
         [Test]
         public void PropagateTwoVariants2()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, x, c;
 x = 10;
 a = 20;
 goto 666;
 666: c = a + x;
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -289,7 +276,7 @@ goto 666;
         [Test]
         public void WhileProp()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, b, x, c;
 while x > 1
 {
@@ -297,9 +284,7 @@ while x > 1
     b = 5;
 }
 c = a + b;
-";
-
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -311,17 +296,15 @@ c = a + b;
         [Test]
         public void ForProp()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, b, x, c;
-for x=1,10
+for x = 1, 10
 {
     a = 2;
     b = 2;
 }
 c = a + b;
-";
-
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -333,17 +316,16 @@ c = a + b;
         [Test]
         public void ForReverse()
         {
-            var program = @"
+            var blocks = GenBlocks(@"
 var a, b, x, c, d;
-for x=1,2
+for x = 1, 2
 {
     a = b;
     b = c;
     c = d;
     d = 5;
 }
-";
-            var blocks = GenBlocks(program);
+");
             var cfg = new ControlFlowGraph(blocks);
             var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
             var actual = InOut.OUT[blocks.Last()];
@@ -362,7 +344,7 @@ for x=1,2
         [Test]
         public void ConstPropagationIterative()
         {
-            var program = @"
+            var cfg = GenCFG(@"
 var a, x, c;
 if c > 5
     x = 10;
@@ -370,8 +352,7 @@ else
     input(c);
 if c > 5
     a = x;
-";
-            var cfg = GenCFG(program);
+");
             var constProp = new ConstantPropagation();
             var result = constProp.Execute(cfg);
             var blocks = cfg.GetCurrentBasicBlocks();

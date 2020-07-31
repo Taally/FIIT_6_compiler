@@ -26,15 +26,11 @@ namespace SimpleLang
                 {
                     tmpCommands = PropagateTransitions(instr.Argument1, tmpCommands);
                 }
-
-                if (instr.Operation == "ifgoto" && instr.Label == "") // Инструкции вида if(усл) goto (случай из задания 2)
+                else if (instr.Operation == "ifgoto") // Инструкции вида [label] if (усл) goto (случай из задания 2)
                 {
-                    tmpCommands = PropagateIfWithoutLabel(instr.Argument2, tmpCommands);
-                }
-
-                if (instr.Operation == "ifgoto" && instr.Label != "") // Инструкции вида l1: if(усл) goto (случай из задания 2)
-                {
-                    tmpCommands = PropagateIfWithLabel(instr, tmpCommands);
+                    tmpCommands = instr.Label == "" ?
+                        PropagateIfWithoutLabel(instr.Argument2, tmpCommands) :
+                        PropagateIfWithLabel(instr, tmpCommands);
                 }
             }
 
@@ -47,7 +43,7 @@ namespace SimpleLang
         /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции с протянутыми goto
+        /// Вернёт изменённые инструкции с протянутыми goto
         /// </returns>
         private static List<Instruction> PropagateTransitions(string label, List<Instruction> instructions)
         {
@@ -71,12 +67,12 @@ namespace SimpleLang
         }
 
         /// <summary>
-        /// Протягивает метки для if(усл) goto
+        /// Протягивает метки для if (усл) goto
         /// </summary>
         /// <param name="label">Метка, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции с протянутыми goto из if
+        /// Вернёт изменённые инструкции с протянутыми goto из if
         /// </returns>
         private static List<Instruction> PropagateIfWithoutLabel(string label, List<Instruction> instructions)
         {
@@ -105,7 +101,7 @@ namespace SimpleLang
         /// <param name="findInstruction">Инструкция, которую мы ищем</param>
         /// <param name="instructions">Набор наших инструкций</param>
         /// <returns>
-        /// Вернет измененные инструкции, если меток if не более двух
+        /// Вернёт изменённые инструкции, если меток if не более двух
         /// </returns>
         private static List<Instruction> PropagateIfWithLabel(Instruction findInstruction, List<Instruction> instructions)
         {
@@ -117,30 +113,24 @@ namespace SimpleLang
                 return instructions;
             }
 
-            var finditem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
+            var findItem = instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").Count() > 0 ?
                 instructions.Where(x => instructions[findIndexIf].Label == x.Argument1 && x.Operation == "goto").ElementAt(0) :
                 new Instruction("", "", "", "", "");
-            var findIndexGoto = instructions.IndexOf(finditem);
+            var findIndexGoto = instructions.IndexOf(findItem);
             if (findIndexGoto == -1)
             {
                 return instructions;
             }
 
             wasChanged = true;
-            if (instructions[findIndexIf + 1].Label == "")
+            instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
+            instructions.RemoveAt(findIndexIf);
+            if (instructions[findIndexIf].Label == "")
             {
-                instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
-                var tmp = ThreeAddressCodeTmp.GenTmpLabel();
-                instructions[findIndexIf] = new Instruction(tmp, "noop", "", "", "");
-                instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
+                instructions[findIndexIf].Label = ThreeAddressCodeTmp.GenTmpLabel();
             }
-            else
-            {
-                instructions[findIndexGoto] = new Instruction("", instructions[findIndexIf].Operation, instructions[findIndexIf].Argument1, instructions[findIndexIf].Argument2, instructions[findIndexIf].Result);
-                var tmp = instructions[findIndexIf + 1].Label;
-                instructions[findIndexIf] = new Instruction("", "noop", "", "", "");
-                instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", tmp, "", ""));
-            }
+            instructions.Insert(findIndexGoto + 1, new Instruction("", "goto", instructions[findIndexIf].Label, "", ""));
+
             return instructions;
         }
     }

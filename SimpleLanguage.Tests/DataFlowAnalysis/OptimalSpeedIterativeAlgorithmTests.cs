@@ -10,12 +10,12 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         public void AvailableExpressions()
         {
             var program = @"
-var a, b, c, d, x, u, e,g, y,zz,i;
+var a, b, c, d, x, e, g, y, zz, i;
 2: a = x + y;
 g = c + d;
 3: zz = 1;
 goto 1;
-1: if(a < b)
+1: if (a < b)
     c = 1;
 b = c + d;
 goto 3;
@@ -61,22 +61,24 @@ a = x;
         public void LiveVariables()
         {
             var program = @"
-var a,b,c,i;
+var a, b, c, i;
 
-for i = 1,b {
-    input (a);
+for i = 1, b
+{
+    input(a);
     c = c + a;
     print(c);
     if c < b
         c = c + 1;
-    else {
+    else
+    {
         b = b - 1;
         print(b);
         print(c);
     }
 }
 
-print (c+a+b);
+print(c + a + b);
 ";
             var graph = GenCFG(program);
             var algorithm = new LiveVariables();

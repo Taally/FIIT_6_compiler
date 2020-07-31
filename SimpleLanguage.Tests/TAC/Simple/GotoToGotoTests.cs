@@ -25,25 +25,6 @@ var a, b;
             TestName = "MultiGoTo")]
 
         [TestCase(@"
-var a, b;
-b = 5;
-if(a > b)
-    goto 6;
-6: a = 4;
-",
-            ExpectedResult = new string[]
-            {
-                "b = 5",
-                "#t1 = a > b",
-                "if #t1 goto 6",
-                "goto L2",
-                "L1: goto 6",
-                "L2: noop",
-                "6: a = 4",
-            },
-            TestName = "GotoIfElseTACGen1")]
-
-        [TestCase(@"
 var a;
 goto 1;
 1: goto 2;
@@ -64,7 +45,7 @@ goto 1;
         [TestCase(@"
 var a, b;
 b = 5;
-if(a > b)
+if (a > b)
     goto 6;
 else
     goto 4;
@@ -81,7 +62,7 @@ else
                 "6: a = 4",
                 "4: a = 6",
             },
-            TestName = "GotoIfElseTACGen2")]
+            TestName = "GotoIfElseTACGen")]
 
         [TestCase(@"
 var a, b;
@@ -94,11 +75,8 @@ a = 1;
             true,
             ExpectedResult = new string[]
             {
-                "if True goto 2",
-                "goto L3",
-                "L3: noop",
-                "goto L2",
-                "L2: noop",
+                "if False goto 2",
+                "goto 2",
                 "2: a = 5",
             },
             TestName = "OptimizationLabelIf")]
@@ -123,7 +101,7 @@ a = 1;
 1: if (true)
     goto 4;
 else
-3: a=5;
+3: a = 5;
 4: b = 2;
 ",
             true,
@@ -132,8 +110,7 @@ else
                 "if True goto 4",
                 "goto 3",
                 "3: a = 5",
-                "goto L2",
-                "L2: noop",
+                "goto 4",
                 "4: b = 2",
             },
             TestName = "Task3")]

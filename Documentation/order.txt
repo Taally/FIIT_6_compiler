@@ -28,7 +28,7 @@ Introduction.md
 2_GotoThroughGoto.md
 2_GotoToGoto.md
 2_RemoveAlgebraicIdentities.md
-2_RemoveNoopInTac.md
+2_RemoveNoopInTAC.md
 2_LocalConstantPropagation.md
 2_CopyPropagation.md
 2_ThreeAddressCodeOptimizer.md

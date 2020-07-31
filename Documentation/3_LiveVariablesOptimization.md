@@ -45,15 +45,15 @@ public class LiveVariablesOptimization
 
 ```csharp
 [TestCase(@"
-var a,b,c;
-input (b);
+var a, b, c;
+input(b);
 a = b + 1;
 c = 6;
 if a < b
     c = b - a;
 else
     c = b + a;
-print (c);
+print(c);
 ",
     ExpectedResult = new[]
     {

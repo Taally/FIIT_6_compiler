@@ -12,15 +12,15 @@ namespace SimpleLanguage.Tests.DataFlowAnalysis
         public void LiveVariables()
         {
             var program = @"
-var a,b,c;
+var a, b, c;
 
-input (b);
+input(b);
 a = b + 1;
 if a < c
     c = b - a;
 else
     c = b + a;
-print (c);
+print(c);
 ";
 
             var cfg = GenCFG(program);
@@ -33,11 +33,11 @@ print (c);
             var expected =
                 new List<(IEnumerable<string>, IEnumerable<string>)>()
                 {
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){ "c" }),
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){"a", "b"}),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){ "c" }),
-                    (new HashSet<string>(){"a", "b"}, new HashSet<string>(){"c"}),
-                    (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+                    (new HashSet<string>(){ "c" }, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){ "c" }, new HashSet<string>(){ "a", "b" }),
+                    (new HashSet<string>(){ "a", "b" }, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){ "a", "b" }, new HashSet<string>(){ "c" }),
+                    (new HashSet<string>(){ "c" }, new HashSet<string>(){ }),
                     (new HashSet<string>(){ }, new HashSet<string>(){ })
                 };
 
@@ -48,15 +48,15 @@ print (c);
         public void ReachingDefinitions()
         {
             var TAC = GenTAC(@"
-var a,b,c;
+var a, b, c;
 
-input (b);
+input(b);
 a = b + 1;
 if a < c
     c = b - a;
 else
     c = b + a;
-print (c);
+print(c);
 ");
 
             var cfg = GenCFG(TAC);
@@ -69,12 +69,12 @@ print (c);
             var expected =
                 new List<(IEnumerable<Instruction>, IEnumerable<Instruction>)>()
                 {
-                    (new List<Instruction>(){}, new List<Instruction>(){}),
-                    (new List<Instruction>(){}, new List<Instruction>(){TAC[2], TAC[0]}),
-                    (new List<Instruction>(){TAC[2], TAC[0]}, new List<Instruction>(){ TAC[6], TAC[2], TAC[0] }),
-                    (new List<Instruction>(){TAC[2], TAC[0]}, new List<Instruction>(){ TAC[9], TAC[2], TAC[0] }),
-                    (new List<Instruction>(){TAC[6], TAC[2], TAC[0], TAC[9]}, new List<Instruction>(){TAC[6], TAC[2], TAC[0], TAC[9]}),
-                    (new List<Instruction>(){TAC[6], TAC[2], TAC[0], TAC[9]}, new List<Instruction>(){ TAC[6], TAC[2], TAC[0], TAC[9]})
+                    (new List<Instruction>(){ }, new List<Instruction>(){ }),
+                    (new List<Instruction>(){ }, new List<Instruction>(){ TAC[2], TAC[0] }),
+                    (new List<Instruction>(){ TAC[2], TAC[0] }, new List<Instruction>(){ TAC[6], TAC[2], TAC[0] }),
+                    (new List<Instruction>(){ TAC[2], TAC[0] }, new List<Instruction>(){ TAC[9], TAC[2], TAC[0] }),
+                    (new List<Instruction>(){ TAC[6], TAC[2], TAC[0], TAC[9] }, new List<Instruction>(){ TAC[6], TAC[2], TAC[0], TAC[9] }),
+                    (new List<Instruction>(){ TAC[6], TAC[2], TAC[0], TAC[9] }, new List<Instruction>(){ TAC[6], TAC[2], TAC[0], TAC[9] })
                 };
 
             AssertSet(expected, actual);
@@ -83,49 +83,92 @@ print (c);
         [Test]
         public void AvailableExpressions()
         {
-            var TAC = GenTAC(@"var a, b, c, d, x, u, e,g, y,zz,i;
+            var cfg = GenCFG(@"
+var a, b, c, d, x, e, g, y, zz, i;
 2: a = x + y;
 g = c + d;
 3: zz = 1;
 goto 1;
-1: if(a < b)
+1: if (a < b)
     c = 1;
 b = c + d;
 goto 3;
-e = zz + i;"
-);
+e = zz + i;
+");
 
-            var cfg = GenCFG(TAC);
             var resAvailableExpressions = new AvailableExpressions().Execute(cfg);
             var actual = cfg.GetCurrentBasicBlocks()
                 .Select(z => resAvailableExpressions[z])
                 .Select(p => ((IEnumerable<OneExpression>)p.In, (IEnumerable<OneExpression>)p.Out))
                 .ToList();
 
-            var expected = new List<(IEnumerable<OneExpression>, IEnumerable<OneExpression>)>()
+            var expected = new List<(IEnumerable<OneExpression> In, IEnumerable<OneExpression> Out)>()
             {
-                (new List<OneExpression>(),
-                new List<OneExpression>()),
+                // 0
+                (In: new List<OneExpression>(),
+                Out: new List<OneExpression>()),
 
-                (new List<OneExpression>(),
-                new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ),
+                // 1
+                (In: new List<OneExpression>(),
+                Out: new List<OneExpression>()
+                {
+                    new OneExpression("PLUS", "x", "y"),
+                    new OneExpression("PLUS", "c", "d")
+                }),
 
-                (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") } ,
-                new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
+                // 2
+                (In: new List<OneExpression>()
+                {
+                    new OneExpression("PLUS", "x", "y"),
+                    new OneExpression("PLUS", "c", "d")
+                },
+                Out: new List<OneExpression>()
+                {
+                    new OneExpression("PLUS", "x", "y"),
+                    new OneExpression("PLUS", "c", "d")
+                }),
 
-                (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d") },
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
+                // 3
+                (In: new List<OneExpression>()
+                {
+                    new OneExpression("PLUS", "x", "y"),
+                    new OneExpression("PLUS", "c", "d")
+                },
+                Out: new List<OneExpression>()
+                {
+                    new OneExpression("EQGREATER", "a", "b" ),
+                    new OneExpression("PLUS", "x", "y"),
+                    new OneExpression("PLUS", "c", "d")
+                }),
 
-                (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")}),
+                // 4
+                (In: new List<OneExpression>()
+                {
+                    new OneExpression("EQGREATER", "a", "b" ),
+                    new OneExpression("PLUS", "x", "y"),
+                    new OneExpression("PLUS", "c", "d")
+                },
+                Out: new List<OneExpression>()
+                {
+                    new OneExpression("EQGREATER", "a", "b" ),
+                    new OneExpression("PLUS", "x", "y"),
+                }),
 
-                (new List<OneExpression>() { new OneExpression("LESS", "a", "b" ), new OneExpression("PLUS", "x", "y"), new OneExpression("PLUS", "c", "d")},
-                new List<OneExpression>() { new OneExpression("LESS", "a", "b" ) , new OneExpression("PLUS", "x", "y") }),
+                // 5
+                (In: new List<OneExpression>()
+                {
+                    new OneExpression("EQGREATER", "a", "b" ),
+                    new OneExpression("PLUS", "x", "y"),
+                },
+                Out: new List<OneExpression>()
+                {
+                    new OneExpression("PLUS", "c", "d"),
+                    new OneExpression("PLUS", "x", "y")
+                }),
 
-                (new List<OneExpression>() { new OneExpression("PLUS", "x", "y"), new OneExpression("LESS", "a", "b")},
-                new List<OneExpression>() { new OneExpression("PLUS", "c", "d"), new OneExpression("PLUS", "x", "y")}),
-
-                (new List<OneExpression>(), new List<OneExpression>())
+                // 6
+                (In: new List<OneExpression>(),
+                Out: new List<OneExpression>())
             };
 
             AssertSet(expected, actual);

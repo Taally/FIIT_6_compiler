@@ -21,20 +21,20 @@
 
 ### Теоретическая часть
 
-__Трёхадресный код__ (ТАК) — это линеаризованное абстрактное синтаксическое дерево, из которого восстановить текст программы уже нельзя. В трёхадресном коде в правой части выражении допускается только один оператор, т.е. выражение ```x+y*z``` транслируется как
+__Трёхадресный код__ (ТАК) — это линеаризованное абстрактное синтаксическое дерево, из которого восстановить текст программы уже нельзя. В трёхадресном коде в правой части выражении допускается только один оператор, т.е. выражение `x + y * z` транслируется как
 
 ```
 t1 = y * z
 t2 = x + t1
 ```
-где ```t1```,```t2``` – временные переменные.
+где `t1`, `t2` – временные переменные.
 
-На примере ниже можно увидеть разбор АСТ узлов, соответствующих выражению ```a = a + b * c```
+На примере ниже можно увидеть разбор АСТ узлов, соответствующих выражению `a = a + b * c`
 
 ![Пример трёхадресного кода](2_GenerationTAC/pic1.jpg)
 
 Представление трёхадресного кода является четвёркой полей 
-(op, arg1, arg2, res). На рисунке ниже показано, как разбирается выражение ```a = b * (-c) + b * (-c)``` в виде трёхадресного кода и представляется в таблице четвёрками:
+(op, arg1, arg2, res). На рисунке ниже показано, как разбирается выражение `a = b * (-c) + b * (-c)` в виде трёхадресного кода и представляется в таблице четвёрками:
 
 ![Пример четвёрок трёхадресного кода](2_GenerationTAC/pic2.jpg)
 
@@ -56,32 +56,31 @@ public string Result { get; }
 ```csharp
 private string Gen(ExprNode ex)
 {
-    if (ex.GetType() == typeof(BinOpNode))
+    if (ex is BinOpNode binOp)
     {
-        var bin = (BinOpNode)ex;
-        var argument1 = Gen(bin.Left);
-        var argument2 = Gen(bin.Right);
+        var argument1 = Gen(binOp.Left);
+        var argument2 = Gen(binOp.Right);
         var result = ThreeAddressCodeTmp.GenTmpName();
-        GenCommand("", bin.Op.ToString(), argument1, argument2, result);
+        GenCommand("", binOp.Op.ToString(), argument1, argument2, result);
         return result;
     }
-    else if (ex.GetType() == typeof(UnOpNode))
+    else if (ex is UnOpNode unOp)
     {
         /*..*/
     }
-    else if (ex.GetType() == typeof(IdNode))
+    else if (ex is IdNode id)
     {
-        var id = (IdNode)ex;
         return id.Name;
     }
-    else if (ex.GetType() == typeof(IntNumNode))
+    else if (ex is IntNumNode intNum)
     {
-        /*..*/
+        return intNum.Num.ToString();
     }
-    else if (ex.GetType() == typeof(BoolValNode))
+    else if (ex is BoolValNode bl)
     {
-        /*..*/
+        return bl.Val.ToString();
     }
+
     return null;
 }
 ```
@@ -97,29 +96,17 @@ public override void VisitAssignNode(AssignNode a)
 ```csharp
 public override void VisitIfElseNode(IfElseNode i)
 {
-    // перевод в трёхадресный код условия
-    var exprTmpName = Gen(i.Expr);
+    string endLabel, exprTmpName;
 
-    var trueLabel = i.TrueStat is LabelStatementNode label
-        ? label.Label.Num.ToString()
-        : i.TrueStat is BlockNode block
-            && block.List.StatChildren[0] is LabelStatementNode labelB
-            ? labelB.Label.Num.ToString()
-            : ThreeAddressCodeTmp.GenTmpLabel();
-
-    var falseLabel = ThreeAddressCodeTmp.GenTmpLabel();
-    GenCommand("", "ifgoto", exprTmpName, trueLabel, "");
-
-    // перевод в трёхадресный код false ветки
-    i.FalseStat?.Visit(this);
-    GenCommand("", "goto", falseLabel, "", "");
-
-    // перевод в трёхадресный код true ветки
-    var instructionIndex = Instructions.Count;
-    i.TrueStat.Visit(this);
-    Instructions[instructionIndex].Label = trueLabel;
-
-    GenCommand(falseLabel, "noop", "", "", "");
+    if (i.FalseStat == null) // краткая форма if else
+    {
+        /*..*/
+    }
+    else // полная форма if else
+    {
+        /*..*/
+    }
+    /*..*/
 }
 ```
 - для цикла while

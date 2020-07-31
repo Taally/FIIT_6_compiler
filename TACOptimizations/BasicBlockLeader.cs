@@ -9,7 +9,7 @@ namespace SimpleLang
         /// </summary>
         /// <param name="instructions">Список инструкций</param>
         /// <returns>
-        /// Вернет список базовых блоков
+        /// Вернёт список базовых блоков
         /// </returns>
         public static List<BasicBlock> DivideLeaderToLeader(IReadOnlyList<Instruction> instructions)
         {

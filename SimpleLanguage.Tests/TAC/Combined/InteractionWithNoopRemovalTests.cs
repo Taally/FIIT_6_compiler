@@ -60,12 +60,11 @@ a = -b;
         [Test]
         public void RemoveEmptyNodesShouldNotDeleteNoopAfterLastLoop()
         {
-            var TAC = GenTAC(
-                @"
-                var a, i;
-                for i = 1,5
-                    a = 10;
-                ");
+            var TAC = GenTAC(@"
+var a, i;
+for i = 1, 5
+    a = 10;
+");
             var opts = new List<Optimization>()
             {
                 ThreeAddressCodeRemoveNoop.RemoveEmptyNodes,
@@ -135,10 +134,9 @@ input(a);
             ExpectedResult = new string[]
             {
                 "input a",
-                "1: #t1 = a == 0",
+                "1: #t1 = a != 0",
                 "#t2 = !#t1",
-                "#t3 = !#t2",
-                "if #t3 goto 3",
+                "if #t2 goto 3",
                 "2: a = 2",
                 "3: a = 3"
             },

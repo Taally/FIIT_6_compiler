@@ -274,15 +274,31 @@ a = 3;
             ExpectedResult = new string[]
             {
                 "a = 2",
-                "if a goto L1",
-                "goto L2",
-                "L1: b = 1",
-                "#t1 = b + 3",
-                "c = #t1",
-                "L2: noop",
+                "#t1 = !a",
+                "if #t1 goto L1",
+                "b = 1",
+                "#t2 = b + 3",
+                "c = #t2",
+                "L1: noop",
                 "a = 3"
             },
-            TestName = "IfNoDead")]
+            TestName = "IfNoDead1")]
+
+        [TestCase(@"
+var a;
+input(a);
+if (a == true)
+    a = false;
+",
+            ExpectedResult = new string[]
+            {
+                "input a",
+                "#t1 = a != True",
+                "if #t1 goto L1",
+                "a = False",
+                "L1: noop",
+            },
+            TestName = "IfNoDead2")]
 
         [TestCase(@"
 var a, b, c;

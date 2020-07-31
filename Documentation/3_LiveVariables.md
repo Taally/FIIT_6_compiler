@@ -137,27 +137,28 @@ public override InOutData<HashSet<string>> Execute(ControlFlowGraph cfg, bool us
 public void WithLoop()
 {
     var TAC = GenTAC(@"
-var a,b,c;
+var a, b, c;
 
-input (b);
+input(b);
 
-while a > 5{
+while a > 5
+{
     a = b + 1;
     c = 5;
 }
 
-print (c);
+print(c);
 ");
 
     var expected =
         new List<(HashSet<string> IN, HashSet<string> OUT)>()
         {
-            (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","c"}),
-            (new HashSet<string>(){"a","c"}, new HashSet<string>(){"a","b","c"}),
-            (new HashSet<string>(){"a","b","c"}, new HashSet<string>(){"b", "c"}),
+            (new HashSet<string>(){ "a", "c" }, new HashSet<string>(){ "a", "c" }),
+            (new HashSet<string>(){ "a", "c" }, new HashSet<string>(){ "a", "b", "c" }),
+            (new HashSet<string>(){ "a", "b", "c" }, new HashSet<string>(){ "b", "c" }),
             (new HashSet<string>(){ "c" }, new HashSet<string>(){ "c" }),
-            (new HashSet<string>(){"b"}, new HashSet<string>(){ "a", "b", "c"}),
-            (new HashSet<string>(){"c"}, new HashSet<string>(){ }),
+            (new HashSet<string>(){ "b" }, new HashSet<string>(){ "a", "b", "c" }),
+            (new HashSet<string>(){ "c" }, new HashSet<string>(){ }),
             (new HashSet<string>(){ }, new HashSet<string>(){ })
         };
     var actual = Execute(TAC);
@@ -169,35 +170,37 @@ print (c);
 public void ComplexWithLoop()
 {
     var TAC = GenTAC(@"
-var a,b,c,i;
+var a, b, c, i;
 
-for i = 1,b {
-    input (a);
+for i = 1, b
+{
+    input(a);
     c = c + a;
     print(c);
     if c < b
         c = c + 1;
-    else {
+    else
+    {
         b = b - 1;
         print(b);
         print(c);
     }
 }
 
-print (c+a+b);
+print(c + a + b);
 ");
 
     var expected =
         new List<(HashSet<string> IN, HashSet<string> OUT)>()
         {
-            (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","b","a"}),
-            (new HashSet<string>(){"b","c","a"}, new HashSet<string>(){"c","i","b","a"}),
-            (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-            (new HashSet<string>(){"c","i","b"}, new HashSet<string>(){"c","a","b", "i"}),
-            (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-            (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-            (new HashSet<string>(){"c","b","i","a"}, new HashSet<string>(){"c","b","i","a"}),
-            (new HashSet<string>(){"c","a","b"}, new HashSet<string>(){ }),
+            (new HashSet<string>(){ "b", "c", "a" }, new HashSet<string>(){ "c", "b", "a" }),
+            (new HashSet<string>(){ "b", "c", "a" }, new HashSet<string>(){ "c", "i", "b", "a" }),
+            (new HashSet<string>(){ "c", "b", "i", "a" }, new HashSet<string>(){ "c", "b", "i", "a" }),
+            (new HashSet<string>(){ "c", "i", "b" }, new HashSet<string>(){ "c", "a", "b", "i" }),
+            (new HashSet<string>(){ "c", "b", "i", "a" }, new HashSet<string>(){ "c", "b", "i", "a" }),
+            (new HashSet<string>(){ "c", "b", "i", "a" }, new HashSet<string>(){ "c", "b", "i", "a" }),
+            (new HashSet<string>(){ "c", "b", "i", "a" }, new HashSet<string>(){ "c", "b", "i", "a" }),
+            (new HashSet<string>(){ "c", "a", "b" }, new HashSet<string>(){ }),
             (new HashSet<string>(){ }, new HashSet<string>(){ })
         };
     var actual = Execute(TAC);

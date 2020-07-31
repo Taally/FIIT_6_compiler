@@ -7,12 +7,12 @@ using SimpleLang;
 namespace SimpleLanguage.Tests.CFG
 {
     [TestFixture]
-    internal class CFGdfs : OptimizationsTestBase
+    internal class CFGdfsTests : OptimizationsTestBase
     {
         [Test]
         public void Test()
         {
-            var program = @"
+            var cfg = GenCFG(@"
 var a, b, c, x, i;
 goto 200;
 200: a = 10 + 5;
@@ -26,9 +26,7 @@ else
 {
     b = 1;
 }
-";
-
-            var cfg = GenCFG(program);
+");
 
             foreach (var block in cfg.GetCurrentBasicBlocks())
             {

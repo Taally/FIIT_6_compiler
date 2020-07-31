@@ -46,9 +46,12 @@ namespace SimpleLang
                 BasicBlockLeader.DivideLeaderToLeader(new ControlFlowGraph(instructions).GetInstructions()) :
                 BasicBlockLeader.DivideLeaderToLeader(instructions);
 
-            for (var i = 0; i < blocks.Count; ++i)
+            if (basicBlockOptimizations.Count != 0)
             {
-                blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
+                for (var i = 0; i < blocks.Count; ++i)
+                {
+                    blocks[i] = OptimizeBlock(blocks[i], basicBlockOptimizations);
+                }
             }
 
             var preResult = blocks.SelectMany(b => b.GetInstructions()).ToList();

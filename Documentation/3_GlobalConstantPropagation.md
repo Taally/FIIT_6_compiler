@@ -111,8 +111,8 @@ public virtual InOutData<T> Execute(ControlFlowGraph graph);
 [Test]
 public void TransfNotDistr()
 {
-    var program = @"
-var a,b,c;
+    var blocks = GenBlocks(@"
+var a, b, c;
 if c > 5
 {
     a = 2;
@@ -124,8 +124,7 @@ else
     b = 2;
 }
 c = a + b;
-";
-    var blocks = GenBlocks(program);
+");
     Assert.AreEqual(4, blocks.Count);
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
@@ -141,15 +140,14 @@ c = a + b;
 [Test]
 public void PropagateTwoVariants()
 {
-    var program = @"
+    var blocks = GenBlocks(@"
 var a, x, c;
 if c > 10
     x = 10;
 else
     a = 20;
 c = a + x;
-";
-    var blocks = GenBlocks(program);
+");
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
@@ -168,7 +166,7 @@ c = a + x;
 [Test]
 public void TwoConstValues()
 {
-    var program = @"
+    var blocks = GenBlocks(@"
 var a, x, c;
 input(c);
 if c > 5
@@ -178,8 +176,7 @@ else
 if c > 5
     x = 20;
 a = x;
-";
-    var blocks = GenBlocks(program);
+");
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];
@@ -194,14 +191,13 @@ a = x;
 [Test]
 public void PropagateTwoVariants2()
 {
-    var program = @"
+    var blocks = GenBlocks(@"
 var a, x, c;
 x = 10;
 a = 20;
 goto 666;
 666: c = a + x;
-";
-    var blocks = GenBlocks(program);
+");
     var cfg = new ControlFlowGraph(blocks);
     var InOut = new ConstantPropagation().ExecuteNonGeneric(cfg);
     var actual = InOut.OUT[blocks.Last()];

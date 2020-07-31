@@ -89,9 +89,9 @@
     <Compile Include="AST\OptStatIfTrueTests.cs" />
     <Compile Include="AST\OptWhileFalseTests.cs" />
     <Compile Include="DataFlowAnalysis\AvailableExpressionsOptimizationTests.cs" />
-    <Compile Include="CFG\CFGcreateTests.cs" />
+    <Compile Include="CFG\CFGCreateTests.cs" />
     <Compile Include="CFG\CFGdfsTests.cs" />
-    <Compile Include="DataFlowAnalysis\ConstPropagationTests.cs" />
+    <Compile Include="DataFlowAnalysis\ConstantPropagationTests.cs" />
     <Compile Include="CFG\CFGUnreachableCodeEliminationTests.cs" />
     <Compile Include="DataFlowAnalysis\LiveVariablesOptimizationTests.cs" />
     <Compile Include="DataFlowAnalysis\ReachingDefinitionsOptimizationTests.cs" />
@@ -108,6 +108,7 @@
     <Compile Include="LoopsInCFG\CFGRegionsTests.cs" />
     <Compile Include="TAC\Combined\InteractionWithNoopRemovalTests.cs" />
     <Compile Include="TAC\Combined\FoldPropagateConstantsTests.cs" />
+    <Compile Include="TAC\Combined\InteractionWithDeleteDeadCodeTests.cs" />
     <Compile Include="TAC\Simple\AlgebraicIdentitiesTests.cs" />
     <Compile Include="TAC\Simple\BasicBlockLeaderTests.cs" />
     <Compile Include="TAC\Simple\CommonExprEliminationTests.cs" />
@@ -121,15 +122,14 @@
     <Compile Include="TAC\Simple\PropagateConstantsTests.cs" />
     <Compile Include="TAC\Simple\PropagateCopiesTests.cs" />
     <Compile Include="TAC\Simple\RemoveNoopTests.cs" />
-    <Compile Include="TAC\Combined\GotoToGotoTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleLang1.csproj">
+    <ProjectReference Include="..\SimpleLanguage.csproj">
       <Project>{12b9d996-7b4a-4ee4-9ad8-2e24eaf3f574}</Project>
-      <Name>SimpleLang1</Name>
+      <Name>SimpleLanguage</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

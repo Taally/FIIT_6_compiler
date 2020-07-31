@@ -69,6 +69,22 @@ a = !a;
             },
             TestName = "Negation")]
 
+        [TestCase(@"
+var a;
+input(a);
+if (a == true)
+    a = false;
+",
+            ExpectedResult = new string[]
+            {
+                "input a",
+                "#t1 = a != True",
+                "if #t1 goto L1",
+                "a = False",
+                "L1: noop",
+            },
+            TestName = "IfNoDead")]
+
         public IEnumerable<string> TestDeleteDeadCodeWithDeadVars(string sourceCode) =>
             TestTACOptimization(sourceCode, DeleteDeadCodeWithDeadVars.DeleteDeadCode);
     }
