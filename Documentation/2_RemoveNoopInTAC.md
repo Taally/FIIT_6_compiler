@@ -137,12 +137,12 @@ new_label: a = b		 goto new_label
 goto old_label
 ```
 
-Пример проверки корректности интеграции с `GotoThroughGoto`
+Пример проверки корректности интеграции с `GotoThroughGoto`:
 ```
-1: if (1 < 2)			 	1: #t1 = 1 < 2
-    a = 4 + 5 * 6;   ->  	if #t1 goto L1
-   else					 	goto 4
-    goto 4;			    	goto L2
+1: if (1 < 2)               1: #t1 = 1 < 2
+    a = 4 + 5 * 6;    ->    if #t1 goto L1
+else                        goto 4
+    goto 4;                 goto L2
                             L1: #t2 = 5 * 6
                             #t3 = 4 + #t2
                             a = #t3
