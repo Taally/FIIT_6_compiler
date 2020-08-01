@@ -14,4 +14,4 @@ jobs:
       - uses: docker://pandoc/latex:2.10
         with:
           args: |
-            $(cat order.txt) -s --output=Documentation.md -V mainfont='Lato' -V monofont='Lato' -f gfm --toc -V toc-title:"Содержание"
+            $(cat /github/workspace/Documentation/order.txt) -s --output=Documentation.md -V mainfont='Lato' -V monofont='Lato' -f gfm --toc -V toc-title:"Содержание"
