@@ -34,25 +34,32 @@ jobs:
         fetch-depth: 0
     - name: Install dependencies
       run: |
-        wget https://github.com/jgm/pandoc/releases/download/2.9.2.1/pandoc-2.9.2.1-1-amd64.deb
-        sudo dpkg -i pandoc-2.9.2.1-1-amd64.deb
+        wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
+        sudo dpkg -i pandoc-2.10.1-1-amd64.deb
         sudo apt-get update && sudo apt-get install texlive-xetex texlive-lang-cyrillic librsvg2-bin
     
     - name: Generate docs
       run: |
         cd Documentation
-        pandoc $(cat order.txt) -s --output=Documentation.md --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f gfm --toc -V toc-title:"Содержание"
+        pandoc $(cat order.txt) -s --output=Documentation.md -V mainfont='Lato' -V monofont='Lato' -f gfm --toc -V lang=ru
         pandoc $(cat order.txt) metadata.yaml -s --output=Documentation.pdf --pdf-engine=xelatex -V mainfont='Lato' -V monofont='Lato' -f markdown+hard_line_breaks \
-        -V geometry:margin=1in --toc -V toc-title:"Содержание"
+        -V geometry:margin=1in --toc -V lang=ru
         
-    - name: Upload Documentation.md
+    - name: Upload Documentation.md artifact
       uses: actions/upload-artifact@v2
       with:
         name: Documentation.md
         path: Documentation/Documentation.md
     
-    - name: Upload Documentation.pdf
+    - name: Upload Documentation.pdf artifact
       uses: actions/upload-artifact@v2
       with:
         name: Documentation.pdf
         path: Documentation/Documentation.pdf
+      
+    - name: Create Pull Request for docs
+      uses: peter-evans/create-pull-request@v3
+      with:
+        title: Update docs
+        labels: documentation
+        commit-message: Update docs

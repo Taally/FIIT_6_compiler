@@ -85,24 +85,24 @@ a = a + 3;
 b = b * 2; 
 }
 ```
-Результат работы PrettyPrintVisitor:
+Результат работы `PrettyPrintVisitor`:
 ```csharp
 var a, b, c, d, i;
 a = ((5 + 3) - 1);
 b = ((a - 3) / (-b));
 if (a > b) {
-  c = 1;
+    c = 1;
 }
 else
-  c = 2;
+    c = 2;
 for i = 1, 5
-  c = (c + 1);
+    c = (c + 1);
 d = (a <= b);
 if (c == 6)
-  goto 777;
+    goto 777;
 d = (d or (a < 10));
 777: while (c < 25) {
-  a = (a + 3);
-  b = (b * 2);
+    a = (a + 3);
+    b = (b * 2);
 }
 ```

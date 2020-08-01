@@ -159,7 +159,7 @@
             "a = a => empty",
             "if (false) a else b => b",
             "if (true) a else b => a",
-            "while(false) => empty"});
+            "while (false) => empty"});
             this.ASToptList.Location = new System.Drawing.Point(6, 6);
             this.ASToptList.Name = "ASToptList";
             this.ASToptList.Size = new System.Drawing.Size(501, 361);
