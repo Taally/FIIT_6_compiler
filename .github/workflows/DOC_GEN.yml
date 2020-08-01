@@ -62,3 +62,4 @@ jobs:
       with:
         title: Update docs
         labels: documentation
+        commit-message: Update docs
