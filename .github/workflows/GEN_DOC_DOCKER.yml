@@ -13,5 +13,6 @@ jobs:
     steps:
       - uses: docker://pandoc/latex:2.10
         with:
+          entrypoint: bin/sh
           args: |
-            /bin/sh ls
+            ls
