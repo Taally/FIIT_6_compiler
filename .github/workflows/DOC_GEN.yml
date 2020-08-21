@@ -25,7 +25,7 @@ jobs:
   gen_doc:
     runs-on: ubuntu-latest
     needs: check_doc_changes
-    if: ${{ needs.check_doc_changes.outputs.doc_files }}
+    if: needs.check_doc_changes.outputs.doc_files && needs.check_doc_changes.outputs.doc_files != 'Documentation/Documentation.md'
 
     steps:
     - uses: actions/checkout@v2
@@ -61,5 +61,6 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         title: Update docs
+        body: Close and reopen this pull request to run required checks. This is due to the fact that Actions don't run on PRs made using Actions.
         labels: documentation
         commit-message: Update docs
